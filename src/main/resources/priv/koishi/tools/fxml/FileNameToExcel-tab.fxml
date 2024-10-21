@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.collections.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" stylesheets="@../css/Styles.css"
+            fx:controller="priv.koishi.tools.Controller.FileNameToExcelController">
+    <VBox fx:id="vbox_Name" spacing="10" AnchorPane.topAnchor="10">
+        <HBox spacing="10">
+            <Label prefHeight="20" text="文件夹查询设置:"/>
+            <ChoiceBox fx:id="directoryNameType_Name" prefHeight="20" prefWidth="140">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="只查询文件"/>
+                        <String fx:value="文件和文件夹都查询"/>
+                        <String fx:value="只查询文件夹"/>
+                    </FXCollections>
+                </items>
+                <value>
+                    <String fx:value="只查询文件"/>
+                </value>
+            </ChoiceBox>
+            <Label prefHeight="20" text="隐藏文件查询设置:"/>
+            <ChoiceBox fx:id="hideFileType_Name" prefHeight="20" prefWidth="120">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="不查询隐藏文件"/>
+                        <String fx:value="是否隐藏都查询"/>
+                        <String fx:value="只查询隐藏文件"/>
+                    </FXCollections>
+                </items>
+                <value>
+                    <String fx:value="不查询隐藏文件"/>
+                </value>
+            </ChoiceBox>
+            <CheckBox fx:id="recursion_Name" prefHeight="20" style="-fx-cursor: hand" text="递归查询"/>
+            <CheckBox fx:id="showFileType_Name" onAction="#handleCheckBoxAction" prefHeight="20"
+                      style="-fx-cursor: hand" text="显示文件拓展名"/>
+            <CheckBox fx:id="openDirectory_Name" prefHeight="20" selected="true" style="-fx-cursor: hand"
+                      text="导出后打开文件夹"/>
+            <CheckBox fx:id="openFile_Name" prefHeight="20" style="-fx-cursor: hand" text="导出后打开excel文件"/>
+        </HBox>
+
+        <HBox spacing="10">
+            <Label prefHeight="20" text="导出excel文件名称:"/>
+            <TextField fx:id="excelName_Name" onKeyTyped="#nameHandleKeyTyped" prefHeight="20" prefWidth="100"/>
+            <Label prefHeight="20" text="excel表名称:"/>
+            <TextField fx:id="sheetOutName_Name" onKeyTyped="#sheetHandleKeyTyped" prefHeight="20" prefWidth="100"/>
+            <Label prefHeight="20" text="导出excel文件类型:"/>
+            <ChoiceBox fx:id="excelType_Name" prefHeight="20" prefWidth="80">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value=".xlsx"/>
+                        <!--                    <String fx:value=".xls"/>-->
+                    </FXCollections>
+                </items>
+                <value>
+                    <String fx:value=".xlsx"/>
+                </value>
+            </ChoiceBox>
+        </HBox>
+
+        <HBox spacing="10">
+            <Label prefHeight="20" text="导出预留行:"/>
+            <TextField fx:id="startRow_Name" onKeyTyped="#rowHandleKeyTyped" prefHeight="20" prefWidth="50"/>
+            <Label prefHeight="20" text="导出预留列:"/>
+            <TextField fx:id="startCell_Name" onKeyTyped="#cellHandleKeyTyped" prefHeight="20" prefWidth="50"/>
+            <Label prefHeight="20" text="需要识别的文件后缀名:"/>
+            <TextField fx:id="filterFileType_Name" onKeyTyped="#filterHandleKeyTyped" prefHeight="20" prefWidth="300"/>
+        </HBox>
+
+        <HBox spacing="10">
+            <Button fx:id="fileButton_Name" onAction="#inDirectoryButton" style="-fx-cursor: hand" text="选择要读取的文件夹"/>
+            <Label fx:id="inPath_Name" prefHeight="20" prefWidth="300" style="-fx-font-size: 15px;"/>
+            <Button onAction="#exportPath" style="-fx-cursor: hand" text="选择导出文件夹位置"/>
+            <Label fx:id="outPath_Name" prefHeight="20" style="-fx-font-size: 15px;"/>
+        </HBox>
+
+        <HBox spacing="10">
+            <Button onAction="#getExcelPath" style="-fx-cursor: hand" text="选择excel模板位置"/>
+            <Label fx:id="excelPath_Name" prefHeight="20" style="-fx-font-size: 15px;"/>
+            <Button fx:id="removeExcelButton_Name" onAction="#removeExcelPath" prefHeight="20"
+                    styleClass="delete-button-style" visible="false">
+                <graphic>
+                    <ImageView>
+                        <Image url="@../icon/trash-o.png"/>
+                    </ImageView>
+                </graphic>
+            </Button>
+        </HBox>
+
+        <HBox spacing="10">
+            <Button fx:id="reSelectButton_Name" onAction="#reSelect" style="-fx-cursor: hand" text="重新查询"/>
+            <Button fx:id="clearButton_Name" onAction="#removeAll" style="-fx-cursor: hand" text="清空列表"/>
+            <Button fx:id="exportButton_Name" onAction="#exportAll" style="-fx-cursor: hand" text="开始导出"/>
+            <Label fx:id="fileNumber_Name" alignment="CENTER_RIGHT" prefHeight="20" text="列表为空"/>
+        </HBox>
+
+        <TableView fx:id="tableView_Name" onDragDropped="#handleDrop" onDragOver="#acceptDrop">
+            <placeholder>
+                <Label text="拖拽 或点击 选择要读取的文件夹 按钮向列表添加文件"/>
+            </placeholder>
+
+            <columns>
+                <TableColumn fx:id="id_Name" text="序号"/>
+                <TableColumn fx:id="name_Name" text="文件名称"/>
+                <TableColumn fx:id="fileType_Name" text="文件类型"/>
+                <TableColumn fx:id="path_Name" text="文件路径"/>
+                <TableColumn fx:id="size_Name" sortType="DESCENDING" text="文件大小"/>
+                <TableColumn fx:id="creatDate_Name" text="创建时间"/>
+                <TableColumn fx:id="updateDate_Name" text="修改时间"/>
+            </columns>
+        </TableView>
+
+        <Label fx:id="log_Name" prefHeight="20"/>
+    </VBox>
+</AnchorPane>

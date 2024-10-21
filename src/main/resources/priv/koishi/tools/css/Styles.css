@@ -1,0 +1,9 @@
+.delete-button-style {
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-padding: 0;
+    -fx-border-radius: 0;
+    -fx-background-insets: 0;
+}

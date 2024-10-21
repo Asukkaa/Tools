@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.collections.FXCollections?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import java.lang.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="priv.koishi.tools.Controller.FileRenameExcelController">
+    <VBox fx:id="vbox_Re" spacing="10" AnchorPane.topAnchor="10">
+        <HBox spacing="10">
+            <Label prefHeight="20" text="文件夹查询设置:"/>
+            <ChoiceBox fx:id="directoryNameType_Re" prefHeight="20" prefWidth="140">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="只查询文件"/>
+                        <String fx:value="文件和文件夹都查询"/>
+                        <String fx:value="只查询文件夹"/>
+                    </FXCollections>
+                </items>
+                <value>
+                    <String fx:value="只查询文件"/>
+                </value>
+            </ChoiceBox>
+            <Label prefHeight="20" text="隐藏文件查询设置:"/>
+            <ChoiceBox fx:id="hideFileType_Re" prefHeight="20" prefWidth="120">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="不查询隐藏文件"/>
+                        <String fx:value="是否隐藏都查询"/>
+                        <String fx:value="只查询隐藏文件"/>
+                    </FXCollections>
+                </items>
+                <value>
+                    <String fx:value="不查询隐藏文件"/>
+                </value>
+            </ChoiceBox>
+            <CheckBox fx:id="openDirectory_Re" prefHeight="20" selected="true" style="-fx-cursor: hand" text="重命名后打开文件夹"/>
+        </HBox>
+
+        <HBox spacing="10">
+            <Label prefHeight="20" text="文件重命名方式设置:"/>
+            <ChoiceBox fx:id="renameType_Re" prefHeight="20" prefWidth="130">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="按配置规则重命名"/>
+                        <String fx:value="按excel模板重命名"/>
+                    </FXCollections>
+                </items>
+                <value>
+                    <String fx:value="按配置规则重命名"/>
+                </value>
+            </ChoiceBox>
+            <Label prefHeight="20" text="需要识别的文件后缀名:"/>
+            <TextField fx:id="filterFileType_Re" onKeyTyped="#filterHandleKeyTyped" prefHeight="20" prefWidth="300"/>
+        </HBox>
+
+        <HBox fx:id="configRename_Re" spacing="10">
+            <Label prefHeight="20" text="文件名起始编号:"/>
+            <TextField fx:id="startName_Re" onKeyTyped="#startNameHandleKeyTyped" prefHeight="20" prefWidth="100"/>
+            <Label prefHeight="20" text="文件名起始编号位数:"/>
+            <TextField fx:id="startSize_Re" onKeyTyped="#startSizeHandleKeyTyped" prefHeight="20" prefWidth="50"/>
+            <Label prefHeight="20" text="相同编号文件数量:" />
+            <TextField fx:id="nameNum_Re" onKeyTyped="#nameNumHandleKeyTyped" prefHeight="20" prefWidth="50" />
+            <CheckBox onAction="#handleCheckBoxAction" fx:id="addSpace_Re" prefHeight="20" selected="true" style="-fx-cursor: hand" text="向分隔符左侧添加一个空格"/>
+        </HBox>
+
+        <HBox spacing="10">
+            <Label prefHeight="20" text="区分编码类型:" />
+            <ChoiceBox onAction="#differenceCodeAction" fx:id="differenceCode_Re" prefHeight="20" prefWidth="150">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="阿拉伯数字：123"/>
+                        <String fx:value="中文数字：一二三"/>
+                        <String fx:value="小写英文字母：abc"/>
+                        <String fx:value="大小英文字母：ABC"/>
+                    </FXCollections>
+                </items>
+                <value>
+                    <String fx:value="阿拉伯数字：123"/>
+                </value>
+            </ChoiceBox>
+            <Label prefHeight="20" text="分隔符:" />
+            <ChoiceBox fx:id="subCode_Re" prefHeight="20" prefWidth="150">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="英文括号：01 (1).xx"/>
+                        <String fx:value="中文括号：01 （1）.xx"/>
+                        <String fx:value="英文横杠：01 -1.xx"/>
+                        <String fx:value="中文横杠：01 —1.xx"/>
+                    </FXCollections>
+                </items>
+                <value>
+                    <String fx:value="英文括号：01 (1).xx"/>
+                </value>
+            </ChoiceBox>
+        </HBox>
+
+        <HBox fx:id="excelRename_Re" spacing="10">
+            <Label prefHeight="20" text="excel表名称:"/>
+            <TextField fx:id="sheetOutName_Re" onKeyTyped="#sheetHandleKeyTyped" prefHeight="20" prefWidth="100"/>
+            <Label prefHeight="20" text="读取预留行:" />
+            <TextField fx:id="readRow_Re" onKeyTyped="#readRowHandleKeyTyped" prefHeight="20" prefWidth="50" />
+            <Label prefHeight="20" text="读取预留列:" />
+            <TextField fx:id="readCell_Re" onKeyTyped="#readCellHandleKeyTyped" prefHeight="20" prefWidth="50" />
+            <Label prefHeight="20" text="读取行数:" />
+            <TextField fx:id="maxRow_Re" onKeyTyped="#maxRowHandleKeyTyped" prefHeight="20" prefWidth="50" />
+        </HBox>
+
+        <HBox spacing="10">
+            <Button fx:id="fileButton_Re" onAction="#inDirectoryButton" style="-fx-cursor: hand"
+                    text="选择要读取的文件夹"/>
+            <Label fx:id="inPath_Re" prefHeight="20" prefWidth="300" style="-fx-font-size: 15px;"/>
+        </HBox>
+
+        <HBox spacing="10">
+            <Button onAction="#getExcelPath" style="-fx-cursor: hand" text="选择excel模板位置"/>
+            <Label fx:id="excelPath_Re" prefHeight="20" style="-fx-font-size: 15px;"/>
+            <Button fx:id="removeExcelButton_Re" onAction="#removeExcelPath" prefHeight="20"
+                    styleClass="delete-button-style" visible="false">
+                <graphic>
+                    <ImageView>
+                        <Image url="@../icon/trash-o.png"/>
+                    </ImageView>
+                </graphic>
+            </Button>
+        </HBox>
+
+        <HBox spacing="10">
+            <Button fx:id="reSelectButton_Re" onAction="#reSelect" style="-fx-cursor: hand" text="重新查询"/>
+            <Button fx:id="clearButton_Re" onAction="#removeAll" style="-fx-cursor: hand" text="清空列表"/>
+            <Button fx:id="exportButton_Re" onAction="#renameAll" style="-fx-cursor: hand" text="开始重命名"/>
+            <Label fx:id="fileNumber_Re" alignment="CENTER_RIGHT" prefHeight="20" text="列表为空"/>
+        </HBox>
+
+        <TableView fx:id="tableView_Re" onDragDropped="#handleDrop" onDragOver="#acceptDrop">
+            <placeholder>
+                <Label text="拖拽 或点击 选择要读取的文件夹 按钮向列表添加文件"/>
+            </placeholder>
+
+            <columns>
+                <TableColumn fx:id="id_Re" text="序号"/>
+                <TableColumn fx:id="name_Re" text="原始文件名称"/>
+                <TableColumn fx:id="rename_Re" text="修改后文件名称"/>
+                <TableColumn fx:id="fileType_Re" text="文件类型"/>
+                <TableColumn fx:id="path_Re" text="文件路径"/>
+                <TableColumn fx:id="size_Re" sortType="DESCENDING" text="文件大小"/>
+                <TableColumn fx:id="creatDate_Re" text="创建时间"/>
+                <TableColumn fx:id="updateDate_Re" text="修改时间"/>
+            </columns>
+        </TableView>
+
+        <Label fx:id="log_Re" prefHeight="20"/>
+    </VBox>
+</AnchorPane>
