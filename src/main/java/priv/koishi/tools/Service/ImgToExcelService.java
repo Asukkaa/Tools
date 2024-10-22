@@ -2,7 +2,6 @@ package priv.koishi.tools.Service;
 
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.ClientAnchor;
 import org.apache.poi.ss.usermodel.CreationHelper;
@@ -95,7 +94,7 @@ public class ImgToExcelService {
         int imgWidth = excelConfigBean.getImgWidth();
         int imgHeight = excelConfigBean.getImgHeight();
         int cellNum = startCellNum;
-        if (CollectionUtils.isEmpty(imgList)) {
+        if (imgList.isEmpty()) {
             XSSFRow row = sheet.getRow(startRowNum);
             if (row == null) {
                 row = sheet.createRow(startRowNum);

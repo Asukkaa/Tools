@@ -14,7 +14,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.PopupWindow;
 import javafx.util.Callback;
 import javafx.util.Duration;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Enum.SelectItemsEnums;
@@ -87,7 +86,7 @@ public class UiUtils {
             fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
         }
         //设置过滤条件
-        if (CollectionUtils.isNotEmpty(extensionFilters)) {
+        if (extensionFilters != null && !extensionFilters.isEmpty()) {
             fileChooser.getExtensionFilters().addAll(extensionFilters);
         }
         return fileChooser.showOpenDialog(((Node) event.getSource()).getScene().getWindow());
@@ -278,7 +277,7 @@ public class UiUtils {
         fileNumber.setText("列表为空");
         log.setTextFill(Color.BLACK);
         log.setText("");
-        if (CollectionUtils.isNotEmpty(fileNumBeanList)) {
+        if (fileNumBeanList != null && !fileNumBeanList.isEmpty()) {
             fileNumBeanList.clear();
         }
     }

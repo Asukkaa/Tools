@@ -11,7 +11,6 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import priv.koishi.tools.Bean.ExcelConfigBean;
@@ -143,7 +142,7 @@ public class FileNumToExcelController extends Properties {
         inFileList = readAllFiles(fileConfigBean);
         //列表中有excel分组后再匹配数据
         ObservableList<FileNumBean> fileNumList = tableView_Num.getItems();
-        if (CollectionUtils.isNotEmpty(fileNumList)) {
+        if (fileNumList != null && !fileNumList.isEmpty()) {
             matchGroupData(fileNumList, inFileList, subCode_Num, showFileType_Num);
             showData(fileNumList);
         }
@@ -184,7 +183,7 @@ public class FileNumToExcelController extends Properties {
      * 匹配数据
      */
     private void showData(List<FileNumBean> fileBeans) throws Exception {
-        if (CollectionUtils.isEmpty(fileBeans)) {
+        if (fileBeans.isEmpty()) {
             throw new Exception("未查询到符合条件的数据，需修改查询条件后再继续");
         }
         autoBuildTableViewData(tableView_Num, fileBeans, "_Num");
@@ -485,7 +484,7 @@ public class FileNumToExcelController extends Properties {
     @FXML
     private void handleCheckBoxAction() throws Exception {
         ObservableList<FileNumBean> fileBeans = tableView_Num.getItems();
-        if (CollectionUtils.isNotEmpty(fileBeans)) {
+        if (fileBeans != null && !fileBeans.isEmpty()) {
             reSelect();
         }
     }

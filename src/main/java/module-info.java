@@ -1,17 +1,13 @@
 module priv.koishi.tools {
     requires javafx.controls;
     requires javafx.fxml;
+//    requires javafx.base;
+//    requires javafx.web;
 
-    requires org.controlsfx.controls;
-    requires com.dlsc.formsfx;
-    requires net.synedra.validatorfx;
-    requires org.kordamp.ikonli.javafx;
-    requires org.kordamp.bootstrapfx.core;
-    requires eu.hansolo.tilesfx;
     requires static lombok;
     requires org.apache.poi.ooxml;
     requires java.desktop;
-    requires org.apache.commons.collections4;
+//    requires org.apache.commons.collections4;
     requires org.apache.commons.lang3;
 
     opens priv.koishi.tools to javafx.fxml;

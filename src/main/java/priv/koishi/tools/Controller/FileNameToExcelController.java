@@ -13,7 +13,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import priv.koishi.tools.Bean.ExcelConfigBean;
@@ -311,7 +310,7 @@ public class FileNameToExcelController extends Properties {
         if (StringUtils.isEmpty(outFilePath)) {
             throw new Exception("导出文件夹位置为空，需要先设置导出文件夹位置再继续");
         }
-        if (CollectionUtils.isEmpty(fileBeans)) {
+        if (fileBeans.isEmpty()) {
             throw new Exception("要读取的文件列表为空，需要选择一个有文件的文件夹");
         }
         int startRowValue = setDefaultIntValue(startRow_Name, 0, 0, null);
@@ -447,7 +446,7 @@ public class FileNameToExcelController extends Properties {
     @FXML
     private void handleCheckBoxAction() throws Exception {
         ObservableList<FileBean> fileBeans = tableView_Name.getItems();
-        if (CollectionUtils.isNotEmpty(fileBeans)) {
+        if (fileBeans != null && !fileBeans.isEmpty()) {
             reSelect();
         }
     }

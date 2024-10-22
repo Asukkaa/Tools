@@ -1,7 +1,6 @@
 package priv.koishi.tools.Utils;
 
 import javafx.scene.control.Label;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -174,7 +173,7 @@ public class FileUtils {
                     }
                     if ("只查询文件".equals(showDirectoryName) || "文件和文件夹都查询".equals(showDirectoryName) || StringUtils.isEmpty(showDirectoryName)) {
                         String extension = getFileType(file);
-                        if (CollectionUtils.isEmpty(filterExtensionList) || filterExtensionList.contains(extension)) {
+                        if (filterExtensionList.isEmpty() || filterExtensionList.contains(extension)) {
                             fileList.add(file);
                         }
                     }

@@ -14,7 +14,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import priv.koishi.tools.Bean.ExcelConfigBean;
@@ -308,7 +307,7 @@ public class FileRenameExcelController extends Properties {
     private void renameAll() throws Exception {
         ObservableList<FileBean> fileBeans = tableView_Re.getItems();
 
-        if (CollectionUtils.isEmpty(fileBeans)) {
+        if (fileBeans.isEmpty()) {
             throw new Exception("要读取的文件列表为空，需要选择一个有文件的文件夹");
         }
         String sheetName = setDefaultStrValue(sheetOutName_Re, "Sheet1");
@@ -349,7 +348,7 @@ public class FileRenameExcelController extends Properties {
     /**
      * 鼠标悬留提示输入的导出excel表名称
      */
-   @FXML
+    @FXML
     private void sheetHandleKeyTyped() {
         aadValueToolTip(sheetOutName_Re, "须填与excel模板相同的表名才能正常读取模板");
     }

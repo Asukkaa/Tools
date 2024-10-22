@@ -11,7 +11,6 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import priv.koishi.tools.Bean.ExcelConfigBean;
@@ -136,7 +135,7 @@ public class ImgToExcelController extends Properties {
         inFileList = readAllFiles(fileConfigBean);
         //列表中有excel分组后再匹配数据
         ObservableList<FileNumBean> fileNumList = tableView_Img.getItems();
-        if (CollectionUtils.isNotEmpty(fileNumList)) {
+        if (fileNumList != null && !fileNumList.isEmpty()) {
             matchGroupData(fileNumList, inFileList, subCode_Img, showFileType_Img);
             showData(fileNumList);
         }
@@ -177,7 +176,7 @@ public class ImgToExcelController extends Properties {
      * 匹配数据
      */
     private void showData(List<FileNumBean> fileBeans) throws Exception {
-        if (CollectionUtils.isEmpty(fileBeans)) {
+        if (fileBeans.isEmpty()) {
             throw new Exception("未查询到符合条件的数据，需修改查询条件后再继续");
         }
         autoBuildTableViewData(tableView_Img, fileBeans, "_Img");
@@ -251,7 +250,7 @@ public class ImgToExcelController extends Properties {
         if (jpeg_Img.isSelected()) {
             filterExtensionList.add(".jpeg");
         }
-        if (CollectionUtils.isEmpty(filterExtensionList)) {
+        if (filterExtensionList.isEmpty()) {
             throw new Exception("未选择需要识别的图片格式");
         }
         // 显示文件选择器
@@ -486,7 +485,7 @@ public class ImgToExcelController extends Properties {
     @FXML
     private void handleCheckBoxAction() throws Exception {
         ObservableList<FileNumBean> fileBeans = tableView_Img.getItems();
-        if (CollectionUtils.isNotEmpty(fileBeans)) {
+        if (fileBeans!= null && !fileBeans.isEmpty()) {
             reSelect();
         }
     }
