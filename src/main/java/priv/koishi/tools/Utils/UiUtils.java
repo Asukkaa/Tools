@@ -14,6 +14,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.PopupWindow;
 import javafx.util.Callback;
 import javafx.util.Duration;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Enum.SelectItemsEnums;
@@ -86,7 +87,7 @@ public class UiUtils {
             fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
         }
         //设置过滤条件
-        if (extensionFilters != null && !extensionFilters.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(extensionFilters)) {
             fileChooser.getExtensionFilters().addAll(extensionFilters);
         }
         return fileChooser.showOpenDialog(((Node) event.getSource()).getScene().getWindow());
@@ -234,7 +235,7 @@ public class UiUtils {
         textArea.setEditable(false);
         textArea.setWrapText(true);
         textArea.setText(errToString(ex));
-//        ex.printStackTrace();
+        ex.printStackTrace();
         // 创建VBox并添加TextArea
         VBox details = new VBox();
         details.heightProperty().addListener((_, _, _) -> Platform.runLater(() -> textArea.setPrefHeight(details.getHeight())));
@@ -277,7 +278,7 @@ public class UiUtils {
         fileNumber.setText("列表为空");
         log.setTextFill(Color.BLACK);
         log.setText("");
-        if (fileNumBeanList != null && !fileNumBeanList.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(fileNumBeanList)) {
             fileNumBeanList.clear();
         }
     }

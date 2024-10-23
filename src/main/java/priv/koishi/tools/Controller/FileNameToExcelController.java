@@ -13,6 +13,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import priv.koishi.tools.Bean.ExcelConfigBean;
@@ -24,6 +25,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static priv.koishi.tools.Service.FileNameToExcelService.buildFileNameExcel;
+import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
 import static priv.koishi.tools.Utils.CommonUtils.isInIntegerRange;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
@@ -53,7 +55,7 @@ public class FileNameToExcelController extends Properties {
     /**
      * 配置文件路径
      */
-    static String configFile = "fileNameToExcelConfig.properties";
+    static String configFile = "config/fileNameToExcelConfig.properties";
 
     @FXML
     private VBox vbox_Name;
@@ -175,7 +177,7 @@ public class FileNameToExcelController extends Properties {
      */
     private static void getConfig() throws IOException {
         Properties prop = new Properties();
-        InputStream input = new FileInputStream(configFile);
+        InputStream input = checkRunningInputStream(configFile);
         // 加载properties文件
         prop.load(input);
         // 根据key读取value
@@ -310,7 +312,7 @@ public class FileNameToExcelController extends Properties {
         if (StringUtils.isEmpty(outFilePath)) {
             throw new Exception("导出文件夹位置为空，需要先设置导出文件夹位置再继续");
         }
-        if (fileBeans.isEmpty()) {
+        if (CollectionUtils.isEmpty(fileBeans)) {
             throw new Exception("要读取的文件列表为空，需要选择一个有文件的文件夹");
         }
         int startRowValue = setDefaultIntValue(startRow_Name, 0, 0, null);
@@ -446,7 +448,7 @@ public class FileNameToExcelController extends Properties {
     @FXML
     private void handleCheckBoxAction() throws Exception {
         ObservableList<FileBean> fileBeans = tableView_Name.getItems();
-        if (fileBeans != null && !fileBeans.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(fileBeans)) {
             reSelect();
         }
     }

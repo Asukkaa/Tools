@@ -6,7 +6,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
@@ -37,8 +36,8 @@ public class MainApplication extends Application {
      */
     @Override
     public void start(Stage stage) throws Exception {
-        getConfig();
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("fxml/Main-view.fxml"));
+        getConfig();
         Scene scene = new Scene(fxmlLoader.load(), appWidth, appHeight);
         stage.setTitle(appTitle);
         stage.setScene(scene);
@@ -65,13 +64,17 @@ public class MainApplication extends Application {
      */
     public static void getConfig() throws IOException {
         Properties prop = new Properties();
-        InputStream input = new FileInputStream("config.properties");
+        InputStream inputStream = Objects.requireNonNull(MainApplication.class.getResource("config/config.properties")).openStream();
+        // 加载输入流
+        prop.load(inputStream);
         // 加载properties文件
-        prop.load(input);
+        prop.load(inputStream);
         // 根据key读取value
         appWidth = Double.parseDouble(prop.getProperty("appWidth"));
         appHeight = Double.parseDouble(prop.getProperty("appHeight"));
         appTitle = prop.getProperty("appTitle");
+        // 关闭输入流
+        inputStream.close();
     }
 
     /**

@@ -1,6 +1,7 @@
 package priv.koishi.tools.Utils;
 
 import javafx.scene.control.Label;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -20,6 +21,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+
+import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
+import static priv.koishi.tools.Utils.CommonUtils.checkRunningOutputStream;
 
 /**
  * @author KOISHI
@@ -173,7 +177,7 @@ public class FileUtils {
                     }
                     if ("只查询文件".equals(showDirectoryName) || "文件和文件夹都查询".equals(showDirectoryName) || StringUtils.isEmpty(showDirectoryName)) {
                         String extension = getFileType(file);
-                        if (filterExtensionList.isEmpty() || filterExtensionList.contains(extension)) {
+                        if (CollectionUtils.isEmpty(filterExtensionList) || filterExtensionList.contains(extension)) {
                             fileList.add(file);
                         }
                     }
@@ -212,12 +216,12 @@ public class FileUtils {
     /**
      * 更新设置文件中的文件路径设置
      */
-    public static void updatePath(String properties, String key, String path) throws IOException {
+    public static void updatePath(String properties, String key, String value) throws IOException {
+        InputStream input = checkRunningInputStream(properties);
+        OutputStream output = checkRunningOutputStream(properties);
         Properties prop = new Properties();
-        InputStream input = new FileInputStream(properties);
         prop.load(input);
-        prop.put(key, path);
-        OutputStream output = new FileOutputStream(properties);
+        prop.put(key, value);
         prop.store(output, null);
     }
 

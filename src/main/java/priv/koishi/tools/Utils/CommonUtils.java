@@ -2,9 +2,10 @@ package priv.koishi.tools.Utils;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
+import priv.koishi.tools.MainApplication;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.*;
+import java.net.URL;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -100,6 +101,48 @@ public class CommonUtils {
         pw.flush();
         sw.flush();
         return sw.toString();
+    }
+
+    /**
+     * 判断程序是否打包运行
+     */
+    public static boolean isRunningFromJar() {
+        // 获取当前运行的JVM的类加载器
+        ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+        // 获取URL资源
+        URL resource = classLoader.getResource("");
+        // 检查URL的协议是否是jar或者file协议，file协议表示不是从JAR中加载
+        String protocol = null;
+        if (resource != null) {
+            protocol = resource.getProtocol();
+        }
+        return "jar".equals(protocol);
+    }
+
+    /**
+     * 根据不同运行环境来建立输入流
+     */
+    public static InputStream checkRunningInputStream(String path) throws IOException {
+        InputStream input;
+        if (isRunningFromJar()) {
+            input = Objects.requireNonNull(MainApplication.class.getResource(path)).openStream();
+        } else {
+            input = new FileInputStream(path);
+        }
+        return input;
+    }
+
+    /**
+     * 根据不同运行环境来建立输出流
+     */
+    public static OutputStream checkRunningOutputStream(String path) throws IOException {
+        OutputStream output;
+        if (isRunningFromJar()) {
+            output = new FileOutputStream(Objects.requireNonNull( MainApplication.class.getResource(path)).getPath());
+        } else {
+            output = new FileOutputStream(path);
+        }
+        return output;
     }
 
 }

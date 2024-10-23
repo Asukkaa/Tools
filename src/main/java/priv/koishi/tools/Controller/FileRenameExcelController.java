@@ -14,6 +14,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import priv.koishi.tools.Bean.ExcelConfigBean;
@@ -26,6 +27,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static priv.koishi.tools.Enum.SelectItemsEnums.*;
 import static priv.koishi.tools.Service.FileNameToExcelService.buildFileNameExcel;
+import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
 import static priv.koishi.tools.Utils.CommonUtils.isInIntegerRange;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
@@ -55,7 +57,7 @@ public class FileRenameExcelController extends Properties {
     /**
      * 配置文件路径
      */
-    static String configFile = "fileRenameConfig.properties";
+    static String configFile = "config/fileRenameConfig.properties";
 
     @FXML
     private VBox vbox_Re;
@@ -179,7 +181,7 @@ public class FileRenameExcelController extends Properties {
      */
     private static void getConfig() throws IOException {
         Properties prop = new Properties();
-        InputStream input = new FileInputStream(configFile);
+        InputStream input = checkRunningInputStream(configFile);
         // 加载properties文件
         prop.load(input);
         // 根据key读取value
@@ -307,7 +309,7 @@ public class FileRenameExcelController extends Properties {
     private void renameAll() throws Exception {
         ObservableList<FileBean> fileBeans = tableView_Re.getItems();
 
-        if (fileBeans.isEmpty()) {
+        if (CollectionUtils.isEmpty(fileBeans)) {
             throw new Exception("要读取的文件列表为空，需要选择一个有文件的文件夹");
         }
         String sheetName = setDefaultStrValue(sheetOutName_Re, "Sheet1");
@@ -348,7 +350,7 @@ public class FileRenameExcelController extends Properties {
     /**
      * 鼠标悬留提示输入的导出excel表名称
      */
-    @FXML
+   @FXML
     private void sheetHandleKeyTyped() {
         aadValueToolTip(sheetOutName_Re, "须填与excel模板相同的表名才能正常读取模板");
     }

@@ -11,6 +11,7 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import priv.koishi.tools.Bean.ExcelConfigBean;
@@ -22,6 +23,7 @@ import java.util.*;
 
 import static priv.koishi.tools.Service.FileNumToExcelService.readExcel;
 import static priv.koishi.tools.Service.ImgToExcelService.buildImgGroupExcel;
+import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
 import static priv.koishi.tools.Utils.CommonUtils.isInIntegerRange;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
@@ -66,7 +68,7 @@ public class ImgToExcelController extends Properties {
     /**
      * 配置文件路径
      */
-    static String configFile = "imgToExcelConfig.properties";
+    static String configFile = "config/imgToExcelConfig.properties";
 
     @FXML
     private VBox vbox_Img;
@@ -135,7 +137,7 @@ public class ImgToExcelController extends Properties {
         inFileList = readAllFiles(fileConfigBean);
         //列表中有excel分组后再匹配数据
         ObservableList<FileNumBean> fileNumList = tableView_Img.getItems();
-        if (fileNumList != null && !fileNumList.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(fileNumList)) {
             matchGroupData(fileNumList, inFileList, subCode_Img, showFileType_Img);
             showData(fileNumList);
         }
@@ -176,7 +178,7 @@ public class ImgToExcelController extends Properties {
      * 匹配数据
      */
     private void showData(List<FileNumBean> fileBeans) throws Exception {
-        if (fileBeans.isEmpty()) {
+        if (CollectionUtils.isEmpty(fileBeans)) {
             throw new Exception("未查询到符合条件的数据，需修改查询条件后再继续");
         }
         autoBuildTableViewData(tableView_Img, fileBeans, "_Img");
@@ -188,7 +190,7 @@ public class ImgToExcelController extends Properties {
      */
     private static void getConfig() throws IOException {
         Properties prop = new Properties();
-        InputStream input = new FileInputStream(configFile);
+        InputStream input = checkRunningInputStream(configFile);
         // 加载properties文件
         prop.load(input);
         // 根据key读取value
@@ -250,7 +252,7 @@ public class ImgToExcelController extends Properties {
         if (jpeg_Img.isSelected()) {
             filterExtensionList.add(".jpeg");
         }
-        if (filterExtensionList.isEmpty()) {
+        if (CollectionUtils.isEmpty(filterExtensionList)) {
             throw new Exception("未选择需要识别的图片格式");
         }
         // 显示文件选择器
@@ -485,7 +487,7 @@ public class ImgToExcelController extends Properties {
     @FXML
     private void handleCheckBoxAction() throws Exception {
         ObservableList<FileNumBean> fileBeans = tableView_Img.getItems();
-        if (fileBeans!= null && !fileBeans.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(fileBeans)) {
             reSelect();
         }
     }

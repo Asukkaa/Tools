@@ -1,13 +1,11 @@
 module priv.koishi.tools {
     requires javafx.controls;
     requires javafx.fxml;
-//    requires javafx.base;
-//    requires javafx.web;
 
     requires static lombok;
     requires org.apache.poi.ooxml;
     requires java.desktop;
-//    requires org.apache.commons.collections4;
+    requires org.apache.commons.collections4;
     requires org.apache.commons.lang3;
 
     opens priv.koishi.tools to javafx.fxml;
