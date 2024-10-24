@@ -76,15 +76,17 @@ public class UiUtils {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle(title);
         // 设置初始目录
-        File file = new File(path);
-        // 设置初始目录
-        if (file.isDirectory()) {
-            fileChooser.setInitialDirectory(file);
-        } else if (file.isFile()) {
-            file = new File(getFileMkdir(file));
-            fileChooser.setInitialDirectory(file);
-        } else {
+        if (StringUtils.isBlank(path)) {
             fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        } else {
+            File file = new File(path);
+            // 设置初始目录
+            if (file.isDirectory()) {
+                fileChooser.setInitialDirectory(file);
+            } else if (file.isFile()) {
+                file = new File(getFileMkdir(file));
+                fileChooser.setInitialDirectory(file);
+            }
         }
         //设置过滤条件
         if (CollectionUtils.isNotEmpty(extensionFilters)) {
@@ -99,12 +101,11 @@ public class UiUtils {
     public static File creatDirectoryChooser(ActionEvent event, String path, String title) {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle(title);
-        File file = new File(path);
         // 设置初始目录
-        if (file.isDirectory()) {
-            directoryChooser.setInitialDirectory(file);
-        } else {
+        if (StringUtils.isBlank(path) || !new File(path).isDirectory()) {
             directoryChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        } else {
+            directoryChooser.setInitialDirectory(new File(path));
         }
         return directoryChooser.showDialog(((Node) event.getSource()).getScene().getWindow());
     }
@@ -275,6 +276,8 @@ public class UiUtils {
         List<FileNumBean> nullFileBeans = new ArrayList<>();
         ObservableList<FileNumBean> nullData = FXCollections.observableArrayList(nullFileBeans);
         tableView.setItems(nullData);
+        // 解除绑定，设置文本，然后重新绑定
+        fileNumber.textProperty().unbind();
         fileNumber.setText("列表为空");
         log.setTextFill(Color.BLACK);
         log.setText("");
@@ -286,11 +289,9 @@ public class UiUtils {
     /**
      * 匹配excel分组与文件夹下文件
      */
-    public static void matchGroupData(List<FileNumBean> fileNumBeans, List<File> inFileList, TextField subCode, CheckBox showFileType) {
+    public static void matchGroupData(List<FileNumBean> fileNumBeans, List<File> inFileList, String nameSubstring, boolean showFile) {
         List<String> paths = new ArrayList<>();
         inFileList.forEach(file -> paths.add(file.getPath()));
-        String nameSubstring = subCode.getText();
-        boolean showFile = showFileType.isSelected();
         List<FileNumBean> fileNumList = buildNameGroupData(paths, nameSubstring, showFile);
         fileNumBeans.forEach(bean1 -> {
             bean1.setGroupNumber(0);
@@ -366,6 +367,18 @@ public class UiUtils {
             choiceBox.setItems(selectItemsEnums.getItems(1));
             choiceBox.setValue(selectItemsEnums.getSelectItemsEnum(1).getValue(0));
         }
+    }
+
+
+    /**
+     * 匹配数据
+     */
+    public static List<FileNumBean> showData(List<FileNumBean> fileBeans, TableView<FileNumBean> tableView, String tabId) throws Exception {
+        if (CollectionUtils.isEmpty(fileBeans)) {
+            throw new Exception("未查询到符合条件的数据，需修改查询条件后再继续");
+        }
+        autoBuildTableViewData(tableView, fileBeans, tabId);
+        return fileBeans;
     }
 
 }

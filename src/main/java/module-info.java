@@ -7,6 +7,7 @@ module priv.koishi.tools {
     requires java.desktop;
     requires org.apache.commons.collections4;
     requires org.apache.commons.lang3;
+    requires easyexcel.core;
 
     opens priv.koishi.tools to javafx.fxml;
     exports priv.koishi.tools;

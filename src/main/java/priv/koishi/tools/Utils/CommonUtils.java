@@ -125,7 +125,7 @@ public class CommonUtils {
     public static InputStream checkRunningInputStream(String path) throws IOException {
         InputStream input;
         if (isRunningFromJar()) {
-            input = Objects.requireNonNull(MainApplication.class.getResource(path)).openStream();
+            input = new FileInputStream(Objects.requireNonNull(MainApplication.class.getResource(path)).getPath().replaceAll("target/classes/","src/main/resources/"));
         } else {
             input = new FileInputStream(path);
         }
@@ -138,7 +138,7 @@ public class CommonUtils {
     public static OutputStream checkRunningOutputStream(String path) throws IOException {
         OutputStream output;
         if (isRunningFromJar()) {
-            output = new FileOutputStream(Objects.requireNonNull( MainApplication.class.getResource(path)).getPath());
+            output = new FileOutputStream(Objects.requireNonNull(MainApplication.class.getResource(path)).getPath().replaceAll("target/classes/","src/main/resources/"));
         } else {
             output = new FileOutputStream(path);
         }

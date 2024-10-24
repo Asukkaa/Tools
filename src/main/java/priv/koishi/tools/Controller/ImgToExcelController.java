@@ -1,6 +1,7 @@
 package priv.koishi.tools.Controller;
 
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -17,6 +18,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import priv.koishi.tools.Bean.ExcelConfigBean;
 import priv.koishi.tools.Bean.FileConfigBean;
 import priv.koishi.tools.Bean.FileNumBean;
+import priv.koishi.tools.Bean.FileNumTaskBean;
 
 import java.io.*;
 import java.util.*;
@@ -66,9 +68,17 @@ public class ImgToExcelController extends Properties {
     static String excelInPath;
 
     /**
+     * 页面标识符
+     */
+    static String tabId = "_Img";
+
+    /**
      * 配置文件路径
      */
     static String configFile = "config/imgToExcelConfig.properties";
+
+    @FXML
+    private ProgressBar progressBar_Img;
 
     @FXML
     private VBox vbox_Img;
@@ -138,15 +148,15 @@ public class ImgToExcelController extends Properties {
         //列表中有excel分组后再匹配数据
         ObservableList<FileNumBean> fileNumList = tableView_Img.getItems();
         if (CollectionUtils.isNotEmpty(fileNumList)) {
-            matchGroupData(fileNumList, inFileList, subCode_Img, showFileType_Img);
-            showData(fileNumList);
+            matchGroupData(fileNumList, inFileList, subCode_Img.getText(), showFileType_Img.isSelected());
+            fileNumBeanList = showData(fileNumList, tableView_Img, tabId);
         }
     }
 
     /**
      * 添加数据渲染列表
      */
-    private void addInData() throws Exception {
+    private void addInData() {
         removeAll();
         //组装数据
         int readRowValue = setDefaultIntValue(readRow_Img, 0, 0, null);
@@ -158,31 +168,31 @@ public class ImgToExcelController extends Properties {
                 .setReadCellNum(readCellValue)
                 .setReadRowNum(readRowValue)
                 .setMaxRowNum(maxRowValue);
-        //读取excel分组信息
-        List<FileNumBean> fileNumBeans = readExcel(excelConfigBean);
-        //已经读取文件后再匹配数据
-        if (inFileList != null && !inFileList.isEmpty()) {
-            matchGroupData(fileNumBeans, inFileList, subCode_Img, showFileType_Img);
-        }
-        //匹配数据
-        showData(fileNumBeans);
-        fileNumber_Img.setText("共有 " + fileNumBeans.size() + " 组数据");
+        FileNumTaskBean fileNumTaskBean = new FileNumTaskBean();
+        fileNumTaskBean.setShowFileType(showFileType_Img.isSelected())
+                .setSubCode(subCode_Img.getText())
+                .setProgressBar(progressBar_Img)
+                .setTableView(tableView_Img)
+                .setInFileList(inFileList)
+                .setTabId(tabId);
+        //获取Task任务
+        Task<Void> readExcelTask = readExcel(excelConfigBean, fileNumTaskBean);
+        //绑定进度条的值属性
+        progressBar_Img.progressProperty().unbind();
+        progressBar_Img.setVisible(true);
+        //给进度条设置初始值
+        progressBar_Img.setProgress(0.0);
+        progressBar_Img.progressProperty().bind(readExcelTask.progressProperty());
+        //绑定TextField的值属性
+        fileNumber_Img.textProperty().unbind();
+        fileNumber_Img.textProperty().bind(readExcelTask.messageProperty());
+        //使用新线程启动
+        new Thread(readExcelTask).start();
         //设置javafx单元格宽度
         groupId_Img.prefWidthProperty().bind(tableView_Img.widthProperty().multiply(0.1));
         groupName_Img.prefWidthProperty().bind(tableView_Img.widthProperty().multiply(0.1));
         groupNumber_Img.prefWidthProperty().bind(tableView_Img.widthProperty().multiply(0.1));
         fileName_Img.prefWidthProperty().bind(tableView_Img.widthProperty().multiply(0.7));
-    }
-
-    /**
-     * 匹配数据
-     */
-    private void showData(List<FileNumBean> fileBeans) throws Exception {
-        if (CollectionUtils.isEmpty(fileBeans)) {
-            throw new Exception("未查询到符合条件的数据，需修改查询条件后再继续");
-        }
-        autoBuildTableViewData(tableView_Img, fileBeans, "_Img");
-        fileNumBeanList = fileBeans;
     }
 
     /**
@@ -271,7 +281,7 @@ public class ImgToExcelController extends Properties {
      * 拖拽释放行为
      */
     @FXML
-    private void handleDrop(DragEvent dragEvent) throws Exception {
+    private void handleDrop(DragEvent dragEvent) {
         List<File> files = dragEvent.getDragboard().getFiles();
         File file = files.getFirst();
         excelPath_Img.setText(file.getPath());

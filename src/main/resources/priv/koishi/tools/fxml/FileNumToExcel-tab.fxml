@@ -122,6 +122,7 @@
             </columns>
         </TableView>
 
+        <ProgressBar fx:id="progressBar_Num" visible="false" layoutX="33.0" prefWidth="200.0" progress="0.0" />
         <Label fx:id="log_Num" prefHeight="20"/>
     </VBox>
 </AnchorPane>

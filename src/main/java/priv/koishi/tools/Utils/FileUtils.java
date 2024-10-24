@@ -218,11 +218,13 @@ public class FileUtils {
      */
     public static void updatePath(String properties, String key, String value) throws IOException {
         InputStream input = checkRunningInputStream(properties);
-        OutputStream output = checkRunningOutputStream(properties);
         Properties prop = new Properties();
         prop.load(input);
         prop.put(key, value);
+        OutputStream output = checkRunningOutputStream(properties);
         prop.store(output, null);
+        input.close();
+        output.close();
     }
 
     /**

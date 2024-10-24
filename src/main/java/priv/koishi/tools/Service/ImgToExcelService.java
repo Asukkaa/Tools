@@ -83,6 +83,7 @@ public class ImgToExcelService {
             logLabel.setText("正在输出第" + (startRowNum + 1) + "/" + fileBeans.size() + "组数据");
             startRowNum++;
         }
+        inputStream.close();
         logLabel.setText("所有数据已输出完毕");
         logLabel.setTextFill(Color.GREEN);
         return workbook;

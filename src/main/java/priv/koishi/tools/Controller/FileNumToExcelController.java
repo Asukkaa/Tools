@@ -1,6 +1,7 @@
 package priv.koishi.tools.Controller;
 
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -17,6 +18,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import priv.koishi.tools.Bean.ExcelConfigBean;
 import priv.koishi.tools.Bean.FileConfigBean;
 import priv.koishi.tools.Bean.FileNumBean;
+import priv.koishi.tools.Bean.FileNumTaskBean;
 
 import java.io.*;
 import java.util.*;
@@ -66,9 +68,17 @@ public class FileNumToExcelController extends Properties {
     static String excelInPath;
 
     /**
+     * 页面标识符
+     */
+    static String tabId = "_Num";
+
+    /**
      * 配置文件路径
      */
     static String configFile = "config/fileNumToExcelConfig.properties";
+
+    @FXML
+    private ProgressBar progressBar_Num;
 
     @FXML
     private VBox vbox_Num;
@@ -145,15 +155,15 @@ public class FileNumToExcelController extends Properties {
         //列表中有excel分组后再匹配数据
         ObservableList<FileNumBean> fileNumList = tableView_Num.getItems();
         if (CollectionUtils.isNotEmpty(fileNumList)) {
-            matchGroupData(fileNumList, inFileList, subCode_Num, showFileType_Num);
-            showData(fileNumList);
+            matchGroupData(fileNumList, inFileList, subCode_Num.getText(), showFileType_Num.isSelected());
+            fileNumBeanList = showData(fileNumList, tableView_Num, tabId);
         }
     }
 
     /**
      * 添加数据渲染列表
      */
-    private void addInData() throws Exception {
+    private void addInData() {
         removeAll();
         //组装数据
         int readRowValue = setDefaultIntValue(readRow_Num, 0, 0, null);
@@ -165,31 +175,31 @@ public class FileNumToExcelController extends Properties {
                 .setReadCellNum(readCellValue)
                 .setReadRowNum(readRowValue)
                 .setMaxRowNum(maxRowValue);
-        //读取excel分组信息
-        List<FileNumBean> fileNumBeans = readExcel(excelConfigBean);
-        //已经读取文件后再匹配数据
-        if (inFileList != null && !inFileList.isEmpty()) {
-            matchGroupData(fileNumBeans, inFileList, subCode_Num, showFileType_Num);
-        }
-        //匹配数据
-        showData(fileNumBeans);
-        fileNumber_Num.setText("共有 " + fileNumBeans.size() + " 组数据");
+        FileNumTaskBean fileNumTaskBean = new FileNumTaskBean();
+        fileNumTaskBean.setShowFileType(showFileType_Num.isSelected())
+                .setSubCode(subCode_Num.getText())
+                .setProgressBar(progressBar_Num)
+                .setTableView(tableView_Num)
+                .setInFileList(inFileList)
+                .setTabId(tabId);
+        //获取Task任务
+        Task<Void> readExcelTask = readExcel(excelConfigBean, fileNumTaskBean);
+        //绑定进度条的值属性
+        progressBar_Num.progressProperty().unbind();
+        progressBar_Num.setVisible(true);
+        //给进度条设置初始值
+        progressBar_Num.setProgress(0.0);
+        progressBar_Num.progressProperty().bind(readExcelTask.progressProperty());
+        //绑定TextField的值属性
+        fileNumber_Num.textProperty().unbind();
+        fileNumber_Num.textProperty().bind(readExcelTask.messageProperty());
+        //使用新线程启动
+        new Thread(readExcelTask).start();
         //设置javafx单元格宽度
         groupId_Num.prefWidthProperty().bind(tableView_Num.widthProperty().multiply(0.1));
         groupName_Num.prefWidthProperty().bind(tableView_Num.widthProperty().multiply(0.1));
         groupNumber_Num.prefWidthProperty().bind(tableView_Num.widthProperty().multiply(0.1));
         fileName_Num.prefWidthProperty().bind(tableView_Num.widthProperty().multiply(0.7));
-    }
-
-    /**
-     * 匹配数据
-     */
-    private void showData(List<FileNumBean> fileBeans) throws Exception {
-        if (CollectionUtils.isEmpty(fileBeans)) {
-            throw new Exception("未查询到符合条件的数据，需修改查询条件后再继续");
-        }
-        autoBuildTableViewData(tableView_Num, fileBeans, "_Num");
-        fileNumBeanList = fileBeans;
     }
 
     /**
@@ -265,7 +275,7 @@ public class FileNumToExcelController extends Properties {
      * 拖拽释放行为
      */
     @FXML
-    private void handleDrop(DragEvent dragEvent) throws Exception {
+    private void handleDrop(DragEvent dragEvent) {
         List<File> files = dragEvent.getDragboard().getFiles();
         File file = files.getFirst();
         excelPath_Num.setText(file.getPath());

@@ -43,6 +43,7 @@ public class FileNameToExcelService {
                     sheet = workbook.createSheet(sheetName);
                 }
             }
+            inputStream.close();
         } else {
             sheet = workbook.createSheet(sheetName);
         }
