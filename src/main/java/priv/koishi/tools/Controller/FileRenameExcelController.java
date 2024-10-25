@@ -291,6 +291,8 @@ public class FileRenameExcelController extends Properties {
         List<FileBean> nullFileBeans = new ArrayList<>();
         ObservableList<FileBean> nullData = FXCollections.observableArrayList(nullFileBeans);
         tableView_Re.setItems(nullData);
+        // 解除绑定，设置文本，然后重新绑定
+        fileNumber_Re.textProperty().unbind();
         fileNumber_Re.setText("列表为空");
     }
 
