@@ -1,7 +1,5 @@
 package priv.koishi.tools.Service;
 
-import javafx.scene.control.Label;
-import javafx.scene.paint.Color;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -58,7 +56,7 @@ public class FileNameToExcelService {
     private static void buildNoGroupExcel(List<String> names, XSSFSheet sheet, ExcelConfigBean excelConfigBean) {
         int startRowNum = excelConfigBean.getStartRowNum();
         int startCellNum = excelConfigBean.getStartCellNum();
-        Label logLabel = excelConfigBean.getLogLabel();
+//        Label logLabel = excelConfigBean.getLogLabel();
         for (int i = 0; i < names.size(); i++) {
             String name = names.get(i);
             XSSFRow row = sheet.getRow(startRowNum);
@@ -67,11 +65,11 @@ public class FileNameToExcelService {
             }
             XSSFCell cell = row.createCell(startCellNum);
             cell.setCellValue(name);
-            logLabel.setText("正在输出第 " + (i + 1) + "/" + names.size() + " 个文件：" + name + "\n数据坐标：" + startRowNum + "," + startCellNum);
+//            logLabel.setText("正在输出第 " + (i + 1) + "/" + names.size() + " 个文件：" + name + "\n数据坐标：" + startRowNum + "," + startCellNum);
             startRowNum++;
         }
-        logLabel.setText("所有数据已输出完毕");
-        logLabel.setTextFill(Color.GREEN);
+//        logLabel.setText("所有数据已输出完毕");
+//        logLabel.setTextFill(Color.GREEN);
         sheet.autoSizeColumn(startCellNum);
         //手动调整列宽，解决中文不能自适应问题,单元格单行最长支持255*256的宽度（每个单元格样式已经设置自动换行，超出即换行）,设置最低列宽度，列宽约六个中文字符
         int width = Math.max(15 * 256, Math.min(255 * 256, sheet.getColumnWidth(startCellNum) * 12 / 10));

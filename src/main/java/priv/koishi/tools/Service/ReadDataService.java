@@ -32,10 +32,10 @@ public class ReadDataService {
     /**
      * 读取excel分组信息
      */
-    public static Task<Void> readExcel(ExcelConfigBean excelConfigBean, TaskBean<FileNumBean> taskBean) {
+    public static Task<List<FileNumBean>> readExcel(ExcelConfigBean excelConfigBean, TaskBean<FileNumBean> taskBean) {
         return new Task<>() {
             @Override
-            protected Void call() throws Exception {
+            protected List<FileNumBean> call() throws Exception {
                 //Task的Message更新方法,这边修改之后,上面的监听方法会经过
                 updateMessage("正在读取数据");
                 List<FileNumBean> fileNumBeanList = new ArrayList<>();
@@ -80,7 +80,7 @@ public class ReadDataService {
                 if (maxRow == -1 || maxRow > lastRowNum) {
                     maxRow = lastRowNum;
                 } else {
-                    maxRow += readRow - 1;
+                    maxRow += readRow;
                 }
                 int id = 0;
                 for (int i = readRow; i <= maxRow; ++i) {
@@ -107,11 +107,9 @@ public class ReadDataService {
                 if (inFileList != null && !inFileList.isEmpty()) {
                     matchGroupData(fileNumBeanList, inFileList, taskBean.getSubCode(), taskBean.isShowFileType());
                 }
-                updateMessage("共有" + maxRow + " 组数据");
+                updateMessage("共有" + (maxRow + 1) + " 组数据");
                 //匹配数据
-                showReadExcelData(fileNumBeanList, taskBean);
-                taskBean.getProgressBar().setVisible(false);
-                return null;
+                return showReadExcelData(fileNumBeanList, taskBean);
             }
         };
     }
@@ -144,7 +142,7 @@ public class ReadDataService {
                     fileBean.setUpdateDate(getFileUpdateTime(f));
                     fileBeans.add(fileBean);
                     //Task的Progress(进度)更新方法,进度条的进度与该属性挂钩
-                    updateProgress(i, inFileSize);
+                    updateProgress(i + 1, inFileSize);
                 }
                 updateMessage("共有" + inFileSize + " 个文件");
                 //匹配数据

@@ -1,7 +1,6 @@
 package priv.koishi.tools.Service;
 
 import javafx.scene.control.Label;
-import javafx.scene.paint.Color;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.ClientAnchor;
@@ -70,8 +69,8 @@ public class ImgToExcelService {
         String sheetName = excelConfigBean.getSheet();
         startRowNum = excelConfigBean.getStartRowNum();
         startCellNum = excelConfigBean.getStartCellNum();
-        logLabel = excelConfigBean.getLogLabel();
-        logLabel.setText("已识别到 " + fileBeans.size() + " 组数据");
+//        logLabel = excelConfigBean.getLogLabel();
+//        logLabel.setText("已识别到 " + fileBeans.size() + " 组数据");
         if (StringUtils.isBlank(sheetName)) {
             sheet = workbook.getSheetAt(0);
         } else {
@@ -80,12 +79,12 @@ public class ImgToExcelService {
         for (FileNumBean fileBean : fileBeans) {
             List<String> imgList = fileBean.getFilePathList();
             buildImgExcel(imgList, excelConfigBean);
-            logLabel.setText("正在输出第" + (startRowNum + 1) + "/" + fileBeans.size() + "组数据");
+//            logLabel.setText("正在输出第" + (startRowNum + 1) + "/" + fileBeans.size() + "组数据");
             startRowNum++;
         }
         inputStream.close();
-        logLabel.setText("所有数据已输出完毕");
-        logLabel.setTextFill(Color.GREEN);
+//        logLabel.setText("所有数据已输出完毕");
+//        logLabel.setTextFill(Color.GREEN);
         return workbook;
     }
 
@@ -133,7 +132,7 @@ public class ImgToExcelService {
                 try {
                     inputStream.close();
                 } catch (IOException e) {
-                    logLabel.setTextFill(Color.RED);
+//                    logLabel.setTextFill(Color.RED);
                     throw new RuntimeException(e);
                 }
                 sheet.setColumnWidth(cellNum, imgWidth);

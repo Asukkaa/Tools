@@ -90,7 +90,7 @@
         </HBox>
 
         <HBox spacing="10">
-            <Button fx:id="reSelectButton_Num" onAction="#reSelect" style="-fx-cursor: hand" text="重新查询" />
+            <Button fx:id="reselectButton_Num" onAction="#reselect" style="-fx-cursor: hand" text="重新查询" />
             <Button fx:id="clearButton_Num" onAction="#removeAll" style="-fx-cursor: hand" text="清空列表" />
             <Button fx:id="exportButton_Num" onAction="#exportAll" style="-fx-cursor: hand" text="开始导出" />
             <Label fx:id="exportTypeLabel_Num" prefHeight="20" text="导出excel文件内容:" />

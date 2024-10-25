@@ -93,7 +93,7 @@ public class ImgToExcelController extends Properties {
     private Label inPath_Img, outPath_Img, excelPath_Img, fileNumber_Img, log_Img;
 
     @FXML
-    private Button fileButton_Img, reSelectButton_Img, clearButton_Img, exportButton_Img;
+    private Button fileButton_Img, reselectButton_Img, clearButton_Img, exportButton_Img;
 
     @FXML
     private CheckBox jpg_Img, png_Img, jpeg_Img, recursion_Img, showFileType_Img, openDirectory_Img, openFile_Img;
@@ -127,8 +127,8 @@ public class ImgToExcelController extends Properties {
         Label fileNum = (Label) scene.lookup("#fileNumber_Img");
         Button removeAll = (Button) scene.lookup("#clearButton_Img");
         Button exportAll = (Button) scene.lookup("#exportButton_Img");
-        Button reSelect = (Button) scene.lookup("#reSelectButton_Img");
-        fileNum.setPrefWidth(tableWidth - removeAll.getWidth() - exportAll.getWidth() - reSelect.getWidth() - 40);
+        Button reselect = (Button) scene.lookup("#reselectButton_Img");
+        fileNum.setPrefWidth(tableWidth - removeAll.getWidth() - exportAll.getWidth() - reselect.getWidth() - 40);
     }
 
     /**
@@ -172,14 +172,14 @@ public class ImgToExcelController extends Properties {
         taskBean.setShowFileType(showFileType_Img.isSelected())
                 .setSubCode(subCode_Img.getText())
                 .setProgressBar(progressBar_Img)
-                .setMassageLabel(fileNumber_Img)
                 .setTableView(tableView_Img)
                 .setInFileList(inFileList)
                 .setTabId(tabId);
         //获取Task任务
-        Task<Void> readExcelTask = readExcel(excelConfigBean, taskBean);
-        //启动带进度条的线程
-        startProgressBarTask(readExcelTask, taskBean);
+        Task<List<FileNumBean>> readExcelTask = readExcel(excelConfigBean, taskBean);
+        //绑定带进度条的线程
+        bindingProgressBarTask(readExcelTask, taskBean);
+        fileNumBeanList = readExcelTask.getValue();
         //设置javafx单元格宽度
         groupId_Img.prefWidthProperty().bind(tableView_Img.widthProperty().multiply(0.1));
         groupName_Img.prefWidthProperty().bind(tableView_Img.widthProperty().multiply(0.1));
@@ -308,7 +308,7 @@ public class ImgToExcelController extends Properties {
      */
     @FXML
     private void exportAll() throws Exception {
-        reSelect();
+        reselect();
         String subCode = subCode_Img.getText();
         String inDirectory = inPath_Img.getText();
         String outFilePath = outPath_Img.getText();
@@ -340,7 +340,6 @@ public class ImgToExcelController extends Properties {
                 .setOutPath(outFilePath)
                 .setImgHeight(imgHeight)
                 .setImgWidth(imgWidth)
-                .setLogLabel(log_Img)
                 .setSubCode(subCode)
                 .setSheet(sheetName);
         fileNumBeanList.sort(Comparator.comparingInt(FileNumBean::getGroupId));
@@ -369,7 +368,7 @@ public class ImgToExcelController extends Properties {
             addToolTip(outPath_Img, outFilePath);
             String inFilePath = excelPath_Img.getText();
             if (StringUtils.isNotEmpty(inFilePath)) {
-                reSelect();
+                reselect();
             }
         }
     }
@@ -475,7 +474,7 @@ public class ImgToExcelController extends Properties {
      * 重新查询按钮
      */
     @FXML
-    private void reSelect() throws Exception {
+    private void reselect() throws Exception {
         String inFilePath = excelPath_Img.getText();
         if (StringUtils.isEmpty(inFilePath)) {
             throw new Exception("excel模板文件位置为空，需要先设置excel模板文件位置再继续");
@@ -490,7 +489,7 @@ public class ImgToExcelController extends Properties {
     private void handleCheckBoxAction() throws Exception {
         ObservableList<FileNumBean> fileBeans = tableView_Img.getItems();
         if (CollectionUtils.isNotEmpty(fileBeans)) {
-            reSelect();
+            reselect();
         }
     }
 

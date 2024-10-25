@@ -281,8 +281,9 @@ public class UiUtils {
         // 解除绑定，设置文本，然后重新绑定
         fileNumber.textProperty().unbind();
         fileNumber.setText("列表为空");
-        log.setTextFill(Color.BLACK);
+        log.textProperty().unbind();
         log.setText("");
+        log.setTextFill(Color.BLACK);
         if (CollectionUtils.isNotEmpty(fileNumBeanList)) {
             fileNumBeanList.clear();
         }
@@ -372,9 +373,9 @@ public class UiUtils {
     }
 
     /**
-     * 启动带进度条的线程
+     * 绑定带进度条的线程
      */
-    public static void startProgressBarTask(Task<?> task, TaskBean<?> taskBean) {
+    public static void bindingProgressBarTask(Task<?> task, TaskBean<?> taskBean) {
         ProgressBar progressBar = taskBean.getProgressBar();
         Label massageLabel = taskBean.getMassageLabel();
         //绑定进度条的值属性
@@ -386,8 +387,6 @@ public class UiUtils {
         //绑定TextField的值属性
         massageLabel.textProperty().unbind();
         massageLabel.textProperty().bind(task.messageProperty());
-        //使用新线程启动
-        new Thread(task).start();
     }
 
 }

@@ -1,6 +1,5 @@
 package priv.koishi.tools.Bean;
 
-import javafx.scene.control.Label;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -72,11 +71,6 @@ public class ExcelConfigBean {
      * 导出excel文件内容
      */
     String exportType;
-
-    /**
-     * 日志输出栏
-     */
-    Label logLabel;
 
     /**
      * 导出excel图片宽

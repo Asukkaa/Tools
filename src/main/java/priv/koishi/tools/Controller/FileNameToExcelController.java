@@ -92,7 +92,7 @@ public class FileNameToExcelController extends Properties {
     private TextField excelName_Name, sheetOutName_Name, startRow_Name, startCell_Name, filterFileType_Name;
 
     @FXML
-    private Button fileButton_Name, clearButton_Name, exportButton_Name, reSelectButton_Name, removeExcelButton_Name;
+    private Button fileButton_Name, clearButton_Name, exportButton_Name, reselectButton_Name, removeExcelButton_Name;
 
     /**
      * 组件自适应宽高
@@ -126,8 +126,8 @@ public class FileNameToExcelController extends Properties {
         Label fileNum = (Label) scene.lookup("#fileNumber_Name");
         Button removeAll = (Button) scene.lookup("#clearButton_Name");
         Button exportAll = (Button) scene.lookup("#exportButton_Name");
-        Button reSelect = (Button) scene.lookup("#reSelectButton_Name");
-        fileNum.setPrefWidth(tableWidth - removeAll.getWidth() - exportAll.getWidth() - reSelect.getWidth() - 40);
+        Button reselect = (Button) scene.lookup("#reselectButton_Name");
+        fileNum.setPrefWidth(tableWidth - removeAll.getWidth() - exportAll.getWidth() - reselect.getWidth() - 40);
     }
 
     /**
@@ -141,7 +141,6 @@ public class FileNameToExcelController extends Properties {
         TaskBean<FileBean> taskBean = new TaskBean<>();
         taskBean.setShowFileType(showFileType_Name.isSelected())
                 .setProgressBar(progressBar_Name)
-                .setMassageLabel(fileNumber_Name)
                 .setTableColumn(size_Name)
                 .setTableView(tableView_Name)
                 .setInFileList(inFileList)
@@ -149,7 +148,7 @@ public class FileNameToExcelController extends Properties {
         //获取Task任务
         Task<Void> readFileTask = readFile(taskBean);
         //启动带进度条的线程
-        startProgressBarTask(readFileTask, taskBean);
+        bindingProgressBarTask(readFileTask, taskBean);
         //设置javafx单元格宽度
         id_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.04));
         name_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.14));
@@ -320,7 +319,6 @@ public class FileNameToExcelController extends Properties {
                 .setStartRowNum(startRowValue)
                 .setOutName(excelNameValue)
                 .setOutPath(outFilePath)
-                .setLogLabel(log_Name)
                 .setSheet(sheetName);
         XSSFWorkbook xssfWorkbook = buildFileNameExcel(names, excelConfigBean);
         String excelPath = saveExcel(xssfWorkbook, excelConfigBean);
@@ -416,7 +414,7 @@ public class FileNameToExcelController extends Properties {
      * 重新查询按钮
      */
     @FXML
-    private void reSelect() throws Exception {
+    private void reselect() throws Exception {
         String inFilePath = inPath_Name.getText();
         if (StringUtils.isEmpty(inFilePath)) {
             throw new Exception("要查询的文件夹位置为空，需要先设置要查询的文件夹位置再继续");
@@ -439,7 +437,7 @@ public class FileNameToExcelController extends Properties {
     private void handleCheckBoxAction() throws Exception {
         ObservableList<FileBean> fileBeans = tableView_Name.getItems();
         if (CollectionUtils.isNotEmpty(fileBeans)) {
-            reSelect();
+            reselect();
         }
     }
 

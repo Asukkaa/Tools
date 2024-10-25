@@ -25,6 +25,11 @@ public class TaskBean<T> {
     List<File> inFileList;
 
     /**
+     * 要处理的数据
+     */
+    List<T> beanList;
+
+    /**
      * 文件名分隔符
      */
     String subCode;

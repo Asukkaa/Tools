@@ -129,7 +129,7 @@
         </HBox>
 
         <HBox spacing="10">
-            <Button fx:id="reSelectButton_Re" onAction="#reSelect" style="-fx-cursor: hand" text="重新查询"/>
+            <Button fx:id="reselectButton_Re" onAction="#reselect" style="-fx-cursor: hand" text="重新查询"/>
             <Button fx:id="clearButton_Re" onAction="#removeAll" style="-fx-cursor: hand" text="清空列表"/>
             <Button fx:id="exportButton_Re" onAction="#renameAll" style="-fx-cursor: hand" text="开始重命名"/>
             <Label fx:id="fileNumber_Re" alignment="CENTER_RIGHT" prefHeight="20" text="列表为空"/>

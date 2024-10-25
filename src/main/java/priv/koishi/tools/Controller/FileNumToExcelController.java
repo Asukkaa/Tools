@@ -10,6 +10,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.commons.collections4.CollectionUtils;
@@ -24,7 +25,8 @@ import java.io.*;
 import java.util.*;
 
 import static priv.koishi.tools.Service.FileNumToExcelService.buildNameGroupNumExcel;
-import static priv.koishi.tools.Service.ReadDataService.*;
+import static priv.koishi.tools.Service.ReadDataService.readExcel;
+import static priv.koishi.tools.Service.ReadDataService.showReadExcelData;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
 import static priv.koishi.tools.Utils.CommonUtils.isInIntegerRange;
 import static priv.koishi.tools.Utils.FileUtils.*;
@@ -46,11 +48,6 @@ public class FileNumToExcelController extends Properties {
      * 要处理的文件夹文件
      */
     static List<File> inFileList;
-
-    /**
-     * 列表中的数据
-     */
-    static List<FileNumBean> fileNumBeanList;
 
     /**
      * 导出文件路径
@@ -96,7 +93,7 @@ public class FileNumToExcelController extends Properties {
     private CheckBox recursion_Num, openDirectory_Num, openFile_Num, showFileType_Num;
 
     @FXML
-    private Button fileButton_Num, clearButton_Num, exportButton_Num, reSelectButton_Num;
+    private Button fileButton_Num, clearButton_Num, exportButton_Num, reselectButton_Num;
 
     @FXML
     private ChoiceBox<String> excelType_Num, hideFileType_Num, directoryNameType_Num, exportType_Num;
@@ -135,9 +132,9 @@ public class FileNumToExcelController extends Properties {
         Button exportAll = (Button) scene.lookup("#exportButton_Num");
         Label exportTypeLabel = (Label) scene.lookup("#exportTypeLabel_Num");
         ChoiceBox<?> exportType = (ChoiceBox<?>) scene.lookup("#exportType_Num");
-        Button reSelect = (Button) scene.lookup("#reSelectButton_Num");
+        Button reselect = (Button) scene.lookup("#reselectButton_Num");
         fileNum.setPrefWidth(tableWidth - removeAll.getWidth() - exportAll.getWidth() - exportTypeLabel.getWidth()
-                - exportType.getWidth() - reSelect.getWidth() - 60);
+                - exportType.getWidth() - reselect.getWidth() - 60);
     }
 
     /**
@@ -159,14 +156,14 @@ public class FileNumToExcelController extends Properties {
             TaskBean<FileNumBean> taskBean = new TaskBean<>();
             taskBean.setTableView(tableView_Num)
                     .setTabId(tabId);
-            fileNumBeanList = showReadExcelData(fileNumList, taskBean);
+            showReadExcelData(fileNumList, taskBean);
         }
     }
 
     /**
      * 添加数据渲染列表
      */
-    private void addInData() {
+    private Task<List<FileNumBean>> addInData() {
         removeAll();
         //组装数据
         int readRowValue = setDefaultIntValue(readRow_Num, 0, 0, null);
@@ -187,14 +184,18 @@ public class FileNumToExcelController extends Properties {
                 .setInFileList(inFileList)
                 .setTabId(tabId);
         //获取Task任务
-        Task<Void> readExcelTask = readExcel(excelConfigBean, taskBean);
+        Task<List<FileNumBean>> readExcelTask = readExcel(excelConfigBean, taskBean);
+        readExcelTask.setOnSucceeded(_ -> progressBar_Num.setVisible(false));
         //启动带进度条的线程
-        startProgressBarTask(readExcelTask, taskBean);
+        bindingProgressBarTask(readExcelTask, taskBean);
+        //使用新线程启动
+        new Thread(readExcelTask).start();
         //设置javafx单元格宽度
         groupId_Num.prefWidthProperty().bind(tableView_Num.widthProperty().multiply(0.1));
         groupName_Num.prefWidthProperty().bind(tableView_Num.widthProperty().multiply(0.1));
         groupNumber_Num.prefWidthProperty().bind(tableView_Num.widthProperty().multiply(0.1));
         fileName_Num.prefWidthProperty().bind(tableView_Num.widthProperty().multiply(0.7));
+        return readExcelTask;
     }
 
     /**
@@ -297,7 +298,7 @@ public class FileNumToExcelController extends Properties {
      */
     @FXML
     private void removeAll() {
-        removeNumImgAll(tableView_Num, fileNumber_Num, log_Num, fileNumBeanList);
+        removeNumImgAll(tableView_Num, fileNumber_Num, log_Num, null);
     }
 
     /**
@@ -305,7 +306,6 @@ public class FileNumToExcelController extends Properties {
      */
     @FXML
     private void exportAll() throws Exception {
-        reSelect();
         String outFilePath = outPath_Num.getText();
         String inFilePath = excelPath_Num.getText();
         String subCode = subCode_Num.getText();
@@ -334,18 +334,46 @@ public class FileNumToExcelController extends Properties {
                 .setStartRowNum(startRowValue)
                 .setOutName(excelNameValue)
                 .setOutPath(outFilePath)
-                .setLogLabel(log_Num)
                 .setSubCode(subCode)
                 .setSheet(sheetName);
-        fileNumBeanList.sort(Comparator.comparingInt(FileNumBean::getGroupId));
-        XSSFWorkbook xssfWorkbook = buildNameGroupNumExcel(fileNumBeanList, excelConfigBean);
-        String excelPath = saveExcel(xssfWorkbook, excelConfigBean);
-        if (openDirectory_Num.isSelected()) {
-            openFile(getFileMkdir(new File(excelPath)));
-        }
-        if (openFile_Num.isSelected()) {
-            openFile(excelPath);
-        }
+        Task<List<FileNumBean>> reselectTask = reselect();
+        reselectTask.setOnSucceeded(_ -> {
+            TaskBean<FileNumBean> taskBean = new TaskBean<>();
+            taskBean.setShowFileType(showFileType_Num.isSelected())
+                    .setBeanList(reselectTask.getValue())
+                    .setSubCode(subCode_Num.getText())
+                    .setProgressBar(progressBar_Num)
+                    .setMassageLabel(log_Num)
+                    .setTableView(tableView_Num)
+                    .setInFileList(inFileList)
+                    .setTabId(tabId);
+            //获取Task任务
+            Task<XSSFWorkbook> buildExcelTask;
+            //获取Task任务
+            buildExcelTask = buildNameGroupNumExcel(taskBean, excelConfigBean);
+            //启动带进度条的线程
+            bindingProgressBarTask(buildExcelTask, taskBean);
+            buildExcelTask.setOnSucceeded(_ -> {
+                XSSFWorkbook xssfWorkbook = buildExcelTask.getValue();
+                String excelPath;
+                try {
+                    excelPath = saveExcel(xssfWorkbook, excelConfigBean);
+                    if (openDirectory_Num.isSelected()) {
+                        openFile(getFileMkdir(new File(excelPath)));
+                    }
+                    if (openFile_Num.isSelected()) {
+                        openFile(excelPath);
+                    }
+                    progressBar_Num.setVisible(false);
+                    log_Num.setTextFill(Color.GREEN);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            new Thread(buildExcelTask).start();
+        });
+        //使用新线程启动
+        new Thread(reselectTask).start();
     }
 
     /**
@@ -363,7 +391,7 @@ public class FileNumToExcelController extends Properties {
             addToolTip(outPath_Num, outFilePath);
             String inFilePath = excelPath_Num.getText();
             if (StringUtils.isNotEmpty(inFilePath)) {
-                reSelect();
+                reselect();
             }
         }
     }
@@ -477,12 +505,12 @@ public class FileNumToExcelController extends Properties {
      * 重新查询按钮
      */
     @FXML
-    private void reSelect() throws Exception {
+    private Task<List<FileNumBean>> reselect() throws Exception {
         String inFilePath = excelPath_Num.getText();
         if (StringUtils.isEmpty(inFilePath)) {
             throw new Exception("excel模板文件位置为空，需要先设置excel模板文件位置再继续");
         }
-        addInData();
+        return addInData();
     }
 
     /**
@@ -492,7 +520,7 @@ public class FileNumToExcelController extends Properties {
     private void handleCheckBoxAction() throws Exception {
         ObservableList<FileNumBean> fileBeans = tableView_Num.getItems();
         if (CollectionUtils.isNotEmpty(fileBeans)) {
-            reSelect();
+            reselect();
         }
     }
 

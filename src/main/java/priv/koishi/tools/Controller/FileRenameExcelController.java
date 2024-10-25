@@ -97,7 +97,7 @@ public class FileRenameExcelController extends Properties {
     private TextField sheetOutName_Re, filterFileType_Re, readRow_Re, readCell_Re, maxRow_Re, startName_Re, nameNum_Re, startSize_Re;
 
     @FXML
-    private Button fileButton_Re, clearButton_Re, exportButton_Re, reSelectButton_Re, removeExcelButton_Re;
+    private Button fileButton_Re, clearButton_Re, exportButton_Re, reselectButton_Re, removeExcelButton_Re;
 
     /**
      * 组件自适应宽高
@@ -133,8 +133,8 @@ public class FileRenameExcelController extends Properties {
         Label fileNum = (Label) scene.lookup("#fileNumber_Re");
         Button removeAll = (Button) scene.lookup("#clearButton_Re");
         Button exportAll = (Button) scene.lookup("#exportButton_Re");
-        Button reSelect = (Button) scene.lookup("#reSelectButton_Re");
-        fileNum.setPrefWidth(tableWidth - removeAll.getWidth() - exportAll.getWidth() - reSelect.getWidth() - 40);
+        Button reselect = (Button) scene.lookup("#reselectButton_Re");
+        fileNum.setPrefWidth(tableWidth - removeAll.getWidth() - exportAll.getWidth() - reselect.getWidth() - 40);
     }
 
     /**
@@ -148,7 +148,6 @@ public class FileRenameExcelController extends Properties {
         TaskBean<FileBean> taskBean = new TaskBean<>();
         taskBean.setShowFileType(false)
                 .setProgressBar(progressBar_Re)
-                .setMassageLabel(fileNumber_Re)
                 .setTableColumn(size_Re)
                 .setTableView(tableView_Re)
                 .setInFileList(inFileList)
@@ -156,7 +155,7 @@ public class FileRenameExcelController extends Properties {
         //获取Task任务
         Task<Void> readFileTask = readFile(taskBean);
         //启动带进度条的线程
-        startProgressBarTask(readFileTask, taskBean);
+        bindingProgressBarTask(readFileTask, taskBean);
         //设置javafx单元格宽度
         id_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.04));
         name_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.14));
@@ -313,7 +312,6 @@ public class FileRenameExcelController extends Properties {
         log_Re.setText("");
         ExcelConfigBean excelConfigBean = new ExcelConfigBean();
         excelConfigBean.setInPath(excelPath_Re.getText())
-                .setLogLabel(log_Re)
                 .setSheet(sheetName);
         XSSFWorkbook xssfWorkbook = buildFileNameExcel(names, excelConfigBean);
         String excelPath = saveExcel(xssfWorkbook, excelConfigBean);
@@ -394,7 +392,7 @@ public class FileRenameExcelController extends Properties {
      * 重新查询按钮
      */
     @FXML
-    private void reSelect() throws Exception {
+    private void reselect() throws Exception {
         String inFilePath = inPath_Re.getText();
         if (StringUtils.isEmpty(inFilePath)) {
             throw new Exception("要查询的文件夹位置为空，需要先设置要查询的文件夹位置再继续");
