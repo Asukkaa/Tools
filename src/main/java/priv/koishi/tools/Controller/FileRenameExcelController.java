@@ -2,6 +2,7 @@ package priv.koishi.tools.Controller;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -20,13 +21,14 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import priv.koishi.tools.Bean.ExcelConfigBean;
 import priv.koishi.tools.Bean.FileBean;
 import priv.koishi.tools.Bean.FileConfigBean;
+import priv.koishi.tools.Bean.TaskBean;
 
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static priv.koishi.tools.Enum.SelectItemsEnums.*;
 import static priv.koishi.tools.Service.FileNameToExcelService.buildFileNameExcel;
+import static priv.koishi.tools.Service.ReadDataService.readFile;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
 import static priv.koishi.tools.Utils.CommonUtils.isInIntegerRange;
 import static priv.koishi.tools.Utils.FileUtils.*;
@@ -55,9 +57,17 @@ public class FileRenameExcelController extends Properties {
     static String excelInPath;
 
     /**
+     * 页面标识符
+     */
+    static String tabId = "_Re";
+
+    /**
      * 配置文件路径
      */
     static String configFile = "config/fileRenameConfig.properties";
+
+    @FXML
+    private ProgressBar progressBar_Re;
 
     @FXML
     private VBox vbox_Re;
@@ -135,28 +145,18 @@ public class FileRenameExcelController extends Properties {
         if (inFileList.isEmpty()) {
             throw new Exception("未查询到符合条件的数据，需修改查询条件后再继续");
         }
-        //组装数据
-        List<FileBean> fileBeans = new ArrayList<>();
-        AtomicInteger i = new AtomicInteger();
-        inFileList.forEach(f -> {
-            FileBean fileBean;
-            try {
-                fileBean = new FileBean();
-                fileBean.setId(i.incrementAndGet());
-                fileBean.setName(getFileName(f));
-                fileBean.setPath(f.getPath());
-                fileBean.setFileType(getFileType(f));
-                fileBean.setSize(getFileSize(f));
-                fileBean.setCreatDate(getFileCreatTime(f));
-                fileBean.setUpdateDate(getFileUpdateTime(f));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            fileBeans.add(fileBean);
-        });
-        //匹配数据
-        showData(fileBeans);
-        fileNumber_Re.setText("共有 " + fileBeans.size() + " 条数据");
+        TaskBean<FileBean> taskBean = new TaskBean<>();
+        taskBean.setShowFileType(false)
+                .setProgressBar(progressBar_Re)
+                .setMassageLabel(fileNumber_Re)
+                .setTableColumn(size_Re)
+                .setTableView(tableView_Re)
+                .setInFileList(inFileList)
+                .setTabId(tabId);
+        //获取Task任务
+        Task<Void> readFileTask = readFile(taskBean);
+        //启动带进度条的线程
+        startProgressBarTask(readFileTask, taskBean);
         //设置javafx单元格宽度
         id_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.04));
         name_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.14));
@@ -166,14 +166,6 @@ public class FileRenameExcelController extends Properties {
         size_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.08));
         creatDate_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.16));
         updateDate_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.16));
-    }
-
-    /**
-     * 匹配数据
-     */
-    private void showData(List<FileBean> fileBeans) {
-        autoBuildTableViewData(tableView_Re, fileBeans, "_Re");
-        fileSizeColum(size_Re);
     }
 
     /**

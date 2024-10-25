@@ -1,6 +1,8 @@
 package priv.koishi.tools.Bean;
 
+import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -15,7 +17,7 @@ import java.util.List;
  */
 @Data
 @Accessors(chain = true)
-public class FileNumTaskBean {
+public class TaskBean<T> {
 
     /**
      * 要处理的文件夹文件
@@ -35,12 +37,22 @@ public class FileNumTaskBean {
     /**
      * 用来更新数据的列表
      */
-    TableView<FileNumBean> tableView;
+    TableView<T> tableView;
+
+    /**
+     * 需要排序的列
+     */
+    TableColumn<T, String> tableColumn;
 
     /**
      * 线程进度条
      */
     ProgressBar progressBar;
+
+    /**
+     * 线程信息栏
+     */
+    Label massageLabel;
 
     /**
      * 页面标识符

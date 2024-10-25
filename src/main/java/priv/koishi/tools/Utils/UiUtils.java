@@ -3,6 +3,7 @@ package priv.koishi.tools.Utils;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -17,6 +18,7 @@ import javafx.util.Duration;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import priv.koishi.tools.Bean.FileNumBean;
+import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Enum.SelectItemsEnums;
 
 import java.io.File;
@@ -369,16 +371,23 @@ public class UiUtils {
         }
     }
 
-
     /**
-     * 匹配数据
+     * 启动带进度条的线程
      */
-    public static List<FileNumBean> showData(List<FileNumBean> fileBeans, TableView<FileNumBean> tableView, String tabId) throws Exception {
-        if (CollectionUtils.isEmpty(fileBeans)) {
-            throw new Exception("未查询到符合条件的数据，需修改查询条件后再继续");
-        }
-        autoBuildTableViewData(tableView, fileBeans, tabId);
-        return fileBeans;
+    public static void startProgressBarTask(Task<?> task, TaskBean<?> taskBean) {
+        ProgressBar progressBar = taskBean.getProgressBar();
+        Label massageLabel = taskBean.getMassageLabel();
+        //绑定进度条的值属性
+        progressBar.progressProperty().unbind();
+        progressBar.setVisible(true);
+        //给进度条设置初始值
+        progressBar.setProgress(0.0);
+        progressBar.progressProperty().bind(task.progressProperty());
+        //绑定TextField的值属性
+        massageLabel.textProperty().unbind();
+        massageLabel.textProperty().bind(task.messageProperty());
+        //使用新线程启动
+        new Thread(task).start();
     }
 
 }

@@ -28,7 +28,7 @@
 
         <Tab style="-fx-cursor: hand" fx:id="fileRenameTab" text="按指定规则批量重命名文件">
             <AnchorPane>
-<!--                <fx:include source="FileRename-tab.fxml"/>-->
+                <fx:include source="FileRename-tab.fxml"/>
             </AnchorPane>
         </Tab>
     </TabPane>

@@ -18,13 +18,13 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import priv.koishi.tools.Bean.ExcelConfigBean;
 import priv.koishi.tools.Bean.FileConfigBean;
 import priv.koishi.tools.Bean.FileNumBean;
-import priv.koishi.tools.Bean.FileNumTaskBean;
+import priv.koishi.tools.Bean.TaskBean;
 
 import java.io.*;
 import java.util.*;
 
 import static priv.koishi.tools.Service.FileNumToExcelService.buildNameGroupNumExcel;
-import static priv.koishi.tools.Service.FileNumToExcelService.readExcel;
+import static priv.koishi.tools.Service.ReadDataService.*;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
 import static priv.koishi.tools.Utils.CommonUtils.isInIntegerRange;
 import static priv.koishi.tools.Utils.FileUtils.*;
@@ -156,7 +156,10 @@ public class FileNumToExcelController extends Properties {
         ObservableList<FileNumBean> fileNumList = tableView_Num.getItems();
         if (CollectionUtils.isNotEmpty(fileNumList)) {
             matchGroupData(fileNumList, inFileList, subCode_Num.getText(), showFileType_Num.isSelected());
-            fileNumBeanList = showData(fileNumList, tableView_Num, tabId);
+            TaskBean<FileNumBean> taskBean = new TaskBean<>();
+            taskBean.setTableView(tableView_Num)
+                    .setTabId(tabId);
+            fileNumBeanList = showReadExcelData(fileNumList, taskBean);
         }
     }
 
@@ -175,26 +178,18 @@ public class FileNumToExcelController extends Properties {
                 .setReadCellNum(readCellValue)
                 .setReadRowNum(readRowValue)
                 .setMaxRowNum(maxRowValue);
-        FileNumTaskBean fileNumTaskBean = new FileNumTaskBean();
-        fileNumTaskBean.setShowFileType(showFileType_Num.isSelected())
+        TaskBean<FileNumBean> taskBean = new TaskBean<>();
+        taskBean.setShowFileType(showFileType_Num.isSelected())
                 .setSubCode(subCode_Num.getText())
                 .setProgressBar(progressBar_Num)
+                .setMassageLabel(fileNumber_Num)
                 .setTableView(tableView_Num)
                 .setInFileList(inFileList)
                 .setTabId(tabId);
         //获取Task任务
-        Task<Void> readExcelTask = readExcel(excelConfigBean, fileNumTaskBean);
-        //绑定进度条的值属性
-        progressBar_Num.progressProperty().unbind();
-        progressBar_Num.setVisible(true);
-        //给进度条设置初始值
-        progressBar_Num.setProgress(0.0);
-        progressBar_Num.progressProperty().bind(readExcelTask.progressProperty());
-        //绑定TextField的值属性
-        fileNumber_Num.textProperty().unbind();
-        fileNumber_Num.textProperty().bind(readExcelTask.messageProperty());
-        //使用新线程启动
-        new Thread(readExcelTask).start();
+        Task<Void> readExcelTask = readExcel(excelConfigBean, taskBean);
+        //启动带进度条的线程
+        startProgressBarTask(readExcelTask, taskBean);
         //设置javafx单元格宽度
         groupId_Num.prefWidthProperty().bind(tableView_Num.widthProperty().multiply(0.1));
         groupName_Num.prefWidthProperty().bind(tableView_Num.widthProperty().multiply(0.1));

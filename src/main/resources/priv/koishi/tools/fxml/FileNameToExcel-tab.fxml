@@ -115,6 +115,7 @@
             </columns>
         </TableView>
 
+        <ProgressBar fx:id="progressBar_Name" visible="false" prefWidth="200.0" progress="0.0" />
         <Label fx:id="log_Name" prefHeight="20"/>
     </VBox>
 </AnchorPane>
