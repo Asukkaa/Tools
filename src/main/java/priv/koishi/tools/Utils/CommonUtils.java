@@ -2,11 +2,13 @@ package priv.koishi.tools.Utils;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
-import priv.koishi.tools.MainApplication;
 
 import java.io.*;
 import java.net.URL;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -16,6 +18,11 @@ import java.util.stream.Collectors;
  * Time:下午1:14
  */
 public class CommonUtils {
+
+    /**
+     * 资源文件夹地址前缀
+     */
+    static String resourcesPath = "src/main/resources/priv/koishi/tools/";
 
     /**
      * 正则表达式用于匹配指定范围的整数
@@ -125,7 +132,7 @@ public class CommonUtils {
     public static InputStream checkRunningInputStream(String path) throws IOException {
         InputStream input;
         if (isRunningFromJar()) {
-            input = new FileInputStream(Objects.requireNonNull(MainApplication.class.getResource(path)).getPath().replaceAll("target/classes/","src/main/resources/"));
+            input = new FileInputStream(resourcesPath + path);
         } else {
             input = new FileInputStream(path);
         }
@@ -138,7 +145,7 @@ public class CommonUtils {
     public static OutputStream checkRunningOutputStream(String path) throws IOException {
         OutputStream output;
         if (isRunningFromJar()) {
-            output = new FileOutputStream(Objects.requireNonNull(MainApplication.class.getResource(path)).getPath().replaceAll("target/classes/","src/main/resources/"));
+            output = new FileOutputStream(resourcesPath + path);
         } else {
             output = new FileOutputStream(path);
         }
