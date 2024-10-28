@@ -19,6 +19,7 @@ import priv.koishi.tools.Bean.ExcelConfigBean;
 import priv.koishi.tools.Bean.FileConfigBean;
 import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Bean.TaskBean;
+import priv.koishi.tools.Properties.ToolsProperties;
 
 import java.io.*;
 import java.util.*;
@@ -38,7 +39,7 @@ import static priv.koishi.tools.Utils.UiUtils.*;
  * Date:2024-10-08
  * Time:下午3:29
  */
-public class FileNumToExcelController extends Properties {
+public class FileNumToExcelController extends ToolsProperties {
 
     /**
      * 要处理的文件夹路径
@@ -76,10 +77,10 @@ public class FileNumToExcelController extends Properties {
     static String configFile = "config/fileNumToExcelConfig.properties";
 
     @FXML
-    private ProgressBar progressBar_Num;
+    private VBox vbox_Num;
 
     @FXML
-    private VBox vbox_Num;
+    private ProgressBar progressBar_Num;
 
     @FXML
     private TableView<FileNumBean> tableView_Num;
@@ -143,12 +144,12 @@ public class FileNumToExcelController extends Properties {
      */
     private void addInFile(File selectedFile, List<String> filterExtensionList) throws Exception {
         FileConfigBean fileConfigBean = new FileConfigBean();
-        fileConfigBean.setInFile(selectedFile)
-                .setShowHideFile(hideFileType_Num.getValue())
-                .setShowDirectoryName(directoryNameType_Num.getValue())
+        fileConfigBean.setShowDirectoryName(directoryNameType_Num.getValue())
                 .setShowFileType(showFileType_Num.isSelected())
+                .setShowHideFile(hideFileType_Num.getValue())
+                .setFilterExtensionList(filterExtensionList)
                 .setRecursion(recursion_Num.isSelected())
-                .setFilterExtensionList(filterExtensionList);
+                .setInFile(selectedFile);
         inFileList = readAllFiles(fileConfigBean);
         //列表中有excel分组后再匹配数据
         ObservableList<FileNumBean> fileNumList = tableView_Num.getItems();
@@ -192,11 +193,7 @@ public class FileNumToExcelController extends Properties {
         //使用新线程启动
         new Thread(readExcelTask).start();
         //设置javafx单元格宽度
-        groupId_Num.prefWidthProperty().bind(tableView_Num.widthProperty().multiply(0.1));
-        groupName_Num.prefWidthProperty().bind(tableView_Num.widthProperty().multiply(0.1));
-        groupNumber_Num.prefWidthProperty().bind(tableView_Num.widthProperty().multiply(0.1));
-        fileName_Num.prefWidthProperty().bind(tableView_Num.widthProperty().multiply(0.7));
-        return readExcelTask;
+        return tableViewNumImgAdaption(readExcelTask, groupId_Num, tableView_Num, groupName_Num.prefWidthProperty(), groupNumber_Num.prefWidthProperty(), fileName_Num);
     }
 
     /**
@@ -215,36 +212,13 @@ public class FileNumToExcelController extends Properties {
     }
 
     /**
-     * 重写Properties的load方法，更换配置文件中的‘\’为‘/’
-     */
-    @Override
-    public synchronized void load(Reader reader) throws IOException {
-        BufferedReader bufferedReader = new BufferedReader(reader);
-        while (true) {
-            //缓冲流以行读取数据
-            String line = bufferedReader.readLine();
-            if (Objects.isNull(line)) {
-                break;
-            }
-            //注意: properties属性类文件存在第一个隐藏字符,需要删除掉，否则第一个数据以key查找不存在
-            if (line.startsWith("\uFEFF")) {
-                line = line.substring(1);
-            }
-            //如果是#注释内容，则不做操作
-            if (!line.startsWith("#") && !line.isEmpty()) {
-                //将读取的数据格式为’=‘分割,以key,Value方式存储properties属性类文件数据
-                String[] split = line.split("=");
-                //由于‘\’在Java中表示转义字符，需要将读取的路径进行转换为‘/’符号,这里“\\\\”代表一个‘\’
-                put(split[0], split[1].replaceAll("\\\\", "/"));
-            }
-        }
-    }
-
-    /**
      * 界面初始化
      */
     @FXML
     private void initialize() {
+        // 获取JVM最大可用内存
+//        long maxMemory = Runtime.getRuntime().maxMemory();
+//        addToolTip(showFileType_Num, String.valueOf(maxMemory / 1024.0 / 1024.0 / 1024.0));
         addToolTip(filterFileType_Num, "填写后只会识别所填写的后缀名文件，多个文件后缀名用空格隔开，后缀名需带 '.'");
         addNumImgToolTip(recursion_Num, subCode_Num, excelName_Num, sheetOutName_Num, startRow_Num, startCell_Num, readCell_Num, readRow_Num, maxRow_Num);
     }
@@ -307,10 +281,10 @@ public class FileNumToExcelController extends Properties {
      */
     @FXML
     private void exportAll() throws Exception {
-        String outFilePath = outPath_Num.getText();
-        String inFilePath = excelPath_Num.getText();
         String subCode = subCode_Num.getText();
         String inDirectory = inPath_Num.getText();
+        String outFilePath = outPath_Num.getText();
+        String inFilePath = excelPath_Num.getText();
         if (StringUtils.isEmpty(outFilePath)) {
             throw new Exception("导出文件夹位置为空，需要先设置导出文件夹位置再继续");
         }
@@ -323,10 +297,10 @@ public class FileNumToExcelController extends Properties {
         if (StringUtils.isEmpty(subCode)) {
             throw new Exception("文件名称分割符位置为空，需要先设置文件名称分割符再继续");
         }
+        String sheetName = setDefaultStrValue(sheetOutName_Num, "Sheet1");
+        String excelNameValue = setDefaultFileName(excelName_Num, "NameList");
         int startRowValue = setDefaultIntValue(startRow_Num, 0, 0, null);
         int startCellValue = setDefaultIntValue(startCell_Num, 0, 0, null);
-        String excelNameValue = setDefaultFileName(excelName_Num, "NameList");
-        String sheetName = setDefaultStrValue(sheetOutName_Num, "Sheet1");
         ExcelConfigBean excelConfigBean = new ExcelConfigBean();
         excelConfigBean.setOutExcelExtension(excelType_Num.getValue())
                 .setExportType(exportType_Num.getValue())
@@ -344,9 +318,9 @@ public class FileNumToExcelController extends Properties {
                     .setBeanList(reselectTask.getValue())
                     .setSubCode(subCode_Num.getText())
                     .setProgressBar(progressBar_Num)
-                    .setMassageLabel(log_Num)
                     .setTableView(tableView_Num)
                     .setInFileList(inFileList)
+                    .setMassageLabel(log_Num)
                     .setTabId(tabId);
             //获取Task任务
             Task<XSSFWorkbook> buildExcelTask;

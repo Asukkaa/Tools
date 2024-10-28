@@ -19,6 +19,7 @@ import priv.koishi.tools.Bean.ExcelConfigBean;
 import priv.koishi.tools.Bean.FileConfigBean;
 import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Bean.TaskBean;
+import priv.koishi.tools.Properties.ToolsProperties;
 
 import java.io.*;
 import java.util.*;
@@ -38,7 +39,7 @@ import static priv.koishi.tools.Utils.UiUtils.*;
  * Date:2024-10-16
  * Time:下午1:24
  */
-public class ImgToExcelController extends Properties {
+public class ImgToExcelController extends ToolsProperties {
 
     /**
      * 要处理的文件夹路径
@@ -76,10 +77,10 @@ public class ImgToExcelController extends Properties {
     static String configFile = "config/imgToExcelConfig.properties";
 
     @FXML
-    private ProgressBar progressBar_Img;
+    private VBox vbox_Img;
 
     @FXML
-    private VBox vbox_Img;
+    private ProgressBar progressBar_Img;
 
     @FXML
     private TableView<FileNumBean> tableView_Img;
@@ -138,11 +139,11 @@ public class ImgToExcelController extends Properties {
      */
     private void addInFile(File selectedFile, List<String> filterExtensionList) throws Exception {
         FileConfigBean fileConfigBean = new FileConfigBean();
-        fileConfigBean.setInFile(selectedFile)
+        fileConfigBean.setShowFileType(showFileType_Img.isSelected())
                 .setShowHideFile(hideFileType_Img.getValue())
-                .setShowFileType(showFileType_Img.isSelected())
+                .setFilterExtensionList(filterExtensionList)
                 .setRecursion(recursion_Img.isSelected())
-                .setFilterExtensionList(filterExtensionList);
+                .setInFile(selectedFile);
         inFileList = readAllFiles(fileConfigBean);
         //列表中有excel分组后再匹配数据
         ObservableList<FileNumBean> fileNumList = tableView_Img.getItems();
@@ -185,11 +186,7 @@ public class ImgToExcelController extends Properties {
         new Thread(readExcelTask).start();
         readExcelTask.setOnSucceeded(t -> progressBar_Img.setVisible(false));
         //设置javafx单元格宽度
-        groupId_Img.prefWidthProperty().bind(tableView_Img.widthProperty().multiply(0.1));
-        groupName_Img.prefWidthProperty().bind(tableView_Img.widthProperty().multiply(0.1));
-        groupNumber_Img.prefWidthProperty().bind(tableView_Img.widthProperty().multiply(0.1));
-        fileName_Img.prefWidthProperty().bind(tableView_Img.widthProperty().multiply(0.7));
-        return readExcelTask;
+        return tableViewNumImgAdaption(readExcelTask, groupId_Img, tableView_Img, groupName_Img.prefWidthProperty(), groupNumber_Img.prefWidthProperty(), fileName_Img);
     }
 
     /**
@@ -205,32 +202,6 @@ public class ImgToExcelController extends Properties {
         outFilePath = prop.getProperty("outFilePath");
         outFileName = prop.getProperty("outFileName");
         excelInPath = prop.getProperty("excelInPath");
-    }
-
-    /**
-     * 重写Properties的load方法，更换配置文件中的‘\’为‘/’
-     */
-    @Override
-    public synchronized void load(Reader reader) throws IOException {
-        BufferedReader bufferedReader = new BufferedReader(reader);
-        while (true) {
-            //缓冲流以行读取数据
-            String line = bufferedReader.readLine();
-            if (Objects.isNull(line)) {
-                break;
-            }
-            //注意: properties属性类文件存在第一个隐藏字符,需要删除掉，否则第一个数据以key查找不存在
-            if (line.startsWith("\uFEFF")) {
-                line = line.substring(1);
-            }
-            //如果是#注释内容，则不做操作
-            if (!line.startsWith("#") && !line.isEmpty()) {
-                //将读取的数据格式为’=‘分割,以key,Value方式存储properties属性类文件数据
-                String[] split = line.split("=");
-                //由于‘\’在Java中表示转义字符，需要将读取的路径进行转换为‘/’符号,这里“\\\\”代表一个‘\’
-                put(split[0], split[1].replaceAll("\\\\", "/"));
-            }
-        }
     }
 
     /**
@@ -355,9 +326,9 @@ public class ImgToExcelController extends Properties {
                     .setBeanList(reselectTask.getValue())
                     .setSubCode(subCode_Img.getText())
                     .setProgressBar(progressBar_Img)
-                    .setMassageLabel(log_Img)
                     .setTableView(tableView_Img)
                     .setInFileList(inFileList)
+                    .setMassageLabel(log_Img)
                     .setTabId(tabId);
             //获取Task任务
             Task<XSSFWorkbook> buildExcelTask;

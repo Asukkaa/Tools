@@ -21,6 +21,7 @@ import priv.koishi.tools.Bean.ExcelConfigBean;
 import priv.koishi.tools.Bean.FileBean;
 import priv.koishi.tools.Bean.FileConfigBean;
 import priv.koishi.tools.Bean.TaskBean;
+import priv.koishi.tools.Properties.ToolsProperties;
 
 import java.io.*;
 import java.util.*;
@@ -39,7 +40,7 @@ import static priv.koishi.tools.Utils.UiUtils.*;
  * Date:2024-10-18
  * Time:下午4:36
  */
-public class FileRenameExcelController extends Properties {
+public class FileRenameExcelController extends ToolsProperties {
 
     /**
      * 要处理的文件夹路径
@@ -67,10 +68,10 @@ public class FileRenameExcelController extends Properties {
     static String configFile = "config/fileRenameConfig.properties";
 
     @FXML
-    private ProgressBar progressBar_Re;
+    private VBox vbox_Re;
 
     @FXML
-    private VBox vbox_Re;
+    private ProgressBar progressBar_Re;
 
     @FXML
     private HBox configRename_Re, excelRename_Re;
@@ -182,42 +183,16 @@ public class FileRenameExcelController extends Properties {
     }
 
     /**
-     * 重写Properties的load方法，更换配置文件中的‘\’为‘/’
-     */
-    @Override
-    public synchronized void load(Reader reader) throws IOException {
-        BufferedReader bufferedReader = new BufferedReader(reader);
-        while (true) {
-            //缓冲流以行读取数据
-            String line = bufferedReader.readLine();
-            if (Objects.isNull(line)) {
-                break;
-            }
-            //注意: properties属性类文件存在第一个隐藏字符,需要删除掉，否则第一个数据以key查找不存在
-            if (line.startsWith("\uFEFF")) {
-                line = line.substring(1);
-            }
-            //如果是#注释内容，则不做操作
-            if (!line.startsWith("#") && !line.isEmpty()) {
-                //将读取的数据格式为’=‘分割,以key,Value方式存储properties属性类文件数据
-                String[] split = line.split("=");
-                //由于‘\’在Java中表示转义字符，需要将读取的路径进行转换为‘/’符号,这里“\\\\”代表一个‘\’
-                put(split[0], split[1].replaceAll("\\\\", "/"));
-            }
-        }
-    }
-
-    /**
      * 界面初始化
      */
     @FXML
     private void initialize() {
-        addToolTip(filterFileType_Re, "填写后只会识别所填写的后缀名文件，多个文件后缀名用空格隔开，后缀名需带 '.'");
-        addToolTip(sheetOutName_Re, "须填与excel模板相同的表名才能正常读取模板");
+        addToolTip(startName_Re, "只能填数字，不填默认为0");
         addToolTip(removeExcelButton_Re, "删除excel模板路径");
         addToolTip(startSize_Re, "只能填数字，0为不限制编号位数，不填默认为0");
-        addToolTip(startName_Re, "只能填数字，不填默认为0");
+        addToolTip(sheetOutName_Re, "须填与excel模板相同的表名才能正常读取模板");
         addToolTip(nameNum_Re, "只能填数字，0为不使用分隔符进行分组重命名，不填默认为0");
+        addToolTip(filterFileType_Re, "填写后只会识别所填写的后缀名文件，多个文件后缀名用空格隔开，后缀名需带 '.'");
     }
 
     /**
@@ -230,10 +205,10 @@ public class FileRenameExcelController extends Properties {
         // 显示文件选择器
         File selectedFile = creatDirectoryChooser(actionEvent, inFilePath, "选择文件夹");
         FileConfigBean fileConfigBean = new FileConfigBean();
-        fileConfigBean.setInFile(selectedFile)
+        fileConfigBean.setShowDirectoryName(directoryNameType_Re.getValue())
                 .setShowHideFile(hideFileType_Re.getValue())
-                .setShowDirectoryName(directoryNameType_Re.getValue())
-                .setFilterExtensionList(filterExtensionList);
+                .setFilterExtensionList(filterExtensionList)
+                .setInFile(selectedFile);
         if (selectedFile != null) {
             String selectedFilePath = selectedFile.getAbsolutePath();
             updatePath(configFile, "inFilePath", selectedFilePath);
@@ -256,10 +231,10 @@ public class FileRenameExcelController extends Properties {
         List<String> filterExtensionList = getFilterExtensionList(filterFileType_Re);
         File file = files.getFirst();
         FileConfigBean fileConfigBean = new FileConfigBean();
-        fileConfigBean.setInFile(file)
+        fileConfigBean.setShowDirectoryName(directoryNameType_Re.getValue())
                 .setShowHideFile(hideFileType_Re.getValue())
-                .setShowDirectoryName(directoryNameType_Re.getValue())
-                .setFilterExtensionList(filterExtensionList);
+                .setFilterExtensionList(filterExtensionList)
+                .setInFile(file);
         List<File> inFileList = readAllFiles(fileConfigBean);
         String filePath = file.getPath();
         inPath_Re.setText(filePath);
@@ -342,7 +317,7 @@ public class FileRenameExcelController extends Properties {
     /**
      * 鼠标悬留提示输入的导出excel表名称
      */
-   @FXML
+    @FXML
     private void sheetHandleKeyTyped() {
         aadValueToolTip(sheetOutName_Re, "须填与excel模板相同的表名才能正常读取模板");
     }
@@ -399,10 +374,10 @@ public class FileRenameExcelController extends Properties {
         }
         FileConfigBean fileConfigBean = new FileConfigBean();
         List<String> filterExtensionList = getFilterExtensionList(filterFileType_Re);
-        fileConfigBean.setInFile(new File(inFilePath))
+        fileConfigBean.setShowDirectoryName(directoryNameType_Re.getValue())
                 .setShowHideFile(hideFileType_Re.getValue())
-                .setShowDirectoryName(directoryNameType_Re.getValue())
-                .setFilterExtensionList(filterExtensionList);
+                .setFilterExtensionList(filterExtensionList)
+                .setInFile(new File(inFilePath));
         List<File> inFileList = readAllFiles(fileConfigBean);
         addInData(inFileList);
     }

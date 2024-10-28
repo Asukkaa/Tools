@@ -1,8 +1,10 @@
 package priv.koishi.tools.Utils;
 
 import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -236,7 +238,7 @@ public class UiUtils {
         textArea.setEditable(false);
         textArea.setWrapText(true);
         textArea.setText(errToString(ex));
-        ex.printStackTrace();
+//        ex.printStackTrace();
         // 创建VBox并添加TextArea
         VBox details = new VBox();
         details.heightProperty().addListener((v1, v2, v3) -> Platform.runLater(() -> textArea.setPrefHeight(details.getHeight())));
@@ -342,16 +344,32 @@ public class UiUtils {
     /**
      * 为统计文件名和插入图片页面添加鼠标悬停提示
      */
-    public static void addNumImgToolTip(CheckBox recursion, TextField subCode, TextField excelName, TextField sheetOutName, TextField startRow, TextField startCell, TextField readCell, TextField readRow, TextField maxRow) {
-        addToolTip(recursion, "勾选后将会查询文件夹中的文件夹里的文件");
-        addToolTip(subCode, "填写后会按所填写的字符串来分割文件名称，按照分割后的文件名称左侧字符串进行分组");
-        addToolTip(excelName, "如果导出地址和名称与模板一样则会覆盖模板excel文件");
-        addToolTip(sheetOutName, "须填与excel模板相同的表名才能正常统计");
+    public static void addNumImgToolTip(CheckBox recursion, TextField subCode, TextField excelName, TextField sheetOutName,
+                                        TextField startRow, TextField startCell, TextField readCell, TextField readRow, TextField maxRow) {
         addToolTip(startRow, "只能填数字，不填默认为0，不预留列");
         addToolTip(startCell, "只能填数字，不填默认为0，不预留行");
-        addToolTip(readCell, "只能填数字，不填默认为0，从第一列读取");
         addToolTip(readRow, "只能填数字，不填默认为0，从第一行读取");
+        addToolTip(readCell, "只能填数字，不填默认为0，从第一列读取");
+        addToolTip(recursion, "勾选后将会查询文件夹中的文件夹里的文件");
+        addToolTip(sheetOutName, "须填与excel模板相同的表名才能正常统计");
+        addToolTip(excelName, "如果导出地址和名称与模板一样则会覆盖模板excel文件");
         addToolTip(maxRow, "只能填数字，不填默认不限制，会读取到有数据的最后一行，最小值为1");
+        addToolTip(subCode, "填写后会按所填写的字符串来分割文件名称，按照分割后的文件名称左侧字符串进行分组");
+    }
+
+    /**
+     * 为统计文件名和插入图片页面列表设置字段宽度
+     */
+    public static Task<List<FileNumBean>> tableViewNumImgAdaption(Task<List<FileNumBean>> readExcelTask,
+                                                                  TableColumn<FileNumBean, String> groupId,
+                                                                  TableView<FileNumBean> tableView,
+                                                                  DoubleProperty groupName, DoubleProperty groupNumber,
+                                                                  TableColumn<FileNumBean, String> fileName) {
+        groupId.prefWidthProperty().bind(tableView.widthProperty().multiply(0.1));
+        groupName.bind(tableView.widthProperty().multiply(0.1));
+        groupNumber.bind(tableView.widthProperty().multiply(0.1));
+        fileName.prefWidthProperty().bind(tableView.widthProperty().multiply(0.7));
+        return readExcelTask;
     }
 
     /**
