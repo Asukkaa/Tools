@@ -43,9 +43,9 @@ public class MainApplication extends Application {
         stage.setScene(scene);
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("css/Styles.css")).toExternalForm());
         // 监听窗口面板宽度变化
-        stage.widthProperty().addListener((_, _, _) -> Platform.runLater(() -> mainAdaption(stage, scene)));
+        stage.widthProperty().addListener((v1, v2, v3) -> Platform.runLater(() -> mainAdaption(stage, scene)));
         // 监听窗口面板高度变化
-        stage.heightProperty().addListener((_, _, _) -> Platform.runLater(() -> mainAdaption(stage, scene)));
+        stage.heightProperty().addListener((v1, v2, v3) -> Platform.runLater(() -> mainAdaption(stage, scene)));
         stage.show();
     }
 
@@ -56,7 +56,7 @@ public class MainApplication extends Application {
     public void init() throws Exception {
         super.init();
         // 在init()方法中设置全局异常处理器
-        Platform.runLater(() -> Thread.setDefaultUncaughtExceptionHandler((_, exception) -> showExceptionDialog(exception)));
+        Platform.runLater(() -> Thread.setDefaultUncaughtExceptionHandler((e, exception) -> showExceptionDialog(exception)));
     }
 
     /**

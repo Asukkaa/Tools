@@ -1,5 +1,8 @@
 package priv.koishi.tools.Service;
 
+import javafx.concurrent.Task;
+import javafx.scene.control.Label;
+import javafx.scene.paint.Color;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.ClientAnchor;
@@ -10,6 +13,7 @@ import org.apache.poi.util.IOUtils;
 import org.apache.poi.xssf.usermodel.*;
 import priv.koishi.tools.Bean.ExcelConfigBean;
 import priv.koishi.tools.Bean.FileNumBean;
+import priv.koishi.tools.Bean.TaskBean;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -50,36 +54,50 @@ public class ImgToExcelService {
     static XSSFWorkbook workbook;
 
     /**
+     * 日志输出栏
+     */
+    static Label logLabel;
+
+    /**
      * 构建分组的图片excel
      */
-    public static XSSFWorkbook buildImgGroupExcel(List<FileNumBean> fileBeans, ExcelConfigBean excelConfigBean) throws Exception {
-        checkCopyDestination(excelConfigBean);
-        File inputFile = new File(excelConfigBean.getInPath());
-        if (!inputFile.exists()) {
-            throw new Exception("模板excel文件不存在");
-        }
-        FileInputStream inputStream = new FileInputStream(inputFile);
-        workbook = new XSSFWorkbook(inputStream);
-        String sheetName = excelConfigBean.getSheet();
-        startRowNum = excelConfigBean.getStartRowNum();
-        startCellNum = excelConfigBean.getStartCellNum();
-//        logLabel = excelConfigBean.getLogLabel();
-//        logLabel.setText("已识别到 " + fileBeans.size() + " 组数据");
-        if (StringUtils.isBlank(sheetName)) {
-            sheet = workbook.getSheetAt(0);
-        } else {
-            sheet = workbook.getSheet(sheetName);
-        }
-        for (FileNumBean fileBean : fileBeans) {
-            List<String> imgList = fileBean.getFilePathList();
-            buildImgExcel(imgList, excelConfigBean);
-//            logLabel.setText("正在输出第" + (startRowNum + 1) + "/" + fileBeans.size() + "组数据");
-            startRowNum++;
-        }
-        inputStream.close();
-//        logLabel.setText("所有数据已输出完毕");
-//        logLabel.setTextFill(Color.GREEN);
-        return workbook;
+    public static Task<XSSFWorkbook> buildImgGroupExcel(TaskBean<FileNumBean> taskBean, ExcelConfigBean excelConfigBean) {
+        return new Task<>() {
+            @Override
+            protected XSSFWorkbook call() throws Exception {
+                checkCopyDestination(excelConfigBean);
+                File inputFile = new File(excelConfigBean.getInPath());
+                if (!inputFile.exists()) {
+                    throw new Exception("模板excel文件不存在");
+                }
+                updateMessage("正在导出数据");
+                FileInputStream inputStream = new FileInputStream(inputFile);
+                workbook = new XSSFWorkbook(inputStream);
+                String sheetName = excelConfigBean.getSheet();
+                startRowNum = excelConfigBean.getStartRowNum();
+                startCellNum = excelConfigBean.getStartCellNum();
+                List<FileNumBean> fileBeans = taskBean.getBeanList();
+                logLabel = taskBean.getMassageLabel();
+                int fileNum = fileBeans.size();
+                updateMessage("已识别到 " + fileNum + " 组数据");
+                if (StringUtils.isBlank(sheetName)) {
+                    sheet = workbook.getSheetAt(0);
+                } else {
+                    sheet = workbook.getSheet(sheetName);
+                }
+                for (int i = 0; i < fileNum; i++) {
+                    FileNumBean fileBean = fileBeans.get(i);
+                    List<String> imgList = fileBean.getFilePathList();
+                    buildImgExcel(imgList, excelConfigBean);
+                    updateMessage("正在输出第" + (i + 1) + "/" + fileNum + "组数据");
+                    updateProgress(i + 1, fileNum);
+                    startRowNum++;
+                }
+                inputStream.close();
+                updateMessage("所有数据已输出完毕");
+                return workbook;
+            }
+        };
     }
 
     /**
@@ -130,7 +148,7 @@ public class ImgToExcelService {
                 try {
                     inputStream.close();
                 } catch (IOException e) {
-//                    logLabel.setTextFill(Color.RED);
+                    logLabel.setTextFill(Color.RED);
                     throw new RuntimeException(e);
                 }
                 sheet.setColumnWidth(cellNum, imgWidth);

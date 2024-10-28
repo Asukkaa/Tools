@@ -17,7 +17,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import priv.koishi.tools.Bean.ExcelConfigBean;
 import priv.koishi.tools.Bean.FileBean;
 import priv.koishi.tools.Bean.FileConfigBean;
@@ -27,11 +26,12 @@ import java.io.*;
 import java.util.*;
 
 import static priv.koishi.tools.Enum.SelectItemsEnums.*;
-import static priv.koishi.tools.Service.FileNameToExcelService.buildFileNameExcel;
 import static priv.koishi.tools.Service.ReadDataService.readFile;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
 import static priv.koishi.tools.Utils.CommonUtils.isInIntegerRange;
-import static priv.koishi.tools.Utils.FileUtils.*;
+import static priv.koishi.tools.Utils.FileUtils.readAllFiles;
+import static priv.koishi.tools.Utils.FileUtils.updatePath;
+import static priv.koishi.tools.Utils.TaskUtils.bindingProgressBarTask;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
 /**
@@ -313,11 +313,11 @@ public class FileRenameExcelController extends Properties {
         ExcelConfigBean excelConfigBean = new ExcelConfigBean();
         excelConfigBean.setInPath(excelPath_Re.getText())
                 .setSheet(sheetName);
-        XSSFWorkbook xssfWorkbook = buildFileNameExcel(names, excelConfigBean);
-        String excelPath = saveExcel(xssfWorkbook, excelConfigBean);
-        if (openDirectory_Re.isSelected()) {
-            openFile(getFileMkdir(new File(excelPath)));
-        }
+//        XSSFWorkbook xssfWorkbook = buildFileNameExcel(names, excelConfigBean);
+//        String excelPath = saveExcel(xssfWorkbook, excelConfigBean);
+//        if (openDirectory_Re.isSelected()) {
+//            openFile(getFileMkdir(new File(excelPath)));
+//        }
 
     }
 

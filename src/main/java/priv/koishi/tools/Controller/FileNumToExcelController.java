@@ -10,7 +10,6 @@ import javafx.scene.control.*;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.commons.collections4.CollectionUtils;
@@ -30,6 +29,8 @@ import static priv.koishi.tools.Service.ReadDataService.showReadExcelData;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
 import static priv.koishi.tools.Utils.CommonUtils.isInIntegerRange;
 import static priv.koishi.tools.Utils.FileUtils.*;
+import static priv.koishi.tools.Utils.TaskUtils.bindingProgressBarTask;
+import static priv.koishi.tools.Utils.TaskUtils.saveExcelOnSucceeded;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
 /**
@@ -185,7 +186,7 @@ public class FileNumToExcelController extends Properties {
                 .setTabId(tabId);
         //获取Task任务
         Task<List<FileNumBean>> readExcelTask = readExcel(excelConfigBean, taskBean);
-        readExcelTask.setOnSucceeded(_ -> progressBar_Num.setVisible(false));
+        readExcelTask.setOnSucceeded(t -> progressBar_Num.setVisible(false));
         //启动带进度条的线程
         bindingProgressBarTask(readExcelTask, taskBean);
         //使用新线程启动
@@ -298,7 +299,7 @@ public class FileNumToExcelController extends Properties {
      */
     @FXML
     private void removeAll() {
-        removeNumImgAll(tableView_Num, fileNumber_Num, log_Num, null);
+        removeNumImgAll(tableView_Num, fileNumber_Num, log_Num);
     }
 
     /**
@@ -337,7 +338,7 @@ public class FileNumToExcelController extends Properties {
                 .setSubCode(subCode)
                 .setSheet(sheetName);
         Task<List<FileNumBean>> reselectTask = reselect();
-        reselectTask.setOnSucceeded(_ -> {
+        reselectTask.setOnSucceeded(t -> {
             TaskBean<FileNumBean> taskBean = new TaskBean<>();
             taskBean.setShowFileType(showFileType_Num.isSelected())
                     .setBeanList(reselectTask.getValue())
@@ -351,26 +352,8 @@ public class FileNumToExcelController extends Properties {
             Task<XSSFWorkbook> buildExcelTask;
             //获取Task任务
             buildExcelTask = buildNameGroupNumExcel(taskBean, excelConfigBean);
-            //启动带进度条的线程
-            bindingProgressBarTask(buildExcelTask, taskBean);
-            buildExcelTask.setOnSucceeded(_ -> {
-                XSSFWorkbook xssfWorkbook = buildExcelTask.getValue();
-                String excelPath;
-                try {
-                    excelPath = saveExcel(xssfWorkbook, excelConfigBean);
-                    if (openDirectory_Num.isSelected()) {
-                        openFile(getFileMkdir(new File(excelPath)));
-                    }
-                    if (openFile_Num.isSelected()) {
-                        openFile(excelPath);
-                    }
-                    progressBar_Num.setVisible(false);
-                    log_Num.setTextFill(Color.GREEN);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            });
-            new Thread(buildExcelTask).start();
+            //线程成功后保存excel
+            saveExcelOnSucceeded(excelConfigBean, taskBean, buildExcelTask, openDirectory_Num, openFile_Num);
         });
         //使用新线程启动
         new Thread(reselectTask).start();

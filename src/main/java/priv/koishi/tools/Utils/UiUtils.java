@@ -3,7 +3,6 @@ package priv.koishi.tools.Utils;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -18,7 +17,6 @@ import javafx.util.Duration;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import priv.koishi.tools.Bean.FileNumBean;
-import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Enum.SelectItemsEnums;
 
 import java.io.File;
@@ -241,7 +239,7 @@ public class UiUtils {
         ex.printStackTrace();
         // 创建VBox并添加TextArea
         VBox details = new VBox();
-        details.heightProperty().addListener((_, _, _) -> Platform.runLater(() -> textArea.setPrefHeight(details.getHeight())));
+        details.heightProperty().addListener((v1, v2, v3) -> Platform.runLater(() -> textArea.setPrefHeight(details.getHeight())));
         details.getChildren().add(textArea);
         alert.getDialogPane().setExpandableContent(details);
         // 展示弹窗
@@ -274,7 +272,7 @@ public class UiUtils {
     /**
      * 清空excel统计文件名或插入图片页面的列表
      */
-    public static void removeNumImgAll(TableView<FileNumBean> tableView, Label fileNumber, Label log, List<FileNumBean> fileNumBeanList) {
+    public static void removeNumImgAll(TableView<FileNumBean> tableView, Label fileNumber, Label log) {
         List<FileNumBean> nullFileBeans = new ArrayList<>();
         ObservableList<FileNumBean> nullData = FXCollections.observableArrayList(nullFileBeans);
         tableView.setItems(nullData);
@@ -284,9 +282,6 @@ public class UiUtils {
         log.textProperty().unbind();
         log.setText("");
         log.setTextFill(Color.BLACK);
-        if (CollectionUtils.isNotEmpty(fileNumBeanList)) {
-            fileNumBeanList.clear();
-        }
     }
 
     /**
@@ -370,23 +365,6 @@ public class UiUtils {
             choiceBox.setItems(selectItemsEnums.getItems(1));
             choiceBox.setValue(selectItemsEnums.getSelectItemsEnum(1).getValue(0));
         }
-    }
-
-    /**
-     * 绑定带进度条的线程
-     */
-    public static void bindingProgressBarTask(Task<?> task, TaskBean<?> taskBean) {
-        ProgressBar progressBar = taskBean.getProgressBar();
-        Label massageLabel = taskBean.getMassageLabel();
-        //绑定进度条的值属性
-        progressBar.progressProperty().unbind();
-        progressBar.setVisible(true);
-        //给进度条设置初始值
-        progressBar.setProgress(0.0);
-        progressBar.progressProperty().bind(task.progressProperty());
-        //绑定TextField的值属性
-        massageLabel.textProperty().unbind();
-        massageLabel.textProperty().bind(task.messageProperty());
     }
 
 }

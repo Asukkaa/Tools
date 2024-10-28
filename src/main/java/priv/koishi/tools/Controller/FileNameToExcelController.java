@@ -30,6 +30,8 @@ import static priv.koishi.tools.Service.ReadDataService.readFile;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
 import static priv.koishi.tools.Utils.CommonUtils.isInIntegerRange;
 import static priv.koishi.tools.Utils.FileUtils.*;
+import static priv.koishi.tools.Utils.TaskUtils.bindingProgressBarTask;
+import static priv.koishi.tools.Utils.TaskUtils.saveExcelOnSucceeded;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
 public class FileNameToExcelController extends Properties {
@@ -142,6 +144,7 @@ public class FileNameToExcelController extends Properties {
         taskBean.setShowFileType(showFileType_Name.isSelected())
                 .setProgressBar(progressBar_Name)
                 .setTableColumn(size_Name)
+                .setMassageLabel(fileNumber_Name)
                 .setTableView(tableView_Name)
                 .setInFileList(inFileList)
                 .setTabId(tabId);
@@ -149,6 +152,8 @@ public class FileNameToExcelController extends Properties {
         Task<Void> readFileTask = readFile(taskBean);
         //启动带进度条的线程
         bindingProgressBarTask(readFileTask, taskBean);
+        new Thread(readFileTask).start();
+        readFileTask.setOnSucceeded(t -> progressBar_Name.setVisible(false));
         //设置javafx单元格宽度
         id_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.04));
         name_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.14));
@@ -308,8 +313,6 @@ public class FileNameToExcelController extends Properties {
         int startCellValue = setDefaultIntValue(startCell_Name, 0, 0, null);
         String excelNameValue = setDefaultFileName(excelName_Name, "NameList");
         String sheetName = setDefaultStrValue(sheetOutName_Name, "Sheet1");
-        List<String> names = new ArrayList<>();
-        fileBeans.forEach(fileBean -> names.add(fileBean.getName()));
         log_Name.setTextFill(Color.BLACK);
         log_Name.setText("");
         ExcelConfigBean excelConfigBean = new ExcelConfigBean();
@@ -320,14 +323,20 @@ public class FileNameToExcelController extends Properties {
                 .setOutName(excelNameValue)
                 .setOutPath(outFilePath)
                 .setSheet(sheetName);
-        XSSFWorkbook xssfWorkbook = buildFileNameExcel(names, excelConfigBean);
-        String excelPath = saveExcel(xssfWorkbook, excelConfigBean);
-        if (openDirectory_Name.isSelected()) {
-            openFile(getFileMkdir(new File(excelPath)));
-        }
-        if (openFile_Name.isSelected()) {
-            openFile(excelPath);
-        }
+        TaskBean<FileBean> taskBean = new TaskBean<>();
+        taskBean.setShowFileType(showFileType_Name.isSelected())
+                .setProgressBar(progressBar_Name)
+                .setTableView(tableView_Name)
+                .setMassageLabel(log_Name)
+                .setBeanList(fileBeans)
+                .setTabId(tabId);
+        //获取Task任务
+        Task<XSSFWorkbook> buildExcelTask = buildFileNameExcel(excelConfigBean, taskBean);
+        //绑定带进度条的线程
+        bindingProgressBarTask(buildExcelTask, taskBean);
+        new Thread(buildExcelTask).start();
+        //线程成功后保存excel
+        saveExcelOnSucceeded(excelConfigBean, taskBean, buildExcelTask, openDirectory_Name, openFile_Name);
     }
 
     /**

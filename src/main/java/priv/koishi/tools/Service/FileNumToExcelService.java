@@ -1,8 +1,5 @@
 package priv.koishi.tools.Service;
 
-import com.alibaba.excel.EasyExcel;
-import com.alibaba.excel.context.AnalysisContext;
-import com.alibaba.excel.event.AnalysisEventListener;
 import javafx.concurrent.Task;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -39,6 +36,7 @@ public class FileNumToExcelService {
                 if (!inputFile.exists()) {
                     throw new Exception("模板excel文件不存在");
                 }
+                updateMessage("正在导出数据");
                 FileInputStream inputStream = new FileInputStream(inputFile);
                 XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
                 String sheetName = excelConfigBean.getSheet();
@@ -84,9 +82,9 @@ public class FileNumToExcelService {
                     updateProgress(i + 1, fileBeansSize);
                     startRowNum++;
                 }
-                updateMessage("所有数据已输出完毕");
                 autoSizeExcel(sheet, maxCellNum, startCellNum);
                 inputStream.close();
+                updateMessage("所有数据已输出完毕");
                 return workbook;
             }
         };
@@ -108,22 +106,22 @@ public class FileNumToExcelService {
         return maxCellNum;
     }
 
-    public void simpleRead(ExcelConfigBean excelConfigBean) {
-        String fileName = excelConfigBean.getInPath();
-        // 这里 需要指定读用哪个class去读，然后读取第一个sheet 文件流会自动关闭
-        EasyExcel.read(fileName, FileNumBean.class, new FileNumBeanListener()).sheet(excelConfigBean.getSheet()).doRead();
-    }
-
-    public static class FileNumBeanListener extends AnalysisEventListener<FileNumBean> {
-        @Override
-        public void invoke(FileNumBean data, AnalysisContext context) {
-            System.out.println("读取到数据：" + data);
-        }
-
-        @Override
-        public void doAfterAllAnalysed(AnalysisContext context) {
-            // 所有数据解析完成后做的事情
-        }
-    }
+//    public void simpleRead(ExcelConfigBean excelConfigBean) {
+//        String fileName = excelConfigBean.getInPath();
+//        // 这里 需要指定读用哪个class去读，然后读取第一个sheet 文件流会自动关闭
+//        EasyExcel.read(fileName, FileNumBean.class, new FileNumBeanListener()).sheet(excelConfigBean.getSheet()).doRead();
+//    }
+//
+//    public static class FileNumBeanListener extends AnalysisEventListener<FileNumBean> {
+//        @Override
+//        public void invoke(FileNumBean data, AnalysisContext context) {
+//            System.out.println("读取到数据：" + data);
+//        }
+//
+//        @Override
+//        public void doAfterAllAnalysed(AnalysisContext context) {
+//            // 所有数据解析完成后做的事情
+//        }
+//    }
 
 }
