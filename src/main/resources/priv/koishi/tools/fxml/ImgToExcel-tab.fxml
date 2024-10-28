@@ -86,6 +86,7 @@
             <Button fx:id="reselectButton_Img" onAction="#reselect" style="-fx-cursor: hand" text="重新查询" />
             <Button fx:id="clearButton_Img" onAction="#removeAll" style="-fx-cursor: hand" text="清空列表" />
             <Button fx:id="exportButton_Img" onAction="#exportAll" style="-fx-cursor: hand" text="开始导出" />
+            <CheckBox fx:id="noImg_Img" prefHeight="20" style="-fx-cursor: hand" text="标记没有图片的数据" />
             <Label fx:id="fileNumber_Img" prefHeight="20" text="列表为空" alignment="CENTER_RIGHT" />
         </HBox>
 

@@ -1,6 +1,5 @@
 package priv.koishi.tools.Service;
 
-import javafx.scene.control.Label;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.ClientAnchor;
@@ -51,11 +50,6 @@ public class ImgToExcelService {
     static XSSFWorkbook workbook;
 
     /**
-     * 日志输出栏
-     */
-    static Label logLabel;
-
-    /**
      * 构建分组的图片excel
      */
     public static XSSFWorkbook buildImgGroupExcel(List<FileNumBean> fileBeans, ExcelConfigBean excelConfigBean) throws Exception {
@@ -101,7 +95,11 @@ public class ImgToExcelService {
                 row = sheet.createRow(startRowNum);
             }
             XSSFCell cell = row.createCell(startCellNum);
-            cell.setCellValue("无图片");
+            if (excelConfigBean.isNoImg()) {
+                cell.setCellValue("无图片");
+            } else {
+                cell.setCellValue("");
+            }
         } else {
             for (String i : imgList) {
                 // 读取图片文件

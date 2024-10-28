@@ -82,4 +82,9 @@ public class ExcelConfigBean {
      */
     int imgHeight;
 
+    /**
+     * 是否标记无图片
+     */
+    boolean noImg;
+
 }
