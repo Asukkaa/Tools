@@ -12,19 +12,22 @@ import javafx.scene.input.DragEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import priv.koishi.tools.Bean.ExcelConfigBean;
 import priv.koishi.tools.Bean.FileBean;
 import priv.koishi.tools.Bean.FileConfigBean;
 import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Properties.ToolsProperties;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
 
 import static priv.koishi.tools.Enum.SelectItemsEnums.*;
 import static priv.koishi.tools.Service.ReadDataService.readFile;
@@ -68,13 +71,10 @@ public class FileRenameExcelController extends ToolsProperties {
     static String configFile = "config/fileRenameConfig.properties";
 
     @FXML
-    private VBox vbox_Re;
+    private VBox vbox_Re, codeRenameVBox_Re, strRenameVBox_Re, excelRenameVBox_Re;
 
     @FXML
     private ProgressBar progressBar_Re;
-
-    @FXML
-    private HBox configRename_Re, excelRename_Re;
 
     @FXML
     private TableView<FileBean> tableView_Re;
@@ -86,19 +86,22 @@ public class FileRenameExcelController extends ToolsProperties {
     private TableColumn<FileBean, String> name_Re, rename_Re, path_Re, size_Re, fileType_Re, creatDate_Re, updateDate_Re;
 
     @FXML
-    private Label excelPath_Re, fileNumber_Re, inPath_Re, log_Re;
+    private HBox renameTypeHBox_Re, behaviorHBox_Re;
+
+    @FXML
+    private Label excelPath_Re, fileNumber_Re, inPath_Re, log_Re, typeLabel_Re;
 
     @FXML
     private CheckBox openDirectory_Re, addSpace_Re;
 
     @FXML
-    private ChoiceBox<String> hideFileType_Re, directoryNameType_Re, renameType_Re, subCode_Re, differenceCode_Re;
+    private ChoiceBox<String> hideFileType_Re, directoryNameType_Re, renameType_Re, subCode_Re, differenceCode_Re, targetStr_Re, beforeBehavior_Re, afterBehavior_Re, renameBehavior_Re;
 
     @FXML
-    private TextField sheetOutName_Re, filterFileType_Re, readRow_Re, readCell_Re, maxRow_Re, startName_Re, nameNum_Re, startSize_Re;
+    private TextField sheetOutName_Re, filterFileType_Re, readRow_Re, readCell_Re, maxRow_Re, startName_Re, nameNum_Re, startSize_Re, before_Re, after_Re, renameStr_Re, beforeValue_Re, afterValue_Re, renameValue_Re;
 
     @FXML
-    private Button fileButton_Re, clearButton_Re, exportButton_Re, reselectButton_Re, removeExcelButton_Re;
+    private Button fileButton_Re, clearButton_Re, exportButton_Re, reselectButton_Re;
 
     /**
      * 组件自适应宽高
@@ -187,8 +190,9 @@ public class FileRenameExcelController extends ToolsProperties {
      */
     @FXML
     private void initialize() {
+        vbox_Re.getChildren().remove(excelRenameVBox_Re);
+        vbox_Re.getChildren().remove(strRenameVBox_Re);
         addToolTip(startName_Re, "只能填数字，不填默认为0");
-        addToolTip(removeExcelButton_Re, "删除excel模板路径");
         addToolTip(startSize_Re, "只能填数字，0为不限制编号位数，不填默认为0");
         addToolTip(sheetOutName_Re, "须填与excel模板相同的表名才能正常读取模板");
         addToolTip(nameNum_Re, "只能填数字，0为不使用分隔符进行分组重命名，不填默认为0");
@@ -276,24 +280,9 @@ public class FileRenameExcelController extends ToolsProperties {
     @FXML
     private void renameAll() throws Exception {
         ObservableList<FileBean> fileBeans = tableView_Re.getItems();
-
         if (CollectionUtils.isEmpty(fileBeans)) {
             throw new Exception("要读取的文件列表为空，需要选择一个有文件的文件夹");
         }
-        String sheetName = setDefaultStrValue(sheetOutName_Re, "Sheet1");
-        List<String> names = new ArrayList<>();
-        fileBeans.forEach(fileBean -> names.add(fileBean.getName()));
-        log_Re.setTextFill(Color.BLACK);
-        log_Re.setText("");
-        ExcelConfigBean excelConfigBean = new ExcelConfigBean();
-        excelConfigBean.setInPath(excelPath_Re.getText())
-                .setSheet(sheetName);
-//        XSSFWorkbook xssfWorkbook = buildFileNameExcel(names, excelConfigBean);
-//        String excelPath = saveExcel(xssfWorkbook, excelConfigBean);
-//        if (openDirectory_Re.isSelected()) {
-//            openFile(getFileMkdir(new File(excelPath)));
-//        }
-
     }
 
     /**
@@ -310,7 +299,6 @@ public class FileRenameExcelController extends ToolsProperties {
             excelInPath = selectedFile.getPath();
             excelPath_Re.setText(excelInPath);
             addToolTip(excelPath_Re, excelInPath);
-            removeExcelButton_Re.setVisible(true);
         }
     }
 
@@ -397,7 +385,6 @@ public class FileRenameExcelController extends ToolsProperties {
     private void removeExcelPath() {
         excelPath_Re.setText("");
         excelPath_Re.setTooltip(null);
-        removeExcelButton_Re.setVisible(false);
     }
 
     /**
@@ -457,6 +444,105 @@ public class FileRenameExcelController extends ToolsProperties {
                 break;
             }
         }
+    }
+
+    /**
+     * 根据重命名方式展示设置组件
+     */
+    @FXML
+    private void renameTypeAction() {
+        String item = renameType_Re.getValue();
+        int index = vbox_Re.getChildren().indexOf(renameTypeHBox_Re) + 1;
+        switch (item) {
+            case "按编号规则重命名": {
+                vbox_Re.getChildren().add(index, codeRenameVBox_Re);
+                vbox_Re.getChildren().remove(strRenameVBox_Re);
+                vbox_Re.getChildren().remove(excelRenameVBox_Re);
+                break;
+            }
+            case "按指定字符重命名": {
+                vbox_Re.getChildren().remove(codeRenameVBox_Re);
+                vbox_Re.getChildren().add(index, strRenameVBox_Re);
+                vbox_Re.getChildren().remove(excelRenameVBox_Re);
+                targetStrAction();
+                break;
+            }
+            case "按excel模板重命名": {
+                vbox_Re.getChildren().remove(codeRenameVBox_Re);
+                vbox_Re.getChildren().remove(strRenameVBox_Re);
+                vbox_Re.getChildren().add(index, excelRenameVBox_Re);
+                break;
+            }
+        }
+    }
+
+    /**
+     * 监控匹配字符规则选项
+     */
+    @FXML
+    private void targetStrAction() {
+        String item = targetStr_Re.getValue();
+        switch (item) {
+            case "指定字符串": {
+                typeLabel_Re.setText("要匹配的字符串:");
+                renameValue_Re.setText("");
+                renameBehavior_Re.getItems().remove("处理两侧字符");
+                renameBehavior_Re.getItems().add("处理两侧字符");
+                behaviorAction();
+                break;
+            }
+            case "指定字符位置": {
+                typeLabel_Re.setText("要匹配的字符位置:");
+                renameValue_Re.setText("");
+                renameBehavior_Re.getItems().remove("处理两侧字符");
+                renameBehavior_Re.setValue(renameBehavior_Re.getItems().getFirst());
+                behaviorAction();
+                break;
+            }
+        }
+    }
+
+    /**
+     * 监控重命名方法选项
+     */
+    @FXML
+    private void behaviorAction() {
+        String item = renameBehavior_Re.getValue();
+        switch (item) {
+            case "替换所有字符为:": {
+                renameStr_Re.setVisible(true);
+                behaviorHBox_Re.setVisible(false);
+                break;
+            }
+            case "移除指定字符": {
+                renameStr_Re.setVisible(false);
+                behaviorHBox_Re.setVisible(false);
+                break;
+            }
+            case "处理两侧字符": {
+                renameStr_Re.setVisible(false);
+                behaviorHBox_Re.setVisible(true);
+                break;
+            }
+        }
+    }
+
+    /**
+     * 监控指定位置之前处理方式下拉框
+     */
+    @FXML
+    private void beforeBehaviorAction() {
+        String item = beforeBehavior_Re.getValue();
+        beforeValue_Re.setVisible("插入字符串为:".equals(item) || "替换所有字符串为:".equals(item));
+    }
+
+    /**
+     * 监控指定位置之后处理方式下拉框
+     */
+    @FXML
+    public void afterBehaviorAction() {
+        String item = afterBehavior_Re.getValue();
+        afterValue_Re.setVisible("插入字符串为:".equals(item) || "替换所有字符串为:".equals(item));
     }
 
 }
