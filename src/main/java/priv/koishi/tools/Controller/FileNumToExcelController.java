@@ -341,9 +341,7 @@ public class FileNumToExcelController extends ToolsProperties {
                     .setMassageLabel(log_Num)
                     .setTabId(tabId);
             //获取Task任务
-            Task<XSSFWorkbook> buildExcelTask;
-            //获取Task任务
-            buildExcelTask = buildNameGroupNumExcel(taskBean, excelConfigBean);
+            Task<XSSFWorkbook> buildExcelTask = buildNameGroupNumExcel(taskBean, excelConfigBean);
             throwTaskException(buildExcelTask);
             //线程成功后保存excel
             saveExcelOnSucceeded(excelConfigBean, taskBean, buildExcelTask, openDirectory_Num, openFile_Num);

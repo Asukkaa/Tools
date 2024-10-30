@@ -366,9 +366,7 @@ public class ImgToExcelController extends ToolsProperties {
                     .setMassageLabel(log_Img)
                     .setTabId(tabId);
             //获取Task任务
-            Task<XSSFWorkbook> buildExcelTask;
-            //获取Task任务
-            buildExcelTask = buildImgGroupExcel(taskBean, excelConfigBean);
+            Task<XSSFWorkbook> buildExcelTask = buildImgGroupExcel(taskBean, excelConfigBean);
             //线程成功后保存excel
             saveExcelOnSucceeded(excelConfigBean, taskBean, buildExcelTask, openDirectory_Img, openFile_Img);
         });
