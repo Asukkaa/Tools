@@ -2,14 +2,12 @@ package priv.koishi.tools.Service;
 
 import javafx.concurrent.Task;
 import javafx.scene.control.Label;
-import javafx.scene.paint.Color;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.ClientAnchor;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.util.IOUtils;
 import org.apache.poi.xssf.usermodel.*;
 import priv.koishi.tools.Bean.ExcelConfigBean;
 import priv.koishi.tools.Bean.FileNumBean;
@@ -93,7 +91,6 @@ public class ImgToExcelService {
                     updateProgress(i + 1, fileNum);
                     startRowNum++;
                 }
-                inputStream.close();
                 updateMessage("所有数据已输出完毕");
                 return workbook;
             }
@@ -103,7 +100,7 @@ public class ImgToExcelService {
     /**
      * 插入图片
      */
-    private static void buildImgExcel(List<String> imgList, ExcelConfigBean excelConfigBean) {
+    private static void buildImgExcel(List<String> imgList, ExcelConfigBean excelConfigBean) throws IOException {
         int imgWidth = excelConfigBean.getImgWidth();
         int imgHeight = excelConfigBean.getImgHeight();
         int cellNum = startCellNum;
@@ -112,23 +109,15 @@ public class ImgToExcelService {
             if (row == null) {
                 row = sheet.createRow(startRowNum);
             }
-            XSSFCell cell = row.createCell(startCellNum);
+            XSSFCell cell = row.getCell(startCellNum);
+            if (cell == null) {
+                cell = row.createCell(startCellNum);
+            }
             if (excelConfigBean.isNoImg()) {
                 cell.setCellValue("无图片");
-            } else {
-                cell.setCellValue("");
             }
         } else {
             for (String i : imgList) {
-                // 读取图片文件
-                InputStream inputStream;
-                byte[] bytes;
-                try {
-                    inputStream = Files.newInputStream(Paths.get(i));
-                    bytes = IOUtils.toByteArray(inputStream);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
                 // 将图片插入Excel单元格
                 CreationHelper helper = workbook.getCreationHelper();
                 Drawing<XSSFShape> drawing = sheet.createDrawingPatriarch();
@@ -140,17 +129,14 @@ public class ImgToExcelService {
                 anchor.setRow2(startRowNum + 1);
                 anchor.setAnchorType(ClientAnchor.AnchorType.MOVE_DONT_RESIZE);
                 String extension = getFileType(new File(i));
+                // 读取图片文件
+                InputStream inputStream = Files.newInputStream(Paths.get(i));
                 if (".jpg".equals(extension) || ".jpeg".equals(extension)) {
-                    drawing.createPicture(anchor, workbook.addPicture(bytes, Workbook.PICTURE_TYPE_JPEG));
+                    drawing.createPicture(anchor, workbook.addPicture(inputStream, Workbook.PICTURE_TYPE_JPEG));
                 } else if (".png".equals(extension)) {
-                    drawing.createPicture(anchor, workbook.addPicture(bytes, Workbook.PICTURE_TYPE_PNG));
+                    drawing.createPicture(anchor, workbook.addPicture(inputStream, Workbook.PICTURE_TYPE_PNG));
                 }
-                try {
-                    inputStream.close();
-                } catch (IOException e) {
-                    logLabel.setTextFill(Color.RED);
-                    throw new RuntimeException(e);
-                }
+                inputStream.close();
                 sheet.setColumnWidth(cellNum, imgWidth);
                 sheet.getRow(startRowNum).setHeightInPoints(imgHeight);
                 cellNum++;

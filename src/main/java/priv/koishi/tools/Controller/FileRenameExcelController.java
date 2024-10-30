@@ -36,6 +36,7 @@ import static priv.koishi.tools.Utils.CommonUtils.isInIntegerRange;
 import static priv.koishi.tools.Utils.FileUtils.readAllFiles;
 import static priv.koishi.tools.Utils.FileUtils.updatePath;
 import static priv.koishi.tools.Utils.TaskUtils.bindingProgressBarTask;
+import static priv.koishi.tools.Utils.TaskUtils.throwTaskException;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
 /**
@@ -160,6 +161,9 @@ public class FileRenameExcelController extends ToolsProperties {
         Task<Void> readFileTask = readFile(taskBean);
         //启动带进度条的线程
         bindingProgressBarTask(readFileTask, taskBean);
+        readFileTask.setOnSucceeded(t -> progressBar_Re.setVisible(false));
+        throwTaskException(readFileTask);
+        new Thread(readFileTask).start();
         //设置javafx单元格宽度
         id_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.04));
         name_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.14));

@@ -68,4 +68,16 @@ public class TaskUtils {
         new Thread(buildExcelTask).start();
     }
 
+    /**
+     * 抛出task异常
+     */
+    public static void throwTaskException(Task<?> task) {
+        task.setOnFailed(event -> {
+            // 获取抛出的异常
+            Throwable ex = task.getException();
+            // 处理异常，例如打印堆栈跟踪信息
+            throw new RuntimeException(ex);
+        });
+    }
+
 }

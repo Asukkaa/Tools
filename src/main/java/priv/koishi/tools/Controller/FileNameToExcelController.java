@@ -31,8 +31,7 @@ import static priv.koishi.tools.Service.ReadDataService.readFile;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
 import static priv.koishi.tools.Utils.CommonUtils.isInIntegerRange;
 import static priv.koishi.tools.Utils.FileUtils.*;
-import static priv.koishi.tools.Utils.TaskUtils.bindingProgressBarTask;
-import static priv.koishi.tools.Utils.TaskUtils.saveExcelOnSucceeded;
+import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
 public class FileNameToExcelController extends ToolsProperties {
@@ -63,6 +62,12 @@ public class FileNameToExcelController extends ToolsProperties {
     static String tabId = "_Name";
 
     /**
+     * 默认起始输出列
+     */
+    static int defaultStartCell = 1;
+
+    /**
+     *
      * 配置文件路径
      */
     static String configFile = "config/fileNameToExcelConfig.properties";
@@ -153,8 +158,9 @@ public class FileNameToExcelController extends ToolsProperties {
         Task<Void> readFileTask = readFile(taskBean);
         //启动带进度条的线程
         bindingProgressBarTask(readFileTask, taskBean);
-        new Thread(readFileTask).start();
         readFileTask.setOnSucceeded(t -> progressBar_Name.setVisible(false));
+        throwTaskException(readFileTask);
+        new Thread(readFileTask).start();
         //设置javafx单元格宽度
         id_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.04));
         name_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.14));
@@ -189,8 +195,8 @@ public class FileNameToExcelController extends ToolsProperties {
         addToolTip(recursion_Name, "勾选后将会查询文件夹中的文件夹里的文件");
         addToolTip(excelName_Name, "如果导出地址和名称与模板一样则会覆盖模板excel文件");
         addToolTip(sheetOutName_Name, "须填与excel模板相同的表名才能正常读取模板，若填表名不存在或不需要读取模板则会创建一个所填表");
-        addToolTip(startRow_Name, "只能填数字，不填默认为0，不预留列");
-        addToolTip(startCell_Name, "只能填数字，不填默认为0，不预留行");
+        addToolTip(startRow_Name, "只能填数字，不填默认为0，不预留行");
+        addToolTip(startCell_Name, "只能填数字，不填默认为 " + defaultStartCell);
         addToolTip(removeExcelButton_Name, "删除excel模板路径");
     }
 
@@ -285,7 +291,7 @@ public class FileNameToExcelController extends ToolsProperties {
             throw new Exception("要读取的文件列表为空，需要选择一个有文件的文件夹");
         }
         int startRowValue = setDefaultIntValue(startRow_Name, 0, 0, null);
-        int startCellValue = setDefaultIntValue(startCell_Name, 0, 0, null);
+        int startCellValue = setDefaultIntValue(startCell_Name, defaultStartCell, 0, null);
         String excelNameValue = setDefaultFileName(excelName_Name, "NameList");
         String sheetName = setDefaultStrValue(sheetOutName_Name, "Sheet1");
         log_Name.setTextFill(Color.BLACK);
@@ -309,6 +315,7 @@ public class FileNameToExcelController extends ToolsProperties {
         Task<XSSFWorkbook> buildExcelTask = buildFileNameExcel(excelConfigBean, taskBean);
         //绑定带进度条的线程
         bindingProgressBarTask(buildExcelTask, taskBean);
+        throwTaskException(buildExcelTask);
         new Thread(buildExcelTask).start();
         //线程成功后保存excel
         saveExcelOnSucceeded(excelConfigBean, taskBean, buildExcelTask, openDirectory_Name, openFile_Name);
@@ -356,7 +363,7 @@ public class FileNameToExcelController extends ToolsProperties {
         if (!isInIntegerRange(startRow_Name.getText(), 0, null)) {
             startRow_Name.setText("");
         }
-        aadValueToolTip(startRow_Name, "只能填数字，不填默认为0，不预留列");
+        aadValueToolTip(startRow_Name, "只能填数字，不填默认为0，不预留行");
     }
 
     /**
@@ -367,7 +374,7 @@ public class FileNameToExcelController extends ToolsProperties {
         if (!isInIntegerRange(startCell_Name.getText(), 0, null)) {
             startCell_Name.setText("");
         }
-        aadValueToolTip(startCell_Name, "只能填数字，不填默认为0，不预留行");
+        aadValueToolTip(startCell_Name, "只能填数字，不填默认为0，不预留列");
     }
 
     /**

@@ -250,10 +250,11 @@ public class FileUtils {
             sxssfWorkbook.write(bufferedOutputStream);
             bufferedOutputStream.flush();
             bufferedOutputStream.close();
+            sxssfWorkbook.close();
+            workbook.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        workbook.close();
         return filePath;
     }
 

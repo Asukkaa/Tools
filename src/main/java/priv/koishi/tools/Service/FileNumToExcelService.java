@@ -83,7 +83,6 @@ public class FileNumToExcelService {
                     startRowNum++;
                 }
                 autoSizeExcel(sheet, maxCellNum, startCellNum);
-                inputStream.close();
                 updateMessage("所有数据已输出完毕");
                 return workbook;
             }

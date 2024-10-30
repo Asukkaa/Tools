@@ -21,8 +21,13 @@ import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Properties.ToolsProperties;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
 
 import static priv.koishi.tools.Service.ImgToExcelService.buildImgGroupExcel;
 import static priv.koishi.tools.Service.ReadDataService.readExcel;
@@ -30,8 +35,7 @@ import static priv.koishi.tools.Service.ReadDataService.showReadExcelData;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
 import static priv.koishi.tools.Utils.CommonUtils.isInIntegerRange;
 import static priv.koishi.tools.Utils.FileUtils.*;
-import static priv.koishi.tools.Utils.TaskUtils.bindingProgressBarTask;
-import static priv.koishi.tools.Utils.TaskUtils.saveExcelOnSucceeded;
+import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
 /**
@@ -70,6 +74,31 @@ public class ImgToExcelController extends ToolsProperties {
      * 页面标识符
      */
     static String tabId = "_Img";
+
+    /**
+     * 默认图片宽度
+     */
+    static int defaultImgWidth = 8000;
+
+    /**
+     * 默认图片高度
+     */
+    static int defaultImgHeight = 100;
+
+    /**
+     * 默认起始输出列
+     */
+    static int defaultStartCell = 1;
+
+    /**
+     * 默认起始读取行
+     */
+    static int defaultReadRow = 1;
+
+    /**
+     * 默认起始读取列
+     */
+    static int defaultReadCell = 0;
 
     /**
      * 配置文件路径
@@ -162,8 +191,8 @@ public class ImgToExcelController extends ToolsProperties {
     private Task<List<FileNumBean>> addInData() {
         removeAll();
         //组装数据
-        int readRowValue = setDefaultIntValue(readRow_Img, 0, 0, null);
-        int readCellValue = setDefaultIntValue(readCell_Img, 0, 0, null);
+        int readRowValue = setDefaultIntValue(readRow_Img, defaultReadRow, 0, null);
+        int readCellValue = setDefaultIntValue(readCell_Img, defaultReadCell, 0, null);
         int maxRowValue = setDefaultIntValue(maxRow_Img, -1, 1, null);
         ExcelConfigBean excelConfigBean = new ExcelConfigBean();
         excelConfigBean.setSheet(sheetOutName_Img.getText())
@@ -183,8 +212,9 @@ public class ImgToExcelController extends ToolsProperties {
         Task<List<FileNumBean>> readExcelTask = readExcel(excelConfigBean, taskBean);
         //绑定带进度条的线程
         bindingProgressBarTask(readExcelTask, taskBean);
-        new Thread(readExcelTask).start();
+        throwTaskException(readExcelTask);
         readExcelTask.setOnSucceeded(t -> progressBar_Img.setVisible(false));
+        new Thread(readExcelTask).start();
         //设置javafx单元格宽度
         return tableViewNumImgAdaption(readExcelTask, groupId_Img, tableView_Img, groupName_Img.prefWidthProperty(), groupNumber_Img.prefWidthProperty(), fileName_Img);
     }
@@ -209,10 +239,14 @@ public class ImgToExcelController extends ToolsProperties {
      */
     @FXML
     private void initialize() {
-        addToolTip(imgHeight_Img, "只能填数字，不填默认为100");
-        addToolTip(imgWidth_Img, "只能填数字，不填默认为8000");
+        addToolTip(imgHeight_Img, "只能填数字，不填默认为 " + defaultImgHeight);
+        addToolTip(imgWidth_Img, "只能填数字，不填默认为 " + defaultImgWidth);
         addToolTip(noImg_Img, "勾选后没有图片的数据将会在单元格中标记为 无图片");
-        addNumImgToolTip(recursion_Img, subCode_Img, excelName_Img, sheetOutName_Img, startRow_Img, startCell_Img, readCell_Img, readRow_Img, maxRow_Img);
+        addToolTip(startRow_Img, "只能填数字，不填默认与读取预留行相同");
+        addToolTip(startCell_Img, "只能填数字，不填默认为 " + defaultStartCell);
+        addToolTip(readRow_Img, "只能填数字，不填默认为 " + defaultReadRow + " 从第 " + (defaultReadRow + 1) + " 行读取");
+        addToolTip(readCell_Img, "只能填数字，不填默认为 " + defaultReadCell + " ，从第 " + (defaultReadCell + 1) + " 列读取");
+        addNumImgToolTip(recursion_Img, subCode_Img, excelName_Img, sheetOutName_Img, maxRow_Img);
     }
 
     /**
@@ -303,10 +337,11 @@ public class ImgToExcelController extends ToolsProperties {
         }
         String sheetName = setDefaultStrValue(sheetOutName_Img, "Sheet1");
         String excelNameValue = setDefaultFileName(excelName_Img, "NameList");
-        int imgWidth = setDefaultIntValue(imgWidth_Img, 8000, 0, null);
-        int imgHeight = setDefaultIntValue(imgHeight_Img, 100, 0, null);
-        int startRowValue = setDefaultIntValue(startRow_Img, 0, 0, null);
-        int startCellValue = setDefaultIntValue(startCell_Img, 0, 0, null);
+        int readRowValue = setDefaultIntValue(readRow_Img, defaultReadRow, 0, null);
+        int imgWidth = setDefaultIntValue(imgWidth_Img, defaultImgWidth, 0, null);
+        int imgHeight = setDefaultIntValue(imgHeight_Img, defaultImgHeight, 0, null);
+        int startRowValue = setDefaultIntValue(startRow_Img, readRowValue, 0, null);
+        int startCellValue = setDefaultIntValue(startCell_Img, defaultStartCell, 0, null);
         ExcelConfigBean excelConfigBean = new ExcelConfigBean();
         excelConfigBean.setOutExcelExtension(excelType_Img.getValue())
                 .setInPath(excelPath_Img.getText())
@@ -320,6 +355,7 @@ public class ImgToExcelController extends ToolsProperties {
                 .setSubCode(subCode)
                 .setSheet(sheetName);
         Task<List<FileNumBean>> reselectTask = reselect();
+        throwTaskException(reselectTask);
         reselectTask.setOnSucceeded(t -> {
             TaskBean<FileNumBean> taskBean = new TaskBean<>();
             taskBean.setShowFileType(showFileType_Img.isSelected())
@@ -327,7 +363,6 @@ public class ImgToExcelController extends ToolsProperties {
                     .setSubCode(subCode_Img.getText())
                     .setProgressBar(progressBar_Img)
                     .setTableView(tableView_Img)
-                    .setInFileList(inFileList)
                     .setMassageLabel(log_Img)
                     .setTabId(tabId);
             //获取Task任务
@@ -385,7 +420,7 @@ public class ImgToExcelController extends ToolsProperties {
         if (!isInIntegerRange(startRow_Img.getText(), 0, null)) {
             startRow_Img.setText("");
         }
-        aadValueToolTip(startRow_Img, "只能填数字，不填默认为0，不预留列");
+        aadValueToolTip(startRow_Img, "只能填数字，不填默认与读取预留行相同");
     }
 
     /**
@@ -396,7 +431,7 @@ public class ImgToExcelController extends ToolsProperties {
         if (!isInIntegerRange(startCell_Img.getText(), 0, null)) {
             startCell_Img.setText("");
         }
-        aadValueToolTip(startCell_Img, "只能填数字，不填默认为0，不预留行");
+        aadValueToolTip(startCell_Img, "只能填数字，不填默认为 " + defaultStartCell);
     }
 
     /**
@@ -431,7 +466,7 @@ public class ImgToExcelController extends ToolsProperties {
         if (!isInIntegerRange(readRow_Img.getText(), 0, null)) {
             readRow_Img.setText("");
         }
-        aadValueToolTip(readRow_Img, "只能填数字，不填默认为0，从第一行读取");
+        aadValueToolTip(readRow_Img, "只能填数字，不填默认为 " + defaultReadRow + " 从第 " + (defaultReadRow + 1) + " 行读取");
     }
 
     /**
@@ -442,7 +477,7 @@ public class ImgToExcelController extends ToolsProperties {
         if (!isInIntegerRange(readCell_Img.getText(), 0, null)) {
             readCell_Img.setText("");
         }
-        aadValueToolTip(readCell_Img, "只能填数字，不填默认为0，从第一列读取");
+        aadValueToolTip(readCell_Img, "只能填数字，不填默认为 " + defaultReadCell + " ，从第 " + (defaultReadCell + 1) + " 列读取");
     }
 
     /**
@@ -484,7 +519,7 @@ public class ImgToExcelController extends ToolsProperties {
         if (!isInIntegerRange(imgWidth_Img.getText(), 0, null)) {
             imgWidth_Img.setText("");
         }
-        aadValueToolTip(imgWidth_Img, "只能填数字，不填默认为8000");
+        aadValueToolTip(imgWidth_Img, "只能填数字，不填默认为 " + defaultImgWidth);
     }
 
     @FXML
@@ -492,7 +527,7 @@ public class ImgToExcelController extends ToolsProperties {
         if (!isInIntegerRange(imgHeight_Img.getText(), 0, null)) {
             imgHeight_Img.setText("");
         }
-        aadValueToolTip(imgHeight_Img, "只能填数字，不填默认为100");
+        aadValueToolTip(imgHeight_Img, "只能填数字，不填默认为 " + defaultImgHeight);
     }
 
 }

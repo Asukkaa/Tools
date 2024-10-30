@@ -238,7 +238,7 @@ public class UiUtils {
         textArea.setEditable(false);
         textArea.setWrapText(true);
         textArea.setText(errToString(ex));
-//        ex.printStackTrace();
+        ex.printStackTrace();
         // 创建VBox并添加TextArea
         VBox details = new VBox();
         details.heightProperty().addListener((v1, v2, v3) -> Platform.runLater(() -> textArea.setPrefHeight(details.getHeight())));
@@ -344,12 +344,7 @@ public class UiUtils {
     /**
      * 为统计文件名和插入图片页面添加鼠标悬停提示
      */
-    public static void addNumImgToolTip(CheckBox recursion, TextField subCode, TextField excelName, TextField sheetOutName,
-                                        TextField startRow, TextField startCell, TextField readCell, TextField readRow, TextField maxRow) {
-        addToolTip(startRow, "只能填数字，不填默认为0，不预留列");
-        addToolTip(startCell, "只能填数字，不填默认为0，不预留行");
-        addToolTip(readRow, "只能填数字，不填默认为0，从第一行读取");
-        addToolTip(readCell, "只能填数字，不填默认为0，从第一列读取");
+    public static void addNumImgToolTip(CheckBox recursion, TextField subCode, TextField excelName, TextField sheetOutName, TextField maxRow) {
         addToolTip(recursion, "勾选后将会查询文件夹中的文件夹里的文件");
         addToolTip(sheetOutName, "须填与excel模板相同的表名才能正常统计");
         addToolTip(excelName, "如果导出地址和名称与模板一样则会覆盖模板excel文件");

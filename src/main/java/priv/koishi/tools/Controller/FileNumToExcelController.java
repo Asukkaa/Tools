@@ -30,8 +30,7 @@ import static priv.koishi.tools.Service.ReadDataService.showReadExcelData;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
 import static priv.koishi.tools.Utils.CommonUtils.isInIntegerRange;
 import static priv.koishi.tools.Utils.FileUtils.*;
-import static priv.koishi.tools.Utils.TaskUtils.bindingProgressBarTask;
-import static priv.koishi.tools.Utils.TaskUtils.saveExcelOnSucceeded;
+import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
 /**
@@ -70,6 +69,21 @@ public class FileNumToExcelController extends ToolsProperties {
      * 页面标识符
      */
     static String tabId = "_Num";
+
+    /**
+     * 默认起始输出列
+     */
+    static int defaultStartCell = 1;
+
+    /**
+     * 默认起始读取行
+     */
+    static int defaultReadRow = 1;
+
+    /**
+     * 默认起始读取列
+     */
+    static int defaultReadCell = 0;
 
     /**
      * 配置文件路径
@@ -187,6 +201,7 @@ public class FileNumToExcelController extends ToolsProperties {
                 .setTabId(tabId);
         //获取Task任务
         Task<List<FileNumBean>> readExcelTask = readExcel(excelConfigBean, taskBean);
+        throwTaskException(readExcelTask);
         readExcelTask.setOnSucceeded(t -> progressBar_Num.setVisible(false));
         //启动带进度条的线程
         bindingProgressBarTask(readExcelTask, taskBean);
@@ -216,11 +231,12 @@ public class FileNumToExcelController extends ToolsProperties {
      */
     @FXML
     private void initialize() {
-        // 获取JVM最大可用内存
-//        long maxMemory = Runtime.getRuntime().maxMemory();
-//        addToolTip(showFileType_Num, String.valueOf(maxMemory / 1024.0 / 1024.0 / 1024.0));
         addToolTip(filterFileType_Num, "填写后只会识别所填写的后缀名文件，多个文件后缀名用空格隔开，后缀名需带 '.'");
-        addNumImgToolTip(recursion_Num, subCode_Num, excelName_Num, sheetOutName_Num, startRow_Num, startCell_Num, readCell_Num, readRow_Num, maxRow_Num);
+        addToolTip(startRow_Num, "只能填数字，不填默认与读取预留行相同");
+        addToolTip(startCell_Num, "只能填数字，不填默认为 " + defaultStartCell);
+        addToolTip(readRow_Num, "只能填数字，不填默认为 " + defaultReadRow + " 从第 " + (defaultReadRow + 1) + " 行读取");
+        addToolTip(readCell_Num, "只能填数字，不填默认为 " + defaultReadCell + " ，从第 " + (defaultReadCell + 1) + " 列读取");
+        addNumImgToolTip(recursion_Num, subCode_Num, excelName_Num, sheetOutName_Num, maxRow_Num);
     }
 
     /**
@@ -299,8 +315,9 @@ public class FileNumToExcelController extends ToolsProperties {
         }
         String sheetName = setDefaultStrValue(sheetOutName_Num, "Sheet1");
         String excelNameValue = setDefaultFileName(excelName_Num, "NameList");
-        int startRowValue = setDefaultIntValue(startRow_Num, 0, 0, null);
-        int startCellValue = setDefaultIntValue(startCell_Num, 0, 0, null);
+        int readRowValue = setDefaultIntValue(readRow_Num, defaultReadRow, 0, null);
+        int startRowValue = setDefaultIntValue(startRow_Num, readRowValue, 0, null);
+        int startCellValue = setDefaultIntValue(startCell_Num, defaultStartCell, 0, null);
         ExcelConfigBean excelConfigBean = new ExcelConfigBean();
         excelConfigBean.setOutExcelExtension(excelType_Num.getValue())
                 .setExportType(exportType_Num.getValue())
@@ -312,7 +329,8 @@ public class FileNumToExcelController extends ToolsProperties {
                 .setSubCode(subCode)
                 .setSheet(sheetName);
         Task<List<FileNumBean>> reselectTask = reselect();
-        reselectTask.setOnSucceeded(t -> {
+        throwTaskException(reselectTask);
+        reselectTask.setOnSucceeded(event -> {
             TaskBean<FileNumBean> taskBean = new TaskBean<>();
             taskBean.setShowFileType(showFileType_Num.isSelected())
                     .setBeanList(reselectTask.getValue())
@@ -326,6 +344,7 @@ public class FileNumToExcelController extends ToolsProperties {
             Task<XSSFWorkbook> buildExcelTask;
             //获取Task任务
             buildExcelTask = buildNameGroupNumExcel(taskBean, excelConfigBean);
+            throwTaskException(buildExcelTask);
             //线程成功后保存excel
             saveExcelOnSucceeded(excelConfigBean, taskBean, buildExcelTask, openDirectory_Num, openFile_Num);
         });
@@ -390,7 +409,7 @@ public class FileNumToExcelController extends ToolsProperties {
         if (!isInIntegerRange(startCell_Num.getText(), 0, null)) {
             startCell_Num.setText("");
         }
-        aadValueToolTip(startCell_Num, "只能填数字，不填默认为0，不预留行");
+        aadValueToolTip(startCell_Num, "只能填数字，不填默认为 " + defaultStartCell);
     }
 
     /**
@@ -433,7 +452,7 @@ public class FileNumToExcelController extends ToolsProperties {
         if (!isInIntegerRange(readRow_Num.getText(), 0, null)) {
             readRow_Num.setText("");
         }
-        aadValueToolTip(readRow_Num, "只能填数字，不填默认为0，从第一行读取");
+        aadValueToolTip(readRow_Num, "只能填数字，不填默认为 " + defaultReadRow + " 从第 " + (defaultReadRow + 1) + " 行读取");
     }
 
     /**
@@ -444,7 +463,7 @@ public class FileNumToExcelController extends ToolsProperties {
         if (!isInIntegerRange(readCell_Num.getText(), 0, null)) {
             readCell_Num.setText("");
         }
-        aadValueToolTip(readCell_Num, "只能填数字，不填默认为0，从第一列读取");
+        aadValueToolTip(readCell_Num, "只能填数字，不填默认为 " + defaultReadCell + " ，从第 " + (defaultReadCell + 1) + " 列读取");
     }
 
     /**

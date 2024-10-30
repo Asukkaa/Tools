@@ -83,6 +83,9 @@ public class CommonUtils {
             leftName = data.substring(data.lastIndexOf("\\") + 1, data.lastIndexOf("."))
                     .replaceAll("\\s+", " ").trim();
         }
+        if (leftName.isEmpty()) {
+            leftName = " ";
+        }
         return leftName;
     }
 

@@ -56,6 +56,7 @@ public class ReadDataService {
                         sheet = workbook.createSheet(sheetName);
                     }
                 }
+                workbook.close();
                 FileInputStream fileInputStream = new FileInputStream(excelConfigBean.getInPath());
                 XSSFWorkbook excel = new XSSFWorkbook(fileInputStream);
                 int lastRowNum = sheet.getLastRowNum();
@@ -80,7 +81,7 @@ public class ReadDataService {
                 if (maxRow == -1 || maxRow > lastRowNum) {
                     maxRow = lastRowNum;
                 } else {
-                    maxRow += readRow;
+                    maxRow += readRow - 1;
                 }
                 int id = 0;
                 for (int i = readRow; i <= maxRow; ++i) {
@@ -100,14 +101,12 @@ public class ReadDataService {
                     updateProgress(i, maxRow);
                 }
                 excel.close();
-                inputStream.close();
-                fileInputStream.close();
                 List<File> inFileList = taskBean.getInFileList();
                 //已经读取文件后再匹配数据
                 if (inFileList != null && !inFileList.isEmpty()) {
                     matchGroupData(fileNumBeanList, inFileList, taskBean.getSubCode(), taskBean.isShowFileType());
                 }
-                updateMessage("共有" + (maxRow + 1) + " 组数据");
+                updateMessage("共有" + fileNumBeanList.size() + " 组数据");
                 //匹配数据
                 return showReadExcelData(fileNumBeanList, taskBean);
             }
