@@ -80,7 +80,7 @@ public class ImgToExcelController extends ToolsProperties {
     /**
      * 默认图片宽度
      */
-    static int defaultImgWidth = 8000;
+    static int defaultImgWidth = 6000;
 
     /**
      * 默认图片高度
