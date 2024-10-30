@@ -20,6 +20,7 @@ import priv.koishi.tools.Bean.FileBean;
 import priv.koishi.tools.Bean.FileConfigBean;
 import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Properties.ToolsProperties;
+import priv.koishi.tools.ThreadPool.ToolsThreadPoolExecutor;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
 
 import static priv.koishi.tools.Enum.SelectItemsEnums.*;
 import static priv.koishi.tools.Service.ReadDataService.readFile;
@@ -70,6 +72,16 @@ public class FileRenameExcelController extends ToolsProperties {
      * 配置文件路径
      */
     static String configFile = "config/fileRenameConfig.properties";
+
+    /**
+     * 线程池
+     */
+    private final ToolsThreadPoolExecutor toolsThreadPoolExecutor = new ToolsThreadPoolExecutor();
+
+    /**
+     * 线程池实例
+     */
+    ExecutorService executorService = toolsThreadPoolExecutor.createNewThreadPool();
 
     @FXML
     private VBox vbox_Re, codeRenameVBox_Re, strRenameVBox_Re, excelRenameVBox_Re;
@@ -163,7 +175,7 @@ public class FileRenameExcelController extends ToolsProperties {
         bindingProgressBarTask(readFileTask, taskBean);
         readFileTask.setOnSucceeded(t -> progressBar_Re.setVisible(false));
         throwTaskException(readFileTask);
-        new Thread(readFileTask).start();
+        executorService.execute(readFileTask);
         //设置javafx单元格宽度
         id_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.04));
         name_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.14));

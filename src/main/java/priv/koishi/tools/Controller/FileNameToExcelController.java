@@ -16,21 +16,29 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import priv.koishi.tools.Bean.ExcelConfigBean;
 import priv.koishi.tools.Bean.FileBean;
 import priv.koishi.tools.Bean.FileConfigBean;
 import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Properties.ToolsProperties;
+import priv.koishi.tools.ThreadPool.ToolsThreadPoolExecutor;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
+import java.util.concurrent.ExecutorService;
 
 import static priv.koishi.tools.Service.FileNameToExcelService.buildFileNameExcel;
 import static priv.koishi.tools.Service.ReadDataService.readFile;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
 import static priv.koishi.tools.Utils.CommonUtils.isInIntegerRange;
-import static priv.koishi.tools.Utils.FileUtils.*;
+import static priv.koishi.tools.Utils.FileUtils.readAllFiles;
+import static priv.koishi.tools.Utils.FileUtils.updatePath;
 import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
@@ -71,6 +79,16 @@ public class FileNameToExcelController extends ToolsProperties {
      * 配置文件路径
      */
     static String configFile = "config/fileNameToExcelConfig.properties";
+
+    /**
+     * 线程池
+     */
+    private final ToolsThreadPoolExecutor toolsThreadPoolExecutor = new ToolsThreadPoolExecutor();
+
+    /**
+     * 线程池实例
+     */
+    ExecutorService executorService = toolsThreadPoolExecutor.createNewThreadPool();
 
     @FXML
     private VBox vbox_Name;
@@ -160,7 +178,7 @@ public class FileNameToExcelController extends ToolsProperties {
         bindingProgressBarTask(readFileTask, taskBean);
         readFileTask.setOnSucceeded(t -> progressBar_Name.setVisible(false));
         throwTaskException(readFileTask);
-        new Thread(readFileTask).start();
+        executorService.execute(readFileTask);
         //设置javafx单元格宽度
         id_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.04));
         name_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.14));
@@ -312,13 +330,13 @@ public class FileNameToExcelController extends ToolsProperties {
                 .setBeanList(fileBeans)
                 .setTabId(tabId);
         //获取Task任务
-        Task<XSSFWorkbook> buildExcelTask = buildFileNameExcel(excelConfigBean, taskBean);
+        Task<SXSSFWorkbook> buildExcelTask = buildFileNameExcel(excelConfigBean, taskBean);
         //绑定带进度条的线程
         bindingProgressBarTask(buildExcelTask, taskBean);
         throwTaskException(buildExcelTask);
-        new Thread(buildExcelTask).start();
+        executorService.execute(buildExcelTask);
         //线程成功后保存excel
-        saveExcelOnSucceeded(excelConfigBean, taskBean, buildExcelTask, openDirectory_Name, openFile_Name);
+        saveExcelOnSucceeded(excelConfigBean, taskBean, buildExcelTask, openDirectory_Name, openFile_Name, executorService);
     }
 
     /**

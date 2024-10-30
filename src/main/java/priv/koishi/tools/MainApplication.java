@@ -46,6 +46,7 @@ public class MainApplication extends Application {
         stage.widthProperty().addListener((v1, v2, v3) -> Platform.runLater(() -> mainAdaption(stage, scene)));
         // 监听窗口面板高度变化
         stage.heightProperty().addListener((v1, v2, v3) -> Platform.runLater(() -> mainAdaption(stage, scene)));
+        stage.setOnCloseRequest(event -> System.exit(0));
         stage.show();
     }
 

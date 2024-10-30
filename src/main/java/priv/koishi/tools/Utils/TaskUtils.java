@@ -5,11 +5,13 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.paint.Color;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import priv.koishi.tools.Bean.ExcelConfigBean;
 import priv.koishi.tools.Bean.TaskBean;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.concurrent.ExecutorService;
 
 import static priv.koishi.tools.Utils.FileUtils.*;
 
@@ -26,46 +28,51 @@ public class TaskUtils {
     public static void bindingProgressBarTask(Task<?> task, TaskBean<?> taskBean) {
         ProgressBar progressBar = taskBean.getProgressBar();
         Label massageLabel = taskBean.getMassageLabel();
-        //绑定进度条的值属性
-        progressBar.progressProperty().unbind();
-        progressBar.setVisible(true);
-        //给进度条设置初始值
-        progressBar.setProgress(0.0);
-        progressBar.progressProperty().bind(task.progressProperty());
-        //绑定TextField的值属性
-        massageLabel.textProperty().unbind();
-        massageLabel.textProperty().bind(task.messageProperty());
+        if (progressBar != null) {
+            //绑定进度条的值属性
+            progressBar.progressProperty().unbind();
+            progressBar.setVisible(true);
+            //给进度条设置初始值
+            progressBar.setProgress(0.0);
+            progressBar.progressProperty().bind(task.progressProperty());
+        }
+        if (massageLabel != null) {
+            //绑定TextField的值属性
+            massageLabel.textProperty().unbind();
+            massageLabel.textProperty().bind(task.messageProperty());
+        }
     }
 
     /**
      * 线程执行成功后保存excel文件
      */
-    public static void saveExcelOnSucceeded(ExcelConfigBean excelConfigBean, TaskBean<?> taskBean, Task<XSSFWorkbook> buildExcelTask,
-                                            CheckBox openDirectory, CheckBox openFile) {
+    public static void saveExcelOnSucceeded(ExcelConfigBean excelConfigBean, TaskBean<?> taskBean, Task<SXSSFWorkbook> buildExcelTask,
+                                            CheckBox openDirectory, CheckBox openFile, ExecutorService executorService) {
         bindingProgressBarTask(buildExcelTask, taskBean);
         buildExcelTask.setOnSucceeded(t -> {
-            XSSFWorkbook xssfWorkbook = buildExcelTask.getValue();
-            String excelPath;
-            Label label = taskBean.getMassageLabel();
-            try {
-                label.textProperty().unbind();
-                label.setText("正在保存excel");
-                excelPath = saveExcel(xssfWorkbook, excelConfigBean);
-                label.setText("所有数据已保存到： " + excelPath);
-                if (openDirectory.isSelected()) {
-                    openFile(getFileMkdir(new File(excelPath)));
-                }
-                if (openFile.isSelected()) {
-                    openFile(excelPath);
+            SXSSFWorkbook workbook = buildExcelTask.getValue();
+            Task<String> saveExceltask = saveExceltask(excelConfigBean, workbook);
+            throwTaskException(saveExceltask);
+            bindingProgressBarTask(saveExceltask, taskBean);
+            saveExceltask.setOnSucceeded(s -> {
+                String excelPath = saveExceltask.getValue();
+                try {
+                    if (openDirectory.isSelected()) {
+                        openFile(getFileMkdir(new File(excelPath)));
+                    }
+                    if (openFile.isSelected()) {
+                        openFile(excelPath);
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+
                 }
                 taskBean.getProgressBar().setVisible(false);
-                label.setTextFill(Color.GREEN);
-            } catch (Exception e) {
-                label.setTextFill(Color.RED);
-                throw new RuntimeException(e);
-            }
+                taskBean.getMassageLabel().setTextFill(Color.GREEN);
+            });
+            executorService.execute(saveExceltask);
         });
-        new Thread(buildExcelTask).start();
+        executorService.execute(buildExcelTask);
     }
 
     /**
@@ -79,5 +86,22 @@ public class TaskUtils {
             throw new RuntimeException(ex);
         });
     }
+
+    /**
+     * 保存excel线程
+     */
+    public static Task<String> saveExceltask(ExcelConfigBean excelConfigBean, SXSSFWorkbook workbook) {
+        return new Task<>() {
+            @Override
+            protected String call() throws Exception {
+                updateMessage("正在保存excel");
+                String excelPath = saveExcel(workbook, excelConfigBean);
+                updateMessage("所有数据已保存到： " + excelPath);
+                System.gc();
+                return excelPath;
+            }
+        };
+    }
+
 
 }

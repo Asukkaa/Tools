@@ -1,13 +1,13 @@
 package priv.koishi.tools.Service;
 
 import javafx.concurrent.Task;
-import javafx.scene.control.Label;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.ClientAnchor;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.*;
 import priv.koishi.tools.Bean.ExcelConfigBean;
 import priv.koishi.tools.Bean.FileNumBean;
@@ -51,18 +51,15 @@ public class ImgToExcelService {
      */
     static XSSFWorkbook workbook;
 
-    /**
-     * 日志输出栏
-     */
-    static Label logLabel;
+    static SXSSFWorkbook sxssfWorkbook;
 
     /**
      * 构建分组的图片excel
      */
-    public static Task<XSSFWorkbook> buildImgGroupExcel(TaskBean<FileNumBean> taskBean, ExcelConfigBean excelConfigBean) {
+    public static Task<SXSSFWorkbook> buildImgGroupExcel(TaskBean<FileNumBean> taskBean, ExcelConfigBean excelConfigBean) {
         return new Task<>() {
             @Override
-            protected XSSFWorkbook call() throws Exception {
+            protected SXSSFWorkbook call() throws Exception {
                 checkCopyDestination(excelConfigBean);
                 File inputFile = new File(excelConfigBean.getInPath());
                 if (!inputFile.exists()) {
@@ -71,17 +68,17 @@ public class ImgToExcelService {
                 updateMessage("正在导出数据");
                 FileInputStream inputStream = new FileInputStream(inputFile);
                 workbook = new XSSFWorkbook(inputStream);
+                sxssfWorkbook = new SXSSFWorkbook(workbook, 50);
                 String sheetName = excelConfigBean.getSheet();
                 startRowNum = excelConfigBean.getStartRowNum();
                 startCellNum = excelConfigBean.getStartCellNum();
                 List<FileNumBean> fileBeans = taskBean.getBeanList();
-                logLabel = taskBean.getMassageLabel();
                 int fileNum = fileBeans.size();
                 updateMessage("已识别到 " + fileNum + " 组数据");
                 if (StringUtils.isBlank(sheetName)) {
-                    sheet = workbook.getSheetAt(0);
+                    sheet = sxssfWorkbook.getXSSFWorkbook().getSheetAt(0);
                 } else {
-                    sheet = workbook.getSheet(sheetName);
+                    sheet = sxssfWorkbook.getXSSFWorkbook().getSheet(sheetName);
                 }
                 for (int i = 0; i < fileNum; i++) {
                     FileNumBean fileBean = fileBeans.get(i);
@@ -92,7 +89,7 @@ public class ImgToExcelService {
                     startRowNum++;
                 }
                 updateMessage("所有数据已输出完毕");
-                return workbook;
+                return sxssfWorkbook;
             }
         };
     }
@@ -132,9 +129,9 @@ public class ImgToExcelService {
                 // 读取图片文件
                 InputStream inputStream = Files.newInputStream(Paths.get(i));
                 if (".jpg".equals(extension) || ".jpeg".equals(extension)) {
-                    drawing.createPicture(anchor, workbook.addPicture(inputStream, Workbook.PICTURE_TYPE_JPEG));
+                    drawing.createPicture(anchor, sxssfWorkbook.addPicture(inputStream.readAllBytes(), Workbook.PICTURE_TYPE_JPEG));
                 } else if (".png".equals(extension)) {
-                    drawing.createPicture(anchor, workbook.addPicture(inputStream, Workbook.PICTURE_TYPE_PNG));
+                    drawing.createPicture(anchor, sxssfWorkbook.addPicture(inputStream.readAllBytes(), Workbook.PICTURE_TYPE_PNG));
                 }
                 inputStream.close();
                 sheet.setColumnWidth(cellNum, imgWidth);

@@ -2,6 +2,7 @@ package priv.koishi.tools.Service;
 
 import javafx.concurrent.Task;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -27,10 +28,10 @@ public class FileNumToExcelService {
     /**
      * 构建分组统计excel
      */
-    public static Task<XSSFWorkbook> buildNameGroupNumExcel(TaskBean<FileNumBean> taskBean, ExcelConfigBean excelConfigBean) {
+    public static Task<SXSSFWorkbook> buildNameGroupNumExcel(TaskBean<FileNumBean> taskBean, ExcelConfigBean excelConfigBean) {
         return new Task<>() {
             @Override
-            protected XSSFWorkbook call() throws Exception {
+            protected SXSSFWorkbook call() throws Exception {
                 checkCopyDestination(excelConfigBean);
                 File inputFile = new File(excelConfigBean.getInPath());
                 if (!inputFile.exists()) {
@@ -39,6 +40,7 @@ public class FileNumToExcelService {
                 updateMessage("正在导出数据");
                 FileInputStream inputStream = new FileInputStream(inputFile);
                 XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
+                SXSSFWorkbook sxssfWorkbook = new SXSSFWorkbook(workbook);
                 String sheetName = excelConfigBean.getSheet();
                 String exportType = excelConfigBean.getExportType();
                 int startRowNum = excelConfigBean.getStartRowNum();
@@ -48,9 +50,9 @@ public class FileNumToExcelService {
                 updateMessage("已识别到 " + fileBeans.size() + " 组数据");
                 XSSFSheet sheet;
                 if (StringUtils.isBlank(sheetName)) {
-                    sheet = workbook.getSheetAt(0);
+                    sheet = sxssfWorkbook.getXSSFWorkbook().getSheetAt(0);
                 } else {
-                    sheet = workbook.getSheet(sheetName);
+                    sheet = sxssfWorkbook.getXSSFWorkbook().getSheet(sheetName);
                 }
                 int fileBeansSize = fileBeans.size();
                 for (int i = 0; i < fileBeansSize; i++) {
@@ -84,7 +86,7 @@ public class FileNumToExcelService {
                 }
                 autoSizeExcel(sheet, maxCellNum, startCellNum);
                 updateMessage("所有数据已输出完毕");
-                return workbook;
+                return sxssfWorkbook;
             }
         };
     }

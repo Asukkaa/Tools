@@ -1,6 +1,7 @@
 package priv.koishi.tools.Service;
 
 import javafx.concurrent.Task;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -26,8 +27,9 @@ public class FileNameToExcelService {
     /**
      * 构建输出文件名称的excel
      */
-    public static Task<XSSFWorkbook> buildFileNameExcel(ExcelConfigBean excelConfigBean, TaskBean<FileBean> taskBean) throws Exception {
+    public static Task<SXSSFWorkbook> buildFileNameExcel(ExcelConfigBean excelConfigBean, TaskBean<FileBean> taskBean) throws Exception {
         XSSFWorkbook workbook = new XSSFWorkbook();
+        SXSSFWorkbook sxssfWorkbook = new SXSSFWorkbook(workbook);
         XSSFSheet sheet;
         String excelInPath = excelConfigBean.getInPath();
         String sheetName = excelConfigBean.getSheet();
@@ -37,28 +39,29 @@ public class FileNameToExcelService {
             checkCopyDestination(excelConfigBean);
             FileInputStream inputStream = new FileInputStream(excelInPath);
             workbook = new XSSFWorkbook(inputStream);
+            sxssfWorkbook = new SXSSFWorkbook(workbook);
             if (sheetName == null || sheetName.isEmpty()) {
-                sheet = workbook.getSheetAt(0);
+                sheet = sxssfWorkbook.getXSSFWorkbook().getSheetAt(0);
             } else {
-                sheet = workbook.getSheet(sheetName);
+                sheet = sxssfWorkbook.getXSSFWorkbook().getSheet(sheetName);
                 if (sheet == null) {
-                    sheet = workbook.createSheet(sheetName);
+                    sheet = sxssfWorkbook.getXSSFWorkbook().createSheet(sheetName);
                 }
             }
         } else {
-            sheet = workbook.createSheet(sheetName);
+            sheet = sxssfWorkbook.getXSSFWorkbook().createSheet(sheetName);
         }
         //构建excel
-        return buildNoGroupExcel(taskBean, excelConfigBean, sheet, workbook);
+        return buildNoGroupExcel(taskBean, excelConfigBean, sheet, sxssfWorkbook);
     }
 
     /**
      * 不分组构建excel
      */
-    private static Task<XSSFWorkbook> buildNoGroupExcel(TaskBean<FileBean> taskBean, ExcelConfigBean excelConfigBean, XSSFSheet sheet, XSSFWorkbook workbook) {
+    private static Task<SXSSFWorkbook> buildNoGroupExcel(TaskBean<FileBean> taskBean, ExcelConfigBean excelConfigBean, XSSFSheet sheet, SXSSFWorkbook workbook) {
         return new Task<>() {
             @Override
-            protected XSSFWorkbook call() {
+            protected SXSSFWorkbook call() {
                 updateMessage("正在导出数据");
                 List<FileBean> fileBeans = taskBean.getBeanList();
                 List<String> names = new ArrayList<>();

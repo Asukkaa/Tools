@@ -14,12 +14,13 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import priv.koishi.tools.Bean.ExcelConfigBean;
 import priv.koishi.tools.Bean.FileConfigBean;
 import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Properties.ToolsProperties;
+import priv.koishi.tools.ThreadPool.ToolsThreadPoolExecutor;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
 
 import static priv.koishi.tools.Service.ImgToExcelService.buildImgGroupExcel;
 import static priv.koishi.tools.Service.ReadDataService.readExcel;
@@ -104,6 +106,16 @@ public class ImgToExcelController extends ToolsProperties {
      * 配置文件路径
      */
     static String configFile = "config/imgToExcelConfig.properties";
+
+    /**
+     * 线程池
+     */
+    private final ToolsThreadPoolExecutor toolsThreadPoolExecutor = new ToolsThreadPoolExecutor();
+
+    /**
+     * 线程池实例
+     */
+    ExecutorService executorService = toolsThreadPoolExecutor.createNewThreadPool();
 
     @FXML
     private VBox vbox_Img;
@@ -214,7 +226,7 @@ public class ImgToExcelController extends ToolsProperties {
         bindingProgressBarTask(readExcelTask, taskBean);
         throwTaskException(readExcelTask);
         readExcelTask.setOnSucceeded(t -> progressBar_Img.setVisible(false));
-        new Thread(readExcelTask).start();
+        executorService.execute(readExcelTask);
         //设置javafx单元格宽度
         return tableViewNumImgAdaption(readExcelTask, groupId_Img, tableView_Img, groupName_Img.prefWidthProperty(), groupNumber_Img.prefWidthProperty(), fileName_Img);
     }
@@ -366,9 +378,9 @@ public class ImgToExcelController extends ToolsProperties {
                     .setMassageLabel(log_Img)
                     .setTabId(tabId);
             //获取Task任务
-            Task<XSSFWorkbook> buildExcelTask = buildImgGroupExcel(taskBean, excelConfigBean);
+            Task<SXSSFWorkbook> buildExcelTask = buildImgGroupExcel(taskBean, excelConfigBean);
             //线程成功后保存excel
-            saveExcelOnSucceeded(excelConfigBean, taskBean, buildExcelTask, openDirectory_Img, openFile_Img);
+            saveExcelOnSucceeded(excelConfigBean, taskBean, buildExcelTask, openDirectory_Img, openFile_Img, executorService);
         });
     }
 

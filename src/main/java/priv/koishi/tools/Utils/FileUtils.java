@@ -3,7 +3,6 @@ package priv.koishi.tools.Utils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import priv.koishi.tools.Bean.ExcelConfigBean;
 import priv.koishi.tools.Bean.FileConfigBean;
 
@@ -240,17 +239,15 @@ public class FileUtils {
     /**
      * 保存excel
      */
-    public static String saveExcel(XSSFWorkbook workbook, ExcelConfigBean excelConfigBean) throws Exception {
+    public static String saveExcel(SXSSFWorkbook workbook, ExcelConfigBean excelConfigBean) throws Exception {
         String filePath = excelConfigBean.getOutPath() + "\\" + excelConfigBean.getOutName() + excelConfigBean.getOutExcelExtension();
         checkDirectory(getFileMkdir(new File(filePath)));
         // 将Excel写入文件
         try {
             BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(Files.newOutputStream(Paths.get(filePath)));
-            SXSSFWorkbook sxssfWorkbook = new SXSSFWorkbook(workbook, 2);
-            sxssfWorkbook.write(bufferedOutputStream);
+            workbook.write(bufferedOutputStream);
             bufferedOutputStream.flush();
             bufferedOutputStream.close();
-            sxssfWorkbook.close();
             workbook.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
