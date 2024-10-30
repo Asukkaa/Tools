@@ -17,7 +17,7 @@ public class ToolsThreadPoolExecutor {
     /**
      * 最大线程池大小
      */
-    int maximumPoolSize = 3;
+    int maximumPoolSize = 2;
 
     /**
      * 线程最大空闲时间

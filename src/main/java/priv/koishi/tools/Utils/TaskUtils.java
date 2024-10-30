@@ -97,7 +97,6 @@ public class TaskUtils {
                 updateMessage("正在保存excel");
                 String excelPath = saveExcel(workbook, excelConfigBean);
                 updateMessage("所有数据已保存到： " + excelPath);
-                System.gc();
                 return excelPath;
             }
         };
