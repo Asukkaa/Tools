@@ -86,7 +86,7 @@
                     styleClass="delete-button-style" visible="false">
                 <graphic>
                     <ImageView>
-                        <Image url="@../icon/trash-o.png"/>
+                        <Image url="@../icon/trash.png"/>
                     </ImageView>
                 </graphic>
             </Button>

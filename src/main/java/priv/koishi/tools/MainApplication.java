@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -41,6 +42,7 @@ public class MainApplication extends Application {
         Scene scene = new Scene(fxmlLoader.load(), appWidth, appHeight);
         stage.setTitle(appTitle);
         stage.setScene(scene);
+        stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResource("icon/wrench.png")).toExternalForm()));
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("css/Styles.css")).toExternalForm());
         // 监听窗口面板宽度变化
         stage.widthProperty().addListener((v1, v2, v3) -> Platform.runLater(() -> mainAdaption(stage, scene)));
