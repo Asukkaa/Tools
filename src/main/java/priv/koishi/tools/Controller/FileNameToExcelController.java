@@ -202,13 +202,15 @@ public class FileNameToExcelController extends ToolsProperties {
         outFilePath = prop.getProperty("outFilePath");
         outFileName = prop.getProperty("outFileName");
         excelInPath = prop.getProperty("excelInPath");
+        defaultStartCell = Integer.parseInt(prop.getProperty("defaultStartCell"));
     }
 
     /**
      * 界面初始化
      */
     @FXML
-    private void initialize() {
+    private void initialize() throws IOException {
+        getConfig();
         addToolTip(filterFileType_Name, "填写后只会识别所填写的后缀名文件，多个文件后缀名用空格隔开，后缀名需带 '.'");
         addToolTip(recursion_Name, "勾选后将会查询文件夹中的文件夹里的文件");
         addToolTip(excelName_Name, "如果导出地址和名称与模板一样则会覆盖模板excel文件");

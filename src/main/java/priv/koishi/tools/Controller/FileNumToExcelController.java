@@ -245,13 +245,17 @@ public class FileNumToExcelController extends ToolsProperties {
         outFilePath = prop.getProperty("outFilePath");
         outFileName = prop.getProperty("outFileName");
         excelInPath = prop.getProperty("excelInPath");
+        defaultStartCell = Integer.parseInt(prop.getProperty("defaultStartCell"));
+        defaultReadRow = Integer.parseInt(prop.getProperty("defaultReadRow"));
+        defaultReadCell = Integer.parseInt(prop.getProperty("defaultReadCell"));
     }
 
     /**
      * 界面初始化
      */
     @FXML
-    private void initialize() {
+    private void initialize() throws IOException {
+        getConfig();
         addToolTip(filterFileType_Num, "填写后只会识别所填写的后缀名文件，多个文件后缀名用空格隔开，后缀名需带 '.'");
         addToolTip(startRow_Num, "只能填数字，不填默认与读取预留行相同");
         addToolTip(startCell_Num, "只能填数字，不填默认为 " + defaultStartCell);

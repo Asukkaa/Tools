@@ -80,12 +80,12 @@ public class ImgToExcelController extends ToolsProperties {
     /**
      * 默认图片宽度
      */
-    static int defaultImgWidth = 6000;
+    static int defaultImgWidth = 3000;
 
     /**
      * 默认图片高度
      */
-    static int defaultImgHeight = 100;
+    static int defaultImgHeight = 50;
 
     /**
      * 默认起始输出列
@@ -224,7 +224,7 @@ public class ImgToExcelController extends ToolsProperties {
         Task<List<FileNumBean>> readExcelTask = readExcel(excelConfigBean, taskBean);
         //绑定带进度条的线程
         bindingProgressBarTask(readExcelTask, taskBean);
-        throwTaskException(readExcelTask,taskBean);
+        throwTaskException(readExcelTask, taskBean);
         readExcelTask.setOnSucceeded(t -> progressBar_Img.setVisible(false));
         executorService.execute(readExcelTask);
         //设置javafx单元格宽度
@@ -244,13 +244,19 @@ public class ImgToExcelController extends ToolsProperties {
         outFilePath = prop.getProperty("outFilePath");
         outFileName = prop.getProperty("outFileName");
         excelInPath = prop.getProperty("excelInPath");
+        defaultImgWidth = Integer.parseInt(prop.getProperty("defaultImgWidth"));
+        defaultImgHeight = Integer.parseInt(prop.getProperty("defaultImgHeight"));
+        defaultStartCell = Integer.parseInt(prop.getProperty("defaultStartCell"));
+        defaultReadRow = Integer.parseInt(prop.getProperty("defaultReadRow"));
+        defaultReadCell = Integer.parseInt(prop.getProperty("defaultReadCell"));
     }
 
     /**
      * 界面初始化
      */
     @FXML
-    private void initialize() {
+    private void initialize() throws IOException {
+        getConfig();
         addToolTip(imgHeight_Img, "只能填数字，不填默认为 " + defaultImgHeight);
         addToolTip(imgWidth_Img, "只能填数字，不填默认为 " + defaultImgWidth);
         addToolTip(noImg_Img, "勾选后没有图片的数据将会在单元格中标记为 无图片");
