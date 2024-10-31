@@ -243,12 +243,11 @@ public class FileUtils {
         String filePath = excelConfigBean.getOutPath() + "\\" + excelConfigBean.getOutName() + excelConfigBean.getOutExcelExtension();
         checkDirectory(getFileMkdir(new File(filePath)));
         // 将Excel写入文件
-        try {
+        try (workbook) {
             BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(Files.newOutputStream(Paths.get(filePath)));
             workbook.write(bufferedOutputStream);
             bufferedOutputStream.flush();
             bufferedOutputStream.close();
-            workbook.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

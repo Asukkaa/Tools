@@ -133,6 +133,7 @@ public class ImgToExcelService {
                 } else if (".png".equals(extension)) {
                     drawing.createPicture(anchor, sxssfWorkbook.addPicture(inputStream.readAllBytes(), Workbook.PICTURE_TYPE_PNG));
                 }
+                sxssfWorkbook.setCompressTempFiles(true);
                 inputStream.close();
                 sheet.setColumnWidth(cellNum, imgWidth);
                 sheet.getRow(startRowNum).setHeightInPoints(imgHeight);

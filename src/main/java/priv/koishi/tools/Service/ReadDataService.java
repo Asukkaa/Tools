@@ -56,17 +56,14 @@ public class ReadDataService {
                         sheet = workbook.createSheet(sheetName);
                     }
                 }
-                workbook.close();
-                FileInputStream fileInputStream = new FileInputStream(excelConfigBean.getInPath());
-                XSSFWorkbook excel = new XSSFWorkbook(fileInputStream);
                 int lastRowNum = sheet.getLastRowNum();
+                DataFormatter dataFormatter = new DataFormatter();
                 //获取有文字的最后一行行号
                 for (int i = lastRowNum; i >= 0; i--) {
                     XSSFRow row = sheet.getRow(i);
                     //过滤中间的空单元格
                     if (row != null) {
                         XSSFCell cell = row.getCell(readCell);
-                        DataFormatter dataFormatter = new DataFormatter();
                         String stringCellValue = dataFormatter.formatCellValue(cell);
                         if (StringUtils.isNotBlank(stringCellValue)) {
                             lastRowNum = i;
@@ -89,7 +86,6 @@ public class ReadDataService {
                     FileNumBean fileNumBean = new FileNumBean();
                     if (row != null) {
                         XSSFCell cell = row.getCell(readCell);
-                        DataFormatter dataFormatter = new DataFormatter();
                         String stringCellValue = dataFormatter.formatCellValue(cell);
                         fileNumBean.setGroupName(stringCellValue);
                     } else {
@@ -100,7 +96,7 @@ public class ReadDataService {
                     //Task的Progress(进度)更新方法,进度条的进度与该属性挂钩
                     updateProgress(i, maxRow);
                 }
-                excel.close();
+                workbook.close();
                 List<File> inFileList = taskBean.getInFileList();
                 //已经读取文件后再匹配数据
                 if (inFileList != null && !inFileList.isEmpty()) {

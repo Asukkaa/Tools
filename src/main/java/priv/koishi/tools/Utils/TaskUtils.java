@@ -52,7 +52,7 @@ public class TaskUtils {
         buildExcelTask.setOnSucceeded(t -> {
             SXSSFWorkbook workbook = buildExcelTask.getValue();
             Task<String> saveExceltask = saveExceltask(excelConfigBean, workbook);
-            throwTaskException(saveExceltask);
+            throwTaskException(saveExceltask,taskBean);
             bindingProgressBarTask(saveExceltask, taskBean);
             saveExceltask.setOnSucceeded(s -> {
                 String excelPath = saveExceltask.getValue();
@@ -65,10 +65,13 @@ public class TaskUtils {
                     }
                 } catch (IOException e) {
                     throw new RuntimeException(e);
-
                 }
-                taskBean.getProgressBar().setVisible(false);
-                taskBean.getMassageLabel().setTextFill(Color.GREEN);
+                ProgressBar progressBar = taskBean.getProgressBar();
+                progressBar.setVisible(false);
+                progressBar.progressProperty().unbind();
+                Label massageLabel = taskBean.getMassageLabel();
+                massageLabel.setTextFill(Color.GREEN);
+                massageLabel.textProperty().unbind();
             });
             executorService.execute(saveExceltask);
         });
@@ -78,11 +81,13 @@ public class TaskUtils {
     /**
      * 抛出task异常
      */
-    public static void throwTaskException(Task<?> task) {
+    public static void throwTaskException(Task<?> task, TaskBean<?> taskBean) {
         task.setOnFailed(event -> {
+            taskBean.getMassageLabel().textProperty().unbind();
+            taskBean.getProgressBar().setVisible(false);
+            taskBean.getProgressBar().progressProperty().unbind();
             // 获取抛出的异常
             Throwable ex = task.getException();
-            // 处理异常，例如打印堆栈跟踪信息
             throw new RuntimeException(ex);
         });
     }

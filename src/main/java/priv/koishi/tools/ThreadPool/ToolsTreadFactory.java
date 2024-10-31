@@ -14,9 +14,7 @@ public class ToolsTreadFactory implements ThreadFactory {
 
     @Override
     public Thread newThread(Runnable r) {
-        Thread t = new Thread(r, String.valueOf(threadNum.getAndIncrement()));
-        System.out.println(t.getName());
-        return t;
+        return new Thread(r, String.valueOf(threadNum.getAndIncrement()));
     }
 
 }

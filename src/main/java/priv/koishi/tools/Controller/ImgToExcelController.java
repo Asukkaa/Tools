@@ -224,7 +224,7 @@ public class ImgToExcelController extends ToolsProperties {
         Task<List<FileNumBean>> readExcelTask = readExcel(excelConfigBean, taskBean);
         //绑定带进度条的线程
         bindingProgressBarTask(readExcelTask, taskBean);
-        throwTaskException(readExcelTask);
+        throwTaskException(readExcelTask,taskBean);
         readExcelTask.setOnSucceeded(t -> progressBar_Img.setVisible(false));
         executorService.execute(readExcelTask);
         //设置javafx单元格宽度
@@ -367,7 +367,6 @@ public class ImgToExcelController extends ToolsProperties {
                 .setSubCode(subCode)
                 .setSheet(sheetName);
         Task<List<FileNumBean>> reselectTask = reselect();
-        throwTaskException(reselectTask);
         reselectTask.setOnSucceeded(t -> {
             TaskBean<FileNumBean> taskBean = new TaskBean<>();
             taskBean.setShowFileType(showFileType_Img.isSelected())
@@ -377,6 +376,8 @@ public class ImgToExcelController extends ToolsProperties {
                     .setTableView(tableView_Img)
                     .setMassageLabel(log_Img)
                     .setTabId(tabId);
+            progressBar_Img.progressProperty().unbind();
+            fileNumber_Img.textProperty().unbind();
             //获取Task任务
             Task<SXSSFWorkbook> buildExcelTask = buildImgGroupExcel(taskBean, excelConfigBean);
             //线程成功后保存excel

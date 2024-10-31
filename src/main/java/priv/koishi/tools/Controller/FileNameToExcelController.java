@@ -174,10 +174,10 @@ public class FileNameToExcelController extends ToolsProperties {
                 .setTabId(tabId);
         //获取Task任务
         Task<Void> readFileTask = readFile(taskBean);
-        //启动带进度条的线程
+        //绑定带进度条的线程
         bindingProgressBarTask(readFileTask, taskBean);
         readFileTask.setOnSucceeded(t -> progressBar_Name.setVisible(false));
-        throwTaskException(readFileTask);
+        throwTaskException(readFileTask, taskBean);
         executorService.execute(readFileTask);
         //设置javafx单元格宽度
         id_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.04));
@@ -333,7 +333,7 @@ public class FileNameToExcelController extends ToolsProperties {
         Task<SXSSFWorkbook> buildExcelTask = buildFileNameExcel(excelConfigBean, taskBean);
         //绑定带进度条的线程
         bindingProgressBarTask(buildExcelTask, taskBean);
-        throwTaskException(buildExcelTask);
+        throwTaskException(buildExcelTask, taskBean);
         executorService.execute(buildExcelTask);
         //线程成功后保存excel
         saveExcelOnSucceeded(excelConfigBean, taskBean, buildExcelTask, openDirectory_Name, openFile_Name, executorService);
