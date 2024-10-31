@@ -48,11 +48,6 @@ public class ExcelConfigBean {
     int startCellNum;
 
     /**
-     * 文件名称分割符
-     */
-    String subCode;
-
-    /**
      * 读取模板起始行
      */
     int readRowNum;

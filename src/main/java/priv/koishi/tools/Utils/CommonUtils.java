@@ -5,10 +5,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 import java.io.*;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -54,7 +51,7 @@ public class CommonUtils {
     /**
      * map分组并按key排序
      */
-    public static Map<String, List<String>> getSortedByMap(List<String> keys, String nameSubstring) {
+    public static Map<String, List<String>> getSortedByMap(List<String> keys, String nameSubstring, int maxValue) {
         Map<String, String> namMap = new HashMap<>();
         Map<String, List<String>> groupedMap;
         keys.forEach(k -> {
@@ -62,14 +59,35 @@ public class CommonUtils {
             namMap.put(k, leftName);
         });
         //根据名称分组
-        groupedMap = namMap.entrySet().stream()
-                .collect(Collectors.groupingBy(Map.Entry::getValue,
-                        Collectors.mapping(Map.Entry::getKey, Collectors.toList())));
+        if (maxValue != 0) {
+            groupedMap = groupByValueWithLimit(namMap, maxValue);
+        } else {
+            groupedMap = namMap.entrySet().stream().collect(Collectors.groupingBy(Map.Entry::getValue,
+                    Collectors.mapping(Map.Entry::getKey, Collectors.toList())));
+        }
         //根据完整路径排序
         return groupedMap.entrySet().stream()
                 .sorted(Map.Entry.comparingByKey())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
     }
+
+    /**
+     * 根据value分组并指定每组数量
+     */
+    public static Map<String, List<String>> groupByValueWithLimit(Map<String, String> originalMap, int listSizeLimit) {
+        Map<String, List<String>> groupedMap = new HashMap<>();
+        for (Map.Entry<String, String> entry : originalMap.entrySet()) {
+            String value = entry.getValue();
+            List<String> list = groupedMap.getOrDefault(value, new ArrayList<>());
+            if (list.size() < listSizeLimit) {
+                list.add(entry.getKey());
+            }
+            // 无论是否添加了元素，都需要将更新后的列表放回 groupedMap 中 因为 getOrDefault 会返回一个新的列表，如果我们不添加元素，则不需要更新 但如果添加了元素，或者列表已经存在，我们需要确保 groupedMap 中的是最新状态
+            groupedMap.put(value, list);
+        }
+        return groupedMap;
+    }
+
 
     /**
      * 获取分隔符左侧文件名

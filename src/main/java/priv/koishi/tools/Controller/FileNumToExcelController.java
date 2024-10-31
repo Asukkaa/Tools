@@ -180,12 +180,13 @@ public class FileNumToExcelController extends ToolsProperties {
                 .setShowHideFile(hideFileType_Num.getValue())
                 .setFilterExtensionList(filterExtensionList)
                 .setRecursion(recursion_Num.isSelected())
+                .setSubCode(subCode_Num.getText())
                 .setInFile(selectedFile);
         inFileList = readAllFiles(fileConfigBean);
         //列表中有excel分组后再匹配数据
         ObservableList<FileNumBean> fileNumList = tableView_Num.getItems();
         if (CollectionUtils.isNotEmpty(fileNumList)) {
-            matchGroupData(fileNumList, inFileList, subCode_Num.getText(), showFileType_Num.isSelected());
+            matchGroupData(fileNumList, inFileList, fileConfigBean);
             TaskBean<FileNumBean> taskBean = new TaskBean<>();
             taskBean.setTableView(tableView_Num)
                     .setTabId(tabId);
@@ -199,8 +200,8 @@ public class FileNumToExcelController extends ToolsProperties {
     private Task<List<FileNumBean>> addInData() {
         removeAll();
         //组装数据
-        int readRowValue = setDefaultIntValue(readRow_Num, 0, 0, null);
-        int readCellValue = setDefaultIntValue(readCell_Num, 0, 0, null);
+        int readRowValue = setDefaultIntValue(readRow_Num, defaultReadRow, 0, null);
+        int readCellValue = setDefaultIntValue(readCell_Num, defaultReadCell, 0, null);
         int maxRowValue = setDefaultIntValue(maxRow_Num, -1, 1, null);
         ExcelConfigBean excelConfigBean = new ExcelConfigBean();
         excelConfigBean.setSheet(sheetOutName_Num.getText())
@@ -351,7 +352,6 @@ public class FileNumToExcelController extends ToolsProperties {
                 .setStartRowNum(startRowValue)
                 .setOutName(excelNameValue)
                 .setOutPath(outFilePath)
-                .setSubCode(subCode)
                 .setSheet(sheetName);
         Task<List<FileNumBean>> reselectTask = reselect();
         reselectTask.setOnSucceeded(event -> {

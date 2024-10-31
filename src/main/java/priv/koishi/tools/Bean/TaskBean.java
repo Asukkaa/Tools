@@ -64,4 +64,9 @@ public class TaskBean<T> {
      */
     String tabId;
 
+    /**
+     * 最大图片匹配数
+     */
+    int maxImgNum;
+
 }

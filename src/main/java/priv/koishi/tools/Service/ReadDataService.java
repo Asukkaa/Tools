@@ -8,10 +8,7 @@ import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import priv.koishi.tools.Bean.ExcelConfigBean;
-import priv.koishi.tools.Bean.FileBean;
-import priv.koishi.tools.Bean.FileNumBean;
-import priv.koishi.tools.Bean.TaskBean;
+import priv.koishi.tools.Bean.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -100,7 +97,11 @@ public class ReadDataService {
                 List<File> inFileList = taskBean.getInFileList();
                 //已经读取文件后再匹配数据
                 if (inFileList != null && !inFileList.isEmpty()) {
-                    matchGroupData(fileNumBeanList, inFileList, taskBean.getSubCode(), taskBean.isShowFileType());
+                    FileConfigBean fileConfigBean = new FileConfigBean();
+                    fileConfigBean.setMaxImgNum(taskBean.getMaxImgNum())
+                            .setShowFileType(taskBean.isShowFileType())
+                            .setSubCode(taskBean.getSubCode());
+                    matchGroupData(fileNumBeanList, inFileList, fileConfigBean);
                 }
                 updateMessage("共有" + fileNumBeanList.size() + " 组数据");
                 //匹配数据

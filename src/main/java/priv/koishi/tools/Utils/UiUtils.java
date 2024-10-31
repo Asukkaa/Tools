@@ -18,6 +18,7 @@ import javafx.util.Callback;
 import javafx.util.Duration;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import priv.koishi.tools.Bean.FileConfigBean;
 import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Enum.SelectItemsEnums;
 
@@ -289,10 +290,10 @@ public class UiUtils {
     /**
      * 匹配excel分组与文件夹下文件
      */
-    public static void matchGroupData(List<FileNumBean> fileNumBeans, List<File> inFileList, String nameSubstring, boolean showFile) {
+    public static void matchGroupData(List<FileNumBean> fileNumBeans, List<File> inFileList, FileConfigBean fileConfigBean) {
         List<String> paths = new ArrayList<>();
         inFileList.forEach(file -> paths.add(file.getPath()));
-        List<FileNumBean> fileNumList = buildNameGroupData(paths, nameSubstring, showFile);
+        List<FileNumBean> fileNumList = buildNameGroupData(paths, fileConfigBean);
         fileNumBeans.forEach(bean1 -> {
             bean1.setGroupNumber(0);
             bean1.setFileName("");
@@ -311,9 +312,9 @@ public class UiUtils {
     /**
      * 分组组装javafx列表数据
      */
-    private static List<FileNumBean> buildNameGroupData(List<String> paths, String nameSubstring, boolean showFileType) {
+    private static List<FileNumBean> buildNameGroupData(List<String> paths, FileConfigBean fileConfigBean) {
         List<FileNumBean> fileNumBeans = new ArrayList<>();
-        Map<String, List<String>> sortedByKey = getSortedByMap(paths, nameSubstring);
+        Map<String, List<String>> sortedByKey = getSortedByMap(paths, fileConfigBean.getSubCode(), fileConfigBean.getMaxImgNum());
         sortedByKey.forEach((k, v) -> {
             FileNumBean fileNumBean = new FileNumBean();
             fileNumBean.setGroupName(k);
@@ -322,7 +323,7 @@ public class UiUtils {
                 try {
                     String fileName;
                     File file = new File(p);
-                    if (showFileType) {
+                    if (fileConfigBean.isShowFileType()) {
                         fileName = file.getName();
                     } else {
                         fileName = getFileName(file);

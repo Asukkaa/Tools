@@ -45,4 +45,14 @@ public class FileConfigBean {
      */
     List<String> filterExtensionList;
 
+    /**
+     * 最大图片匹配数
+     */
+    int maxImgNum;
+
+    /**
+     * 文件名称分割符
+     */
+    String subCode;
+
 }

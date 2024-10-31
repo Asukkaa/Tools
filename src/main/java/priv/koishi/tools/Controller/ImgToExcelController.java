@@ -133,7 +133,7 @@ public class ImgToExcelController extends ToolsProperties {
     private ChoiceBox<String> hideFileType_Img, excelType_Img;
 
     @FXML
-    private Label inPath_Img, outPath_Img, excelPath_Img, fileNumber_Img, log_Img;
+    private Label inPath_Img, outPath_Img, excelPath_Img, fileNumber_Img, log_Img, maxImg_Img;
 
     @FXML
     private Button fileButton_Img, reselectButton_Img, clearButton_Img, exportButton_Img;
@@ -142,7 +142,7 @@ public class ImgToExcelController extends ToolsProperties {
     private CheckBox jpg_Img, png_Img, jpeg_Img, recursion_Img, showFileType_Img, openDirectory_Img, openFile_Img, noImg_Img;
 
     @FXML
-    private TextField imgWidth_Img, imgHeight_Img, excelName_Img, sheetOutName_Img, subCode_Img, startRow_Img, startCell_Img, readRow_Img, readCell_Img, maxRow_Img;
+    private TextField imgWidth_Img, imgHeight_Img, excelName_Img, sheetOutName_Img, subCode_Img, startRow_Img, startCell_Img, readRow_Img, readCell_Img, maxRow_Img, maxImgNum_Img;
 
     /**
      * 组件自适应宽高
@@ -172,7 +172,9 @@ public class ImgToExcelController extends ToolsProperties {
         Button exportAll = (Button) scene.lookup("#exportButton_Img");
         Button reselect = (Button) scene.lookup("#reselectButton_Img");
         CheckBox noImg = (CheckBox) scene.lookup("#noImg_Img");
-        fileNum.setPrefWidth(tableWidth - removeAll.getWidth() - exportAll.getWidth() - reselect.getWidth() - noImg.getWidth() - 50);
+        Label maxImg = (Label) scene.lookup("#maxImg_Img");
+        TextField maxImgNum = (TextField) scene.lookup("#maxImgNum_Img");
+        fileNum.setPrefWidth(tableWidth - removeAll.getWidth() - exportAll.getWidth() - reselect.getWidth() - noImg.getWidth() - maxImg.getWidth() - maxImgNum.getWidth() - 70);
     }
 
     /**
@@ -180,16 +182,23 @@ public class ImgToExcelController extends ToolsProperties {
      */
     private void addInFile(File selectedFile, List<String> filterExtensionList) throws Exception {
         FileConfigBean fileConfigBean = new FileConfigBean();
+        String maxImgValue = maxImgNum_Img.getText();
+        int maxImgNum = 0;
+        if (StringUtils.isNotBlank(maxImgValue)) {
+            maxImgNum = Integer.parseInt(maxImgValue);
+        }
         fileConfigBean.setShowFileType(showFileType_Img.isSelected())
                 .setShowHideFile(hideFileType_Img.getValue())
                 .setFilterExtensionList(filterExtensionList)
                 .setRecursion(recursion_Img.isSelected())
+                .setSubCode(subCode_Img.getText())
+                .setMaxImgNum(maxImgNum)
                 .setInFile(selectedFile);
         inFileList = readAllFiles(fileConfigBean);
         //列表中有excel分组后再匹配数据
         ObservableList<FileNumBean> fileNumList = tableView_Img.getItems();
         if (CollectionUtils.isNotEmpty(fileNumList)) {
-            matchGroupData(fileNumList, inFileList, subCode_Img.getText(), showFileType_Img.isSelected());
+            matchGroupData(fileNumList, inFileList, fileConfigBean);
             TaskBean<FileNumBean> taskBean = new TaskBean<>();
             taskBean.setTableView(tableView_Img)
                     .setTabId(tabId);
@@ -203,6 +212,11 @@ public class ImgToExcelController extends ToolsProperties {
     private Task<List<FileNumBean>> addInData() {
         removeAll();
         //组装数据
+        String maxImgValue = maxImgNum_Img.getText();
+        int maxImgNum = 0;
+        if (StringUtils.isNotBlank(maxImgValue)) {
+            maxImgNum = Integer.parseInt(maxImgValue);
+        }
         int readRowValue = setDefaultIntValue(readRow_Img, defaultReadRow, 0, null);
         int readCellValue = setDefaultIntValue(readCell_Img, defaultReadCell, 0, null);
         int maxRowValue = setDefaultIntValue(maxRow_Img, -1, 1, null);
@@ -219,13 +233,18 @@ public class ImgToExcelController extends ToolsProperties {
                 .setProgressBar(progressBar_Img)
                 .setTableView(tableView_Img)
                 .setInFileList(inFileList)
+                .setMaxImgNum(maxImgNum)
                 .setTabId(tabId);
         //获取Task任务
         Task<List<FileNumBean>> readExcelTask = readExcel(excelConfigBean, taskBean);
         //绑定带进度条的线程
         bindingProgressBarTask(readExcelTask, taskBean);
         throwTaskException(readExcelTask, taskBean);
-        readExcelTask.setOnSucceeded(t -> progressBar_Img.setVisible(false));
+        readExcelTask.setOnSucceeded(t -> {
+            progressBar_Img.setVisible(false);
+            progressBar_Img.progressProperty().unbind();
+            fileNumber_Img.textProperty().unbind();
+        });
         executorService.execute(readExcelTask);
         //设置javafx单元格宽度
         return tableViewNumImgAdaption(readExcelTask, groupId_Img, tableView_Img, groupName_Img.prefWidthProperty(), groupNumber_Img.prefWidthProperty(), fileName_Img);
@@ -264,6 +283,7 @@ public class ImgToExcelController extends ToolsProperties {
         addToolTip(startCell_Img, "只能填数字，不填默认为 " + defaultStartCell);
         addToolTip(readRow_Img, "只能填数字，不填默认为 " + defaultReadRow + " 从第 " + (defaultReadRow + 1) + " 行读取");
         addToolTip(readCell_Img, "只能填数字，不填默认为 " + defaultReadCell + " ，从第 " + (defaultReadCell + 1) + " 列读取");
+        addToolTip(maxImgNum_Img, "只能填正整数，不填默认为不限制");
         addNumImgToolTip(recursion_Img, subCode_Img, excelName_Img, sheetOutName_Img, maxRow_Img);
     }
 
@@ -370,20 +390,16 @@ public class ImgToExcelController extends ToolsProperties {
                 .setOutPath(outFilePath)
                 .setImgHeight(imgHeight)
                 .setImgWidth(imgWidth)
-                .setSubCode(subCode)
                 .setSheet(sheetName);
         Task<List<FileNumBean>> reselectTask = reselect();
         reselectTask.setOnSucceeded(t -> {
             TaskBean<FileNumBean> taskBean = new TaskBean<>();
             taskBean.setShowFileType(showFileType_Img.isSelected())
                     .setBeanList(reselectTask.getValue())
-                    .setSubCode(subCode_Img.getText())
                     .setProgressBar(progressBar_Img)
                     .setTableView(tableView_Img)
                     .setMassageLabel(log_Img)
                     .setTabId(tabId);
-            progressBar_Img.progressProperty().unbind();
-            fileNumber_Img.textProperty().unbind();
             //获取Task任务
             Task<SXSSFWorkbook> buildExcelTask = buildImgGroupExcel(taskBean, excelConfigBean);
             //线程成功后保存excel
@@ -531,6 +547,9 @@ public class ImgToExcelController extends ToolsProperties {
         }
     }
 
+    /**
+     * 图片宽度设置监听
+     */
     @FXML
     private void imgWidthHandleKeyTyped() {
         if (!isInIntegerRange(imgWidth_Img.getText(), 0, null)) {
@@ -539,12 +558,26 @@ public class ImgToExcelController extends ToolsProperties {
         aadValueToolTip(imgWidth_Img, "只能填数字，不填默认为 " + defaultImgWidth);
     }
 
+    /**
+     * 图片高度设置监听
+     */
     @FXML
     private void imgHeightHandleKeyTyped() {
         if (!isInIntegerRange(imgHeight_Img.getText(), 0, null)) {
             imgHeight_Img.setText("");
         }
         aadValueToolTip(imgHeight_Img, "只能填数字，不填默认为 " + defaultImgHeight);
+    }
+
+    /**
+     * 最大匹配数量设置监听
+     */
+    @FXML
+    public void maxImgNumKeyTyped() {
+        if (!isInIntegerRange(maxImgNum_Img.getText(), 1, null)) {
+            maxImgNum_Img.setText("");
+        }
+        aadValueToolTip(maxImgNum_Img, "只能填正整数，不填默不限制");
     }
 
 }
