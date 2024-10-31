@@ -153,16 +153,17 @@ public class FileUtils {
      * 读取文件夹下的文件名称
      */
     public static List<File> readAllFiles(FileConfigBean fileConfigBean) {
+        File file = new File(fileConfigBean.getInFile().getPath());
         List<File> fileList = new ArrayList<>();
-        readFiles(fileConfigBean, fileList);
+        readFiles(fileConfigBean, fileList, file);
         return fileList;
     }
 
     /**
      * 递归读取文件夹下的文件名称
      */
-    public static void readFiles(FileConfigBean fileConfigBean, List<File> fileList) {
-        File[] files = fileConfigBean.getInFile().listFiles();
+    public static void readFiles(FileConfigBean fileConfigBean, List<File> fileList, File f) {
+        File[] files = f.listFiles();
         String showHideFile = fileConfigBean.getShowHideFile();
         String showDirectoryName = fileConfigBean.getShowDirectoryName();
         boolean recursion = fileConfigBean.isRecursion();
@@ -180,7 +181,7 @@ public class FileUtils {
                         }
                     }
                     if (recursion) {
-                        readFiles(fileConfigBean, fileList);
+                        readFiles(fileConfigBean, fileList, file);
                     }
                 } else if (file.isDirectory()) {
                     if (("不查询隐藏文件".equals(showHideFile) && file.isHidden()) || ("只查询隐藏文件".equals(showHideFile) && !file.isHidden())) {
@@ -190,7 +191,7 @@ public class FileUtils {
                         fileList.add(file);
                     }
                     if (recursion) {
-                        readFiles(fileConfigBean, fileList);
+                        readFiles(fileConfigBean, fileList, file);
                     }
                 }
             }

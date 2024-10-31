@@ -38,7 +38,6 @@ import static priv.koishi.tools.Utils.CommonUtils.isInIntegerRange;
 import static priv.koishi.tools.Utils.FileUtils.readAllFiles;
 import static priv.koishi.tools.Utils.FileUtils.updatePath;
 import static priv.koishi.tools.Utils.TaskUtils.bindingProgressBarTask;
-import static priv.koishi.tools.Utils.TaskUtils.throwTaskException;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
 /**
@@ -231,7 +230,6 @@ public class FileRenameExcelController extends ToolsProperties {
         if (selectedFile != null) {
             String selectedFilePath = selectedFile.getAbsolutePath();
             updatePath(configFile, "inFilePath", selectedFilePath);
-            removeAll();
             inPath_Re.setText(selectedFilePath);
             addToolTip(inPath_Re, selectedFilePath);
             //读取数据

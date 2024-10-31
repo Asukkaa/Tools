@@ -237,7 +237,6 @@ public class FileNameToExcelController extends ToolsProperties {
         if (selectedFile != null) {
             String selectedFilePath = selectedFile.getPath();
             updatePath(configFile, "inFilePath", selectedFilePath);
-            removeAll();
             inPath_Name.setText(selectedFilePath);
             addToolTip(inPath_Name, selectedFilePath);
             //读取数据

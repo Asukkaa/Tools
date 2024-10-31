@@ -143,7 +143,6 @@ public class ReadDataService {
                 updateMessage("共有" + inFileSize + " 个文件");
                 //匹配数据
                 showFileData(fileBeans, taskBean);
-                taskBean.getProgressBar().setVisible(false);
                 return null;
             }
         };
