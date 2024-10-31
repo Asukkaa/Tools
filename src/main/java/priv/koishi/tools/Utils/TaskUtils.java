@@ -41,6 +41,7 @@ public class TaskUtils {
             massageLabel.textProperty().unbind();
             massageLabel.textProperty().bind(task.messageProperty());
         }
+        throwTaskException(task, taskBean);
     }
 
     /**
@@ -52,7 +53,6 @@ public class TaskUtils {
         buildExcelTask.setOnSucceeded(t -> {
             SXSSFWorkbook workbook = buildExcelTask.getValue();
             Task<String> saveExceltask = saveExceltask(excelConfigBean, workbook);
-            throwTaskException(saveExceltask,taskBean);
             bindingProgressBarTask(saveExceltask, taskBean);
             saveExceltask.setOnSucceeded(s -> {
                 String excelPath = saveExceltask.getValue();
@@ -66,12 +66,8 @@ public class TaskUtils {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-                ProgressBar progressBar = taskBean.getProgressBar();
-                progressBar.setVisible(false);
-                progressBar.progressProperty().unbind();
-                Label massageLabel = taskBean.getMassageLabel();
-                massageLabel.setTextFill(Color.GREEN);
-                massageLabel.textProperty().unbind();
+                taskUnbind(taskBean);
+                taskBean.getMassageLabel().setTextFill(Color.GREEN);
             });
             executorService.execute(saveExceltask);
         });
@@ -83,13 +79,26 @@ public class TaskUtils {
      */
     public static void throwTaskException(Task<?> task, TaskBean<?> taskBean) {
         task.setOnFailed(event -> {
-            taskBean.getMassageLabel().textProperty().unbind();
-            taskBean.getProgressBar().setVisible(false);
-            taskBean.getProgressBar().progressProperty().unbind();
+            taskUnbind(taskBean);
             // 获取抛出的异常
             Throwable ex = task.getException();
             throw new RuntimeException(ex);
         });
+    }
+
+    /**
+     * 线程组件解绑
+     */
+    public static void taskUnbind(TaskBean<?> taskBean) {
+        Label massageLabel = taskBean.getMassageLabel();
+        ProgressBar progressBar = taskBean.getProgressBar();
+        if (massageLabel != null) {
+            massageLabel.textProperty().unbind();
+        }
+        if (progressBar != null) {
+            progressBar.setVisible(false);
+            progressBar.progressProperty().unbind();
+        }
     }
 
     /**

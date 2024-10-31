@@ -219,12 +219,7 @@ public class FileNumToExcelController extends ToolsProperties {
                 .setTabId(tabId);
         //获取Task任务
         Task<List<FileNumBean>> readExcelTask = readExcel(excelConfigBean, taskBean);
-        throwTaskException(readExcelTask, taskBean);
-        readExcelTask.setOnSucceeded(t -> {
-            progressBar_Num.setVisible(false);
-            progressBar_Num.progressProperty().unbind();
-            fileNumber_Num.textProperty().unbind();
-        });
+        readExcelTask.setOnSucceeded(t -> taskUnbind(taskBean));
         //绑定带进度条的线程
         bindingProgressBarTask(readExcelTask, taskBean);
         //使用新线程启动
@@ -366,7 +361,6 @@ public class FileNumToExcelController extends ToolsProperties {
                     .setTabId(tabId);
             //获取Task任务
             Task<SXSSFWorkbook> buildExcelTask = buildNameGroupNumExcel(taskBean, excelConfigBean);
-            throwTaskException(buildExcelTask,taskBean);
             //线程成功后保存excel
             saveExcelOnSucceeded(excelConfigBean, taskBean, buildExcelTask, openDirectory_Num, openFile_Num, executorService);
         });

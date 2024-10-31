@@ -239,12 +239,7 @@ public class ImgToExcelController extends ToolsProperties {
         Task<List<FileNumBean>> readExcelTask = readExcel(excelConfigBean, taskBean);
         //绑定带进度条的线程
         bindingProgressBarTask(readExcelTask, taskBean);
-        throwTaskException(readExcelTask, taskBean);
-        readExcelTask.setOnSucceeded(t -> {
-            progressBar_Img.setVisible(false);
-            progressBar_Img.progressProperty().unbind();
-            fileNumber_Img.textProperty().unbind();
-        });
+        readExcelTask.setOnSucceeded(t -> taskUnbind(taskBean));
         executorService.execute(readExcelTask);
         //设置javafx单元格宽度
         return tableViewNumImgAdaption(readExcelTask, groupId_Img, tableView_Img, groupName_Img.prefWidthProperty(), groupNumber_Img.prefWidthProperty(), fileName_Img);

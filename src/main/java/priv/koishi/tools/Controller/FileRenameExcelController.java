@@ -174,7 +174,6 @@ public class FileRenameExcelController extends ToolsProperties {
         //绑定带进度条的线程
         bindingProgressBarTask(readFileTask, taskBean);
         readFileTask.setOnSucceeded(t -> progressBar_Re.setVisible(false));
-        throwTaskException(readFileTask, taskBean);
         executorService.execute(readFileTask);
         //设置javafx单元格宽度
         id_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.04));
