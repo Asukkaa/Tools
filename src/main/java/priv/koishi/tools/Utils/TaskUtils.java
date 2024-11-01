@@ -80,6 +80,7 @@ public class TaskUtils {
                     }
                     taskUnbind(taskBean);
                 }
+                taskBean.getMassageLabel().setText("所有数据已保存到： " + excelPath);
                 taskBean.getMassageLabel().setTextFill(Color.GREEN);
             });
             executorService.execute(saveExceltask);
@@ -123,9 +124,7 @@ public class TaskUtils {
             @Override
             protected String call() throws Exception {
                 updateMessage("正在保存excel");
-                String excelPath = saveExcel(workbook, excelConfigBean);
-                updateMessage("所有数据已保存到： " + excelPath);
-                return excelPath;
+                return saveExcel(workbook, excelConfigBean);
             }
         };
     }

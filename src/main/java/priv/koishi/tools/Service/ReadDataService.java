@@ -101,9 +101,11 @@ public class ReadDataService {
                     fileConfigBean.setMaxImgNum(taskBean.getMaxImgNum())
                             .setShowFileType(taskBean.isShowFileType())
                             .setSubCode(taskBean.getSubCode());
-                    matchGroupData(fileNumBeanList, inFileList, fileConfigBean);
+                    int imgNum = matchGroupData(fileNumBeanList, inFileList, fileConfigBean);
+                    updateMessage("共有 " + fileNumBeanList.size() + " 组数据，匹配到 " + imgNum + " 张图片");
+                } else {
+                    updateMessage("共有 " + fileNumBeanList.size() + " 组数据");
                 }
-                updateMessage("共有" + fileNumBeanList.size() + " 组数据");
                 //匹配数据
                 return showReadExcelData(fileNumBeanList, taskBean);
             }

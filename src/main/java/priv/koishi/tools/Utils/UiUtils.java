@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static priv.koishi.tools.Utils.CommonUtils.*;
 import static priv.koishi.tools.Utils.FileUtils.*;
@@ -290,10 +291,11 @@ public class UiUtils {
     /**
      * 匹配excel分组与文件夹下文件
      */
-    public static void matchGroupData(List<FileNumBean> fileNumBeans, List<File> inFileList, FileConfigBean fileConfigBean) {
+    public static int matchGroupData(List<FileNumBean> fileNumBeans, List<File> inFileList, FileConfigBean fileConfigBean) {
         List<String> paths = new ArrayList<>();
         inFileList.forEach(file -> paths.add(file.getPath()));
         List<FileNumBean> fileNumList = buildNameGroupData(paths, fileConfigBean);
+        AtomicInteger imgNum = new AtomicInteger();
         fileNumBeans.forEach(bean1 -> {
             bean1.setGroupNumber(0);
             bean1.setFileName("");
@@ -305,8 +307,10 @@ public class UiUtils {
                 bean1.setGroupNumber(matched.getGroupNumber());
                 bean1.setFileNameList(matched.getFileNameList());
                 bean1.setFilePathList(matched.getFilePathList());
+                imgNum.addAndGet(matched.getFilePathList().size());
             });
         });
+        return imgNum.get();
     }
 
     /**

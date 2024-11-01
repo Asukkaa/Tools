@@ -186,11 +186,13 @@ public class FileNumToExcelController extends ToolsProperties {
         //列表中有excel分组后再匹配数据
         ObservableList<FileNumBean> fileNumList = tableView_Num.getItems();
         if (CollectionUtils.isNotEmpty(fileNumList)) {
-            matchGroupData(fileNumList, inFileList, fileConfigBean);
+            int imgNum = matchGroupData(fileNumList, inFileList, fileConfigBean);
             TaskBean<FileNumBean> taskBean = new TaskBean<>();
             taskBean.setTableView(tableView_Num)
                     .setTabId(tabId);
             showReadExcelData(fileNumList, taskBean);
+            fileNumber_Num.setText("共有 " + fileNumList.size() + " 组数据，匹配到 " + imgNum + " 张图片");
+            System.gc();
         }
     }
 
