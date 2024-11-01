@@ -70,6 +70,7 @@ public class TaskUtils {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 } finally {
+                    //导出结束后重新查询列表
                     Button button = taskBean.getReselectButton();
                     if (button != null) {
                         EventHandler<ActionEvent> handler = button.getOnAction();
