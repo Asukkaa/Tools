@@ -20,6 +20,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import priv.koishi.tools.Bean.FileConfigBean;
 import priv.koishi.tools.Bean.FileNumBean;
+import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Enum.SelectItemsEnums;
 
 import java.io.File;
@@ -28,6 +29,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static priv.koishi.tools.Service.ReadDataService.showReadExcelData;
 import static priv.koishi.tools.Utils.CommonUtils.*;
 import static priv.koishi.tools.Utils.FileUtils.*;
 
@@ -383,6 +385,19 @@ public class UiUtils {
             choiceBox.setItems(selectItemsEnums.getItems(1));
             choiceBox.setValue(selectItemsEnums.getSelectItemsEnum(1).getValue(0));
         }
+    }
+
+    /**
+     * 分组匹配数
+     */
+    public static void machGroup(FileConfigBean fileConfigBean, ObservableList<FileNumBean> fileNumList, List<File> inFileList,
+                                 TableView<FileNumBean> tableViewImg, String tabId, Label fileNumberImg) throws Exception {
+        int imgNum = matchGroupData(fileNumList, inFileList, fileConfigBean);
+        TaskBean<FileNumBean> taskBean = new TaskBean<>();
+        taskBean.setTableView(tableViewImg)
+                .setTabId(tabId);
+        showReadExcelData(fileNumList, taskBean);
+        fileNumberImg.setText("共有 " + fileNumList.size() + " 组数据，匹配到 " + imgNum + " 张图片");
     }
 
 }

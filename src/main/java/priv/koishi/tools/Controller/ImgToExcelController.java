@@ -33,7 +33,6 @@ import java.util.concurrent.ExecutorService;
 
 import static priv.koishi.tools.Service.ImgToExcelService.buildImgGroupExcel;
 import static priv.koishi.tools.Service.ReadDataService.readExcel;
-import static priv.koishi.tools.Service.ReadDataService.showReadExcelData;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
 import static priv.koishi.tools.Utils.CommonUtils.isInIntegerRange;
 import static priv.koishi.tools.Utils.FileUtils.*;
@@ -198,13 +197,7 @@ public class ImgToExcelController extends ToolsProperties {
         //列表中有excel分组后再匹配数据
         ObservableList<FileNumBean> fileNumList = tableView_Img.getItems();
         if (CollectionUtils.isNotEmpty(fileNumList)) {
-            int imgNum = matchGroupData(fileNumList, inFileList, fileConfigBean);
-            TaskBean<FileNumBean> taskBean = new TaskBean<>();
-            taskBean.setTableView(tableView_Img)
-                    .setTabId(tabId);
-            showReadExcelData(fileNumList, taskBean);
-            fileNumber_Img.setText("共有 " + fileNumList.size() + " 组数据，匹配到 " + imgNum + " 张图片");
-            System.gc();
+            machGroup(fileConfigBean, fileNumList, inFileList, tableView_Img, tabId, fileNumber_Img);
         }
     }
 
