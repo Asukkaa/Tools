@@ -203,6 +203,7 @@ public class ImgToExcelController extends ToolsProperties {
             taskBean.setTableView(tableView_Img)
                     .setTabId(tabId);
             showReadExcelData(fileNumList, taskBean);
+            System.gc();
         }
     }
 
@@ -390,6 +391,7 @@ public class ImgToExcelController extends ToolsProperties {
         reselectTask.setOnSucceeded(t -> {
             TaskBean<FileNumBean> taskBean = new TaskBean<>();
             taskBean.setShowFileType(showFileType_Img.isSelected())
+                    .setReselectButton(reselectButton_Img)
                     .setBeanList(reselectTask.getValue())
                     .setProgressBar(progressBar_Img)
                     .setTableView(tableView_Img)

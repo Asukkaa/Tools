@@ -1,6 +1,9 @@
 package priv.koishi.tools.Utils;
 
 import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
@@ -42,6 +45,7 @@ public class TaskUtils {
             massageLabel.textProperty().bind(task.messageProperty());
         }
         throwTaskException(task, taskBean);
+        System.gc();
     }
 
     /**
@@ -65,8 +69,16 @@ public class TaskUtils {
                     }
                 } catch (IOException e) {
                     throw new RuntimeException(e);
+                } finally {
+                    Button button = taskBean.getReselectButton();
+                    if (button != null) {
+                        EventHandler<ActionEvent> handler = button.getOnAction();
+                        if (handler != null) {
+                            handler.handle(new ActionEvent(button, button));
+                        }
+                    }
+                    taskUnbind(taskBean);
                 }
-                taskUnbind(taskBean);
                 taskBean.getMassageLabel().setTextFill(Color.GREEN);
             });
             executorService.execute(saveExceltask);
@@ -99,6 +111,7 @@ public class TaskUtils {
             progressBar.setVisible(false);
             progressBar.progressProperty().unbind();
         }
+        System.gc();
     }
 
     /**

@@ -1,9 +1,6 @@
 package priv.koishi.tools.Bean;
 
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -68,5 +65,10 @@ public class TaskBean<T> {
      * 最大图片匹配数
      */
     int maxImgNum;
+
+    /**
+     * 查询查询按钮
+     */
+    Button reselectButton;
 
 }

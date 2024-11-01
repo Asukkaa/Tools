@@ -153,7 +153,7 @@ public class FileUtils {
      * 读取文件夹下的文件名称
      */
     public static List<File> readAllFiles(FileConfigBean fileConfigBean) {
-        File file = new File(fileConfigBean.getInFile().getPath());
+        File file = fileConfigBean.getInFile();
         List<File> fileList = new ArrayList<>();
         readFiles(fileConfigBean, fileList, file);
         return fileList;

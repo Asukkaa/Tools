@@ -32,28 +32,6 @@ import static priv.koishi.tools.Utils.FileUtils.getFileType;
 public class ImgToExcelService {
 
     /**
-     * excel输出起始行
-     */
-    static int startRowNum;
-
-    /**
-     * excel输出起始列
-     */
-    static int startCellNum;
-
-    /**
-     * 要输出的表
-     */
-    static XSSFSheet sheet;
-
-    /**
-     * 要输出的excel文件
-     */
-    static XSSFWorkbook workbook;
-
-    static SXSSFWorkbook sxssfWorkbook;
-
-    /**
      * 构建分组的图片excel
      */
     public static Task<SXSSFWorkbook> buildImgGroupExcel(TaskBean<FileNumBean> taskBean, ExcelConfigBean excelConfigBean) {
@@ -67,14 +45,15 @@ public class ImgToExcelService {
                 }
                 updateMessage("正在导出数据");
                 FileInputStream inputStream = new FileInputStream(inputFile);
-                workbook = new XSSFWorkbook(inputStream);
-                sxssfWorkbook = new SXSSFWorkbook(workbook, 50);
+                XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
+                SXSSFWorkbook sxssfWorkbook = new SXSSFWorkbook(workbook, 50);
                 String sheetName = excelConfigBean.getSheet();
-                startRowNum = excelConfigBean.getStartRowNum();
-                startCellNum = excelConfigBean.getStartCellNum();
+                int startRowNum = excelConfigBean.getStartRowNum();
+                int startCellNum = excelConfigBean.getStartCellNum();
                 List<FileNumBean> fileBeans = taskBean.getBeanList();
                 int fileNum = fileBeans.size();
                 updateMessage("已识别到 " + fileNum + " 组数据");
+                XSSFSheet sheet;
                 if (StringUtils.isBlank(sheetName)) {
                     sheet = sxssfWorkbook.getXSSFWorkbook().getSheetAt(0);
                 } else {
@@ -83,7 +62,7 @@ public class ImgToExcelService {
                 for (int i = 0; i < fileNum; i++) {
                     FileNumBean fileBean = fileBeans.get(i);
                     List<String> imgList = fileBean.getFilePathList();
-                    buildImgExcel(imgList, excelConfigBean);
+                    buildImgExcel(imgList, excelConfigBean, startCellNum, startRowNum, sheet, sxssfWorkbook);
                     updateMessage("正在输出第" + (i + 1) + "/" + fileNum + "组数据");
                     updateProgress(i + 1, fileNum);
                     startRowNum++;
@@ -97,7 +76,8 @@ public class ImgToExcelService {
     /**
      * 插入图片
      */
-    private static void buildImgExcel(List<String> imgList, ExcelConfigBean excelConfigBean) throws IOException {
+    private static void buildImgExcel(List<String> imgList, ExcelConfigBean excelConfigBean, int startCellNum,
+                                      int startRowNum, XSSFSheet sheet, SXSSFWorkbook sxssfWorkbook) throws IOException {
         int imgWidth = excelConfigBean.getImgWidth();
         int imgHeight = excelConfigBean.getImgHeight();
         int cellNum = startCellNum;
@@ -116,7 +96,7 @@ public class ImgToExcelService {
         } else {
             for (String i : imgList) {
                 // 将图片插入Excel单元格
-                CreationHelper helper = workbook.getCreationHelper();
+                CreationHelper helper = sxssfWorkbook.getCreationHelper();
                 Drawing<XSSFShape> drawing = sheet.createDrawingPatriarch();
                 ClientAnchor anchor = helper.createClientAnchor();
                 // 设置图片的起始位置以及大小

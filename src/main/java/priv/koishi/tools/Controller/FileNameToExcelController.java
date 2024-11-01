@@ -324,6 +324,7 @@ public class FileNameToExcelController extends ToolsProperties {
                 .setSheet(sheetName);
         TaskBean<FileBean> taskBean = new TaskBean<>();
         taskBean.setShowFileType(showFileType_Name.isSelected())
+                .setReselectButton(reselectButton_Name)
                 .setProgressBar(progressBar_Name)
                 .setTableView(tableView_Name)
                 .setMassageLabel(log_Name)

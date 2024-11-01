@@ -6,7 +6,7 @@
 
     <groupId>priv.Koishi</groupId>
     <artifactId>Tools</artifactId>
-    <version>0.2.5</version>
+    <version>0.2.6</version>
     <name>Tools</name>
 
     <properties>

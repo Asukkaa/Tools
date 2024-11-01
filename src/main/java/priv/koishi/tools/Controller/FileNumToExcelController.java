@@ -352,6 +352,7 @@ public class FileNumToExcelController extends ToolsProperties {
         reselectTask.setOnSucceeded(event -> {
             TaskBean<FileNumBean> taskBean = new TaskBean<>();
             taskBean.setShowFileType(showFileType_Num.isSelected())
+                    .setReselectButton(reselectButton_Num)
                     .setBeanList(reselectTask.getValue())
                     .setSubCode(subCode_Num.getText())
                     .setProgressBar(progressBar_Num)
