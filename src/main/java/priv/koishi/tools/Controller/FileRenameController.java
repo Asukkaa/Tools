@@ -45,7 +45,7 @@ import static priv.koishi.tools.Utils.UiUtils.*;
  * Date:2024-10-18
  * Time:下午4:36
  */
-public class FileRenameExcelController extends ToolsProperties {
+public class FileRenameController extends ToolsProperties {
 
     /**
      * 要处理的文件夹路径

@@ -8,7 +8,7 @@ import javafx.stage.Stage;
 
 import static priv.koishi.tools.Controller.FileNameToExcelController.fileNameToExcelAdaption;
 import static priv.koishi.tools.Controller.FileNumToExcelController.fileNumToExcelAdaption;
-import static priv.koishi.tools.Controller.FileRenameExcelController.fileRenameAdaption;
+import static priv.koishi.tools.Controller.FileRenameController.fileRenameAdaption;
 import static priv.koishi.tools.Controller.ImgToExcelController.imgToExcelAdaption;
 
 /**
