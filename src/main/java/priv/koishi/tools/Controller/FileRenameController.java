@@ -19,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import priv.koishi.tools.Bean.FileBean;
 import priv.koishi.tools.Bean.FileConfigBean;
 import priv.koishi.tools.Bean.TaskBean;
+import priv.koishi.tools.EditingCell.EditingCell;
 import priv.koishi.tools.Properties.ToolsProperties;
 import priv.koishi.tools.ThreadPool.ToolsThreadPoolExecutor;
 
@@ -189,7 +190,12 @@ public class FileRenameController extends ToolsProperties {
         Task<Void> readFileTask = readFile(taskBean);
         //绑定带进度条的线程
         bindingProgressBarTask(readFileTask, taskBean);
-        readFileTask.setOnSucceeded(t -> taskUnbind(taskBean));
+        readFileTask.setOnSucceeded(t -> {
+            //表格设置为可编辑
+            tableView_Re.setEditable(true);
+            rename_Re.setCellFactory((tableColumn) -> new EditingCell<>(FileBean::setRename));
+            taskUnbind(taskBean);
+        });
         executorService.execute(readFileTask);
         //设置javafx单元格宽度
         id_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.04));
