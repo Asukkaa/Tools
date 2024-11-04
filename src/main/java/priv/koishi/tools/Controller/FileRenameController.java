@@ -38,6 +38,7 @@ import static priv.koishi.tools.Utils.CommonUtils.isInIntegerRange;
 import static priv.koishi.tools.Utils.FileUtils.readAllFiles;
 import static priv.koishi.tools.Utils.FileUtils.updatePath;
 import static priv.koishi.tools.Utils.TaskUtils.bindingProgressBarTask;
+import static priv.koishi.tools.Utils.TaskUtils.taskUnbind;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
 /**
@@ -68,6 +69,21 @@ public class FileRenameController extends ToolsProperties {
     static String tabId = "_Re";
 
     /**
+     * 文件名起始编号
+     */
+    static int defaultStartNameNum = 1;
+
+    /**
+     * 默认起始读取行
+     */
+    static int defaultReadRow = 0;
+
+    /**
+     * 默认起始读取列
+     */
+    static int defaultReadCell = 0;
+
+    /**
      * 配置文件路径
      */
     static String configFile = "config/fileRenameConfig.properties";
@@ -83,9 +99,6 @@ public class FileRenameController extends ToolsProperties {
     ExecutorService executorService = toolsThreadPoolExecutor.createNewThreadPool();
 
     @FXML
-    private VBox vbox_Re, codeRenameVBox_Re, strRenameVBox_Re, excelRenameVBox_Re;
-
-    @FXML
     private ProgressBar progressBar_Re;
 
     @FXML
@@ -95,25 +108,28 @@ public class FileRenameController extends ToolsProperties {
     private TableColumn<FileBean, Integer> id_Re;
 
     @FXML
-    private TableColumn<FileBean, String> name_Re, rename_Re, path_Re, size_Re, fileType_Re, creatDate_Re, updateDate_Re;
+    private CheckBox openDirectory_Re, addSpace_Re;
 
     @FXML
-    private HBox renameTypeHBox_Re, behaviorHBox_Re;
+    private HBox renameTypeHBox_Re, behaviorHBox_Re, targetStrHBox_Re;
+
+    @FXML
+    private VBox vbox_Re, codeRenameVBox_Re, strRenameVBox_Re, excelRenameVBox_Re;
 
     @FXML
     private Label excelPath_Re, fileNumber_Re, inPath_Re, log_Re, typeLabel_Re;
 
     @FXML
-    private CheckBox openDirectory_Re, addSpace_Re;
+    private Button fileButton_Re, clearButton_Re, exportButton_Re, reselectButton_Re;
+
+    @FXML
+    private TableColumn<FileBean, String> name_Re, rename_Re, path_Re, size_Re, fileType_Re, creatDate_Re, updateDate_Re;
 
     @FXML
     private ChoiceBox<String> hideFileType_Re, directoryNameType_Re, renameType_Re, subCode_Re, differenceCode_Re, targetStr_Re, beforeBehavior_Re, afterBehavior_Re, renameBehavior_Re;
 
     @FXML
     private TextField sheetOutName_Re, filterFileType_Re, readRow_Re, readCell_Re, maxRow_Re, startName_Re, nameNum_Re, startSize_Re, before_Re, after_Re, renameStr_Re, beforeValue_Re, afterValue_Re, renameValue_Re;
-
-    @FXML
-    private Button fileButton_Re, clearButton_Re, exportButton_Re, reselectButton_Re;
 
     /**
      * 组件自适应宽高
@@ -164,15 +180,16 @@ public class FileRenameController extends ToolsProperties {
         TaskBean<FileBean> taskBean = new TaskBean<>();
         taskBean.setShowFileType(false)
                 .setProgressBar(progressBar_Re)
-                .setTableColumn(size_Re)
+                .setMassageLabel(fileNumber_Re)
                 .setTableView(tableView_Re)
                 .setInFileList(inFileList)
+                .setTableColumn(size_Re)
                 .setTabId(tabId);
         //获取Task任务
         Task<Void> readFileTask = readFile(taskBean);
         //绑定带进度条的线程
         bindingProgressBarTask(readFileTask, taskBean);
-        readFileTask.setOnSucceeded(t -> progressBar_Re.setVisible(false));
+        readFileTask.setOnSucceeded(t -> taskUnbind(taskBean));
         executorService.execute(readFileTask);
         //设置javafx单元格宽度
         id_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.04));
@@ -197,20 +214,42 @@ public class FileRenameController extends ToolsProperties {
         inFilePath = prop.getProperty("inFilePath");
         outFileName = prop.getProperty("outFileName");
         excelInPath = prop.getProperty("excelInPath");
+        defaultReadRow = Integer.parseInt(prop.getProperty("defaultReadRow"));
+        defaultReadCell = Integer.parseInt(prop.getProperty("defaultReadCell"));
+        defaultStartNameNum = Integer.parseInt(prop.getProperty("defaultStartNameNum"));
+        input.close();
     }
 
     /**
      * 界面初始化
      */
     @FXML
-    private void initialize() {
-        vbox_Re.getChildren().remove(excelRenameVBox_Re);
+    private void initialize() throws IOException {
+        getConfig();
         vbox_Re.getChildren().remove(strRenameVBox_Re);
-        addToolTip(startName_Re, "只能填数字，不填默认为0");
+        vbox_Re.getChildren().remove(excelRenameVBox_Re);
+        String optionTip = """
+                插入：在匹配的字符位置插入所填写的字符串
+                替换：将匹配的字符串替换为所填写的字符串
+                删除：只删除指定位置的字符
+                移除：移除指定位置左侧或右侧所有字符串""";
+        addToolTip(afterBehavior_Re, optionTip);
+        addToolTip(beforeBehavior_Re, optionTip);
         addToolTip(startSize_Re, "只能填数字，0为不限制编号位数，不填默认为0");
+        addToolTip(renameStr_Re, "填写后会将匹配到的字符串替换为所填写的字符串");
         addToolTip(sheetOutName_Re, "须填与excel模板相同的表名才能正常读取模板");
+        addToolTip(renameValue_Re, "填写后会根据其他配置项处理文件名中所匹配的字符");
+        addToolTip(startName_Re, "只能填数字，不填默认为 " + defaultStartNameNum);
         addToolTip(nameNum_Re, "只能填数字，0为不使用分隔符进行分组重命名，不填默认为0");
+        addToolTip(afterValue_Re, "将所填字符根据选项插入或替换目标字符左侧所匹配的字符");
+        addToolTip(beforeValue_Re, "将所填字符根据选项插入或替换目标字符右侧所匹配的字符");
+        addToolTip(maxRow_Re, "只能填数字，不填默认不限制，会读取到有数据的最后一行，最小值为1");
+        addToolTip(addSpace_Re, "win系统自动重命名规则为：文件名 + 空格 + 英文括号包裹的阿拉伯数字编号");
         addToolTip(filterFileType_Re, "填写后只会识别所填写的后缀名文件，多个文件后缀名用空格隔开，后缀名需带 '.'");
+        addToolTip(after_Re, "只能填正整数，不填默认匹配目标字符串右侧所有字符，填写后匹配目标字符串右侧所填写个数的单个字符");
+        addToolTip(before_Re, "只能填正整数，不填默认匹配目标字符串左侧所有字符，填写后匹配目标字符串左侧所填写个数的单个字符");
+        addToolTip(readRow_Re, "只能填数字，不填默认为 " + defaultReadRow + " 从第 " + (defaultReadRow + 1) + " 行读取");
+        addToolTip(readCell_Re, "只能填数字，不填默认为 " + defaultReadCell + " ，从第 " + (defaultReadCell + 1) + " 列读取");
     }
 
     /**
@@ -285,6 +324,7 @@ public class FileRenameController extends ToolsProperties {
         // 解除绑定，设置文本，然后重新绑定
         fileNumber_Re.textProperty().unbind();
         fileNumber_Re.setText("列表为空");
+        System.gc();
     }
 
     /**
@@ -331,7 +371,7 @@ public class FileRenameController extends ToolsProperties {
         if (!isInIntegerRange(startName_Re.getText(), 0, null)) {
             startName_Re.setText("");
         }
-        aadValueToolTip(startName_Re, "只能填数字，不填默认为0");
+        aadValueToolTip(startName_Re, "只能填数字，不填默认为 " + defaultStartNameNum);
     }
 
     /**
@@ -408,7 +448,7 @@ public class FileRenameController extends ToolsProperties {
         if (!isInIntegerRange(readRow_Re.getText(), 0, null)) {
             readRow_Re.setText("");
         }
-        aadValueToolTip(readRow_Re, "只能填数字，不填默认为0，从第一行读取");
+        aadValueToolTip(readRow_Re, "只能填数字，不填默认为 " + defaultReadRow + " 从第 " + (defaultReadRow + 1) + " 行读取");
     }
 
     /**
@@ -419,7 +459,7 @@ public class FileRenameController extends ToolsProperties {
         if (!isInIntegerRange(readCell_Re.getText(), 0, null)) {
             readCell_Re.setText("");
         }
-        aadValueToolTip(readCell_Re, "只能填数字，不填默认为0，从第一列读取");
+        aadValueToolTip(readCell_Re, "只能填数字，不填默认不限制，会读取到有数据的最后一行，最小值为1");
     }
 
     /**
@@ -512,6 +552,11 @@ public class FileRenameController extends ToolsProperties {
                 behaviorAction();
                 break;
             }
+            default: {
+                targetStrHBox_Re.setVisible(false);
+                behaviorHBox_Re.setVisible(false);
+                break;
+            }
         }
     }
 
@@ -521,6 +566,7 @@ public class FileRenameController extends ToolsProperties {
     @FXML
     private void behaviorAction() {
         String item = renameBehavior_Re.getValue();
+        targetStrHBox_Re.setVisible(true);
         switch (item) {
             case "替换所有字符为:": {
                 renameStr_Re.setVisible(true);
@@ -556,6 +602,60 @@ public class FileRenameController extends ToolsProperties {
     public void afterBehaviorAction() {
         String item = afterBehavior_Re.getValue();
         afterValue_Re.setVisible("插入字符串为:".equals(item) || "替换所有字符串为:".equals(item));
+    }
+
+    /**
+     * 要匹配的字符串鼠标悬停提示
+     */
+    @FXML
+    private void renameValueHandleKeyTyped() {
+        aadValueToolTip(renameValue_Re, "填写后会根据其他配置项处理文件名中所匹配的字符");
+    }
+
+    /**
+     * 指定字符串所替换的字符串鼠标悬停提示
+     */
+    @FXML
+    private void renameStrHandleKeyTyped() {
+        aadValueToolTip(renameStr_Re, "填写后会将匹配到的字符串替换为所填写的字符串");
+    }
+
+    /**
+     * 限制向前匹配字符位置输入框内容
+     */
+    @FXML
+    private void beforeHandleKeyTyped() {
+        if (!isInIntegerRange(before_Re.getText(), 1, null)) {
+            before_Re.setText("");
+        }
+        aadValueToolTip(before_Re, "只能填正整数，不填默认匹配目标字符串左侧所有字符，填写后匹配目标字符串左侧所填写个数的单个字符");
+    }
+
+    /**
+     * 限制向后匹配字符位置输入框内容
+     */
+    @FXML
+    private void afterHandleKeyTyped() {
+        if (!isInIntegerRange(after_Re.getText(), 1, null)) {
+            after_Re.setText("");
+        }
+        aadValueToolTip(after_Re, "只能填正整数，不填默认匹配目标字符串右侧所有字符，填写后匹配目标字符串右侧所填写个数的单个字符");
+    }
+
+    /**
+     * 给目标字符串左侧替换或插入输入框添加鼠标悬停提示
+     */
+    @FXML
+    private void afterValueHandleKeyTyped() {
+        aadValueToolTip(afterValue_Re, "将所填字符根据选项插入或替换目标字符左侧所匹配的字符");
+    }
+
+    /**
+     * 给目标字符串右侧替换或插入输入框添加鼠标悬停提示
+     */
+    @FXML
+    private void beforeValueHandleKeyTyped() {
+        aadValueToolTip(beforeValue_Re, "将所填字符根据选项插入或替换目标字符右侧所匹配的字符");
     }
 
 }

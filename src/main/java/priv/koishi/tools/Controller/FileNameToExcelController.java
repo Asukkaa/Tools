@@ -202,6 +202,7 @@ public class FileNameToExcelController extends ToolsProperties {
         outFileName = prop.getProperty("outFileName");
         excelInPath = prop.getProperty("excelInPath");
         defaultStartCell = Integer.parseInt(prop.getProperty("defaultStartCell"));
+        input.close();
     }
 
     /**
@@ -293,6 +294,7 @@ public class FileNameToExcelController extends ToolsProperties {
         // 解除绑定，设置文本，然后重新绑定
         fileNumber_Name.textProperty().unbind();
         fileNumber_Name.setText("列表为空");
+        System.gc();
     }
 
     /**

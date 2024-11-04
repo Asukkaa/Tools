@@ -239,6 +239,7 @@ public class FileNumToExcelController extends ToolsProperties {
         defaultStartCell = Integer.parseInt(prop.getProperty("defaultStartCell"));
         defaultReadRow = Integer.parseInt(prop.getProperty("defaultReadRow"));
         defaultReadCell = Integer.parseInt(prop.getProperty("defaultReadCell"));
+        input.close();
     }
 
     /**
@@ -306,6 +307,7 @@ public class FileNumToExcelController extends ToolsProperties {
     @FXML
     private void removeAll() {
         removeNumImgAll(tableView_Num, fileNumber_Num, log_Num);
+        System.gc();
     }
 
     /**

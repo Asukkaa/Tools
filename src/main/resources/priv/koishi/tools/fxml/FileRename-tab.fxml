@@ -104,67 +104,78 @@
         <VBox fx:id="strRenameVBox_Re" spacing="10">
             <HBox spacing="10">
                 <Label prefHeight="20" text="匹配字符规则:"/>
-                <ChoiceBox onAction="#targetStrAction" fx:id="targetStr_Re" prefHeight="20" prefWidth="100">
+                <ChoiceBox onAction="#targetStrAction" fx:id="targetStr_Re" prefHeight="20" prefWidth="160">
                     <items>
                         <FXCollections fx:factory="observableArrayList">
                             <String fx:value="指定字符串"/>
                             <String fx:value="指定字符位置"/>
+                            <String fx:value="全部英文字符转为大写"/>
+                            <String fx:value="全部英文字符转为小写"/>
+                            <String fx:value="全部英文字符大小写互换"/>
                         </FXCollections>
                     </items>
                     <value>
                         <String fx:value="指定字符串"/>
                     </value>
                 </ChoiceBox>
-                <Label fx:id="typeLabel_Re" prefHeight="20" text="要匹配的字符串:"/>
-                <TextField fx:id="renameValue_Re" prefHeight="20" prefWidth="100"/>
-                <Label prefHeight="20" text="重命名方法:"/>
-                <ChoiceBox onAction="#behaviorAction" fx:id="renameBehavior_Re" prefHeight="20" prefWidth="120">
-                    <items>
-                        <FXCollections fx:factory="observableArrayList">
+                <HBox fx:id="targetStrHBox_Re" spacing="10" visible="false">
+                    <Label fx:id="typeLabel_Re" prefHeight="20" text="要匹配的字符串:"/>
+                    <TextField fx:id="renameValue_Re" onKeyTyped="#renameValueHandleKeyTyped" prefHeight="20" prefWidth="100"/>
+                    <Label prefHeight="20" text="重命名方法:"/>
+                    <ChoiceBox onAction="#behaviorAction" fx:id="renameBehavior_Re" prefHeight="20" prefWidth="120">
+                        <items>
+                            <FXCollections fx:factory="observableArrayList">
+                                <String fx:value="替换所有字符为:"/>
+                                <String fx:value="移除指定字符"/>
+                            </FXCollections>
+                        </items>
+                        <value>
                             <String fx:value="替换所有字符为:"/>
-                            <String fx:value="移除指定字符"/>
-                        </FXCollections>
-                    </items>
-                    <value>
-                        <String fx:value="替换所有字符为:"/>
-                    </value>
-                </ChoiceBox>
-                <TextField fx:id="renameStr_Re" prefHeight="20" prefWidth="100" visible="false"/>
+                        </value>
+                    </ChoiceBox>
+                    <TextField fx:id="renameStr_Re" onKeyTyped="#renameStrHandleKeyTyped" prefHeight="20" prefWidth="100" visible="false"/>
+                </HBox>
             </HBox>
 
             <HBox fx:id="behaviorHBox_Re" spacing="10" visible="false">
-                <Label prefHeight="20" text="之前:"/>
-                <TextField fx:id="before_Re" prefHeight="20" prefWidth="50"/>
-                <ChoiceBox onAction="#beforeBehaviorAction" fx:id="beforeBehavior_Re" prefHeight="20" prefWidth="130">
+                <Label prefHeight="20" text="左侧:"/>
+                <TextField fx:id="before_Re" onKeyTyped="#beforeHandleKeyTyped" prefHeight="20" prefWidth="50"/>
+                <ChoiceBox onAction="#beforeBehaviorAction" fx:id="beforeBehavior_Re" prefHeight="20" prefWidth="160">
                     <items>
                         <FXCollections fx:factory="observableArrayList">
                             <String fx:value="插入字符串为:"/>
                             <String fx:value="替换所有字符串为:"/>
                             <String fx:value="删除指定位置字符"/>
                             <String fx:value="移除所有字符"/>
+                            <String fx:value="全部英文字符转为大写"/>
+                            <String fx:value="全部英文字符转为小写"/>
+                            <String fx:value="全部英文字符大小写互换"/>
                         </FXCollections>
                     </items>
                     <value>
                         <String fx:value="插入字符串为:"/>
                     </value>
                 </ChoiceBox>
-                <TextField fx:id="beforeValue_Re" prefHeight="20" prefWidth="100"/>
-                <Label prefHeight="20" text="之后:"/>
-                <TextField fx:id="after_Re" prefHeight="20" prefWidth="50"/>
-                <ChoiceBox onAction="#afterBehaviorAction" fx:id="afterBehavior_Re" prefHeight="20" prefWidth="130">
+                <TextField fx:id="beforeValue_Re" onKeyTyped="#beforeValueHandleKeyTyped" prefHeight="20" prefWidth="100"/>
+                <Label prefHeight="20" text="右侧:"/>
+                <TextField fx:id="after_Re" onKeyTyped="#afterHandleKeyTyped" prefHeight="20" prefWidth="50"/>
+                <ChoiceBox onAction="#afterBehaviorAction" fx:id="afterBehavior_Re" prefHeight="20" prefWidth="160">
                     <items>
                         <FXCollections fx:factory="observableArrayList">
                             <String fx:value="插入字符串为:"/>
                             <String fx:value="替换所有字符串为:"/>
                             <String fx:value="删除指定位置字符"/>
                             <String fx:value="移除所有字符"/>
+                            <String fx:value="全部英文字符转为大写"/>
+                            <String fx:value="全部英文字符转为小写"/>
+                            <String fx:value="全部英文字符大小写互换"/>
                         </FXCollections>
                     </items>
                     <value>
                         <String fx:value="插入字符串为:"/>
                     </value>
                 </ChoiceBox>
-                <TextField fx:id="afterValue_Re" prefHeight="20" prefWidth="100"/>
+                <TextField fx:id="afterValue_Re" onKeyTyped="#afterValueHandleKeyTyped" prefHeight="20" prefWidth="100"/>
             </HBox>
         </VBox>
 

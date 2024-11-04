@@ -258,6 +258,7 @@ public class ImgToExcelController extends ToolsProperties {
         defaultStartCell = Integer.parseInt(prop.getProperty("defaultStartCell"));
         defaultReadRow = Integer.parseInt(prop.getProperty("defaultReadRow"));
         defaultReadCell = Integer.parseInt(prop.getProperty("defaultReadCell"));
+        input.close();
     }
 
     /**
@@ -340,6 +341,7 @@ public class ImgToExcelController extends ToolsProperties {
     @FXML
     private void removeAll() {
         removeNumImgAll(tableView_Img, fileNumber_Img, log_Img);
+        System.gc();
     }
 
     /**

@@ -25,7 +25,6 @@ public class CommonUtils {
      * 正则表达式用于匹配指定范围的整数
      */
     public static boolean isInIntegerRange(String str, Integer min, Integer max) {
-        Pattern integerPattern = Pattern.compile("^-?\\d{1,10}$");
         if (StringUtils.isEmpty(str)) {
             return false;
         }
@@ -33,15 +32,22 @@ public class CommonUtils {
         if (str.indexOf("0") == 0 && str.length() > 1) {
             return false;
         }
-        // 使用正则表达式判断字符串是否为整数
+        Pattern integerPattern = Pattern.compile("^-?\\d{1,10}$");
+        //使用正则表达式判断字符串是否为整数
         if (!integerPattern.matcher(str).matches()) {
             return false;
         }
-        // 将字符串转换为整数并判断是否在指定范围内
+        //将字符串转换为整数并判断是否在指定范围内
         int value = Integer.parseInt(str);
+        //只判断是否为整数，不限定范围
+        if (max == null && min == null) {
+            return true;
+        }
+        //限定最小值
         if (max == null) {
             return value >= min;
         }
+        //限定最大值
         if (min == null) {
             return value <= max;
         }
