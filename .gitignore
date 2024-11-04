@@ -8,9 +8,13 @@ target/
 .idea/jarRepositories.xml
 .idea/compiler.xml
 .idea/libraries/
+。idae/
 *.iws
 *.iml
 *.ipr
+*.xcm
+*.log
+/.xcodemap
 
 ### Eclipse ###
 .apt_generated
