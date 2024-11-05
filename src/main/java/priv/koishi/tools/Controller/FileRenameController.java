@@ -17,8 +17,11 @@ import javafx.stage.Stage;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import priv.koishi.tools.Bean.FileBean;
-import priv.koishi.tools.Bean.FileConfigBean;
+import priv.koishi.tools.Configuration.CodeRenameConfig;
+import priv.koishi.tools.Configuration.ExcelConfig;
+import priv.koishi.tools.Configuration.FileConfig;
 import priv.koishi.tools.Bean.TaskBean;
+import priv.koishi.tools.Configuration.StringRenameConfig;
 import priv.koishi.tools.EditingCell.EditingCell;
 import priv.koishi.tools.Properties.ToolsProperties;
 import priv.koishi.tools.ThreadPool.ToolsThreadPoolExecutor;
@@ -130,7 +133,7 @@ public class FileRenameController extends ToolsProperties {
     private ChoiceBox<String> hideFileType_Re, directoryNameType_Re, renameType_Re, subCode_Re, differenceCode_Re, targetStr_Re, beforeBehavior_Re, afterBehavior_Re, renameBehavior_Re;
 
     @FXML
-    private TextField sheetOutName_Re, filterFileType_Re, readRow_Re, readCell_Re, maxRow_Re, startName_Re, nameNum_Re, startSize_Re, before_Re, after_Re, renameStr_Re, beforeValue_Re, afterValue_Re, renameValue_Re;
+    private TextField sheetOutName_Re, filterFileType_Re, readRow_Re, readCell_Re, maxRow_Re, startName_Re, nameNum_Re, startSize_Re, before_Re, after_Re, renameStr_Re, beforeValue_Re, afterValue_Re, renameValue_Re, tag_Re;
 
     /**
      * 组件自适应宽高
@@ -179,13 +182,15 @@ public class FileRenameController extends ToolsProperties {
             throw new Exception("未查询到符合条件的数据，需修改查询条件后再继续");
         }
         TaskBean<FileBean> taskBean = new TaskBean<>();
-        taskBean.setShowFileType(false)
-                .setProgressBar(progressBar_Re)
+        taskBean.setProgressBar(progressBar_Re)
                 .setMassageLabel(fileNumber_Re)
                 .setTableView(tableView_Re)
                 .setInFileList(inFileList)
                 .setTableColumn(size_Re)
+                .setShowFileType(false)
                 .setTabId(tabId);
+        //匹配重命名规则
+        matchRenameConfig(taskBean);
         //获取Task任务
         Task<Void> readFileTask = readFile(taskBean);
         //绑定带进度条的线程
@@ -206,6 +211,94 @@ public class FileRenameController extends ToolsProperties {
         size_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.08));
         creatDate_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.16));
         updateDate_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.16));
+    }
+
+    /**
+     * 匹配重命名规则
+     */
+    private void matchRenameConfig(TaskBean<FileBean> taskBean) {
+        String renameType = renameType_Re.getValue();
+        switch (renameType) {
+            case "按编号规则重命名": {
+                matchCodeRename(taskBean);
+                break;
+            }
+            case "按指定字符重命名": {
+                matchStringRename(taskBean);
+                break;
+            }
+            case "按excel模板重命名": {
+                matchExcelRename(taskBean);
+                break;
+            }
+        }
+    }
+
+    /**
+     * 按编号规则重命名
+     */
+    private void matchCodeRename(TaskBean<FileBean> taskBean) {
+        int startNameValue = setDefaultIntValue(startName_Re, 1, 0, null);
+        int startSizeValue = setDefaultIntValue(startSize_Re, 0, 0, null);
+        int nameNumValue = setDefaultIntValue(nameNum_Re, 0, 0, null);
+        CodeRenameConfig codeRenameConfig = new CodeRenameConfig();
+        codeRenameConfig.setDifferenceCode(differenceCode_Re.getValue())
+                .setAddSpace(addSpace_Re.isSelected())
+                .setSubCode(subCode_Re.getValue())
+                .setStartName(startNameValue)
+                .setStartSize(startSizeValue)
+                .setTag(tag_Re.getText())
+                .setNameNum(nameNumValue);
+        taskBean.setConfiguration(codeRenameConfig);
+    }
+
+    /**
+     * 按指定字符重命名
+     */
+    private void matchStringRename(TaskBean<FileBean> taskBean) {
+        String targetStr = targetStr_Re.getValue();
+        StringRenameConfig stringRenameConfig = new StringRenameConfig();
+        stringRenameConfig.setTargetStr(targetStr);
+        if ("指定字符串".equals(targetStr) || "指定字符位置".equals(targetStr)) {
+            String renameBehavior = renameBehavior_Re.getValue();
+            stringRenameConfig.setRenameValue(renameValue_Re.getText())
+                    .setRenameBehavior(renameBehavior);
+            if ("替换所有字符为:".equals(renameBehavior)) {
+                stringRenameConfig.setRenameStr(renameStr_Re.getText());
+            } else if ("处理两侧字符".equals(renameBehavior)) {
+                int beforeValue = setDefaultIntValue(before_Re, 0, 0, null);
+                int afterValue = setDefaultIntValue(after_Re, 0, 0, null);
+                String beforeBehavior = beforeBehavior_Re.getValue();
+                String afterBehavior = afterBehavior_Re.getValue();
+                stringRenameConfig.setBeforeBehavior(beforeBehavior)
+                        .setAfterBehavior(afterBehavior)
+                        .setBefore(beforeValue)
+                        .setAfter(afterValue);
+                if ("插入字符串为:".equals(beforeBehavior) || "替换所有字符串为:".equals(beforeBehavior)) {
+                    stringRenameConfig.setBeforeValue(beforeValue_Re.getText());
+                }
+                if ("插入字符串为:".equals(afterBehavior) || "替换所有字符串为:".equals(afterBehavior)) {
+                    stringRenameConfig.setAfterValue(afterValue_Re.getText());
+                }
+            }
+        }
+        taskBean.setConfiguration(stringRenameConfig);
+    }
+
+    /**
+     * 按excel模板重命名
+     */
+    private void matchExcelRename(TaskBean<FileBean> taskBean) {
+        int readCellValue = setDefaultIntValue(readCell_Re, defaultReadCell, 0, null);
+        int readRowValue = setDefaultIntValue(readRow_Re, defaultReadRow, 0, null);
+        int maxRowValue = setDefaultIntValue(maxRow_Re, -1, 1, null);
+        ExcelConfig excelConfig = new ExcelConfig();
+        excelConfig.setSheet(sheetOutName_Re.getText())
+                .setInPath(inPath_Re.getText())
+                .setReadCellNum(readCellValue)
+                .setReadRowNum(readRowValue)
+                .setMaxRowNum(maxRowValue);
+        taskBean.setConfiguration(excelConfig);
     }
 
     /**
@@ -245,7 +338,7 @@ public class FileRenameController extends ToolsProperties {
         addToolTip(renameStr_Re, "填写后会将匹配到的字符串替换为所填写的字符串");
         addToolTip(sheetOutName_Re, "须填与excel模板相同的表名才能正常读取模板");
         addToolTip(renameValue_Re, "填写后会根据其他配置项处理文件名中所匹配的字符");
-        addToolTip(startName_Re, "只能填数字，不填默认为 " + defaultStartNameNum);
+        addToolTip(startName_Re, "只能填自然数，不填默认为 " + defaultStartNameNum);
         addToolTip(nameNum_Re, "只能填数字，0为不使用分隔符进行分组重命名，不填默认为0");
         addToolTip(afterValue_Re, "将所填字符根据选项插入或替换目标字符左侧所匹配的字符");
         addToolTip(beforeValue_Re, "将所填字符根据选项插入或替换目标字符右侧所匹配的字符");
@@ -267,8 +360,8 @@ public class FileRenameController extends ToolsProperties {
         List<String> filterExtensionList = getFilterExtensionList(filterFileType_Re);
         // 显示文件选择器
         File selectedFile = creatDirectoryChooser(actionEvent, inFilePath, "选择文件夹");
-        FileConfigBean fileConfigBean = new FileConfigBean();
-        fileConfigBean.setShowDirectoryName(directoryNameType_Re.getValue())
+        FileConfig fileConfig = new FileConfig();
+        fileConfig.setShowDirectoryName(directoryNameType_Re.getValue())
                 .setShowHideFile(hideFileType_Re.getValue())
                 .setFilterExtensionList(filterExtensionList)
                 .setInFile(selectedFile);
@@ -278,7 +371,7 @@ public class FileRenameController extends ToolsProperties {
             inPath_Re.setText(selectedFilePath);
             addToolTip(inPath_Re, selectedFilePath);
             //读取数据
-            List<File> inFileList = readAllFiles(fileConfigBean);
+            List<File> inFileList = readAllFiles(fileConfig);
             addInData(inFileList);
         }
     }
@@ -292,12 +385,12 @@ public class FileRenameController extends ToolsProperties {
         List<File> files = dragEvent.getDragboard().getFiles();
         List<String> filterExtensionList = getFilterExtensionList(filterFileType_Re);
         File file = files.getFirst();
-        FileConfigBean fileConfigBean = new FileConfigBean();
-        fileConfigBean.setShowDirectoryName(directoryNameType_Re.getValue())
+        FileConfig fileConfig = new FileConfig();
+        fileConfig.setShowDirectoryName(directoryNameType_Re.getValue())
                 .setShowHideFile(hideFileType_Re.getValue())
                 .setFilterExtensionList(filterExtensionList)
                 .setInFile(file);
-        List<File> inFileList = readAllFiles(fileConfigBean);
+        List<File> inFileList = readAllFiles(fileConfig);
         String filePath = file.getPath();
         inPath_Re.setText(filePath);
         addToolTip(inPath_Re, filePath);
@@ -377,7 +470,7 @@ public class FileRenameController extends ToolsProperties {
         if (!isInIntegerRange(startName_Re.getText(), 0, null)) {
             startName_Re.setText("");
         }
-        aadValueToolTip(startName_Re, "只能填数字，不填默认为 " + defaultStartNameNum);
+        aadValueToolTip(startName_Re, "只能填自然数，不填默认为 " + defaultStartNameNum);
     }
 
     /**
@@ -419,13 +512,13 @@ public class FileRenameController extends ToolsProperties {
         if (StringUtils.isEmpty(inFilePath)) {
             throw new Exception("要查询的文件夹位置为空，需要先设置要查询的文件夹位置再继续");
         }
-        FileConfigBean fileConfigBean = new FileConfigBean();
+        FileConfig fileConfig = new FileConfig();
         List<String> filterExtensionList = getFilterExtensionList(filterFileType_Re);
-        fileConfigBean.setShowDirectoryName(directoryNameType_Re.getValue())
+        fileConfig.setShowDirectoryName(directoryNameType_Re.getValue())
                 .setShowHideFile(hideFileType_Re.getValue())
                 .setFilterExtensionList(filterExtensionList)
                 .setInFile(new File(inFilePath));
-        List<File> inFileList = readAllFiles(fileConfigBean);
+        List<File> inFileList = readAllFiles(fileConfig);
         addInData(inFileList);
     }
 

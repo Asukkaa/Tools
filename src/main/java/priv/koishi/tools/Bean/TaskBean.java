@@ -3,6 +3,7 @@ package priv.koishi.tools.Bean;
 import javafx.scene.control.*;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import priv.koishi.tools.Configuration.Configuration;
 
 import java.io.File;
 import java.util.List;
@@ -70,5 +71,7 @@ public class TaskBean<T> {
      * 查询查询按钮
      */
     Button reselectButton;
+
+    Configuration configuration;
 
 }

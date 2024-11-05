@@ -18,7 +18,7 @@ import javafx.util.Callback;
 import javafx.util.Duration;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import priv.koishi.tools.Bean.FileConfigBean;
+import priv.koishi.tools.Configuration.FileConfig;
 import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Enum.SelectItemsEnums;
@@ -293,10 +293,10 @@ public class UiUtils {
     /**
      * 匹配excel分组与文件夹下文件
      */
-    public static int matchGroupData(List<FileNumBean> fileNumBeans, List<File> inFileList, FileConfigBean fileConfigBean) {
+    public static int matchGroupData(List<FileNumBean> fileNumBeans, List<File> inFileList, FileConfig fileConfig) {
         List<String> paths = new ArrayList<>();
         inFileList.forEach(file -> paths.add(file.getPath()));
-        List<FileNumBean> fileNumList = buildNameGroupData(paths, fileConfigBean);
+        List<FileNumBean> fileNumList = buildNameGroupData(paths, fileConfig);
         AtomicInteger imgNum = new AtomicInteger();
         fileNumBeans.forEach(bean1 -> {
             bean1.setGroupNumber(0);
@@ -318,9 +318,9 @@ public class UiUtils {
     /**
      * 分组组装javafx列表数据
      */
-    private static List<FileNumBean> buildNameGroupData(List<String> paths, FileConfigBean fileConfigBean) {
+    private static List<FileNumBean> buildNameGroupData(List<String> paths, FileConfig fileConfig) {
         List<FileNumBean> fileNumBeans = new ArrayList<>();
-        Map<String, List<String>> sortedByKey = getSortedByMap(paths, fileConfigBean.getSubCode(), fileConfigBean.getMaxImgNum());
+        Map<String, List<String>> sortedByKey = getSortedByMap(paths, fileConfig.getSubCode(), fileConfig.getMaxImgNum());
         sortedByKey.forEach((k, v) -> {
             FileNumBean fileNumBean = new FileNumBean();
             fileNumBean.setGroupName(k);
@@ -329,7 +329,7 @@ public class UiUtils {
                 try {
                     String fileName;
                     File file = new File(p);
-                    if (fileConfigBean.isShowFileType()) {
+                    if (fileConfig.isShowFileType()) {
                         fileName = file.getName();
                     } else {
                         fileName = getFileName(file);
@@ -390,9 +390,9 @@ public class UiUtils {
     /**
      * 分组匹配数
      */
-    public static void machGroup(FileConfigBean fileConfigBean, ObservableList<FileNumBean> fileNumList, List<File> inFileList,
+    public static void machGroup(FileConfig fileConfig, ObservableList<FileNumBean> fileNumList, List<File> inFileList,
                                  TableView<FileNumBean> tableViewImg, String tabId, Label fileNumberImg) throws Exception {
-        int imgNum = matchGroupData(fileNumList, inFileList, fileConfigBean);
+        int imgNum = matchGroupData(fileNumList, inFileList, fileConfig);
         TaskBean<FileNumBean> taskBean = new TaskBean<>();
         taskBean.setTableView(tableViewImg)
                 .setTabId(tabId);

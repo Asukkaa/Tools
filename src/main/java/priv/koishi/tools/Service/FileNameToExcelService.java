@@ -6,7 +6,7 @@ import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import priv.koishi.tools.Bean.ExcelConfigBean;
+import priv.koishi.tools.Configuration.ExcelConfig;
 import priv.koishi.tools.Bean.FileBean;
 import priv.koishi.tools.Bean.TaskBean;
 
@@ -27,16 +27,16 @@ public class FileNameToExcelService {
     /**
      * 构建输出文件名称的excel
      */
-    public static Task<SXSSFWorkbook> buildFileNameExcel(ExcelConfigBean excelConfigBean, TaskBean<FileBean> taskBean) throws Exception {
+    public static Task<SXSSFWorkbook> buildFileNameExcel(ExcelConfig excelConfig, TaskBean<FileBean> taskBean) throws Exception {
         XSSFWorkbook workbook = new XSSFWorkbook();
         SXSSFWorkbook sxssfWorkbook = new SXSSFWorkbook(workbook);
         XSSFSheet sheet;
-        String excelInPath = excelConfigBean.getInPath();
-        String sheetName = excelConfigBean.getSheet();
+        String excelInPath = excelConfig.getInPath();
+        String sheetName = excelConfig.getSheet();
         if (excelInPath != null && !excelInPath.isEmpty()) {
             checkExcelParam(excelInPath);
             //输出路径与编辑路径不同先将要编辑的文件复制到输出路径
-            checkCopyDestination(excelConfigBean);
+            checkCopyDestination(excelConfig);
             FileInputStream inputStream = new FileInputStream(excelInPath);
             workbook = new XSSFWorkbook(inputStream);
             sxssfWorkbook = new SXSSFWorkbook(workbook);
@@ -52,13 +52,13 @@ public class FileNameToExcelService {
             sheet = sxssfWorkbook.getXSSFWorkbook().createSheet(sheetName);
         }
         //构建excel
-        return buildNoGroupExcel(taskBean, excelConfigBean, sheet, sxssfWorkbook);
+        return buildNoGroupExcel(taskBean, excelConfig, sheet, sxssfWorkbook);
     }
 
     /**
      * 不分组构建excel
      */
-    private static Task<SXSSFWorkbook> buildNoGroupExcel(TaskBean<FileBean> taskBean, ExcelConfigBean excelConfigBean, XSSFSheet sheet, SXSSFWorkbook workbook) {
+    private static Task<SXSSFWorkbook> buildNoGroupExcel(TaskBean<FileBean> taskBean, ExcelConfig excelConfig, XSSFSheet sheet, SXSSFWorkbook workbook) {
         return new Task<>() {
             @Override
             protected SXSSFWorkbook call() {
@@ -66,8 +66,8 @@ public class FileNameToExcelService {
                 List<FileBean> fileBeans = taskBean.getBeanList();
                 List<String> names = new ArrayList<>();
                 fileBeans.forEach(fileBean -> names.add(fileBean.getName()));
-                int startRowNum = excelConfigBean.getStartRowNum();
-                int startCellNum = excelConfigBean.getStartCellNum();
+                int startRowNum = excelConfig.getStartRowNum();
+                int startCellNum = excelConfig.getStartCellNum();
                 int nameSize = names.size();
                 updateMessage("已识别到 " + nameSize + " 个文件");
                 for (int i = 0; i < nameSize; i++) {

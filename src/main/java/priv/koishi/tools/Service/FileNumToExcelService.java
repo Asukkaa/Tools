@@ -7,7 +7,7 @@ import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import priv.koishi.tools.Bean.ExcelConfigBean;
+import priv.koishi.tools.Configuration.ExcelConfig;
 import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Bean.TaskBean;
 
@@ -28,12 +28,12 @@ public class FileNumToExcelService {
     /**
      * 构建分组统计excel
      */
-    public static Task<SXSSFWorkbook> buildNameGroupNumExcel(TaskBean<FileNumBean> taskBean, ExcelConfigBean excelConfigBean) {
+    public static Task<SXSSFWorkbook> buildNameGroupNumExcel(TaskBean<FileNumBean> taskBean, ExcelConfig excelConfig) {
         return new Task<>() {
             @Override
             protected SXSSFWorkbook call() throws Exception {
-                checkCopyDestination(excelConfigBean);
-                File inputFile = new File(excelConfigBean.getInPath());
+                checkCopyDestination(excelConfig);
+                File inputFile = new File(excelConfig.getInPath());
                 if (!inputFile.exists()) {
                     throw new Exception("模板excel文件不存在");
                 }
@@ -41,10 +41,10 @@ public class FileNumToExcelService {
                 FileInputStream inputStream = new FileInputStream(inputFile);
                 XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
                 SXSSFWorkbook sxssfWorkbook = new SXSSFWorkbook(workbook);
-                String sheetName = excelConfigBean.getSheet();
-                String exportType = excelConfigBean.getExportType();
-                int startRowNum = excelConfigBean.getStartRowNum();
-                int startCellNum = excelConfigBean.getStartCellNum();
+                String sheetName = excelConfig.getSheet();
+                String exportType = excelConfig.getExportType();
+                int startRowNum = excelConfig.getStartRowNum();
+                int startCellNum = excelConfig.getStartCellNum();
                 int maxCellNum = startCellNum;
                 List<FileNumBean> fileBeans = taskBean.getBeanList();
                 updateMessage("已识别到 " + fileBeans.size() + " 组数据");

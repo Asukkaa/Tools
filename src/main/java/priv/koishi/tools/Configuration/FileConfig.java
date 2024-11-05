@@ -1,4 +1,4 @@
-package priv.koishi.tools.Bean;
+package priv.koishi.tools.Configuration;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -13,7 +13,7 @@ import java.util.List;
  */
 @Data
 @Accessors(chain = true)
-public class FileConfigBean {
+public class FileConfig {
 
     /**
      * 要读取的文件夹

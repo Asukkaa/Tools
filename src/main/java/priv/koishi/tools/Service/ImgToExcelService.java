@@ -9,7 +9,7 @@ import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.*;
-import priv.koishi.tools.Bean.ExcelConfigBean;
+import priv.koishi.tools.Configuration.ExcelConfig;
 import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Bean.TaskBean;
 
@@ -34,12 +34,12 @@ public class ImgToExcelService {
     /**
      * 构建分组的图片excel
      */
-    public static Task<SXSSFWorkbook> buildImgGroupExcel(TaskBean<FileNumBean> taskBean, ExcelConfigBean excelConfigBean) {
+    public static Task<SXSSFWorkbook> buildImgGroupExcel(TaskBean<FileNumBean> taskBean, ExcelConfig excelConfig) {
         return new Task<>() {
             @Override
             protected SXSSFWorkbook call() throws Exception {
-                checkCopyDestination(excelConfigBean);
-                File inputFile = new File(excelConfigBean.getInPath());
+                checkCopyDestination(excelConfig);
+                File inputFile = new File(excelConfig.getInPath());
                 if (!inputFile.exists()) {
                     throw new Exception("模板excel文件不存在");
                 }
@@ -47,9 +47,9 @@ public class ImgToExcelService {
                 FileInputStream inputStream = new FileInputStream(inputFile);
                 XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
                 SXSSFWorkbook sxssfWorkbook = new SXSSFWorkbook(workbook, 50);
-                String sheetName = excelConfigBean.getSheet();
-                int startRowNum = excelConfigBean.getStartRowNum();
-                int startCellNum = excelConfigBean.getStartCellNum();
+                String sheetName = excelConfig.getSheet();
+                int startRowNum = excelConfig.getStartRowNum();
+                int startCellNum = excelConfig.getStartCellNum();
                 List<FileNumBean> fileBeans = taskBean.getBeanList();
                 int fileNum = fileBeans.size();
                 updateMessage("已识别到 " + fileNum + " 组数据");
@@ -62,7 +62,7 @@ public class ImgToExcelService {
                 for (int i = 0; i < fileNum; i++) {
                     FileNumBean fileBean = fileBeans.get(i);
                     List<String> imgList = fileBean.getFilePathList();
-                    buildImgExcel(imgList, excelConfigBean, startCellNum, startRowNum, sheet, sxssfWorkbook);
+                    buildImgExcel(imgList, excelConfig, startCellNum, startRowNum, sheet, sxssfWorkbook);
                     updateMessage("正在输出第" + (i + 1) + "/" + fileNum + "组数据");
                     updateProgress(i + 1, fileNum);
                     startRowNum++;
@@ -76,10 +76,10 @@ public class ImgToExcelService {
     /**
      * 插入图片
      */
-    private static void buildImgExcel(List<String> imgList, ExcelConfigBean excelConfigBean, int startCellNum,
+    private static void buildImgExcel(List<String> imgList, ExcelConfig excelConfig, int startCellNum,
                                       int startRowNum, XSSFSheet sheet, SXSSFWorkbook sxssfWorkbook) throws IOException {
-        int imgWidth = excelConfigBean.getImgWidth();
-        int imgHeight = excelConfigBean.getImgHeight();
+        int imgWidth = excelConfig.getImgWidth();
+        int imgHeight = excelConfig.getImgHeight();
         int cellNum = startCellNum;
         if (CollectionUtils.isEmpty(imgList)) {
             XSSFRow row = sheet.getRow(startRowNum);
@@ -90,7 +90,7 @@ public class ImgToExcelService {
             if (cell == null) {
                 cell = row.createCell(startCellNum);
             }
-            if (excelConfigBean.isNoImg()) {
+            if (excelConfig.isNoImg()) {
                 cell.setCellValue("无图片");
             }
         } else {

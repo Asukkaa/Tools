@@ -3,8 +3,8 @@ package priv.koishi.tools.Utils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import priv.koishi.tools.Bean.ExcelConfigBean;
-import priv.koishi.tools.Bean.FileConfigBean;
+import priv.koishi.tools.Configuration.ExcelConfig;
+import priv.koishi.tools.Configuration.FileConfig;
 
 import java.awt.*;
 import java.io.*;
@@ -15,10 +15,8 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningOutputStream;
@@ -152,22 +150,22 @@ public class FileUtils {
     /**
      * 读取文件夹下的文件名称
      */
-    public static List<File> readAllFiles(FileConfigBean fileConfigBean) {
-        File file = fileConfigBean.getInFile();
+    public static List<File> readAllFiles(FileConfig fileConfig) {
+        File file = fileConfig.getInFile();
         List<File> fileList = new ArrayList<>();
-        readFiles(fileConfigBean, fileList, file);
+        readFiles(fileConfig, fileList, file);
         return fileList;
     }
 
     /**
      * 递归读取文件夹下的文件名称
      */
-    public static void readFiles(FileConfigBean fileConfigBean, List<File> fileList, File f) {
+    public static void readFiles(FileConfig fileConfig, List<File> fileList, File f) {
         File[] files = f.listFiles();
-        String showHideFile = fileConfigBean.getShowHideFile();
-        String showDirectoryName = fileConfigBean.getShowDirectoryName();
-        boolean recursion = fileConfigBean.isRecursion();
-        List<String> filterExtensionList = fileConfigBean.getFilterExtensionList();
+        String showHideFile = fileConfig.getShowHideFile();
+        String showDirectoryName = fileConfig.getShowDirectoryName();
+        boolean recursion = fileConfig.isRecursion();
+        List<String> filterExtensionList = fileConfig.getFilterExtensionList();
         if (files != null) {
             for (File file : files) {
                 if (file.isFile()) {
@@ -181,7 +179,7 @@ public class FileUtils {
                         }
                     }
                     if (recursion) {
-                        readFiles(fileConfigBean, fileList, file);
+                        readFiles(fileConfig, fileList, file);
                     }
                 } else if (file.isDirectory()) {
                     if (("不查询隐藏文件".equals(showHideFile) && file.isHidden()) || ("只查询隐藏文件".equals(showHideFile) && !file.isHidden())) {
@@ -191,7 +189,7 @@ public class FileUtils {
                         fileList.add(file);
                     }
                     if (recursion) {
-                        readFiles(fileConfigBean, fileList, file);
+                        readFiles(fileConfig, fileList, file);
                     }
                 }
             }
@@ -240,8 +238,8 @@ public class FileUtils {
     /**
      * 保存excel
      */
-    public static String saveExcel(SXSSFWorkbook workbook, ExcelConfigBean excelConfigBean) throws Exception {
-        String filePath = excelConfigBean.getOutPath() + "\\" + excelConfigBean.getOutName() + excelConfigBean.getOutExcelExtension();
+    public static String saveExcel(SXSSFWorkbook workbook, ExcelConfig excelConfig) throws Exception {
+        String filePath = excelConfig.getOutPath() + "\\" + excelConfig.getOutName() + excelConfig.getOutExcelExtension();
         checkDirectory(getFileMkdir(new File(filePath)));
         // 将Excel写入文件
         try (workbook) {
@@ -315,11 +313,11 @@ public class FileUtils {
     /**
      * 校验excel输出路径是否与模板一致，若不一致则复制一份模板文件到输出路径
      */
-    public static void checkCopyDestination(ExcelConfigBean excelConfigBean) throws Exception {
-        String excelInPath = excelConfigBean.getInPath();
-        String outPath = excelConfigBean.getOutPath();
-        String excelName = excelConfigBean.getOutName();
-        String outExcelExtension = excelConfigBean.getOutExcelExtension();
+    public static void checkCopyDestination(ExcelConfig excelConfig) throws Exception {
+        String excelInPath = excelConfig.getInPath();
+        String outPath = excelConfig.getOutPath();
+        String excelName = excelConfig.getOutName();
+        String outExcelExtension = excelConfig.getOutExcelExtension();
         Path sourcePath = Paths.get(excelInPath);
         checkDirectory(outPath);
         String path = outPath + "\\" + excelName + outExcelExtension;
@@ -333,6 +331,30 @@ public class FileUtils {
                 }
             }
         }
+    }
+
+    /**
+     * 先将文件重命名为一个临时名称防止重名
+     */
+    public static String tempReName(String filePath) {
+        File oldFile = new File(String.valueOf(filePath));
+        String newPath = filePath;
+        if (oldFile.exists()) {
+            //不处理隐藏文件
+            if (!oldFile.isHidden()) {
+                // 获取文件扩展名
+                String ext = oldFile.getName().substring(oldFile.getName().lastIndexOf("."));
+                UUID uuid = UUID.randomUUID();
+                String uuidStr = uuid.toString();
+                // 生成新的文件名
+                String newName = uuidStr + ext;
+                // 修改文件名
+                if (oldFile.renameTo(new File(oldFile.getParent(), newName))) {
+                    newPath = new File(oldFile.getParent(), newName).getPath();
+                }
+            }
+        }
+        return newPath;
     }
 
 }

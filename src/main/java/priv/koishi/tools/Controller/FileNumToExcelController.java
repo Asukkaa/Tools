@@ -15,8 +15,8 @@ import javafx.stage.Stage;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import priv.koishi.tools.Bean.ExcelConfigBean;
-import priv.koishi.tools.Bean.FileConfigBean;
+import priv.koishi.tools.Configuration.ExcelConfig;
+import priv.koishi.tools.Configuration.FileConfig;
 import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Properties.ToolsProperties;
@@ -173,19 +173,19 @@ public class FileNumToExcelController extends ToolsProperties {
      * 读取文件数据
      */
     private void addInFile(File selectedFile, List<String> filterExtensionList) throws Exception {
-        FileConfigBean fileConfigBean = new FileConfigBean();
-        fileConfigBean.setShowDirectoryName(directoryNameType_Num.getValue())
+        FileConfig fileConfig = new FileConfig();
+        fileConfig.setShowDirectoryName(directoryNameType_Num.getValue())
                 .setShowFileType(showFileType_Num.isSelected())
                 .setShowHideFile(hideFileType_Num.getValue())
                 .setFilterExtensionList(filterExtensionList)
                 .setRecursion(recursion_Num.isSelected())
                 .setSubCode(subCode_Num.getText())
                 .setInFile(selectedFile);
-        inFileList = readAllFiles(fileConfigBean);
+        inFileList = readAllFiles(fileConfig);
         //列表中有excel分组后再匹配数据
         ObservableList<FileNumBean> fileNumList = tableView_Num.getItems();
         if (CollectionUtils.isNotEmpty(fileNumList)) {
-            machGroup(fileConfigBean, fileNumList, inFileList, tableView_Num, tabId, fileNumber_Num);
+            machGroup(fileConfig, fileNumList, inFileList, tableView_Num, tabId, fileNumber_Num);
         }
     }
 
@@ -198,8 +198,8 @@ public class FileNumToExcelController extends ToolsProperties {
         int readRowValue = setDefaultIntValue(readRow_Num, defaultReadRow, 0, null);
         int readCellValue = setDefaultIntValue(readCell_Num, defaultReadCell, 0, null);
         int maxRowValue = setDefaultIntValue(maxRow_Num, -1, 1, null);
-        ExcelConfigBean excelConfigBean = new ExcelConfigBean();
-        excelConfigBean.setSheet(sheetOutName_Num.getText())
+        ExcelConfig excelConfig = new ExcelConfig();
+        excelConfig.setSheet(sheetOutName_Num.getText())
                 .setInPath(excelPath_Num.getText())
                 .setReadCellNum(readCellValue)
                 .setReadRowNum(readRowValue)
@@ -213,7 +213,7 @@ public class FileNumToExcelController extends ToolsProperties {
                 .setInFileList(inFileList)
                 .setTabId(tabId);
         //获取Task任务
-        Task<List<FileNumBean>> readExcelTask = readExcel(excelConfigBean, taskBean);
+        Task<List<FileNumBean>> readExcelTask = readExcel(excelConfig, taskBean);
         readExcelTask.setOnSucceeded(t -> taskUnbind(taskBean));
         //绑定带进度条的线程
         bindingProgressBarTask(readExcelTask, taskBean);
@@ -336,8 +336,8 @@ public class FileNumToExcelController extends ToolsProperties {
         int readRowValue = setDefaultIntValue(readRow_Num, defaultReadRow, 0, null);
         int startRowValue = setDefaultIntValue(startRow_Num, readRowValue, 0, null);
         int startCellValue = setDefaultIntValue(startCell_Num, defaultStartCell, 0, null);
-        ExcelConfigBean excelConfigBean = new ExcelConfigBean();
-        excelConfigBean.setOutExcelExtension(excelType_Num.getValue())
+        ExcelConfig excelConfig = new ExcelConfig();
+        excelConfig.setOutExcelExtension(excelType_Num.getValue())
                 .setExportType(exportType_Num.getValue())
                 .setInPath(excelPath_Num.getText())
                 .setStartCellNum(startCellValue)
@@ -358,9 +358,9 @@ public class FileNumToExcelController extends ToolsProperties {
                     .setMassageLabel(log_Num)
                     .setTabId(tabId);
             //获取Task任务
-            Task<SXSSFWorkbook> buildExcelTask = buildNameGroupNumExcel(taskBean, excelConfigBean);
+            Task<SXSSFWorkbook> buildExcelTask = buildNameGroupNumExcel(taskBean, excelConfig);
             //线程成功后保存excel
-            saveExcelOnSucceeded(excelConfigBean, taskBean, buildExcelTask, openDirectory_Num, openFile_Num, executorService);
+            saveExcelOnSucceeded(excelConfig, taskBean, buildExcelTask, openDirectory_Num, openFile_Num, executorService);
         });
         //使用新线程启动
         executorService.execute(reselectTask);

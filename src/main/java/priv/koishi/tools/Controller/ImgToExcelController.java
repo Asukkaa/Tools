@@ -15,8 +15,8 @@ import javafx.stage.Stage;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import priv.koishi.tools.Bean.ExcelConfigBean;
-import priv.koishi.tools.Bean.FileConfigBean;
+import priv.koishi.tools.Configuration.ExcelConfig;
+import priv.koishi.tools.Configuration.FileConfig;
 import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Properties.ToolsProperties;
@@ -180,24 +180,24 @@ public class ImgToExcelController extends ToolsProperties {
      * 读取文件数据
      */
     private void addInFile(File selectedFile, List<String> filterExtensionList) throws Exception {
-        FileConfigBean fileConfigBean = new FileConfigBean();
+        FileConfig fileConfig = new FileConfig();
         String maxImgValue = maxImgNum_Img.getText();
         int maxImgNum = 0;
         if (StringUtils.isNotBlank(maxImgValue)) {
             maxImgNum = Integer.parseInt(maxImgValue);
         }
-        fileConfigBean.setShowFileType(showFileType_Img.isSelected())
+        fileConfig.setShowFileType(showFileType_Img.isSelected())
                 .setShowHideFile(hideFileType_Img.getValue())
                 .setFilterExtensionList(filterExtensionList)
                 .setRecursion(recursion_Img.isSelected())
                 .setSubCode(subCode_Img.getText())
                 .setMaxImgNum(maxImgNum)
                 .setInFile(selectedFile);
-        inFileList = readAllFiles(fileConfigBean);
+        inFileList = readAllFiles(fileConfig);
         //列表中有excel分组后再匹配数据
         ObservableList<FileNumBean> fileNumList = tableView_Img.getItems();
         if (CollectionUtils.isNotEmpty(fileNumList)) {
-            machGroup(fileConfigBean, fileNumList, inFileList, tableView_Img, tabId, fileNumber_Img);
+            machGroup(fileConfig, fileNumList, inFileList, tableView_Img, tabId, fileNumber_Img);
         }
     }
 
@@ -215,8 +215,8 @@ public class ImgToExcelController extends ToolsProperties {
         int readRowValue = setDefaultIntValue(readRow_Img, defaultReadRow, 0, null);
         int readCellValue = setDefaultIntValue(readCell_Img, defaultReadCell, 0, null);
         int maxRowValue = setDefaultIntValue(maxRow_Img, -1, 1, null);
-        ExcelConfigBean excelConfigBean = new ExcelConfigBean();
-        excelConfigBean.setSheet(sheetOutName_Img.getText())
+        ExcelConfig excelConfig = new ExcelConfig();
+        excelConfig.setSheet(sheetOutName_Img.getText())
                 .setInPath(excelPath_Img.getText())
                 .setReadCellNum(readCellValue)
                 .setReadRowNum(readRowValue)
@@ -231,7 +231,7 @@ public class ImgToExcelController extends ToolsProperties {
                 .setMaxImgNum(maxImgNum)
                 .setTabId(tabId);
         //获取Task任务
-        Task<List<FileNumBean>> readExcelTask = readExcel(excelConfigBean, taskBean);
+        Task<List<FileNumBean>> readExcelTask = readExcel(excelConfig, taskBean);
         //绑定带进度条的线程
         bindingProgressBarTask(readExcelTask, taskBean);
         readExcelTask.setOnSucceeded(t -> taskUnbind(taskBean));
@@ -372,8 +372,8 @@ public class ImgToExcelController extends ToolsProperties {
         int imgHeight = setDefaultIntValue(imgHeight_Img, defaultImgHeight, 0, null);
         int startRowValue = setDefaultIntValue(startRow_Img, readRowValue, 0, null);
         int startCellValue = setDefaultIntValue(startCell_Img, defaultStartCell, 0, null);
-        ExcelConfigBean excelConfigBean = new ExcelConfigBean();
-        excelConfigBean.setOutExcelExtension(excelType_Img.getValue())
+        ExcelConfig excelConfig = new ExcelConfig();
+        excelConfig.setOutExcelExtension(excelType_Img.getValue())
                 .setInPath(excelPath_Img.getText())
                 .setNoImg(noImg_Img.isSelected())
                 .setStartCellNum(startCellValue)
@@ -394,9 +394,9 @@ public class ImgToExcelController extends ToolsProperties {
                     .setMassageLabel(log_Img)
                     .setTabId(tabId);
             //获取Task任务
-            Task<SXSSFWorkbook> buildExcelTask = buildImgGroupExcel(taskBean, excelConfigBean);
+            Task<SXSSFWorkbook> buildExcelTask = buildImgGroupExcel(taskBean, excelConfig);
             //线程成功后保存excel
-            saveExcelOnSucceeded(excelConfigBean, taskBean, buildExcelTask, openDirectory_Img, openFile_Img, executorService);
+            saveExcelOnSucceeded(excelConfig, taskBean, buildExcelTask, openDirectory_Img, openFile_Img, executorService);
         });
     }
 

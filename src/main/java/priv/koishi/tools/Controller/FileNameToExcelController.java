@@ -17,9 +17,9 @@ import javafx.stage.Stage;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import priv.koishi.tools.Bean.ExcelConfigBean;
+import priv.koishi.tools.Configuration.ExcelConfig;
 import priv.koishi.tools.Bean.FileBean;
-import priv.koishi.tools.Bean.FileConfigBean;
+import priv.koishi.tools.Configuration.FileConfig;
 import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Properties.ToolsProperties;
 import priv.koishi.tools.ThreadPool.ToolsThreadPoolExecutor;
@@ -229,8 +229,8 @@ public class FileNameToExcelController extends ToolsProperties {
         List<String> filterExtensionList = getFilterExtensionList(filterFileType_Name);
         // 显示文件选择器
         File selectedFile = creatDirectoryChooser(actionEvent, inFilePath, "选择文件夹");
-        FileConfigBean fileConfigBean = new FileConfigBean();
-        fileConfigBean.setShowDirectoryName(directoryNameType_Name.getValue())
+        FileConfig fileConfig = new FileConfig();
+        fileConfig.setShowDirectoryName(directoryNameType_Name.getValue())
                 .setShowHideFile(hideFileType_Name.getValue())
                 .setFilterExtensionList(filterExtensionList)
                 .setRecursion(recursion_Name.isSelected())
@@ -241,7 +241,7 @@ public class FileNameToExcelController extends ToolsProperties {
             inPath_Name.setText(selectedFilePath);
             addToolTip(inPath_Name, selectedFilePath);
             //读取数据
-            List<File> inFileList = readAllFiles(fileConfigBean);
+            List<File> inFileList = readAllFiles(fileConfig);
             addInData(inFileList);
         }
     }
@@ -255,13 +255,13 @@ public class FileNameToExcelController extends ToolsProperties {
         List<File> files = dragEvent.getDragboard().getFiles();
         List<String> filterExtensionList = getFilterExtensionList(filterFileType_Name);
         File file = files.getFirst();
-        FileConfigBean fileConfigBean = new FileConfigBean();
-        fileConfigBean.setShowDirectoryName(directoryNameType_Name.getValue())
+        FileConfig fileConfig = new FileConfig();
+        fileConfig.setShowDirectoryName(directoryNameType_Name.getValue())
                 .setShowHideFile(hideFileType_Name.getValue())
                 .setFilterExtensionList(filterExtensionList)
                 .setRecursion(recursion_Name.isSelected())
                 .setInFile(file);
-        List<File> inFileList = readAllFiles(fileConfigBean);
+        List<File> inFileList = readAllFiles(fileConfig);
         String filePath = file.getPath();
         inPath_Name.setText(filePath);
         addToolTip(inPath_Name, filePath);
@@ -316,8 +316,8 @@ public class FileNameToExcelController extends ToolsProperties {
         String sheetName = setDefaultStrValue(sheetOutName_Name, "Sheet1");
         log_Name.setTextFill(Color.BLACK);
         log_Name.setText("");
-        ExcelConfigBean excelConfigBean = new ExcelConfigBean();
-        excelConfigBean.setOutExcelExtension(excelType_Name.getValue())
+        ExcelConfig excelConfig = new ExcelConfig();
+        excelConfig.setOutExcelExtension(excelType_Name.getValue())
                 .setInPath(excelPath_Name.getText())
                 .setStartCellNum(startCellValue)
                 .setStartRowNum(startRowValue)
@@ -333,12 +333,12 @@ public class FileNameToExcelController extends ToolsProperties {
                 .setBeanList(fileBeans)
                 .setTabId(tabId);
         //获取Task任务
-        Task<SXSSFWorkbook> buildExcelTask = buildFileNameExcel(excelConfigBean, taskBean);
+        Task<SXSSFWorkbook> buildExcelTask = buildFileNameExcel(excelConfig, taskBean);
         //绑定带进度条的线程
         bindingProgressBarTask(buildExcelTask, taskBean);
         executorService.execute(buildExcelTask);
         //线程成功后保存excel
-        saveExcelOnSucceeded(excelConfigBean, taskBean, buildExcelTask, openDirectory_Name, openFile_Name, executorService);
+        saveExcelOnSucceeded(excelConfig, taskBean, buildExcelTask, openDirectory_Name, openFile_Name, executorService);
     }
 
     /**
@@ -430,14 +430,14 @@ public class FileNameToExcelController extends ToolsProperties {
         if (StringUtils.isEmpty(inFilePath)) {
             throw new Exception("要查询的文件夹位置为空，需要先设置要查询的文件夹位置再继续");
         }
-        FileConfigBean fileConfigBean = new FileConfigBean();
+        FileConfig fileConfig = new FileConfig();
         List<String> filterExtensionList = getFilterExtensionList(filterFileType_Name);
-        fileConfigBean.setShowDirectoryName(directoryNameType_Name.getValue())
+        fileConfig.setShowDirectoryName(directoryNameType_Name.getValue())
                 .setShowHideFile(hideFileType_Name.getValue())
                 .setFilterExtensionList(filterExtensionList)
                 .setRecursion(recursion_Name.isSelected())
                 .setInFile(new File(inFilePath));
-        List<File> inFileList = readAllFiles(fileConfigBean);
+        List<File> inFileList = readAllFiles(fileConfig);
         addInData(inFileList);
     }
 

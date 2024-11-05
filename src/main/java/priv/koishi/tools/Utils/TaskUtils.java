@@ -9,7 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.paint.Color;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import priv.koishi.tools.Bean.ExcelConfigBean;
+import priv.koishi.tools.Configuration.ExcelConfig;
 import priv.koishi.tools.Bean.TaskBean;
 
 import java.io.File;
@@ -51,12 +51,12 @@ public class TaskUtils {
     /**
      * 线程执行成功后保存excel文件
      */
-    public static void saveExcelOnSucceeded(ExcelConfigBean excelConfigBean, TaskBean<?> taskBean, Task<SXSSFWorkbook> buildExcelTask,
+    public static void saveExcelOnSucceeded(ExcelConfig excelConfig, TaskBean<?> taskBean, Task<SXSSFWorkbook> buildExcelTask,
                                             CheckBox openDirectory, CheckBox openFile, ExecutorService executorService) {
         bindingProgressBarTask(buildExcelTask, taskBean);
         buildExcelTask.setOnSucceeded(t -> {
             SXSSFWorkbook workbook = buildExcelTask.getValue();
-            Task<String> saveExceltask = saveExceltask(excelConfigBean, workbook);
+            Task<String> saveExceltask = saveExceltask(excelConfig, workbook);
             bindingProgressBarTask(saveExceltask, taskBean);
             saveExceltask.setOnSucceeded(s -> {
                 String excelPath = saveExceltask.getValue();
@@ -119,12 +119,12 @@ public class TaskUtils {
     /**
      * 保存excel线程
      */
-    public static Task<String> saveExceltask(ExcelConfigBean excelConfigBean, SXSSFWorkbook workbook) {
+    public static Task<String> saveExceltask(ExcelConfig excelConfig, SXSSFWorkbook workbook) {
         return new Task<>() {
             @Override
             protected String call() throws Exception {
                 updateMessage("正在保存excel");
-                return saveExcel(workbook, excelConfigBean);
+                return saveExcel(workbook, excelConfig);
             }
         };
     }

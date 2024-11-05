@@ -8,7 +8,10 @@ import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import priv.koishi.tools.Bean.*;
+import priv.koishi.tools.Bean.FileBean;
+import priv.koishi.tools.Bean.FileNumBean;
+import priv.koishi.tools.Bean.TaskBean;
+import priv.koishi.tools.Configuration.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,18 +32,18 @@ public class ReadDataService {
     /**
      * 读取excel分组信息
      */
-    public static Task<List<FileNumBean>> readExcel(ExcelConfigBean excelConfigBean, TaskBean<FileNumBean> taskBean) {
+    public static Task<List<FileNumBean>> readExcel(ExcelConfig excelConfig, TaskBean<FileNumBean> taskBean) {
         return new Task<>() {
             @Override
             protected List<FileNumBean> call() throws Exception {
                 //Task的Message更新方法,这边修改之后,上面的监听方法会经过
                 updateMessage("正在读取数据");
                 List<FileNumBean> fileNumBeanList = new ArrayList<>();
-                String excelInPath = excelConfigBean.getInPath();
-                String sheetName = excelConfigBean.getSheet();
-                int readRow = excelConfigBean.getReadRowNum();
-                int readCell = excelConfigBean.getReadCellNum();
-                int maxRow = excelConfigBean.getMaxRowNum();
+                String excelInPath = excelConfig.getInPath();
+                String sheetName = excelConfig.getSheet();
+                int readRow = excelConfig.getReadRowNum();
+                int readCell = excelConfig.getReadCellNum();
+                int maxRow = excelConfig.getMaxRowNum();
                 checkExcelParam(excelInPath);
                 FileInputStream inputStream = new FileInputStream(excelInPath);
                 XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
@@ -97,11 +100,11 @@ public class ReadDataService {
                 List<File> inFileList = taskBean.getInFileList();
                 //已经读取文件后再匹配数据
                 if (inFileList != null && !inFileList.isEmpty()) {
-                    FileConfigBean fileConfigBean = new FileConfigBean();
-                    fileConfigBean.setMaxImgNum(taskBean.getMaxImgNum())
+                    FileConfig fileConfig = new FileConfig();
+                    fileConfig.setMaxImgNum(taskBean.getMaxImgNum())
                             .setShowFileType(taskBean.isShowFileType())
                             .setSubCode(taskBean.getSubCode());
-                    int imgNum = matchGroupData(fileNumBeanList, inFileList, fileConfigBean);
+                    int imgNum = matchGroupData(fileNumBeanList, inFileList, fileConfig);
                     updateMessage("共有 " + fileNumBeanList.size() + " 组数据，匹配到 " + imgNum + " 张图片");
                 } else {
                     updateMessage("共有 " + fileNumBeanList.size() + " 组数据");
@@ -124,14 +127,41 @@ public class ReadDataService {
                 List<File> inFileList = taskBean.getInFileList();
                 List<FileBean> fileBeans = new ArrayList<>();
                 int inFileSize = inFileList.size();
+                Configuration configuration = taskBean.getConfiguration();
+                CodeRenameConfig codeRenameConfig = null;
+                StringRenameConfig stringRenameConfig = null;
+                ExcelConfig excelConfig = null;
+                int startName = -1;
+                int tag = -1;
+                if (configuration != null) {
+                    if (configuration.getClass() == CodeRenameConfig.class) {
+                        codeRenameConfig = (CodeRenameConfig) configuration;
+                        startName = codeRenameConfig.getStartName();
+                        tag = Integer.parseInt(codeRenameConfig.getTag());
+                    } else if (configuration.getClass() == StringRenameConfig.class) {
+                        stringRenameConfig = (StringRenameConfig) configuration;
+                    } else if (configuration.getClass() == ExcelConfig.class) {
+                        excelConfig = (ExcelConfig) configuration;
+                    }
+                }
                 for (int i = 0; i < inFileSize; i++) {
                     FileBean fileBean = new FileBean();
                     fileBean.setId(i + 1);
                     File f = inFileList.get(i);
+                    String fileName = getFileName(f);
                     if (taskBean.isShowFileType()) {
                         fileBean.setName(f.getName());
                     } else {
-                        fileBean.setName(getFileName(f));
+                        fileBean.setName(fileName);
+                    }
+                    buildRename(codeRenameConfig, fileName, fileBean, stringRenameConfig, excelConfig, startName, tag);
+                    if (codeRenameConfig != null) {
+                        if (tag < codeRenameConfig.getNameNum()) {
+                            tag++;
+                        } else {
+                            startName++;
+                            tag = Integer.parseInt(codeRenameConfig.getTag());
+                        }
                     }
                     fileBean.setPath(f.getPath());
                     fileBean.setFileType(getFileType(f));
@@ -148,6 +178,66 @@ public class ReadDataService {
                 return null;
             }
         };
+    }
+
+    /**
+     * 构建文件重命名
+     */
+    private static void buildRename(CodeRenameConfig codeRenameConfig, String fileName, FileBean fileBean, StringRenameConfig stringRenameConfig,
+                                    ExcelConfig excelConfig, int startName, int tag) {
+        String fileRename = null;
+        if (codeRenameConfig != null) {
+            fileRename = fileName;
+            String differenceCode = codeRenameConfig.getDifferenceCode();
+            String space = "";
+            if (codeRenameConfig.isAddSpace()) {
+                space = " ";
+            }
+            switch (differenceCode) {
+                case "阿拉伯数字：123": {
+                    int startSize = codeRenameConfig.getStartSize();
+                    String paddedNum = String.valueOf(startName);
+                    // 使用String.format()函数进行补齐操作
+                    if (startSize > 0) {
+                        paddedNum = String.format("%0" + startSize + "d", startName);
+                    }
+                    String subCode = codeRenameConfig.getSubCode();
+                    switch (subCode.substring(0, 4)) {
+                        case "英文括号": {
+                            fileRename = paddedNum + space + "(" + tag + ")";
+                            break;
+                        }
+                        case "中文括号": {
+                            fileRename = paddedNum + space + "（" + tag + "）";
+                            break;
+                        }
+                        case "英文横杠": {
+                            fileRename = paddedNum + space + "-" + tag;
+                            break;
+                        }
+                        case "中文横杠": {
+                            fileRename = paddedNum + space + "—" + tag;
+                            break;
+                        }
+                    }
+                    break;
+                }
+                case "中文数字：一二三": {
+                    break;
+                }
+                case "小写英文字母：abc": {
+                    break;
+                }
+                case "大小英文字母：ABC": {
+                    break;
+                }
+            }
+        } else if (stringRenameConfig != null) {
+
+        } else if (excelConfig != null) {
+
+        }
+        fileBean.setRename(fileRename);
     }
 
     /**
