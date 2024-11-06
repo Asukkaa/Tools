@@ -388,7 +388,7 @@ public class FileNameToExcelController extends ToolsProperties {
         if (!isInIntegerRange(startRow_Name.getText(), 0, null)) {
             startRow_Name.setText("");
         }
-        aadValueToolTip(startRow_Name, "只能填数字，不填默认为0，不预留行");
+        addValueToolTip(startRow_Name, "只能填数字，不填默认为0，不预留行");
     }
 
     /**
@@ -404,7 +404,7 @@ public class FileNameToExcelController extends ToolsProperties {
         if (!isInIntegerRange(startCell_Name.getText(), 0, null)) {
             startCell_Name.setText("");
         }
-        aadValueToolTip(startCell_Name, "只能填数字，不填默认为0，不预留列");
+        addValueToolTip(startCell_Name, "只能填数字，不填默认为0，不预留列");
     }
 
     /**
@@ -412,7 +412,7 @@ public class FileNameToExcelController extends ToolsProperties {
      */
     @FXML
     private void nameHandleKeyTyped() {
-        aadValueToolTip(excelName_Name, "如果导出地址和名称与模板一样则会覆盖模板excel文件");
+        addValueToolTip(excelName_Name, "如果导出地址和名称与模板一样则会覆盖模板excel文件");
     }
 
     /**
@@ -420,7 +420,7 @@ public class FileNameToExcelController extends ToolsProperties {
      */
     @FXML
     private void sheetHandleKeyTyped() {
-        aadValueToolTip(sheetOutName_Name, "须填与excel模板相同的表名才能正常读取模板，若填表名不存在或不需要读取模板则会创建一个所填表");
+        addValueToolTip(sheetOutName_Name, "须填与excel模板相同的表名才能正常读取模板，若填表名不存在或不需要读取模板则会创建一个所填表");
     }
 
     /**
@@ -428,7 +428,7 @@ public class FileNameToExcelController extends ToolsProperties {
      */
     @FXML
     private void filterHandleKeyTyped() {
-        aadValueToolTip(filterFileType_Name, "填写后只会识别所填写的后缀名文件，多个文件后缀名用空格隔开，后缀名需带 '.'");
+        addValueToolTip(filterFileType_Name, "填写后只会识别所填写的后缀名文件，多个文件后缀名用空格隔开，后缀名需带 '.'");
     }
 
     /**

@@ -418,7 +418,7 @@ public class FileNumToExcelController extends ToolsProperties {
         if (!isInIntegerRange(startRow_Num.getText(), 0, null)) {
             startRow_Num.setText("");
         }
-        aadValueToolTip(startRow_Num, "只能填数字，不填默认为0，不预留列");
+        addValueToolTip(startRow_Num, "只能填数字，不填默认为0，不预留列");
     }
 
     /**
@@ -434,7 +434,7 @@ public class FileNumToExcelController extends ToolsProperties {
         if (!isInIntegerRange(startCell_Num.getText(), 0, null)) {
             startCell_Num.setText("");
         }
-        aadValueToolTip(startCell_Num, "只能填数字，不填默认为 " + defaultStartCell);
+        addValueToolTip(startCell_Num, "只能填数字，不填默认为 " + defaultStartCell);
     }
 
     /**
@@ -442,7 +442,7 @@ public class FileNumToExcelController extends ToolsProperties {
      */
     @FXML
     private void nameHandleKeyTyped() {
-        aadValueToolTip(excelName_Num, "如果导出地址和名称与模板一样则会覆盖模板excel文件");
+        addValueToolTip(excelName_Num, "如果导出地址和名称与模板一样则会覆盖模板excel文件");
     }
 
     /**
@@ -450,7 +450,7 @@ public class FileNumToExcelController extends ToolsProperties {
      */
     @FXML
     private void sheetHandleKeyTyped() {
-        aadValueToolTip(sheetOutName_Num, "须填与excel模板相同的表名才能正常统计");
+        addValueToolTip(sheetOutName_Num, "须填与excel模板相同的表名才能正常统计");
     }
 
     /**
@@ -458,7 +458,7 @@ public class FileNumToExcelController extends ToolsProperties {
      */
     @FXML
     private void filterHandleKeyTyped() {
-        aadValueToolTip(filterFileType_Num, "填写后只会识别所填写的后缀名文件，多个文件后缀名用空格隔开，后缀名需带 '.'");
+        addValueToolTip(filterFileType_Num, "填写后只会识别所填写的后缀名文件，多个文件后缀名用空格隔开，后缀名需带 '.'");
     }
 
     /**
@@ -466,7 +466,7 @@ public class FileNumToExcelController extends ToolsProperties {
      */
     @FXML
     private void subHandleKeyTyped() {
-        aadValueToolTip(subCode_Num, "填写后会按所填写的字符串来分割文件名称，按照分割后的文件名称左侧字符串进行分组");
+        addValueToolTip(subCode_Num, "填写后会按所填写的字符串来分割文件名称，按照分割后的文件名称左侧字符串进行分组");
     }
 
     /**
@@ -482,7 +482,7 @@ public class FileNumToExcelController extends ToolsProperties {
         if (!isInIntegerRange(readRow_Num.getText(), 0, null)) {
             readRow_Num.setText("");
         }
-        aadValueToolTip(readRow_Num, "只能填数字，不填默认为 " + defaultReadRow + " 从第 " + (defaultReadRow + 1) + " 行读取");
+        addValueToolTip(readRow_Num, "只能填数字，不填默认为 " + defaultReadRow + " 从第 " + (defaultReadRow + 1) + " 行读取");
     }
 
     /**
@@ -498,7 +498,7 @@ public class FileNumToExcelController extends ToolsProperties {
         if (!isInIntegerRange(readCell_Num.getText(), 0, null)) {
             readCell_Num.setText("");
         }
-        aadValueToolTip(readCell_Num, "只能填数字，不填默认为 " + defaultReadCell + " ，从第 " + (defaultReadCell + 1) + " 列读取");
+        addValueToolTip(readCell_Num, "只能填数字，不填默认为 " + defaultReadCell + " ，从第 " + (defaultReadCell + 1) + " 列读取");
     }
 
     /**
@@ -514,7 +514,7 @@ public class FileNumToExcelController extends ToolsProperties {
         if (!isInIntegerRange(maxRow_Num.getText(), 1, null)) {
             maxRow_Num.setText("");
         }
-        aadValueToolTip(maxRow_Num, "只能填数字，不填默认不限制，会读取到有数据的最后一行，最小值为1");
+        addValueToolTip(maxRow_Num, "只能填数字，不填默认不限制，会读取到有数据的最后一行，最小值为1");
     }
 
     /**

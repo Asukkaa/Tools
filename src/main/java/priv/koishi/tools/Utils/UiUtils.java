@@ -58,7 +58,7 @@ public class UiUtils {
     /**
      * 输入框鼠标停留提示输入值
      */
-    public static void aadValueToolTip(TextField textField, String text) {
+    public static void addValueToolTip(TextField textField, String text) {
         String value = textField.getText();
         if (StringUtils.isNotEmpty(text)) {
             if (StringUtils.isNotBlank(value)) {

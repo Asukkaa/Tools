@@ -3,8 +3,13 @@ package priv.koishi.tools.EditingCell;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
+import javafx.stage.PopupWindow;
+import javafx.util.Duration;
 
 import java.util.Objects;
+
+import static priv.koishi.tools.Utils.UiUtils.addValueToolTip;
 
 /**
  * @author KOISHI
@@ -21,12 +26,23 @@ public class EditingCell<T> extends TableCell<T, String> {
     private final ItemConsumer<T> itemConsumer;
 
     /**
+     * 单元格鼠标悬停提示
+     */
+    private final String tip = "双击单元格可编辑修改后的文件名称";
+
+    /**
      * 构造EditingCell对象,并且明确将该cell的值保存进相应的JavaBean的属性值的方法
      *
      * @param itemConsumer 用于引入lambda表达式的对象
      */
     public EditingCell(ItemConsumer<T> itemConsumer) {
         this.itemConsumer = itemConsumer;
+        Tooltip tooltip = new Tooltip(tip);
+        tooltip.setWrapText(true);
+        tooltip.setShowDuration(new Duration(6000000));
+        tooltip.setShowDelay(Duration.ZERO);
+        tooltip.setAnchorLocation(PopupWindow.AnchorLocation.WINDOW_BOTTOM_LEFT);
+        setTooltip(tooltip);
     }
 
     @Override
@@ -41,6 +57,7 @@ public class EditingCell<T> extends TableCell<T, String> {
             textField.selectAll();
             textField.requestFocus();
         }
+        textField.setOnKeyTyped(event -> addValueToolTip(textField, tip));
     }
 
     @Override
@@ -67,7 +84,6 @@ public class EditingCell<T> extends TableCell<T, String> {
                 setText(getString());
                 setGraphic(null);
             }
-
         }
     }
 
@@ -97,6 +113,7 @@ public class EditingCell<T> extends TableCell<T, String> {
                 commitEdit(textField.getText());
             }
         });
+        addValueToolTip(textField, "双击单元格可编辑修改后的文件名称");
     }
 
     private String getString() {

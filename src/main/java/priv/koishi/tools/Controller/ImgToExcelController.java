@@ -452,7 +452,7 @@ public class ImgToExcelController extends ToolsProperties {
         if (!isInIntegerRange(startRow_Img.getText(), 0, null)) {
             startRow_Img.setText("");
         }
-        aadValueToolTip(startRow_Img, "只能填数字，不填默认与读取预留行相同");
+        addValueToolTip(startRow_Img, "只能填数字，不填默认与读取预留行相同");
     }
 
     /**
@@ -468,7 +468,7 @@ public class ImgToExcelController extends ToolsProperties {
         if (!isInIntegerRange(startCell_Img.getText(), 0, null)) {
             startCell_Img.setText("");
         }
-        aadValueToolTip(startCell_Img, "只能填数字，不填默认为 " + defaultStartCell);
+        addValueToolTip(startCell_Img, "只能填数字，不填默认为 " + defaultStartCell);
     }
 
     /**
@@ -476,7 +476,7 @@ public class ImgToExcelController extends ToolsProperties {
      */
     @FXML
     private void nameHandleKeyTyped() {
-        aadValueToolTip(excelName_Img, "如果导出地址和名称与模板一样则会覆盖模板excel文件");
+        addValueToolTip(excelName_Img, "如果导出地址和名称与模板一样则会覆盖模板excel文件");
     }
 
     /**
@@ -484,7 +484,7 @@ public class ImgToExcelController extends ToolsProperties {
      */
     @FXML
     private void sheetHandleKeyTyped() {
-        aadValueToolTip(sheetOutName_Img, "须填与excel模板相同的表名才能正常统计");
+        addValueToolTip(sheetOutName_Img, "须填与excel模板相同的表名才能正常统计");
     }
 
     /**
@@ -492,7 +492,7 @@ public class ImgToExcelController extends ToolsProperties {
      */
     @FXML
     private void subHandleKeyTyped() {
-        aadValueToolTip(subCode_Img, "填写后会按所填写的字符串来分割文件名称，按照分割后的文件名称左侧字符串进行分组");
+        addValueToolTip(subCode_Img, "填写后会按所填写的字符串来分割文件名称，按照分割后的文件名称左侧字符串进行分组");
     }
 
     /**
@@ -508,7 +508,7 @@ public class ImgToExcelController extends ToolsProperties {
         if (!isInIntegerRange(readRow_Img.getText(), 0, null)) {
             readRow_Img.setText("");
         }
-        aadValueToolTip(readRow_Img, "只能填数字，不填默认为 " + defaultReadRow + " 从第 " + (defaultReadRow + 1) + " 行读取");
+        addValueToolTip(readRow_Img, "只能填数字，不填默认为 " + defaultReadRow + " 从第 " + (defaultReadRow + 1) + " 行读取");
     }
 
     /**
@@ -524,7 +524,7 @@ public class ImgToExcelController extends ToolsProperties {
         if (!isInIntegerRange(readCell_Img.getText(), 0, null)) {
             readCell_Img.setText("");
         }
-        aadValueToolTip(readCell_Img, "只能填数字，不填默认为 " + defaultReadCell + " ，从第 " + (defaultReadCell + 1) + " 列读取");
+        addValueToolTip(readCell_Img, "只能填数字，不填默认为 " + defaultReadCell + " ，从第 " + (defaultReadCell + 1) + " 列读取");
     }
 
     /**
@@ -540,7 +540,7 @@ public class ImgToExcelController extends ToolsProperties {
         if (!isInIntegerRange(maxRow_Img.getText(), 1, null)) {
             maxRow_Img.setText("");
         }
-        aadValueToolTip(maxRow_Img, "只能填数字，不填默认不限制，会读取到有数据的最后一行，最小值为1");
+        addValueToolTip(maxRow_Img, "只能填数字，不填默认不限制，会读取到有数据的最后一行，最小值为1");
     }
 
     /**
@@ -579,7 +579,7 @@ public class ImgToExcelController extends ToolsProperties {
         if (!isInIntegerRange(imgWidth_Img.getText(), 0, null)) {
             imgWidth_Img.setText("");
         }
-        aadValueToolTip(imgWidth_Img, "只能填数字，不填默认为 " + defaultImgWidth);
+        addValueToolTip(imgWidth_Img, "只能填数字，不填默认为 " + defaultImgWidth);
     }
 
     /**
@@ -595,7 +595,7 @@ public class ImgToExcelController extends ToolsProperties {
         if (!isInIntegerRange(imgHeight_Img.getText(), 0, null)) {
             imgHeight_Img.setText("");
         }
-        aadValueToolTip(imgHeight_Img, "只能填数字，不填默认为 " + defaultImgHeight);
+        addValueToolTip(imgHeight_Img, "只能填数字，不填默认为 " + defaultImgHeight);
     }
 
     /**
@@ -611,7 +611,7 @@ public class ImgToExcelController extends ToolsProperties {
         if (!isInIntegerRange(maxImgNum_Img.getText(), 1, null)) {
             maxImgNum_Img.setText("");
         }
-        aadValueToolTip(maxImgNum_Img, "只能填正整数，不填默不限制");
+        addValueToolTip(maxImgNum_Img, "只能填正整数，不填默不限制");
     }
 
 }

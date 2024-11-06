@@ -336,7 +336,6 @@ public class FileRenameController extends ToolsProperties {
                 移除：移除指定位置左侧或右侧所有字符串""";
         addToolTip(afterBehavior_Re, optionTip);
         addToolTip(beforeBehavior_Re, optionTip);
-
         addToolTip(startSize_Re, "只能填数字，0为不限制编号位数，不填默认为0");
         addToolTip(renameStr_Re, "填写后会将匹配到的字符串替换为所填写的字符串");
         addToolTip(sheetOutName_Re, "须填与excel模板相同的表名才能正常读取模板");
@@ -463,7 +462,7 @@ public class FileRenameController extends ToolsProperties {
      */
     @FXML
     private void sheetHandleKeyTyped() {
-        aadValueToolTip(sheetOutName_Re, "须填与excel模板相同的表名才能正常读取模板");
+        addValueToolTip(sheetOutName_Re, "须填与excel模板相同的表名才能正常读取模板");
     }
 
     /**
@@ -479,7 +478,7 @@ public class FileRenameController extends ToolsProperties {
         if (!isInIntegerRange(startName_Re.getText(), 0, null)) {
             startName_Re.setText("");
         }
-        aadValueToolTip(startName_Re, "只能填自然数，不填默认为 " + defaultStartNameNum);
+        addValueToolTip(startName_Re, "只能填自然数，不填默认为 " + defaultStartNameNum);
     }
 
     /**
@@ -495,7 +494,7 @@ public class FileRenameController extends ToolsProperties {
         if (!isInIntegerRange(startSize_Re.getText(), 0, null)) {
             startSize_Re.setText("");
         }
-        aadValueToolTip(startSize_Re, "只能填数字，0为不限制编号位数，不填默认为0");
+        addValueToolTip(startSize_Re, "只能填数字，0为不限制编号位数，不填默认为0");
     }
 
     /**
@@ -511,7 +510,7 @@ public class FileRenameController extends ToolsProperties {
         if (!isInIntegerRange(nameNum_Re.getText(), 0, null)) {
             nameNum_Re.setText("");
         }
-        aadValueToolTip(nameNum_Re, "只能填数字，0为不使用分隔符进行分组重命名，不填默认为0");
+        addValueToolTip(nameNum_Re, "只能填数字，0为不使用分隔符进行分组重命名，不填默认为0");
     }
 
     /**
@@ -519,7 +518,7 @@ public class FileRenameController extends ToolsProperties {
      */
     @FXML
     private void filterHandleKeyTyped() {
-        aadValueToolTip(filterFileType_Re, "填写后只会识别所填写的后缀名文件，多个文件后缀名用空格隔开，后缀名需带 '.'");
+        addValueToolTip(filterFileType_Re, "填写后只会识别所填写的后缀名文件，多个文件后缀名用空格隔开，后缀名需带 '.'");
     }
 
     /**
@@ -571,7 +570,7 @@ public class FileRenameController extends ToolsProperties {
         if (!isInIntegerRange(readRow_Re.getText(), 0, null)) {
             readRow_Re.setText("");
         }
-        aadValueToolTip(readRow_Re, "只能填数字，不填默认为 " + defaultReadRow + " 从第 " + (defaultReadRow + 1) + " 行读取");
+        addValueToolTip(readRow_Re, "只能填数字，不填默认为 " + defaultReadRow + " 从第 " + (defaultReadRow + 1) + " 行读取");
     }
 
     /**
@@ -587,7 +586,7 @@ public class FileRenameController extends ToolsProperties {
         if (!isInIntegerRange(readCell_Re.getText(), 0, null)) {
             readCell_Re.setText("");
         }
-        aadValueToolTip(readCell_Re, "只能填数字，不填默认不限制，会读取到有数据的最后一行，最小值为1");
+        addValueToolTip(readCell_Re, "只能填数字，不填默认不限制，会读取到有数据的最后一行，最小值为1");
     }
 
     /**
@@ -603,7 +602,7 @@ public class FileRenameController extends ToolsProperties {
         if (!isInIntegerRange(maxRow_Re.getText(), 1, null)) {
             maxRow_Re.setText("");
         }
-        aadValueToolTip(maxRow_Re, "只能填数字，不填默认不限制，会读取到有数据的最后一行，最小值为1");
+        addValueToolTip(maxRow_Re, "只能填数字，不填默认不限制，会读取到有数据的最后一行，最小值为1");
     }
 
     /**
@@ -672,7 +671,7 @@ public class FileRenameController extends ToolsProperties {
             case "指定字符串": {
                 typeLabel_Re.setText("要匹配的字符串:");
                 renameValue_Re.setText("");
-                aadValueToolTip(renameValue_Re, "填写后会根据其他配置项处理文件名中所匹配的字符");
+                addValueToolTip(renameValue_Re, "填写后会根据其他配置项处理文件名中所匹配的字符");
                 renameBehavior_Re.getItems().remove("处理两侧字符");
                 renameBehavior_Re.getItems().add("处理两侧字符");
                 behaviorAction();
@@ -681,7 +680,7 @@ public class FileRenameController extends ToolsProperties {
             case "指定字符位置": {
                 typeLabel_Re.setText("要匹配的字符位置:");
                 renameValue_Re.setText("");
-                aadValueToolTip(renameValue_Re, "填写后会根据其他配置项处理文件名中所匹配的字符");
+                addValueToolTip(renameValue_Re, "填写后会根据其他配置项处理文件名中所匹配的字符");
                 renameBehavior_Re.getItems().remove("处理两侧字符");
                 renameBehavior_Re.setValue(renameBehavior_Re.getItems().getFirst());
                 behaviorAction();
@@ -755,7 +754,7 @@ public class FileRenameController extends ToolsProperties {
                 renameValue_Re.setText("");
             }
         }
-        aadValueToolTip(renameValue_Re, "填写后会根据其他配置项处理文件名中所匹配的字符");
+        addValueToolTip(renameValue_Re, "填写后会根据其他配置项处理文件名中所匹配的字符");
     }
 
     /**
@@ -763,7 +762,7 @@ public class FileRenameController extends ToolsProperties {
      */
     @FXML
     private void renameStrHandleKeyTyped() {
-        aadValueToolTip(renameStr_Re, "填写后会将匹配到的字符串替换为所填写的字符串");
+        addValueToolTip(renameStr_Re, "填写后会将匹配到的字符串替换为所填写的字符串");
     }
 
     /**
@@ -779,7 +778,7 @@ public class FileRenameController extends ToolsProperties {
         if (!isInIntegerRange(before_Re.getText(), 1, null)) {
             before_Re.setText("");
         }
-        aadValueToolTip(before_Re, "只能填正整数，不填默认匹配目标字符串左侧所有字符，填写后匹配目标字符串左侧所填写个数的单个字符");
+        addValueToolTip(before_Re, "只能填正整数，不填默认匹配目标字符串左侧所有字符，填写后匹配目标字符串左侧所填写个数的单个字符");
     }
 
     /**
@@ -795,7 +794,7 @@ public class FileRenameController extends ToolsProperties {
         if (!isInIntegerRange(after_Re.getText(), 1, null)) {
             after_Re.setText("");
         }
-        aadValueToolTip(after_Re, "只能填正整数，不填默认匹配目标字符串右侧所有字符，填写后匹配目标字符串右侧所填写个数的单个字符");
+        addValueToolTip(after_Re, "只能填正整数，不填默认匹配目标字符串右侧所有字符，填写后匹配目标字符串右侧所填写个数的单个字符");
     }
 
     /**
@@ -803,7 +802,7 @@ public class FileRenameController extends ToolsProperties {
      */
     @FXML
     private void afterValueHandleKeyTyped() {
-        aadValueToolTip(afterValue_Re, "将所填字符根据选项插入或替换目标字符左侧所匹配的字符");
+        addValueToolTip(afterValue_Re, "将所填字符根据选项插入或替换目标字符左侧所匹配的字符");
     }
 
     /**
@@ -811,7 +810,7 @@ public class FileRenameController extends ToolsProperties {
      */
     @FXML
     private void beforeValueHandleKeyTyped() {
-        aadValueToolTip(beforeValue_Re, "将所填字符根据选项插入或替换目标字符右侧所匹配的字符");
+        addValueToolTip(beforeValue_Re, "将所填字符根据选项插入或替换目标字符右侧所匹配的字符");
     }
 
     /**
@@ -827,7 +826,7 @@ public class FileRenameController extends ToolsProperties {
         if (!isInIntegerRange(tag_Re.getText(), 0, null)) {
             tag_Re.setText("");
         }
-        aadValueToolTip(tag_Re, "只能填自然数，不填默认为1，会根据所填值设置相同文件名起始尾缀");
+        addValueToolTip(tag_Re, "只能填自然数，不填默认为1，会根据所填值设置相同文件名起始尾缀");
     }
     
 }
