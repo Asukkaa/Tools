@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static priv.koishi.tools.Service.RenameService.buildRename;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
@@ -133,6 +134,7 @@ public class ReadDataService {
                 ExcelConfig excelConfig = null;
                 int startName = -1;
                 int tag = -1;
+                int nameNum = 1;
                 if (configuration != null) {
                     if (configuration.getClass() == CodeRenameConfig.class) {
                         codeRenameConfig = (CodeRenameConfig) configuration;
@@ -154,13 +156,15 @@ public class ReadDataService {
                     } else {
                         fileBean.setName(fileName);
                     }
-                    buildRename(codeRenameConfig, fileName, fileBean, stringRenameConfig, excelConfig, startName, tag);
+                    buildRename(codeRenameConfig, fileBean, stringRenameConfig, excelConfig, startName, tag);
                     if (codeRenameConfig != null) {
-                        if (tag < codeRenameConfig.getNameNum()) {
+                        if (nameNum < codeRenameConfig.getNameNum()) {
                             tag++;
+                            nameNum++;
                         } else {
                             startName++;
                             tag = codeRenameConfig.getTag();
+                            nameNum = 1;
                         }
                     }
                     fileBean.setPath(f.getPath());
@@ -178,66 +182,6 @@ public class ReadDataService {
                 return null;
             }
         };
-    }
-
-    /**
-     * 构建文件重命名
-     */
-    private static void buildRename(CodeRenameConfig codeRenameConfig, String fileName, FileBean fileBean, StringRenameConfig stringRenameConfig,
-                                    ExcelConfig excelConfig, int startName, int tag) {
-        String fileRename = null;
-        if (codeRenameConfig != null) {
-            fileRename = fileName;
-            String differenceCode = codeRenameConfig.getDifferenceCode();
-            String space = "";
-            if (codeRenameConfig.isAddSpace()) {
-                space = " ";
-            }
-            switch (differenceCode) {
-                case "阿拉伯数字：123": {
-                    int startSize = codeRenameConfig.getStartSize();
-                    String paddedNum = String.valueOf(startName);
-                    // 使用String.format()函数进行补齐操作
-                    if (startSize > 0) {
-                        paddedNum = String.format("%0" + startSize + "d", startName);
-                    }
-                    String subCode = codeRenameConfig.getSubCode();
-                    switch (subCode.substring(0, 4)) {
-                        case "英文括号": {
-                            fileRename = paddedNum + space + "(" + tag + ")";
-                            break;
-                        }
-                        case "中文括号": {
-                            fileRename = paddedNum + space + "（" + tag + "）";
-                            break;
-                        }
-                        case "英文横杠": {
-                            fileRename = paddedNum + space + "-" + tag;
-                            break;
-                        }
-                        case "中文横杠": {
-                            fileRename = paddedNum + space + "—" + tag;
-                            break;
-                        }
-                    }
-                    break;
-                }
-                case "中文数字：一二三": {
-                    break;
-                }
-                case "小写英文字母：abc": {
-                    break;
-                }
-                case "大小英文字母：ABC": {
-                    break;
-                }
-            }
-        } else if (stringRenameConfig != null) {
-
-        } else if (excelConfig != null) {
-
-        }
-        fileBean.setRename(fileRename);
     }
 
     /**

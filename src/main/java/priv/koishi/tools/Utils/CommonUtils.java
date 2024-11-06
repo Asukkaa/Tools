@@ -55,6 +55,59 @@ public class CommonUtils {
     }
 
     /**
+     * int转汉字
+     *
+     * @param intNum 要转换为汉字的数字
+     */
+    public static String intToChineseNum(int intNum) {
+        String[] cnNum = {"零", "一", "二", "三", "四", "五", "六", "七", "八", "九"};
+        String[] cnUnit = {"", "十", "百", "千", "万", "十", "百", "千", "亿", "十", "百", "千"};
+        String cnNegative = "负";
+        StringBuilder sb = new StringBuilder();
+        boolean isNegative = false;
+        if (intNum < 0) {
+            isNegative = true;
+            intNum *= -1;
+        }
+        int count = 0;
+        while (intNum > 0) {
+            sb.insert(0, cnNum[intNum % 10] + cnUnit[count]);
+            intNum = intNum / 10;
+            count++;
+        }
+        if (isNegative)
+            sb.insert(0, cnNegative);
+        String chineseNum = sb.toString().replaceAll("零[千百十]", "零").replaceAll("零+万", "万")
+                .replaceAll("零+亿", "亿").replaceAll("亿万", "亿零")
+                .replaceAll("零+", "零").replaceAll("零$", "");
+        if (chineseNum.indexOf("一") == 0 && chineseNum.indexOf("十") == 1 && chineseNum.length() < 4) {
+            chineseNum = chineseNum.substring(1);
+        }
+        return chineseNum;
+    }
+
+    /**
+     * int转英文字母
+     */
+    public static String convertToAlpha(int number, boolean toLowerCase) {
+        char[] ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
+        if (toLowerCase) {
+            ALPHABET = "abcdefghijklmnopqrstuvwxyz".toCharArray();
+        }
+        if (number <= 0) {
+            return "";
+        }
+        StringBuilder alphaNum = new StringBuilder();
+        while (number > 0) {
+            int remainder = (number - 1) % ALPHABET.length;
+            alphaNum.append(ALPHABET[remainder]);
+            number = (number - 1) / ALPHABET.length;
+        }
+        // 因为我们从'A'开始，所以需要翻转字符串
+        return alphaNum.reverse().toString();
+    }
+
+    /**
      * map分组并按key排序
      */
     public static Map<String, List<String>> getSortedByMap(List<String> keys, String nameSubstring, int maxValue) {
