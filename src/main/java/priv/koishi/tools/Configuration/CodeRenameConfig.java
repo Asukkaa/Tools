@@ -47,6 +47,6 @@ public class CodeRenameConfig extends Configuration {
     /**
      * 每个编码起始尾缀值
      */
-    String tag;
+    int tag;
 
 }

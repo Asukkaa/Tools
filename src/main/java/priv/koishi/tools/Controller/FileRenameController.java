@@ -242,13 +242,14 @@ public class FileRenameController extends ToolsProperties {
         int startNameValue = setDefaultIntValue(startName_Re, 1, 0, null);
         int startSizeValue = setDefaultIntValue(startSize_Re, 0, 0, null);
         int nameNumValue = setDefaultIntValue(nameNum_Re, 0, 0, null);
+        int tagValue = setDefaultIntValue(tag_Re, 1, 0, null);
         CodeRenameConfig codeRenameConfig = new CodeRenameConfig();
         codeRenameConfig.setDifferenceCode(differenceCode_Re.getValue())
                 .setAddSpace(addSpace_Re.isSelected())
                 .setSubCode(subCode_Re.getValue())
                 .setStartName(startNameValue)
                 .setStartSize(startSizeValue)
-                .setTag(tag_Re.getText())
+                .setTag(tagValue)
                 .setNameNum(nameNumValue);
         taskBean.setConfiguration(codeRenameConfig);
     }
@@ -335,14 +336,15 @@ public class FileRenameController extends ToolsProperties {
                 移除：移除指定位置左侧或右侧所有字符串""";
         addToolTip(afterBehavior_Re, optionTip);
         addToolTip(beforeBehavior_Re, optionTip);
-        addToolTip(tag_Re, "只能填自然数，会根据所填值设置相同文件名起始尾缀");
+
         addToolTip(startSize_Re, "只能填数字，0为不限制编号位数，不填默认为0");
         addToolTip(renameStr_Re, "填写后会将匹配到的字符串替换为所填写的字符串");
         addToolTip(sheetOutName_Re, "须填与excel模板相同的表名才能正常读取模板");
         addToolTip(renameValue_Re, "填写后会根据其他配置项处理文件名中所匹配的字符");
-        addToolTip(startName_Re, "只能填自然数，不填默认为 " + defaultStartNameNum);
         addToolTip(nameNum_Re, "只能填数字，0为不使用分隔符进行分组重命名，不填默认为0");
+        addToolTip(startName_Re, "只能填自然数，不填默认为 " + defaultStartNameNum);
         addToolTip(afterValue_Re, "将所填字符根据选项插入或替换目标字符左侧所匹配的字符");
+        addToolTip(tag_Re, "只能填自然数，不填默认为1，会根据所填值设置相同文件名起始尾缀");
         addToolTip(beforeValue_Re, "将所填字符根据选项插入或替换目标字符右侧所匹配的字符");
         addToolTip(maxRow_Re, "只能填数字，不填默认不限制，会读取到有数据的最后一行，最小值为1");
         addToolTip(addSpace_Re, "win系统自动重命名规则为：文件名 + 空格 + 英文括号包裹的阿拉伯数字编号");
@@ -825,7 +827,7 @@ public class FileRenameController extends ToolsProperties {
         if (!isInIntegerRange(tag_Re.getText(), 0, null)) {
             tag_Re.setText("");
         }
-        aadValueToolTip(tag_Re, "只能填自然数，会根据所填值设置相同文件名起始尾缀");
+        aadValueToolTip(tag_Re, "只能填自然数，不填默认为1，会根据所填值设置相同文件名起始尾缀");
     }
     
 }

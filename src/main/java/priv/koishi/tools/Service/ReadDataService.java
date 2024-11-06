@@ -137,7 +137,7 @@ public class ReadDataService {
                     if (configuration.getClass() == CodeRenameConfig.class) {
                         codeRenameConfig = (CodeRenameConfig) configuration;
                         startName = codeRenameConfig.getStartName();
-                        tag = Integer.parseInt(codeRenameConfig.getTag());
+                        tag = codeRenameConfig.getTag();
                     } else if (configuration.getClass() == StringRenameConfig.class) {
                         stringRenameConfig = (StringRenameConfig) configuration;
                     } else if (configuration.getClass() == ExcelConfig.class) {
@@ -160,7 +160,7 @@ public class ReadDataService {
                             tag++;
                         } else {
                             startName++;
-                            tag = Integer.parseInt(codeRenameConfig.getTag());
+                            tag = codeRenameConfig.getTag();
                         }
                     }
                     fileBean.setPath(f.getPath());
