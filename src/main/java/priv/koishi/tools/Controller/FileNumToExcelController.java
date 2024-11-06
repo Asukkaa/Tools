@@ -8,6 +8,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.DragEvent;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
@@ -408,7 +409,12 @@ public class FileNumToExcelController extends ToolsProperties {
      * 限制导出预留行只能输入自然数
      */
     @FXML
-    private void rowHandleKeyTyped() {
+    private void rowHandleKeyTyped(KeyEvent event) {
+        String input = event.getCharacter();
+        if (!isInIntegerRange(input, 0, null)) {
+            startRow_Num.setText(startRow_Num.getText().replaceAll(input, ""));
+        }
+        //如果复制的值有非范围内的字符直接清空
         if (!isInIntegerRange(startRow_Num.getText(), 0, null)) {
             startRow_Num.setText("");
         }
@@ -419,7 +425,12 @@ public class FileNumToExcelController extends ToolsProperties {
      * 限制导出预留列只能输入自然数
      */
     @FXML
-    private void cellHandleKeyTyped() {
+    private void cellHandleKeyTyped(KeyEvent event) {
+        String input = event.getCharacter();
+        if (!isInIntegerRange(input, 0, null)) {
+            startCell_Num.setText(startCell_Num.getText().replaceAll(input, ""));
+        }
+        //如果复制的值有非范围内的字符直接清空
         if (!isInIntegerRange(startCell_Num.getText(), 0, null)) {
             startCell_Num.setText("");
         }
@@ -462,7 +473,12 @@ public class FileNumToExcelController extends ToolsProperties {
      * 限制读取起始行只能输入自然数
      */
     @FXML
-    private void readRowHandleKeyTyped() {
+    private void readRowHandleKeyTyped(KeyEvent event) {
+        String input = event.getCharacter();
+        if (!isInIntegerRange(input, 0, null)) {
+            readRow_Num.setText(readRow_Num.getText().replaceAll(input, ""));
+        }
+        //如果复制的值有非范围内的字符直接清空
         if (!isInIntegerRange(readRow_Num.getText(), 0, null)) {
             readRow_Num.setText("");
         }
@@ -473,7 +489,12 @@ public class FileNumToExcelController extends ToolsProperties {
      * 限制读取起始列只能输入自然数
      */
     @FXML
-    private void readCellHandleKeyTyped() {
+    private void readCellHandleKeyTyped(KeyEvent event) {
+        String input = event.getCharacter();
+        if (!isInIntegerRange(input, 0, null)) {
+            readCell_Num.setText(readCell_Num.getText().replaceAll(input, ""));
+        }
+        //如果复制的值有非范围内的字符直接清空
         if (!isInIntegerRange(readCell_Num.getText(), 0, null)) {
             readCell_Num.setText("");
         }
@@ -484,7 +505,12 @@ public class FileNumToExcelController extends ToolsProperties {
      * 限制读取最大行数只能输入正整数
      */
     @FXML
-    private void maxRowHandleKeyTyped() {
+    private void maxRowHandleKeyTyped(KeyEvent event) {
+        String input = event.getCharacter();
+        if (!isInIntegerRange(input, 1, null)) {
+            maxRow_Num.setText(maxRow_Num.getText().replaceAll(input, ""));
+        }
+        //如果复制的值有非范围内的字符直接清空
         if (!isInIntegerRange(maxRow_Num.getText(), 1, null)) {
             maxRow_Num.setText("");
         }

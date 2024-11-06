@@ -8,6 +8,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.DragEvent;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
@@ -442,7 +443,12 @@ public class ImgToExcelController extends ToolsProperties {
      * 限制导出预留行只能输入自然数
      */
     @FXML
-    private void rowHandleKeyTyped() {
+    private void rowHandleKeyTyped(KeyEvent event) {
+        String input = event.getCharacter();
+        if (!isInIntegerRange(input, 0, null)) {
+            startRow_Img.setText(startRow_Img.getText().replaceAll(input, ""));
+        }
+        //如果复制的值有非范围内的字符直接清空
         if (!isInIntegerRange(startRow_Img.getText(), 0, null)) {
             startRow_Img.setText("");
         }
@@ -453,7 +459,12 @@ public class ImgToExcelController extends ToolsProperties {
      * 限制导出预留列只能输入自然数
      */
     @FXML
-    private void cellHandleKeyTyped() {
+    private void cellHandleKeyTyped(KeyEvent event) {
+        String input = event.getCharacter();
+        if (!isInIntegerRange(input, 0, null)) {
+            startCell_Img.setText(startCell_Img.getText().replaceAll(input, ""));
+        }
+        //如果复制的值有非范围内的字符直接清空
         if (!isInIntegerRange(startCell_Img.getText(), 0, null)) {
             startCell_Img.setText("");
         }
@@ -488,7 +499,12 @@ public class ImgToExcelController extends ToolsProperties {
      * 限制读取起始行只能输入自然数
      */
     @FXML
-    private void readRowHandleKeyTyped() {
+    private void readRowHandleKeyTyped(KeyEvent event) {
+        String input = event.getCharacter();
+        if (!isInIntegerRange(input, 0, null)) {
+            readRow_Img.setText(readRow_Img.getText().replaceAll(input, ""));
+        }
+        //如果复制的值有非范围内的字符直接清空
         if (!isInIntegerRange(readRow_Img.getText(), 0, null)) {
             readRow_Img.setText("");
         }
@@ -499,7 +515,12 @@ public class ImgToExcelController extends ToolsProperties {
      * 限制读取起始列只能输入自然数
      */
     @FXML
-    private void readCellHandleKeyTyped() {
+    private void readCellHandleKeyTyped(KeyEvent event) {
+        String input = event.getCharacter();
+        if (!isInIntegerRange(input, 0, null)) {
+            readCell_Img.setText(readCell_Img.getText().replaceAll(input, ""));
+        }
+        //如果复制的值有非范围内的字符直接清空
         if (!isInIntegerRange(readCell_Img.getText(), 0, null)) {
             readCell_Img.setText("");
         }
@@ -510,7 +531,12 @@ public class ImgToExcelController extends ToolsProperties {
      * 限制读取最大行数只能输入正整数
      */
     @FXML
-    private void maxRowHandleKeyTyped() {
+    private void maxRowHandleKeyTyped(KeyEvent event) {
+        String input = event.getCharacter();
+        if (!isInIntegerRange(input, 1, null)) {
+            maxRow_Img.setText(maxRow_Img.getText().replaceAll(input, ""));
+        }
+        //如果复制的值有非范围内的字符直接清空
         if (!isInIntegerRange(maxRow_Img.getText(), 1, null)) {
             maxRow_Img.setText("");
         }
@@ -544,7 +570,12 @@ public class ImgToExcelController extends ToolsProperties {
      * 图片宽度设置监听
      */
     @FXML
-    private void imgWidthHandleKeyTyped() {
+    private void imgWidthHandleKeyTyped(KeyEvent event) {
+        String input = event.getCharacter();
+        if (!isInIntegerRange(input, 0, null)) {
+            imgWidth_Img.setText(imgWidth_Img.getText().replaceAll(input, ""));
+        }
+        //如果复制的值有非范围内的字符直接清空
         if (!isInIntegerRange(imgWidth_Img.getText(), 0, null)) {
             imgWidth_Img.setText("");
         }
@@ -555,7 +586,12 @@ public class ImgToExcelController extends ToolsProperties {
      * 图片高度设置监听
      */
     @FXML
-    private void imgHeightHandleKeyTyped() {
+    private void imgHeightHandleKeyTyped(KeyEvent event) {
+        String input = event.getCharacter();
+        if (!isInIntegerRange(input, 0, null)) {
+            imgHeight_Img.setText(imgHeight_Img.getText().replaceAll(input, ""));
+        }
+        //如果复制的值有非范围内的字符直接清空
         if (!isInIntegerRange(imgHeight_Img.getText(), 0, null)) {
             imgHeight_Img.setText("");
         }
@@ -566,7 +602,12 @@ public class ImgToExcelController extends ToolsProperties {
      * 最大匹配数量设置监听
      */
     @FXML
-    public void maxImgNumKeyTyped() {
+    public void maxImgNumKeyTyped(KeyEvent event) {
+        String input = event.getCharacter();
+        if (!isInIntegerRange(input, 1, null)) {
+            maxImgNum_Img.setText(maxImgNum_Img.getText().replaceAll(input, ""));
+        }
+        //如果复制的值有非范围内的字符直接清空
         if (!isInIntegerRange(maxImgNum_Img.getText(), 1, null)) {
             maxImgNum_Img.setText("");
         }

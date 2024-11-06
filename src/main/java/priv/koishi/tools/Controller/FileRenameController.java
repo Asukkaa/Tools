@@ -9,6 +9,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.DragEvent;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -17,10 +18,10 @@ import javafx.stage.Stage;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import priv.koishi.tools.Bean.FileBean;
+import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.CodeRenameConfig;
 import priv.koishi.tools.Configuration.ExcelConfig;
 import priv.koishi.tools.Configuration.FileConfig;
-import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.StringRenameConfig;
 import priv.koishi.tools.EditingCell.EditingCell;
 import priv.koishi.tools.Properties.ToolsProperties;
@@ -334,6 +335,7 @@ public class FileRenameController extends ToolsProperties {
                 移除：移除指定位置左侧或右侧所有字符串""";
         addToolTip(afterBehavior_Re, optionTip);
         addToolTip(beforeBehavior_Re, optionTip);
+        addToolTip(tag_Re, "只能填自然数，会根据所填值设置相同文件名起始尾缀");
         addToolTip(startSize_Re, "只能填数字，0为不限制编号位数，不填默认为0");
         addToolTip(renameStr_Re, "填写后会将匹配到的字符串替换为所填写的字符串");
         addToolTip(sheetOutName_Re, "须填与excel模板相同的表名才能正常读取模板");
@@ -466,7 +468,12 @@ public class FileRenameController extends ToolsProperties {
      * 鼠标悬留提示输入的文件名起始编号
      */
     @FXML
-    private void startNameHandleKeyTyped() {
+    private void startNameHandleKeyTyped(KeyEvent event) {
+        String input = event.getCharacter();
+        if (!isInIntegerRange(input, 0, null)) {
+            startName_Re.setText(startName_Re.getText().replaceAll(input, ""));
+        }
+        //如果复制的值有非范围内的字符直接清空
         if (!isInIntegerRange(startName_Re.getText(), 0, null)) {
             startName_Re.setText("");
         }
@@ -477,7 +484,12 @@ public class FileRenameController extends ToolsProperties {
      * 鼠标悬留提示输入的文件名起始编号位数
      */
     @FXML
-    private void startSizeHandleKeyTyped() {
+    private void startSizeHandleKeyTyped(KeyEvent event) {
+        String input = event.getCharacter();
+        if (!isInIntegerRange(input, 0, null)) {
+            startSize_Re.setText(startSize_Re.getText().replaceAll(input, ""));
+        }
+        //如果复制的值有非范围内的字符直接清空
         if (!isInIntegerRange(startSize_Re.getText(), 0, null)) {
             startSize_Re.setText("");
         }
@@ -488,7 +500,12 @@ public class FileRenameController extends ToolsProperties {
      * 鼠标悬留提示输入的相同编号文件数量
      */
     @FXML
-    private void nameNumHandleKeyTyped() {
+    private void nameNumHandleKeyTyped(KeyEvent event) {
+        String input = event.getCharacter();
+        if (!isInIntegerRange(input, 0, null)) {
+            nameNum_Re.setText(nameNum_Re.getText().replaceAll(input, ""));
+        }
+        //如果复制的值有非范围内的字符直接清空
         if (!isInIntegerRange(nameNum_Re.getText(), 0, null)) {
             nameNum_Re.setText("");
         }
@@ -543,7 +560,12 @@ public class FileRenameController extends ToolsProperties {
      * 限制读取起始行只能输入自然数
      */
     @FXML
-    private void readRowHandleKeyTyped() {
+    private void readRowHandleKeyTyped(KeyEvent event) {
+        String input = event.getCharacter();
+        if (!isInIntegerRange(input, 0, null)) {
+            readRow_Re.setText(readRow_Re.getText().replaceAll(input, ""));
+        }
+        //如果复制的值有非范围内的字符直接清空
         if (!isInIntegerRange(readRow_Re.getText(), 0, null)) {
             readRow_Re.setText("");
         }
@@ -554,7 +576,12 @@ public class FileRenameController extends ToolsProperties {
      * 限制读取起始列只能输入自然数
      */
     @FXML
-    private void readCellHandleKeyTyped() {
+    private void readCellHandleKeyTyped(KeyEvent event) {
+        String input = event.getCharacter();
+        if (!isInIntegerRange(input, 0, null)) {
+            readCell_Re.setText(readCell_Re.getText().replaceAll(input, ""));
+        }
+        //如果复制的值有非范围内的字符直接清空
         if (!isInIntegerRange(readCell_Re.getText(), 0, null)) {
             readCell_Re.setText("");
         }
@@ -565,7 +592,12 @@ public class FileRenameController extends ToolsProperties {
      * 限制读取最大行数只能输入正整数
      */
     @FXML
-    private void maxRowHandleKeyTyped() {
+    private void maxRowHandleKeyTyped(KeyEvent event) {
+        String input = event.getCharacter();
+        if (!isInIntegerRange(input, 1, null)) {
+            maxRow_Re.setText(maxRow_Re.getText().replaceAll(input, ""));
+        }
+        //如果复制的值有非范围内的字符直接清空
         if (!isInIntegerRange(maxRow_Re.getText(), 1, null)) {
             maxRow_Re.setText("");
         }
@@ -638,6 +670,7 @@ public class FileRenameController extends ToolsProperties {
             case "指定字符串": {
                 typeLabel_Re.setText("要匹配的字符串:");
                 renameValue_Re.setText("");
+                aadValueToolTip(renameValue_Re, "填写后会根据其他配置项处理文件名中所匹配的字符");
                 renameBehavior_Re.getItems().remove("处理两侧字符");
                 renameBehavior_Re.getItems().add("处理两侧字符");
                 behaviorAction();
@@ -646,6 +679,7 @@ public class FileRenameController extends ToolsProperties {
             case "指定字符位置": {
                 typeLabel_Re.setText("要匹配的字符位置:");
                 renameValue_Re.setText("");
+                aadValueToolTip(renameValue_Re, "填写后会根据其他配置项处理文件名中所匹配的字符");
                 renameBehavior_Re.getItems().remove("处理两侧字符");
                 renameBehavior_Re.setValue(renameBehavior_Re.getItems().getFirst());
                 behaviorAction();
@@ -707,7 +741,18 @@ public class FileRenameController extends ToolsProperties {
      * 要匹配的字符串鼠标悬停提示
      */
     @FXML
-    private void renameValueHandleKeyTyped() {
+    private void renameValueHandleKeyTyped(KeyEvent event) {
+        //这个输入框只有在输入指定字符位置时才限制输入范围
+        if ("指定字符位置".equals(targetStr_Re.getValue())) {
+            String input = event.getCharacter();
+            if (!isInIntegerRange(input, 0, null)) {
+                renameValue_Re.setText(renameValue_Re.getText().replaceAll(input, ""));
+            }
+            //如果复制的值有非范围内的字符直接清空
+            if (!isInIntegerRange(renameValue_Re.getText(), 0, null)) {
+                renameValue_Re.setText("");
+            }
+        }
         aadValueToolTip(renameValue_Re, "填写后会根据其他配置项处理文件名中所匹配的字符");
     }
 
@@ -723,7 +768,12 @@ public class FileRenameController extends ToolsProperties {
      * 限制向前匹配字符位置输入框内容
      */
     @FXML
-    private void beforeHandleKeyTyped() {
+    private void beforeHandleKeyTyped(KeyEvent event) {
+        String input = event.getCharacter();
+        if (!isInIntegerRange(input, 1, null)) {
+            before_Re.setText(before_Re.getText().replaceAll(input, ""));
+        }
+        //如果复制的值有非范围内的字符直接清空
         if (!isInIntegerRange(before_Re.getText(), 1, null)) {
             before_Re.setText("");
         }
@@ -734,7 +784,12 @@ public class FileRenameController extends ToolsProperties {
      * 限制向后匹配字符位置输入框内容
      */
     @FXML
-    private void afterHandleKeyTyped() {
+    private void afterHandleKeyTyped(KeyEvent event) {
+        String input = event.getCharacter();
+        if (!isInIntegerRange(input, 1, null)) {
+            after_Re.setText(after_Re.getText().replaceAll(input, ""));
+        }
+        //如果复制的值有非范围内的字符直接清空
         if (!isInIntegerRange(after_Re.getText(), 1, null)) {
             after_Re.setText("");
         }
@@ -757,4 +812,20 @@ public class FileRenameController extends ToolsProperties {
         aadValueToolTip(beforeValue_Re, "将所填字符根据选项插入或替换目标字符右侧所匹配的字符");
     }
 
+    /**
+     * 给相同编号文件起始尾缀输入框添加鼠标悬停提示
+     */
+    @FXML
+    private void tagHandleKeyTyped(KeyEvent event) {
+        String input = event.getCharacter();
+        if (!isInIntegerRange(input, 0, null)) {
+            tag_Re.setText(tag_Re.getText().replaceAll(input, ""));
+        }
+        //如果复制的值有非范围内的字符直接清空
+        if (!isInIntegerRange(tag_Re.getText(), 0, null)) {
+            tag_Re.setText("");
+        }
+        aadValueToolTip(tag_Re, "只能填自然数，会根据所填值设置相同文件名起始尾缀");
+    }
+    
 }

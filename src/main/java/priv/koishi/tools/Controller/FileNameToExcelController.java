@@ -9,6 +9,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.DragEvent;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -75,7 +76,6 @@ public class FileNameToExcelController extends ToolsProperties {
     static int defaultStartCell = 1;
 
     /**
-     *
      * 配置文件路径
      */
     static String configFile = "config/fileNameToExcelConfig.properties";
@@ -379,7 +379,12 @@ public class FileNameToExcelController extends ToolsProperties {
      * 限制导出预留行只能输入自然数
      */
     @FXML
-    private void rowHandleKeyTyped() {
+    private void rowHandleKeyTyped(KeyEvent event) {
+        String input = event.getCharacter();
+        if (!isInIntegerRange(input, 0, null)) {
+            startRow_Name.setText(startRow_Name.getText().replaceAll(input, ""));
+        }
+        //如果复制的值有非范围内的字符直接清空
         if (!isInIntegerRange(startRow_Name.getText(), 0, null)) {
             startRow_Name.setText("");
         }
@@ -390,7 +395,12 @@ public class FileNameToExcelController extends ToolsProperties {
      * 限制导出预留列只能输入自然数
      */
     @FXML
-    private void cellHandleKeyTyped() {
+    private void cellHandleKeyTyped(KeyEvent event) {
+        String input = event.getCharacter();
+        if (!isInIntegerRange(input, 0, null)) {
+            startCell_Name.setText(startCell_Name.getText().replaceAll(input, ""));
+        }
+        //如果复制的值有非范围内的字符直接清空
         if (!isInIntegerRange(startCell_Name.getText(), 0, null)) {
             startCell_Name.setText("");
         }

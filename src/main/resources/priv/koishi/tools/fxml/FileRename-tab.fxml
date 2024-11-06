@@ -66,7 +66,7 @@
                 <Label prefHeight="20" text="相同编号文件数量:"/>
                 <TextField fx:id="nameNum_Re" onKeyTyped="#nameNumHandleKeyTyped" prefHeight="20" prefWidth="50"/>
                 <Label prefHeight="20" text="相同编号文件起始尾缀:"/>
-                <TextField fx:id="tag_Re" onKeyTyped="#nameNumHandleKeyTyped" prefHeight="20" prefWidth="50"/>
+                <TextField fx:id="tag_Re" onKeyTyped="#tagHandleKeyTyped" prefHeight="20" prefWidth="50"/>
                 <CheckBox onAction="#handleCheckBoxAction" fx:id="addSpace_Re" prefHeight="20" selected="true"
                           style="-fx-cursor: hand" text="向分隔符左侧添加一个空格"/>
             </HBox>
