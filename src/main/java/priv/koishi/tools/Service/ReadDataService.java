@@ -48,6 +48,7 @@ public class ReadDataService {
                 checkExcelParam(excelInPath);
                 FileInputStream inputStream = new FileInputStream(excelInPath);
                 XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
+                //读取指定sheet
                 XSSFSheet sheet;
                 if (StringUtils.isEmpty(sheetName)) {
                     sheet = workbook.getSheetAt(0);
@@ -57,9 +58,9 @@ public class ReadDataService {
                         sheet = workbook.createSheet(sheetName);
                     }
                 }
+                //获取有文字的最后一行行号
                 int lastRowNum = sheet.getLastRowNum();
                 DataFormatter dataFormatter = new DataFormatter();
-                //获取有文字的最后一行行号
                 for (int i = lastRowNum; i >= 0; i--) {
                     XSSFRow row = sheet.getRow(i);
                     //过滤中间的空单元格
@@ -81,6 +82,7 @@ public class ReadDataService {
                 } else {
                     maxRow += readRow - 1;
                 }
+                //读取excel数据
                 int id = 0;
                 for (int i = readRow; i <= maxRow; ++i) {
                     XSSFRow row = sheet.getRow(i);
@@ -98,9 +100,16 @@ public class ReadDataService {
                     updateProgress(i, maxRow);
                 }
                 workbook.close();
-                List<File> inFileList = taskBean.getInFileList();
+                //如果是文件重命名的excel模板则无需匹配数据
+                if (taskBean.isReturnRenameList()) {
+                    if (CollectionUtils.isEmpty(fileNumBeanList)) {
+                        throw new Exception("未查询到符合条件的数据，需修改查询条件后再继续");
+                    }
+                    return fileNumBeanList;
+                }
                 //已经读取文件后再匹配数据
-                if (inFileList != null && !inFileList.isEmpty()) {
+                List<File> inFileList = taskBean.getInFileList();
+                if (CollectionUtils.isNotEmpty(inFileList)) {
                     FileConfig fileConfig = new FileConfig();
                     fileConfig.setMaxImgNum(taskBean.getMaxImgNum())
                             .setShowFileType(taskBean.isShowFileType())
@@ -117,6 +126,17 @@ public class ReadDataService {
     }
 
     /**
+     * 渲染excel数据到列表中
+     */
+    public static List<FileNumBean> showReadExcelData(List<FileNumBean> fileBeans, TaskBean<FileNumBean> taskBean) throws Exception {
+        if (CollectionUtils.isEmpty(fileBeans)) {
+            throw new Exception("未查询到符合条件的数据，需修改查询条件后再继续");
+        }
+        autoBuildTableViewData(taskBean.getTableView(), fileBeans, taskBean.getTabId());
+        return fileBeans;
+    }
+
+    /**
      * 读取文件夹下的文件
      */
     public static Task<Void> readFile(TaskBean<FileBean> taskBean) {
@@ -124,10 +144,7 @@ public class ReadDataService {
             @Override
             protected Void call() throws IOException {
                 updateMessage("正在读取数据");
-                //组装数据
-                List<File> inFileList = taskBean.getInFileList();
-                List<FileBean> fileBeans = new ArrayList<>();
-                int inFileSize = inFileList.size();
+                //判断是否为重命名功能的查询文件
                 Configuration configuration = taskBean.getConfiguration();
                 CodeRenameConfig codeRenameConfig = null;
                 StringRenameConfig stringRenameConfig = null;
@@ -146,6 +163,10 @@ public class ReadDataService {
                         excelConfig = (ExcelConfig) configuration;
                     }
                 }
+                //组装文件数据
+                List<File> inFileList = taskBean.getInFileList();
+                List<FileBean> fileBeans = new ArrayList<>();
+                int inFileSize = inFileList.size();
                 for (int i = 0; i < inFileSize; i++) {
                     FileBean fileBean = new FileBean();
                     fileBean.setId(i + 1);
@@ -156,6 +177,7 @@ public class ReadDataService {
                     } else {
                         fileBean.setName(fileName);
                     }
+                    //组装文件重命名数据
                     buildRename(codeRenameConfig, fileBean, stringRenameConfig, excelConfig, startName, tag);
                     if (codeRenameConfig != null) {
                         if (nameNum < codeRenameConfig.getNameNum()) {
@@ -167,6 +189,7 @@ public class ReadDataService {
                             nameNum = 1;
                         }
                     }
+                    //组装文件基础数据
                     fileBean.setPath(f.getPath());
                     fileBean.setFileType(getFileType(f));
                     fileBean.setSize(getFileSize(f));
@@ -177,7 +200,7 @@ public class ReadDataService {
                     updateProgress(i + 1, inFileSize);
                 }
                 updateMessage("共有" + inFileSize + " 个文件");
-                //匹配数据
+                //渲染数据
                 showFileData(fileBeans, taskBean);
                 return null;
             }
@@ -185,18 +208,7 @@ public class ReadDataService {
     }
 
     /**
-     * 匹配excel数据
-     */
-    public static List<FileNumBean> showReadExcelData(List<FileNumBean> fileBeans, TaskBean<FileNumBean> taskBean) throws Exception {
-        if (CollectionUtils.isEmpty(fileBeans)) {
-            throw new Exception("未查询到符合条件的数据，需修改查询条件后再继续");
-        }
-        autoBuildTableViewData(taskBean.getTableView(), fileBeans, taskBean.getTabId());
-        return fileBeans;
-    }
-
-    /**
-     * 匹配文件数据
+     * 渲染文件数据
      */
     public static void showFileData(List<FileBean> fileBeans, TaskBean<FileBean> taskBean) {
         autoBuildTableViewData(taskBean.getTableView(), fileBeans, taskBean.getTabId());

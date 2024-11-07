@@ -16,10 +16,10 @@ import javafx.stage.Stage;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import priv.koishi.tools.Configuration.ExcelConfig;
-import priv.koishi.tools.Configuration.FileConfig;
 import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Bean.TaskBean;
+import priv.koishi.tools.Configuration.ExcelConfig;
+import priv.koishi.tools.Configuration.FileConfig;
 import priv.koishi.tools.Properties.ToolsProperties;
 import priv.koishi.tools.ThreadPool.ToolsThreadPoolExecutor;
 
@@ -35,7 +35,6 @@ import java.util.concurrent.ExecutorService;
 import static priv.koishi.tools.Service.FileNumToExcelService.buildNameGroupNumExcel;
 import static priv.koishi.tools.Service.ReadDataService.readExcel;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
-import static priv.koishi.tools.Utils.CommonUtils.isInIntegerRange;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
@@ -410,14 +409,7 @@ public class FileNumToExcelController extends ToolsProperties {
      */
     @FXML
     private void rowHandleKeyTyped(KeyEvent event) {
-        String input = event.getCharacter();
-        if (!isInIntegerRange(input, 0, null)) {
-            startRow_Num.setText(startRow_Num.getText().replaceAll(input, ""));
-        }
-        //如果复制的值有非范围内的字符直接清空
-        if (!isInIntegerRange(startRow_Num.getText(), 0, null)) {
-            startRow_Num.setText("");
-        }
+        integerRangeTextField(startRow_Num, 0, null, event);
         addValueToolTip(startRow_Num, "只能填数字，不填默认为0，不预留列");
     }
 
@@ -426,14 +418,7 @@ public class FileNumToExcelController extends ToolsProperties {
      */
     @FXML
     private void cellHandleKeyTyped(KeyEvent event) {
-        String input = event.getCharacter();
-        if (!isInIntegerRange(input, 0, null)) {
-            startCell_Num.setText(startCell_Num.getText().replaceAll(input, ""));
-        }
-        //如果复制的值有非范围内的字符直接清空
-        if (!isInIntegerRange(startCell_Num.getText(), 0, null)) {
-            startCell_Num.setText("");
-        }
+        integerRangeTextField(startCell_Num, 0, null, event);
         addValueToolTip(startCell_Num, "只能填数字，不填默认为 " + defaultStartCell);
     }
 
@@ -474,14 +459,7 @@ public class FileNumToExcelController extends ToolsProperties {
      */
     @FXML
     private void readRowHandleKeyTyped(KeyEvent event) {
-        String input = event.getCharacter();
-        if (!isInIntegerRange(input, 0, null)) {
-            readRow_Num.setText(readRow_Num.getText().replaceAll(input, ""));
-        }
-        //如果复制的值有非范围内的字符直接清空
-        if (!isInIntegerRange(readRow_Num.getText(), 0, null)) {
-            readRow_Num.setText("");
-        }
+        integerRangeTextField(readRow_Num, 0, null, event);
         addValueToolTip(readRow_Num, "只能填数字，不填默认为 " + defaultReadRow + " 从第 " + (defaultReadRow + 1) + " 行读取");
     }
 
@@ -490,14 +468,7 @@ public class FileNumToExcelController extends ToolsProperties {
      */
     @FXML
     private void readCellHandleKeyTyped(KeyEvent event) {
-        String input = event.getCharacter();
-        if (!isInIntegerRange(input, 0, null)) {
-            readCell_Num.setText(readCell_Num.getText().replaceAll(input, ""));
-        }
-        //如果复制的值有非范围内的字符直接清空
-        if (!isInIntegerRange(readCell_Num.getText(), 0, null)) {
-            readCell_Num.setText("");
-        }
+        integerRangeTextField(readCell_Num, 0, null, event);
         addValueToolTip(readCell_Num, "只能填数字，不填默认为 " + defaultReadCell + " ，从第 " + (defaultReadCell + 1) + " 列读取");
     }
 
@@ -506,14 +477,7 @@ public class FileNumToExcelController extends ToolsProperties {
      */
     @FXML
     private void maxRowHandleKeyTyped(KeyEvent event) {
-        String input = event.getCharacter();
-        if (!isInIntegerRange(input, 1, null)) {
-            maxRow_Num.setText(maxRow_Num.getText().replaceAll(input, ""));
-        }
-        //如果复制的值有非范围内的字符直接清空
-        if (!isInIntegerRange(maxRow_Num.getText(), 1, null)) {
-            maxRow_Num.setText("");
-        }
+        integerRangeTextField(maxRow_Num, 1, null, event);
         addValueToolTip(maxRow_Num, "只能填数字，不填默认不限制，会读取到有数据的最后一行，最小值为1");
     }
 

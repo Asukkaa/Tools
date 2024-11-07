@@ -72,6 +72,14 @@ public class TaskBean<T> {
      */
     Button reselectButton;
 
+    /**
+     * 文件批量重命名功能的设置
+     */
     Configuration configuration;
+
+    /**
+     * 读取重命名功能excel模板标志
+     */
+    boolean returnRenameList;
 
 }

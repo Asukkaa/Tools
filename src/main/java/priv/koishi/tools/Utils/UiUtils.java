@@ -9,6 +9,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
@@ -398,6 +399,19 @@ public class UiUtils {
                 .setTabId(tabId);
         showReadExcelData(fileNumList, taskBean);
         fileNumberImg.setText("共有 " + fileNumList.size() + " 组数据，匹配到 " + imgNum + " 张图片");
+    }
+
+    /**
+     * 限制输入框只能输入指定范围内的整数
+     */
+    public static void integerRangeTextField(TextField textField, Integer min, Integer max, KeyEvent event) {
+        if (!isInIntegerRange(textField.getText(), min, max)) {
+            textField.setText(textField.getText().replaceAll(event.getCharacter(), ""));
+        }
+        //如果复制的值有非范围内的字符直接清空
+        if (!isInIntegerRange(textField.getText(), min, max)) {
+            textField.setText("");
+        }
     }
 
 }

@@ -18,6 +18,7 @@ import javafx.stage.Stage;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import priv.koishi.tools.Bean.FileBean;
+import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.CodeRenameConfig;
 import priv.koishi.tools.Configuration.ExcelConfig;
@@ -37,9 +38,9 @@ import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 
 import static priv.koishi.tools.Enum.SelectItemsEnums.*;
+import static priv.koishi.tools.Service.ReadDataService.readExcel;
 import static priv.koishi.tools.Service.ReadDataService.readFile;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
-import static priv.koishi.tools.Utils.CommonUtils.isInIntegerRange;
 import static priv.koishi.tools.Utils.FileUtils.readAllFiles;
 import static priv.koishi.tools.Utils.FileUtils.updatePath;
 import static priv.koishi.tools.Utils.TaskUtils.bindingProgressBarTask;
@@ -57,6 +58,11 @@ public class FileRenameController extends ToolsProperties {
      * 要处理的文件夹路径
      */
     static String inFilePath;
+
+    /**
+     * 从excel读取的重命名名称
+     */
+    static List<String> excelRenameList;
 
     /**
      * 导出文件名称
@@ -197,10 +203,8 @@ public class FileRenameController extends ToolsProperties {
         //绑定带进度条的线程
         bindingProgressBarTask(readFileTask, taskBean);
         readFileTask.setOnSucceeded(t -> {
-            //表格设置为可编辑
-            tableView_Re.setEditable(true);
-            rename_Re.setCellFactory((tableColumn) -> new EditingCell<>(FileBean::setRename));
-            taskUnbind(taskBean);
+            ObservableList<FileBean> fileBeanList = tableView_Re.getItems();
+            showMatchExcelData(taskBean, fileBeanList, excelRenameList);
         });
         executorService.execute(readFileTask);
         //设置javafx单元格宽度
@@ -212,6 +216,76 @@ public class FileRenameController extends ToolsProperties {
         size_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.08));
         creatDate_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.16));
         updateDate_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.16));
+    }
+
+    /**
+     * 匹配excel重命名数据
+     */
+    private void matchExcelRename(ObservableList<FileBean> fileBeanList) {
+        int fileBeanListSize = fileBeanList.size();
+        int excelRenameListSize = excelRenameList.size();
+        for (int i = 0; i < fileBeanListSize; i++) {
+            FileBean fileBean = fileBeanList.get(i);
+            if (i < excelRenameListSize) {
+                String fileRename = excelRenameList.get(i);
+                if (StringUtils.isNotBlank(fileRename)) {
+                    fileBean.setRename(fileRename);
+                } else {
+                    fileBean.setRename(fileBean.getName());
+                }
+            } else {
+                fileBean.setRename(fileBean.getName());
+            }
+        }
+        autoBuildTableViewData(tableView_Re, fileBeanList, tabId);
+    }
+
+    /**
+     * 读取excel重命名模板
+     */
+    private void readExcelRename() {
+        int readRowValue = setDefaultIntValue(readRow_Re, defaultReadRow, 0, null);
+        int readCellValue = setDefaultIntValue(readCell_Re, defaultReadCell, 0, null);
+        int maxRowValue = setDefaultIntValue(maxRow_Re, -1, 1, null);
+        ExcelConfig excelConfig = new ExcelConfig();
+        excelConfig.setSheet(sheetOutName_Re.getText())
+                .setInPath(excelPath_Re.getText())
+                .setReadCellNum(readCellValue)
+                .setReadRowNum(readRowValue)
+                .setMaxRowNum(maxRowValue);
+        TaskBean<FileNumBean> taskBean = new TaskBean<>();
+        taskBean.setProgressBar(progressBar_Re)
+                .setReturnRenameList(true)
+                .setMassageLabel(log_Re)
+                .setShowFileType(false)
+                .setTabId(tabId);
+        //获取Task任务
+        Task<List<FileNumBean>> readExcelTask = readExcel(excelConfig, taskBean);
+        readExcelTask.setOnSucceeded(t -> {
+            excelRenameList = readExcelTask.getValue().stream().map(FileNumBean::getGroupName).toList();
+            ObservableList<FileBean> fileBeanList = tableView_Re.getItems();
+            showMatchExcelData(taskBean, fileBeanList, excelRenameList);
+        });
+        //绑定带进度条的线程
+        bindingProgressBarTask(readExcelTask, taskBean);
+        //使用新线程启动
+        executorService.execute(readExcelTask);
+    }
+
+    /**
+     * 展示读取excel重命名数据
+     */
+    private void showMatchExcelData(TaskBean<?> taskBean, ObservableList<FileBean> fileBeanList, List<String> excelRenameList) {
+        if (CollectionUtils.isNotEmpty(fileBeanList) && CollectionUtils.isNotEmpty(excelRenameList)) {
+            matchExcelRename(fileBeanList);
+        }
+        //表格设置为可编辑
+        tableView_Re.setEditable(true);
+        rename_Re.setCellFactory((tableColumn) -> new EditingCell<>(FileBean::setRename));
+        taskUnbind(taskBean);
+        if (taskBean.getMassageLabel() == log_Re) {
+            log_Re.setText("");
+        }
     }
 
     /**
@@ -454,6 +528,7 @@ public class FileRenameController extends ToolsProperties {
             excelInPath = selectedFile.getPath();
             excelPath_Re.setText(excelInPath);
             addToolTip(excelPath_Re, excelInPath);
+            readExcelRename();
         }
     }
 
@@ -470,14 +545,7 @@ public class FileRenameController extends ToolsProperties {
      */
     @FXML
     private void startNameHandleKeyTyped(KeyEvent event) {
-        String input = event.getCharacter();
-        if (!isInIntegerRange(input, 0, null)) {
-            startName_Re.setText(startName_Re.getText().replaceAll(input, ""));
-        }
-        //如果复制的值有非范围内的字符直接清空
-        if (!isInIntegerRange(startName_Re.getText(), 0, null)) {
-            startName_Re.setText("");
-        }
+        integerRangeTextField(startName_Re, 0, null, event);
         addValueToolTip(startName_Re, "只能填自然数，不填默认为 " + defaultStartNameNum);
     }
 
@@ -486,14 +554,7 @@ public class FileRenameController extends ToolsProperties {
      */
     @FXML
     private void startSizeHandleKeyTyped(KeyEvent event) {
-        String input = event.getCharacter();
-        if (!isInIntegerRange(input, 0, null)) {
-            startSize_Re.setText(startSize_Re.getText().replaceAll(input, ""));
-        }
-        //如果复制的值有非范围内的字符直接清空
-        if (!isInIntegerRange(startSize_Re.getText(), 0, null)) {
-            startSize_Re.setText("");
-        }
+        integerRangeTextField(startSize_Re, 0, null, event);
         addValueToolTip(startSize_Re, "只能填数字，0为不限制编号位数，不填默认为0");
     }
 
@@ -502,14 +563,7 @@ public class FileRenameController extends ToolsProperties {
      */
     @FXML
     private void nameNumHandleKeyTyped(KeyEvent event) {
-        String input = event.getCharacter();
-        if (!isInIntegerRange(input, 0, null)) {
-            nameNum_Re.setText(nameNum_Re.getText().replaceAll(input, ""));
-        }
-        //如果复制的值有非范围内的字符直接清空
-        if (!isInIntegerRange(nameNum_Re.getText(), 0, null)) {
-            nameNum_Re.setText("");
-        }
+        integerRangeTextField(nameNum_Re, 0, null, event);
         addValueToolTip(nameNum_Re, "只能填数字，0为不使用分隔符进行分组重命名，不填默认为0");
     }
 
@@ -549,27 +603,11 @@ public class FileRenameController extends ToolsProperties {
     }
 
     /**
-     * 清空excel模板路径按钮
-     */
-    @FXML
-    private void removeExcelPath() {
-        excelPath_Re.setText("");
-        excelPath_Re.setTooltip(null);
-    }
-
-    /**
      * 限制读取起始行只能输入自然数
      */
     @FXML
     private void readRowHandleKeyTyped(KeyEvent event) {
-        String input = event.getCharacter();
-        if (!isInIntegerRange(input, 0, null)) {
-            readRow_Re.setText(readRow_Re.getText().replaceAll(input, ""));
-        }
-        //如果复制的值有非范围内的字符直接清空
-        if (!isInIntegerRange(readRow_Re.getText(), 0, null)) {
-            readRow_Re.setText("");
-        }
+        integerRangeTextField(readRow_Re, 0, null, event);
         addValueToolTip(readRow_Re, "只能填数字，不填默认为 " + defaultReadRow + " 从第 " + (defaultReadRow + 1) + " 行读取");
     }
 
@@ -578,15 +616,8 @@ public class FileRenameController extends ToolsProperties {
      */
     @FXML
     private void readCellHandleKeyTyped(KeyEvent event) {
-        String input = event.getCharacter();
-        if (!isInIntegerRange(input, 0, null)) {
-            readCell_Re.setText(readCell_Re.getText().replaceAll(input, ""));
-        }
-        //如果复制的值有非范围内的字符直接清空
-        if (!isInIntegerRange(readCell_Re.getText(), 0, null)) {
-            readCell_Re.setText("");
-        }
-        addValueToolTip(readCell_Re, "只能填数字，不填默认不限制，会读取到有数据的最后一行，最小值为1");
+        integerRangeTextField(readCell_Re, 0, null, event);
+        addValueToolTip(readCell_Re, "只能填数字，不填默认为 " + defaultReadCell + " 从第 " + (defaultReadCell + 1) + " 列读取");
     }
 
     /**
@@ -594,14 +625,7 @@ public class FileRenameController extends ToolsProperties {
      */
     @FXML
     private void maxRowHandleKeyTyped(KeyEvent event) {
-        String input = event.getCharacter();
-        if (!isInIntegerRange(input, 1, null)) {
-            maxRow_Re.setText(maxRow_Re.getText().replaceAll(input, ""));
-        }
-        //如果复制的值有非范围内的字符直接清空
-        if (!isInIntegerRange(maxRow_Re.getText(), 1, null)) {
-            maxRow_Re.setText("");
-        }
+        integerRangeTextField(maxRow_Re, 1, null, event);
         addValueToolTip(maxRow_Re, "只能填数字，不填默认不限制，会读取到有数据的最后一行，最小值为1");
     }
 
@@ -745,14 +769,7 @@ public class FileRenameController extends ToolsProperties {
     private void renameValueHandleKeyTyped(KeyEvent event) {
         //这个输入框只有在输入指定字符位置时才限制输入范围
         if ("指定字符位置".equals(targetStr_Re.getValue())) {
-            String input = event.getCharacter();
-            if (!isInIntegerRange(input, 0, null)) {
-                renameValue_Re.setText(renameValue_Re.getText().replaceAll(input, ""));
-            }
-            //如果复制的值有非范围内的字符直接清空
-            if (!isInIntegerRange(renameValue_Re.getText(), 0, null)) {
-                renameValue_Re.setText("");
-            }
+            integerRangeTextField(renameValue_Re, 0, null, event);
         }
         addValueToolTip(renameValue_Re, "填写后会根据其他配置项处理文件名中所匹配的字符");
     }
@@ -770,14 +787,7 @@ public class FileRenameController extends ToolsProperties {
      */
     @FXML
     private void beforeHandleKeyTyped(KeyEvent event) {
-        String input = event.getCharacter();
-        if (!isInIntegerRange(input, 1, null)) {
-            before_Re.setText(before_Re.getText().replaceAll(input, ""));
-        }
-        //如果复制的值有非范围内的字符直接清空
-        if (!isInIntegerRange(before_Re.getText(), 1, null)) {
-            before_Re.setText("");
-        }
+        integerRangeTextField(before_Re, 1, null, event);
         addValueToolTip(before_Re, "只能填正整数，不填默认匹配目标字符串左侧所有字符，填写后匹配目标字符串左侧所填写个数的单个字符");
     }
 
@@ -786,14 +796,7 @@ public class FileRenameController extends ToolsProperties {
      */
     @FXML
     private void afterHandleKeyTyped(KeyEvent event) {
-        String input = event.getCharacter();
-        if (!isInIntegerRange(input, 1, null)) {
-            after_Re.setText(after_Re.getText().replaceAll(input, ""));
-        }
-        //如果复制的值有非范围内的字符直接清空
-        if (!isInIntegerRange(after_Re.getText(), 1, null)) {
-            after_Re.setText("");
-        }
+        integerRangeTextField(after_Re, 1, null, event);
         addValueToolTip(after_Re, "只能填正整数，不填默认匹配目标字符串右侧所有字符，填写后匹配目标字符串右侧所填写个数的单个字符");
     }
 
@@ -818,15 +821,8 @@ public class FileRenameController extends ToolsProperties {
      */
     @FXML
     private void tagHandleKeyTyped(KeyEvent event) {
-        String input = event.getCharacter();
-        if (!isInIntegerRange(input, 0, null)) {
-            tag_Re.setText(tag_Re.getText().replaceAll(input, ""));
-        }
-        //如果复制的值有非范围内的字符直接清空
-        if (!isInIntegerRange(tag_Re.getText(), 0, null)) {
-            tag_Re.setText("");
-        }
+        integerRangeTextField(tag_Re, 0, null, event);
         addValueToolTip(tag_Re, "只能填自然数，不填默认为1，会根据所填值设置相同文件名起始尾缀");
     }
-    
+
 }
