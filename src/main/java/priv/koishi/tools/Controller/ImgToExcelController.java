@@ -180,6 +180,18 @@ public class ImgToExcelController extends ToolsProperties {
      * 读取文件数据
      */
     private void addInFile(File selectedFile, List<String> filterExtensionList) throws Exception {
+        FileConfig fileConfig = getInFileList(selectedFile, filterExtensionList);
+        //列表中有excel分组后再匹配数据
+        ObservableList<FileNumBean> fileNumList = tableView_Img.getItems();
+        if (CollectionUtils.isNotEmpty(fileNumList)) {
+            machGroup(fileConfig, fileNumList, inFileList, tableView_Img, tabId, fileNumber_Img);
+        }
+    }
+
+    /**
+     * 查询要处理的文件
+     */
+    private FileConfig getInFileList(File selectedFile, List<String> filterExtensionList) {
         FileConfig fileConfig = new FileConfig();
         String maxImgValue = maxImgNum_Img.getText();
         int maxImgNum = 0;
@@ -194,18 +206,26 @@ public class ImgToExcelController extends ToolsProperties {
                 .setMaxImgNum(maxImgNum)
                 .setInFile(selectedFile);
         inFileList = readAllFiles(fileConfig);
-        //列表中有excel分组后再匹配数据
-        ObservableList<FileNumBean> fileNumList = tableView_Img.getItems();
-        if (CollectionUtils.isNotEmpty(fileNumList)) {
-            machGroup(fileConfig, fileNumList, inFileList, tableView_Img, tabId, fileNumber_Img);
+        return fileConfig;
+    }
+
+    /**
+     * 更新要处理的文件
+     */
+    private void updateInFileList() throws Exception {
+        String selectedFilePath = inPath_Img.getText();
+        if (StringUtils.isNotBlank(selectedFilePath)) {
+            getInFileList(new File(selectedFilePath), getFilterExtension());
         }
     }
 
     /**
      * 添加数据渲染列表
      */
-    private Task<List<FileNumBean>> addInData() {
+    private Task<List<FileNumBean>> addInData() throws Exception {
         removeAll();
+        //渲染表格前需要更新一下读取的文件
+        updateInFileList();
         //组装数据
         String maxImgValue = maxImgNum_Img.getText();
         int maxImgNum = 0;
@@ -284,6 +304,22 @@ public class ImgToExcelController extends ToolsProperties {
     @FXML
     private void inDirectoryButton(ActionEvent actionEvent) throws Exception {
         getConfig();
+        // 显示文件选择器
+        File selectedFile = creatDirectoryChooser(actionEvent, inFilePath, "选择文件夹");
+        if (selectedFile != null) {
+            String selectedFilePath = selectedFile.getPath();
+            updatePath(configFile, "inFilePath", selectedFilePath);
+            inPath_Img.setText(selectedFilePath);
+            addToolTip(inPath_Img, selectedFilePath);
+            //读取文件数据
+            addInFile(selectedFile, getFilterExtension());
+        }
+    }
+
+    /**
+     * 获取要识别的图片格式
+     */
+    private List<String> getFilterExtension() throws Exception {
         List<String> filterExtensionList = new ArrayList<>();
         if (jpg_Img.isSelected()) {
             filterExtensionList.add(".jpg");
@@ -297,23 +333,14 @@ public class ImgToExcelController extends ToolsProperties {
         if (CollectionUtils.isEmpty(filterExtensionList)) {
             throw new Exception("未选择需要识别的图片格式");
         }
-        // 显示文件选择器
-        File selectedFile = creatDirectoryChooser(actionEvent, inFilePath, "选择文件夹");
-        if (selectedFile != null) {
-            String selectedFilePath = selectedFile.getPath();
-            updatePath(configFile, "inFilePath", selectedFilePath);
-            inPath_Img.setText(selectedFilePath);
-            addToolTip(inPath_Img, selectedFilePath);
-            //读取文件数据
-            addInFile(selectedFile, filterExtensionList);
-        }
+        return filterExtensionList;
     }
 
     /**
      * 拖拽释放行为
      */
     @FXML
-    private void handleDrop(DragEvent dragEvent) {
+    private void handleDrop(DragEvent dragEvent) throws Exception {
         List<File> files = dragEvent.getDragboard().getFiles();
         File file = files.getFirst();
         excelPath_Img.setText(file.getPath());

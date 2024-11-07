@@ -148,7 +148,6 @@ public class ReadDataService {
                 Configuration configuration = taskBean.getConfiguration();
                 CodeRenameConfig codeRenameConfig = null;
                 StringRenameConfig stringRenameConfig = null;
-                ExcelConfig excelConfig = null;
                 int startName = -1;
                 int tag = -1;
                 int nameNum = 1;
@@ -159,8 +158,6 @@ public class ReadDataService {
                         tag = codeRenameConfig.getTag();
                     } else if (configuration.getClass() == StringRenameConfig.class) {
                         stringRenameConfig = (StringRenameConfig) configuration;
-                    } else if (configuration.getClass() == ExcelConfig.class) {
-                        excelConfig = (ExcelConfig) configuration;
                     }
                 }
                 //组装文件数据
@@ -178,7 +175,7 @@ public class ReadDataService {
                         fileBean.setName(fileName);
                     }
                     //组装文件重命名数据
-                    buildRename(codeRenameConfig, fileBean, stringRenameConfig, excelConfig, startName, tag);
+                    buildRename(codeRenameConfig, fileBean, stringRenameConfig, startName, tag);
                     if (codeRenameConfig != null) {
                         if (nameNum < codeRenameConfig.getNameNum()) {
                             tag++;

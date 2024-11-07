@@ -60,11 +60,6 @@ public class FileRenameController extends ToolsProperties {
     static String inFilePath;
 
     /**
-     * 从excel读取的重命名名称
-     */
-    static List<String> excelRenameList;
-
-    /**
      * 导出文件名称
      */
     static String outFileName;
@@ -203,8 +198,14 @@ public class FileRenameController extends ToolsProperties {
         //绑定带进度条的线程
         bindingProgressBarTask(readFileTask, taskBean);
         readFileTask.setOnSucceeded(t -> {
-            ObservableList<FileBean> fileBeanList = tableView_Re.getItems();
-            showMatchExcelData(taskBean, fileBeanList, excelRenameList);
+            if (StringUtils.isNotBlank(excelPath_Re.getText())) {
+                readExcelRename();
+            } else {
+                //表格设置为可编辑
+                tableView_Re.setEditable(true);
+                rename_Re.setCellFactory((tableColumn) -> new EditingCell<>(FileBean::setRename));
+                taskUnbind(taskBean);
+            }
         });
         executorService.execute(readFileTask);
         //设置javafx单元格宽度
@@ -216,28 +217,6 @@ public class FileRenameController extends ToolsProperties {
         size_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.08));
         creatDate_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.16));
         updateDate_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.16));
-    }
-
-    /**
-     * 匹配excel重命名数据
-     */
-    private void matchExcelRename(ObservableList<FileBean> fileBeanList) {
-        int fileBeanListSize = fileBeanList.size();
-        int excelRenameListSize = excelRenameList.size();
-        for (int i = 0; i < fileBeanListSize; i++) {
-            FileBean fileBean = fileBeanList.get(i);
-            if (i < excelRenameListSize) {
-                String fileRename = excelRenameList.get(i);
-                if (StringUtils.isNotBlank(fileRename)) {
-                    fileBean.setRename(fileRename);
-                } else {
-                    fileBean.setRename(fileBean.getName());
-                }
-            } else {
-                fileBean.setRename(fileBean.getName());
-            }
-        }
-        autoBuildTableViewData(tableView_Re, fileBeanList, tabId);
     }
 
     /**
@@ -262,7 +241,7 @@ public class FileRenameController extends ToolsProperties {
         //获取Task任务
         Task<List<FileNumBean>> readExcelTask = readExcel(excelConfig, taskBean);
         readExcelTask.setOnSucceeded(t -> {
-            excelRenameList = readExcelTask.getValue().stream().map(FileNumBean::getGroupName).toList();
+            List<String> excelRenameList = readExcelTask.getValue().stream().map(FileNumBean::getGroupName).toList();
             ObservableList<FileBean> fileBeanList = tableView_Re.getItems();
             showMatchExcelData(taskBean, fileBeanList, excelRenameList);
         });
@@ -276,8 +255,8 @@ public class FileRenameController extends ToolsProperties {
      * 展示读取excel重命名数据
      */
     private void showMatchExcelData(TaskBean<?> taskBean, ObservableList<FileBean> fileBeanList, List<String> excelRenameList) {
-        if (CollectionUtils.isNotEmpty(fileBeanList) && CollectionUtils.isNotEmpty(excelRenameList)) {
-            matchExcelRename(fileBeanList);
+        if (CollectionUtils.isNotEmpty(fileBeanList) && CollectionUtils.isNotEmpty(excelRenameList) && "按excel模板重命名".equals(renameType_Re.getValue())) {
+            matchExcelRename(fileBeanList, excelRenameList);
         }
         //表格设置为可编辑
         tableView_Re.setEditable(true);
@@ -286,6 +265,28 @@ public class FileRenameController extends ToolsProperties {
         if (taskBean.getMassageLabel() == log_Re) {
             log_Re.setText("");
         }
+    }
+
+    /**
+     * 匹配excel重命名数据
+     */
+    private void matchExcelRename(ObservableList<FileBean> fileBeanList, List<String> excelRenameList) {
+        int fileBeanListSize = fileBeanList.size();
+        int excelRenameListSize = excelRenameList.size();
+        for (int i = 0; i < fileBeanListSize; i++) {
+            FileBean fileBean = fileBeanList.get(i);
+            if (i < excelRenameListSize) {
+                String fileRename = excelRenameList.get(i);
+                if (StringUtils.isNotBlank(fileRename)) {
+                    fileBean.setRename(fileRename);
+                } else {
+                    fileBean.setRename(fileBean.getName());
+                }
+            } else {
+                fileBean.setRename(fileBean.getName());
+            }
+        }
+        autoBuildTableViewData(tableView_Re, fileBeanList, tabId);
     }
 
     /**
@@ -300,10 +301,6 @@ public class FileRenameController extends ToolsProperties {
             }
             case "按指定字符重命名": {
                 matchStringRename(taskBean);
-                break;
-            }
-            case "按excel模板重命名": {
-                matchExcelRename(taskBean);
                 break;
             }
         }
@@ -359,22 +356,6 @@ public class FileRenameController extends ToolsProperties {
             }
         }
         taskBean.setConfiguration(stringRenameConfig);
-    }
-
-    /**
-     * 按excel模板重命名
-     */
-    private void matchExcelRename(TaskBean<FileBean> taskBean) {
-        int readCellValue = setDefaultIntValue(readCell_Re, defaultReadCell, 0, null);
-        int readRowValue = setDefaultIntValue(readRow_Re, defaultReadRow, 0, null);
-        int maxRowValue = setDefaultIntValue(maxRow_Re, -1, 1, null);
-        ExcelConfig excelConfig = new ExcelConfig();
-        excelConfig.setSheet(sheetOutName_Re.getText())
-                .setInPath(inPath_Re.getText())
-                .setReadCellNum(readCellValue)
-                .setReadRowNum(readRowValue)
-                .setMaxRowNum(maxRowValue);
-        taskBean.setConfiguration(excelConfig);
     }
 
     /**

@@ -173,6 +173,18 @@ public class FileNumToExcelController extends ToolsProperties {
      * 读取文件数据
      */
     private void addInFile(File selectedFile, List<String> filterExtensionList) throws Exception {
+        FileConfig fileConfig = getInFileList(selectedFile, filterExtensionList);
+        //列表中有excel分组后再匹配数据
+        ObservableList<FileNumBean> fileNumList = tableView_Num.getItems();
+        if (CollectionUtils.isNotEmpty(fileNumList)) {
+            machGroup(fileConfig, fileNumList, inFileList, tableView_Num, tabId, fileNumber_Num);
+        }
+    }
+
+    /**
+     * 查询要处理的文件
+     */
+    private FileConfig getInFileList(File selectedFile, List<String> filterExtensionList) {
         FileConfig fileConfig = new FileConfig();
         fileConfig.setShowDirectoryName(directoryNameType_Num.getValue())
                 .setShowFileType(showFileType_Num.isSelected())
@@ -182,10 +194,16 @@ public class FileNumToExcelController extends ToolsProperties {
                 .setSubCode(subCode_Num.getText())
                 .setInFile(selectedFile);
         inFileList = readAllFiles(fileConfig);
-        //列表中有excel分组后再匹配数据
-        ObservableList<FileNumBean> fileNumList = tableView_Num.getItems();
-        if (CollectionUtils.isNotEmpty(fileNumList)) {
-            machGroup(fileConfig, fileNumList, inFileList, tableView_Num, tabId, fileNumber_Num);
+        return fileConfig;
+    }
+
+    /**
+     * 更新要处理的文件
+     */
+    private void updateInFileList() {
+        String selectedFilePath = inPath_Num.getText();
+        if (StringUtils.isNotBlank(selectedFilePath)) {
+            getInFileList(new File(selectedFilePath), getFilterExtensionList(filterFileType_Num));
         }
     }
 
@@ -194,6 +212,8 @@ public class FileNumToExcelController extends ToolsProperties {
      */
     private Task<List<FileNumBean>> addInData() {
         removeAll();
+        //渲染表格前需要更新一下读取的文件
+        updateInFileList();
         //组装数据
         int readRowValue = setDefaultIntValue(readRow_Num, defaultReadRow, 0, null);
         int readCellValue = setDefaultIntValue(readCell_Num, defaultReadCell, 0, null);
@@ -262,7 +282,6 @@ public class FileNumToExcelController extends ToolsProperties {
     @FXML
     private void inDirectoryButton(ActionEvent actionEvent) throws Exception {
         getConfig();
-        List<String> filterExtensionList = getFilterExtensionList(filterFileType_Num);
         // 显示文件选择器
         File selectedFile = creatDirectoryChooser(actionEvent, inFilePath, "选择文件夹");
         if (selectedFile != null) {
@@ -271,7 +290,7 @@ public class FileNumToExcelController extends ToolsProperties {
             inPath_Num.setText(selectedFilePath);
             addToolTip(inPath_Num, selectedFilePath);
             //读取文件数据
-            addInFile(selectedFile, filterExtensionList);
+            addInFile(selectedFile, getFilterExtensionList(filterFileType_Num));
         }
     }
 

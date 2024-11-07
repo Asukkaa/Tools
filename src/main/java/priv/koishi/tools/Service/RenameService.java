@@ -2,7 +2,6 @@ package priv.koishi.tools.Service;
 
 import priv.koishi.tools.Bean.FileBean;
 import priv.koishi.tools.Configuration.CodeRenameConfig;
-import priv.koishi.tools.Configuration.ExcelConfig;
 import priv.koishi.tools.Configuration.StringRenameConfig;
 
 import static priv.koishi.tools.Utils.CommonUtils.convertToAlpha;
@@ -18,14 +17,12 @@ public class RenameService {
     /**
      * 构建文件重命名
      */
-    public static void buildRename(CodeRenameConfig codeRenameConfig, FileBean fileBean, StringRenameConfig stringRenameConfig,
-                                   ExcelConfig excelConfig, int startName, int tag) {
+    public static void buildRename(CodeRenameConfig codeRenameConfig, FileBean fileBean,
+                                   StringRenameConfig stringRenameConfig, int startName, int tag) {
         String fileRename = null;
         if (codeRenameConfig != null) {
             fileRename = getCodeRename(codeRenameConfig, startName, tag);
         } else if (stringRenameConfig != null) {
-
-        } else if (excelConfig != null) {
 
         }
         fileBean.setRename(fileRename);
