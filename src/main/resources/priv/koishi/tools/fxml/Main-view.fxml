@@ -8,9 +8,9 @@
 
     <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE">
 
-        <Tab style="-fx-cursor: hand" fx:id="fileNumToExcelTab" text="分组统计文件夹下文件数量">
+        <Tab style="-fx-cursor: hand" fx:id="fileRenameTab" text="按指定规则批量重命名文件">
             <AnchorPane>
-                <fx:include source="FileNumToExcel-tab.fxml"/>
+                <fx:include source="FileRename-tab.fxml"/>
             </AnchorPane>
         </Tab>
 
@@ -20,17 +20,18 @@
             </AnchorPane>
         </Tab>
 
+        <Tab style="-fx-cursor: hand" fx:id="fileNumToExcelTab" text="分组统计文件夹下文件数量">
+            <AnchorPane>
+                <fx:include source="FileNumToExcel-tab.fxml"/>
+            </AnchorPane>
+        </Tab>
+
         <Tab style="-fx-cursor: hand" fx:id="fileNameToExcelTab" text="获取文件夹下的文件名称">
             <AnchorPane>
                 <fx:include source="FileNameToExcel-tab.fxml"/>
             </AnchorPane>
         </Tab>
 
-        <Tab style="-fx-cursor: hand" fx:id="fileRenameTab" text="按指定规则批量重命名文件">
-            <AnchorPane>
-                <fx:include source="FileRename-tab.fxml"/>
-            </AnchorPane>
-        </Tab>
     </TabPane>
 
 </VBox>

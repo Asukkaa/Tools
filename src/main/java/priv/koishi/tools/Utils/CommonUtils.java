@@ -6,6 +6,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import java.io.*;
 import java.net.URL;
 import java.util.*;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -230,6 +231,40 @@ public class CommonUtils {
             output = new FileOutputStream(path);
         }
         return output;
+    }
+
+    /**
+     * 字符串大小写互换
+     */
+    public static String swapCase(String s) {
+        char[] charArray = s.toCharArray();
+        for (int i = 0; i < charArray.length; i++) {
+            if (Character.isUpperCase(charArray[i])) {
+                charArray[i] = Character.toLowerCase(charArray[i]);
+            } else if (Character.isLowerCase(charArray[i])) {
+                charArray[i] = Character.toUpperCase(charArray[i]);
+            }
+        }
+        return new String(charArray);
+    }
+
+    /**
+     * 替换字符串中的指定内容
+     *
+     * @param input  输入字符串
+     * @param target 要被替换的目标字符串
+     * @param repl   替换内容
+     * @return 替换后的字符串
+     */
+    public static String replaceString(String input, String target, String repl) {
+        // 对target进行转义，防止正则表达式特殊字符影响
+        String regex = Pattern.quote(target);
+        // 创建Pattern对象
+        Pattern pattern = Pattern.compile(regex);
+        // 创建Matcher对象
+        Matcher matcher = pattern.matcher(input);
+        // 替换所有匹配项
+        return matcher.replaceAll(repl);
     }
 
 }

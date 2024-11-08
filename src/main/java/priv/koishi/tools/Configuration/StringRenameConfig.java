@@ -37,31 +37,31 @@ public class StringRenameConfig extends Configuration {
     /**
      * 左侧字符坐标
      */
-    int before;
+    int left;
 
     /**
      * 右侧字符坐标
      */
-    int after;
+    int right;
 
     /**
      * 左侧重命名方法
      */
-    String beforeBehavior;
+    String leftBehavior;
 
     /**
      * 右侧重命名方法
      */
-    String afterBehavior;
+    String rightBehavior;
 
     /**
      * 左侧输入字符
      */
-    String beforeValue;
+    String leftValue;
 
     /**
      * 右侧输入字符
      */
-    String afterValue;
+    String rightValue;
 
 }

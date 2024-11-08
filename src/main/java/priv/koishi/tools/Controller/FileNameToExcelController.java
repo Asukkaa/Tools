@@ -214,8 +214,8 @@ public class FileNameToExcelController extends ToolsProperties {
         addToolTip(recursion_Name, "勾选后将会查询文件夹中的文件夹里的文件");
         addToolTip(excelName_Name, "如果导出地址和名称与模板一样则会覆盖模板excel文件");
         addToolTip(sheetOutName_Name, "须填与excel模板相同的表名才能正常读取模板，若填表名不存在或不需要读取模板则会创建一个所填表");
-        addToolTip(startRow_Name, "只能填数字，不填默认为0，不预留行");
-        addToolTip(startCell_Name, "只能填数字，不填默认为 " + defaultStartCell);
+        addToolTip(startRow_Name, "只能填自然数，不填默认为0，不预留行");
+        addToolTip(startCell_Name, "只能填自然数，不填默认为 " + defaultStartCell);
         addToolTip(removeExcelButton_Name, "删除excel模板路径");
     }
 
@@ -380,7 +380,7 @@ public class FileNameToExcelController extends ToolsProperties {
     @FXML
     private void rowHandleKeyTyped(KeyEvent event) {
         integerRangeTextField(startRow_Name, 0, null, event);
-        addValueToolTip(startRow_Name, "只能填数字，不填默认为0，不预留行");
+        addValueToolTip(startRow_Name, "只能填自然数，不填默认为0，不预留行");
     }
 
     /**
@@ -389,7 +389,7 @@ public class FileNameToExcelController extends ToolsProperties {
     @FXML
     private void cellHandleKeyTyped(KeyEvent event) {
         integerRangeTextField(startCell_Name, 0, null, event);
-        addValueToolTip(startCell_Name, "只能填数字，不填默认为0，不预留列");
+        addValueToolTip(startCell_Name, "只能填自然数，不填默认为0，不预留列");
     }
 
     /**

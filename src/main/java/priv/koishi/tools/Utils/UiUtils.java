@@ -62,13 +62,13 @@ public class UiUtils {
     public static void addValueToolTip(TextField textField, String text) {
         String value = textField.getText();
         if (StringUtils.isNotEmpty(text)) {
-            if (StringUtils.isNotBlank(value)) {
+            if (StringUtils.isNotEmpty(value)) {
                 addToolTip(textField, text + "\n" + value);
             } else {
                 addToolTip(textField, text);
             }
         } else {
-            if (StringUtils.isNotBlank(value)) {
+            if (StringUtils.isNotEmpty(value)) {
                 addToolTip(textField, value);
             } else {
                 textField.setTooltip(null);
@@ -356,7 +356,7 @@ public class UiUtils {
         addToolTip(recursion, "勾选后将会查询文件夹中的文件夹里的文件");
         addToolTip(sheetOutName, "须填与excel模板相同的表名才能正常统计");
         addToolTip(excelName, "如果导出地址和名称与模板一样则会覆盖模板excel文件");
-        addToolTip(maxRow, "只能填数字，不填默认不限制，会读取到有数据的最后一行，最小值为1");
+        addToolTip(maxRow, "只能填正整数，不填默认不限制，会读取到有数据的最后一行，最小值为1");
         addToolTip(subCode, "填写后会按所填写的字符串来分割文件名称，按照分割后的文件名称左侧字符串进行分组");
     }
 
@@ -406,7 +406,7 @@ public class UiUtils {
      */
     public static void integerRangeTextField(TextField textField, Integer min, Integer max, KeyEvent event) {
         if (!isInIntegerRange(textField.getText(), min, max)) {
-            textField.setText(textField.getText().replaceAll(event.getCharacter(), ""));
+            textField.setText(replaceString(textField.getText(), event.getCharacter(), ""));
         }
         //如果复制的值有非范围内的字符直接清空
         if (!isInIntegerRange(textField.getText(), min, max)) {

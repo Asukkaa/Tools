@@ -287,13 +287,13 @@ public class ImgToExcelController extends ToolsProperties {
     @FXML
     private void initialize() throws IOException {
         getConfig();
-        addToolTip(imgHeight_Img, "只能填数字，不填默认为 " + defaultImgHeight);
-        addToolTip(imgWidth_Img, "只能填数字，不填默认为 " + defaultImgWidth);
+        addToolTip(imgHeight_Img, "只能填正整数，不填默认为 " + defaultImgHeight);
+        addToolTip(imgWidth_Img, "只能填正整数，不填默认为 " + defaultImgWidth);
         addToolTip(noImg_Img, "勾选后没有图片的数据将会在单元格中标记为 无图片");
-        addToolTip(startRow_Img, "只能填数字，不填默认与读取预留行相同");
-        addToolTip(startCell_Img, "只能填数字，不填默认为 " + defaultStartCell);
-        addToolTip(readRow_Img, "只能填数字，不填默认为 " + defaultReadRow + " 从第 " + (defaultReadRow + 1) + " 行读取");
-        addToolTip(readCell_Img, "只能填数字，不填默认为 " + defaultReadCell + " ，从第 " + (defaultReadCell + 1) + " 列读取");
+        addToolTip(startRow_Img, "只能填自然数，不填默认与读取预留行相同");
+        addToolTip(startCell_Img, "只能填自然数，不填默认为 " + defaultStartCell);
+        addToolTip(readRow_Img, "只能填自然数，不填默认为 " + defaultReadRow + " 从第 " + (defaultReadRow + 1) + " 行读取");
+        addToolTip(readCell_Img, "只能填自然数，不填默认为 " + defaultReadCell + " ，从第 " + (defaultReadCell + 1) + " 列读取");
         addToolTip(maxImgNum_Img, "只能填正整数，不填默认为不限制");
         addNumImgToolTip(recursion_Img, subCode_Img, excelName_Img, sheetOutName_Img, maxRow_Img);
     }
@@ -471,7 +471,7 @@ public class ImgToExcelController extends ToolsProperties {
     @FXML
     private void rowHandleKeyTyped(KeyEvent event) {
         integerRangeTextField(startRow_Img, 0, null, event);
-        addValueToolTip(startRow_Img, "只能填数字，不填默认与读取预留行相同");
+        addValueToolTip(startRow_Img, "只能填自然数，不填默认与读取预留行相同");
     }
 
     /**
@@ -480,7 +480,7 @@ public class ImgToExcelController extends ToolsProperties {
     @FXML
     private void cellHandleKeyTyped(KeyEvent event) {
         integerRangeTextField(startCell_Img, 0, null, event);
-        addValueToolTip(startCell_Img, "只能填数字，不填默认为 " + defaultStartCell);
+        addValueToolTip(startCell_Img, "只能填自然数，不填默认为 " + defaultStartCell);
     }
 
     /**
@@ -513,7 +513,7 @@ public class ImgToExcelController extends ToolsProperties {
     @FXML
     private void readRowHandleKeyTyped(KeyEvent event) {
         integerRangeTextField(readRow_Img, 0, null, event);
-        addValueToolTip(readRow_Img, "只能填数字，不填默认为 " + defaultReadRow + " 从第 " + (defaultReadRow + 1) + " 行读取");
+        addValueToolTip(readRow_Img, "只能填自然数，不填默认为 " + defaultReadRow + " 从第 " + (defaultReadRow + 1) + " 行读取");
     }
 
     /**
@@ -522,7 +522,7 @@ public class ImgToExcelController extends ToolsProperties {
     @FXML
     private void readCellHandleKeyTyped(KeyEvent event) {
         integerRangeTextField(readCell_Img, 0, null, event);
-        addValueToolTip(readCell_Img, "只能填数字，不填默认为 " + defaultReadCell + " ，从第 " + (defaultReadCell + 1) + " 列读取");
+        addValueToolTip(readCell_Img, "只能填自然数，不填默认为 " + defaultReadCell + " ，从第 " + (defaultReadCell + 1) + " 列读取");
     }
 
     /**
@@ -531,7 +531,7 @@ public class ImgToExcelController extends ToolsProperties {
     @FXML
     private void maxRowHandleKeyTyped(KeyEvent event) {
         integerRangeTextField(maxRow_Img, 1, null, event);
-        addValueToolTip(maxRow_Img, "只能填数字，不填默认不限制，会读取到有数据的最后一行，最小值为1");
+        addValueToolTip(maxRow_Img, "只能填正整数，不填默认不限制，会读取到有数据的最后一行，最小值为1");
     }
 
     /**
@@ -563,7 +563,7 @@ public class ImgToExcelController extends ToolsProperties {
     @FXML
     private void imgWidthHandleKeyTyped(KeyEvent event) {
         integerRangeTextField(imgWidth_Img, 0, null, event);
-        addValueToolTip(imgWidth_Img, "只能填数字，不填默认为 " + defaultImgWidth);
+        addValueToolTip(imgWidth_Img, "只能填自然数，不填默认为 " + defaultImgWidth);
     }
 
     /**
@@ -572,7 +572,7 @@ public class ImgToExcelController extends ToolsProperties {
     @FXML
     private void imgHeightHandleKeyTyped(KeyEvent event) {
         integerRangeTextField(imgHeight_Img, 0, null, event);
-        addValueToolTip(imgHeight_Img, "只能填数字，不填默认为 " + defaultImgHeight);
+        addValueToolTip(imgHeight_Img, "只能填自然数，不填默认为 " + defaultImgHeight);
     }
 
     /**

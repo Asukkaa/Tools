@@ -269,10 +269,10 @@ public class FileNumToExcelController extends ToolsProperties {
     private void initialize() throws IOException {
         getConfig();
         addToolTip(filterFileType_Num, "填写后只会识别所填写的后缀名文件，多个文件后缀名用空格隔开，后缀名需带 '.'");
-        addToolTip(startRow_Num, "只能填数字，不填默认与读取预留行相同");
-        addToolTip(startCell_Num, "只能填数字，不填默认为 " + defaultStartCell);
-        addToolTip(readRow_Num, "只能填数字，不填默认为 " + defaultReadRow + " 从第 " + (defaultReadRow + 1) + " 行读取");
-        addToolTip(readCell_Num, "只能填数字，不填默认为 " + defaultReadCell + " ，从第 " + (defaultReadCell + 1) + " 列读取");
+        addToolTip(startRow_Num, "只能填自然数，不填默认与读取预留行相同");
+        addToolTip(startCell_Num, "只能填自然数，不填默认为 " + defaultStartCell);
+        addToolTip(readRow_Num, "只能填自然数，不填默认为 " + defaultReadRow + " 从第 " + (defaultReadRow + 1) + " 行读取");
+        addToolTip(readCell_Num, "只能填自然数，不填默认为 " + defaultReadCell + " ，从第 " + (defaultReadCell + 1) + " 列读取");
         addNumImgToolTip(recursion_Num, subCode_Num, excelName_Num, sheetOutName_Num, maxRow_Num);
     }
 
@@ -429,7 +429,7 @@ public class FileNumToExcelController extends ToolsProperties {
     @FXML
     private void rowHandleKeyTyped(KeyEvent event) {
         integerRangeTextField(startRow_Num, 0, null, event);
-        addValueToolTip(startRow_Num, "只能填数字，不填默认为0，不预留列");
+        addValueToolTip(startRow_Num, "只能填自然数，不填默认为0，不预留列");
     }
 
     /**
@@ -438,7 +438,7 @@ public class FileNumToExcelController extends ToolsProperties {
     @FXML
     private void cellHandleKeyTyped(KeyEvent event) {
         integerRangeTextField(startCell_Num, 0, null, event);
-        addValueToolTip(startCell_Num, "只能填数字，不填默认为 " + defaultStartCell);
+        addValueToolTip(startCell_Num, "只能填自然数，不填默认为 " + defaultStartCell);
     }
 
     /**
@@ -479,7 +479,7 @@ public class FileNumToExcelController extends ToolsProperties {
     @FXML
     private void readRowHandleKeyTyped(KeyEvent event) {
         integerRangeTextField(readRow_Num, 0, null, event);
-        addValueToolTip(readRow_Num, "只能填数字，不填默认为 " + defaultReadRow + " 从第 " + (defaultReadRow + 1) + " 行读取");
+        addValueToolTip(readRow_Num, "只能填自然数，不填默认为 " + defaultReadRow + " 从第 " + (defaultReadRow + 1) + " 行读取");
     }
 
     /**
@@ -488,7 +488,7 @@ public class FileNumToExcelController extends ToolsProperties {
     @FXML
     private void readCellHandleKeyTyped(KeyEvent event) {
         integerRangeTextField(readCell_Num, 0, null, event);
-        addValueToolTip(readCell_Num, "只能填数字，不填默认为 " + defaultReadCell + " ，从第 " + (defaultReadCell + 1) + " 列读取");
+        addValueToolTip(readCell_Num, "只能填自然数，不填默认为 " + defaultReadCell + " ，从第 " + (defaultReadCell + 1) + " 列读取");
     }
 
     /**
@@ -497,7 +497,7 @@ public class FileNumToExcelController extends ToolsProperties {
     @FXML
     private void maxRowHandleKeyTyped(KeyEvent event) {
         integerRangeTextField(maxRow_Num, 1, null, event);
-        addValueToolTip(maxRow_Num, "只能填数字，不填默认不限制，会读取到有数据的最后一行，最小值为1");
+        addValueToolTip(maxRow_Num, "只能填正整数，不填默认不限制，会读取到有数据的最后一行，最小值为1");
     }
 
     /**

@@ -141,8 +141,8 @@
 
             <HBox fx:id="behaviorHBox_Re" spacing="10" visible="false">
                 <Label prefHeight="20" text="左侧:"/>
-                <TextField fx:id="before_Re" onKeyTyped="#beforeHandleKeyTyped" prefHeight="20" prefWidth="50"/>
-                <ChoiceBox onAction="#beforeBehaviorAction" fx:id="beforeBehavior_Re" prefHeight="20" prefWidth="160">
+                <TextField fx:id="left_Re" onKeyTyped="#leftHandleKeyTyped" prefHeight="20" prefWidth="50"/>
+                <ChoiceBox onAction="#leftBehaviorAction" fx:id="leftBehavior_Re" prefHeight="20" prefWidth="160">
                     <items>
                         <FXCollections fx:factory="observableArrayList">
                             <String fx:value="插入字符串为:"/>
@@ -158,10 +158,10 @@
                         <String fx:value="插入字符串为:"/>
                     </value>
                 </ChoiceBox>
-                <TextField fx:id="beforeValue_Re" onKeyTyped="#beforeValueHandleKeyTyped" prefHeight="20" prefWidth="100"/>
+                <TextField fx:id="leftValue_Re" onKeyTyped="#leftValueHandleKeyTyped" prefHeight="20" prefWidth="100"/>
                 <Label prefHeight="20" text="右侧:"/>
-                <TextField fx:id="after_Re" onKeyTyped="#afterHandleKeyTyped" prefHeight="20" prefWidth="50"/>
-                <ChoiceBox onAction="#afterBehaviorAction" fx:id="afterBehavior_Re" prefHeight="20" prefWidth="160">
+                <TextField fx:id="right_Re" onKeyTyped="#rightHandleKeyTyped" prefHeight="20" prefWidth="50"/>
+                <ChoiceBox onAction="#rightBehaviorAction" fx:id="rightBehavior_Re" prefHeight="20" prefWidth="160">
                     <items>
                         <FXCollections fx:factory="observableArrayList">
                             <String fx:value="插入字符串为:"/>
@@ -177,7 +177,7 @@
                         <String fx:value="插入字符串为:"/>
                     </value>
                 </ChoiceBox>
-                <TextField fx:id="afterValue_Re" onKeyTyped="#afterValueHandleKeyTyped" prefHeight="20" prefWidth="100"/>
+                <TextField fx:id="rightValue_Re" onKeyTyped="#rightValueHandleKeyTyped" prefHeight="20" prefWidth="100"/>
             </HBox>
         </VBox>
 

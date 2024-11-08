@@ -1,7 +1,6 @@
 package priv.koishi.tools.Configuration;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
@@ -11,8 +10,7 @@ import lombok.experimental.Accessors;
  */
 @Data
 @Accessors(chain = true)
-@EqualsAndHashCode(callSuper = true)
-public class ExcelConfig extends Configuration {
+public class ExcelConfig {
 
     /**
      * 模板文件路径

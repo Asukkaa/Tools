@@ -1,11 +1,11 @@
 package priv.koishi.tools.Service;
 
+import org.apache.commons.lang3.StringUtils;
 import priv.koishi.tools.Bean.FileBean;
 import priv.koishi.tools.Configuration.CodeRenameConfig;
 import priv.koishi.tools.Configuration.StringRenameConfig;
 
-import static priv.koishi.tools.Utils.CommonUtils.convertToAlpha;
-import static priv.koishi.tools.Utils.CommonUtils.intToChineseNum;
+import static priv.koishi.tools.Utils.CommonUtils.*;
 
 /**
  * @author KOISHI
@@ -19,11 +19,11 @@ public class RenameService {
      */
     public static void buildRename(CodeRenameConfig codeRenameConfig, FileBean fileBean,
                                    StringRenameConfig stringRenameConfig, int startName, int tag) {
-        String fileRename = null;
+        String fileRename = fileBean.getName();
         if (codeRenameConfig != null) {
             fileRename = getCodeRename(codeRenameConfig, startName, tag);
         } else if (stringRenameConfig != null) {
-
+            fileRename = getStringRename(stringRenameConfig, fileBean);
         }
         fileBean.setRename(fileRename);
     }
@@ -92,6 +92,162 @@ public class RenameService {
             }
         }
         return fileRename;
+    }
+
+    /**
+     * 按指定字符重命名
+     */
+    private static String getStringRename(StringRenameConfig stringRenameConfig, FileBean fileBean) {
+        String targetStr = stringRenameConfig.getTargetStr();
+        String fileName = fileBean.getName();
+        String fileRename = fileName;
+        switch (targetStr) {
+            case "指定字符串": {
+                fileRename = getTargetStringRename(fileName, stringRenameConfig);
+                break;
+            }
+            case "指定字符位置": {
+                fileRename = getTargetIndexRename(fileName, stringRenameConfig);
+                break;
+            }
+            case "全部英文字符转为大写": {
+                fileRename = fileName.toUpperCase();
+                break;
+            }
+            case "全部英文字符转为小写": {
+                fileRename = fileName.toLowerCase();
+                break;
+            }
+            case "全部英文字符大小写互换": {
+                fileRename = swapCase(fileName);
+                break;
+            }
+        }
+        return fileRename;
+    }
+
+    /**
+     * 根据指定字符位置重命名
+     */
+    private static String getTargetIndexRename(String fileName, StringRenameConfig stringRenameConfig) {
+        String renameValue = stringRenameConfig.getRenameValue();
+        if (StringUtils.isNotBlank(renameValue)) {
+            int renameValueInt = Integer.parseInt(stringRenameConfig.getRenameValue());
+            String renameBehavior = stringRenameConfig.getRenameBehavior();
+            if (renameValueInt >= 0 && renameValueInt < fileName.length()) {
+                switch (renameBehavior) {
+                    case "替换所有字符为:": {
+                        String renameStr = stringRenameConfig.getRenameStr();
+                        StringBuilder sb = new StringBuilder(fileName);
+                        sb.deleteCharAt(renameValueInt);
+                        sb.insert(renameValueInt, renameStr);
+                        fileName = sb.toString();
+                        break;
+                    }
+                    case "移除指定字符": {
+                        StringBuilder sb = new StringBuilder(fileName);
+                        sb.deleteCharAt(renameValueInt);
+                        fileName = sb.toString();
+                        break;
+                    }
+                }
+            }
+        }
+        return fileName;
+    }
+
+    /**
+     * 根据指定字符串重命名
+     */
+    private static String getTargetStringRename(String fileName, StringRenameConfig stringRenameConfig) {
+        String renameValue = stringRenameConfig.getRenameValue();
+        if (StringUtils.isNotEmpty(renameValue)) {
+            String renameBehavior = stringRenameConfig.getRenameBehavior();
+            switch (renameBehavior) {
+                case "替换所有字符为:": {
+                    String renameStr = stringRenameConfig.getRenameStr();
+                    fileName = replaceString(fileName, renameValue, renameStr);
+                    break;
+                }
+                case "移除指定字符": {
+                    fileName = replaceString(fileName, renameValue, "");
+                    break;
+                }
+                case "处理两侧字符": {
+                    fileName = bothSidesRename(fileName, stringRenameConfig);
+                    break;
+                }
+            }
+        }
+        return fileName;
+    }
+
+    /**
+     * 处理两侧字符
+     */
+    private static String bothSidesRename(String fileName, StringRenameConfig stringRenameConfig) {
+        String renameValue = stringRenameConfig.getRenameValue();
+        if (!fileName.contains(renameValue)) {
+            return fileName;
+        }
+        //匹配最后一次相同字符串
+        int lastIndexOf = fileName.lastIndexOf(renameValue);
+        //组装左侧重命名
+        String leftName = fileName.substring(0, lastIndexOf);
+        int leftSize = leftName.length();
+        int left = Math.min(stringRenameConfig.getLeft(), leftSize);
+        String leftRename = leftName.substring(0, leftSize - left);
+        String leftBehavior = stringRenameConfig.getLeftBehavior();
+        String renameLeft = getOneSidesRename(leftRename, leftBehavior, true, stringRenameConfig.getLeftValue());
+        //组装右侧重命名
+        String rightName = fileName.substring(lastIndexOf + renameValue.length());
+        int rightSize = rightName.length();
+        int right = Math.min(stringRenameConfig.getRight(), rightSize);
+        String rightRename = rightName.substring(right);
+        String rightBehavior = stringRenameConfig.getRightBehavior();
+        String renameRight = getOneSidesRename(rightRename, rightBehavior, false, stringRenameConfig.getRightValue());
+        //中间字符串
+        String middleName = leftName.substring(leftSize - left) + renameValue + rightName.substring(0, right);
+        return renameLeft + middleName + renameRight;
+    }
+
+    /**
+     * 处理单侧字符
+     */
+    private static String getOneSidesRename(String fileName, String behavior, boolean isLeft, String replaceString) {
+        switch (behavior) {
+            case "插入字符串为:": {
+                fileName = isLeft ? (fileName + replaceString) : (replaceString + fileName);
+                break;
+            }
+            case "替换所有字符串为:": {
+                fileName = replaceString;
+                break;
+            }
+            case "删除指定位置字符": {
+                if (!fileName.isEmpty()) {
+                    fileName = isLeft ? fileName.substring(0, fileName.length() - 1) : fileName.substring(1);
+                }
+                break;
+            }
+            case "移除所有字符": {
+                fileName = "";
+                break;
+            }
+            case "全部英文字符转为大写": {
+                fileName = fileName.toUpperCase();
+                break;
+            }
+            case "全部英文字符转为小写": {
+                fileName = fileName.toLowerCase();
+                break;
+            }
+            case "全部英文字符大小写互换": {
+                fileName = swapCase(fileName);
+                break;
+            }
+        }
+        return fileName;
     }
 
 }
