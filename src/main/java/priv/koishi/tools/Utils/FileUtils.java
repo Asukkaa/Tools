@@ -322,28 +322,4 @@ public class FileUtils {
         }
     }
 
-    /**
-     * 先将文件重命名为一个临时名称防止重名
-     */
-    public static String tempReName(String filePath) {
-        File oldFile = new File(String.valueOf(filePath));
-        String newPath = filePath;
-        if (oldFile.exists()) {
-            //不处理隐藏文件
-            if (!oldFile.isHidden()) {
-                // 获取文件扩展名
-                String ext = oldFile.getName().substring(oldFile.getName().lastIndexOf("."));
-                UUID uuid = UUID.randomUUID();
-                String uuidStr = uuid.toString();
-                // 生成新的文件名
-                String newName = uuidStr + ext;
-                // 修改文件名
-                if (oldFile.renameTo(new File(oldFile.getParent(), newName))) {
-                    newPath = new File(oldFile.getParent(), newName).getPath();
-                }
-            }
-        }
-        return newPath;
-    }
-
 }
