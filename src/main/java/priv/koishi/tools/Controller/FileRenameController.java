@@ -208,15 +208,6 @@ public class FileRenameController extends ToolsProperties {
             }
         });
         executorService.execute(readFileTask);
-        //设置javafx单元格宽度
-        id_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.04));
-        name_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.14));
-        rename_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.14));
-        fileType_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.06));
-        path_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.22));
-        size_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.08));
-        creatDate_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.16));
-        updateDate_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.16));
     }
 
     /**
@@ -407,6 +398,15 @@ public class FileRenameController extends ToolsProperties {
         addToolTip(right_Re, "只能填自然数，不填为 0 默认匹配目标字符串右侧所有字符，填写后匹配目标字符串右侧所填写个数的单个字符");
         addToolTip(readRow_Re, "只能填自然数，不填默认为 " + defaultReadRow + " 从第 " + (defaultReadRow + 1) + " 行读取");
         addToolTip(readCell_Re, "只能填自然数，不填默认为 " + defaultReadCell + " ，从第 " + (defaultReadCell + 1) + " 列读取");
+        //设置javafx单元格宽度
+        id_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.04));
+        name_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.14));
+        rename_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.14));
+        fileType_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.06));
+        path_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.22));
+        size_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.08));
+        creatDate_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.16));
+        updateDate_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.16));
     }
 
     /**

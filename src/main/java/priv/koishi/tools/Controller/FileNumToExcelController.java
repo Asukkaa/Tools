@@ -239,8 +239,7 @@ public class FileNumToExcelController extends ToolsProperties {
         bindingProgressBarTask(readExcelTask, taskBean);
         //使用新线程启动
         executorService.execute(readExcelTask);
-        //设置javafx单元格宽度
-        return tableViewNumImgAdaption(readExcelTask, groupId_Num, tableView_Num, groupName_Num.prefWidthProperty(), groupNumber_Num.prefWidthProperty(), fileName_Num);
+        return readExcelTask;
     }
 
     /**
@@ -274,6 +273,8 @@ public class FileNumToExcelController extends ToolsProperties {
         addToolTip(readRow_Num, "只能填自然数，不填默认为 " + defaultReadRow + " 从第 " + (defaultReadRow + 1) + " 行读取");
         addToolTip(readCell_Num, "只能填自然数，不填默认为 " + defaultReadCell + " ，从第 " + (defaultReadCell + 1) + " 列读取");
         addNumImgToolTip(recursion_Num, subCode_Num, excelName_Num, sheetOutName_Num, maxRow_Num);
+        //设置javafx单元格宽度
+        tableViewNumImgAdaption(groupId_Num, tableView_Num, groupName_Num.prefWidthProperty(), groupNumber_Num.prefWidthProperty(), fileName_Num);
     }
 
     /**

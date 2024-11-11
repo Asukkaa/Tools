@@ -256,8 +256,7 @@ public class ImgToExcelController extends ToolsProperties {
         bindingProgressBarTask(readExcelTask, taskBean);
         readExcelTask.setOnSucceeded(t -> taskUnbind(taskBean));
         executorService.execute(readExcelTask);
-        //设置javafx单元格宽度
-        return tableViewNumImgAdaption(readExcelTask, groupId_Img, tableView_Img, groupName_Img.prefWidthProperty(), groupNumber_Img.prefWidthProperty(), fileName_Img);
+        return readExcelTask;
     }
 
     /**
@@ -296,6 +295,8 @@ public class ImgToExcelController extends ToolsProperties {
         addToolTip(readCell_Img, "只能填自然数，不填默认为 " + defaultReadCell + " ，从第 " + (defaultReadCell + 1) + " 列读取");
         addToolTip(maxImgNum_Img, "只能填正整数，不填默认为不限制");
         addNumImgToolTip(recursion_Img, subCode_Img, excelName_Img, sheetOutName_Img, maxRow_Img);
+        //设置javafx单元格宽度
+        tableViewNumImgAdaption(groupId_Img, tableView_Img, groupName_Img.prefWidthProperty(), groupNumber_Img.prefWidthProperty(), fileName_Img);
     }
 
     /**

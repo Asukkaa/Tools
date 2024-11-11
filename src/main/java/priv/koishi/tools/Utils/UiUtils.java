@@ -4,7 +4,6 @@ import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -19,9 +18,9 @@ import javafx.util.Callback;
 import javafx.util.Duration;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import priv.koishi.tools.Configuration.FileConfig;
 import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Bean.TaskBean;
+import priv.koishi.tools.Configuration.FileConfig;
 import priv.koishi.tools.Enum.SelectItemsEnums;
 
 import java.io.File;
@@ -363,16 +362,13 @@ public class UiUtils {
     /**
      * 为统计文件名和插入图片页面列表设置字段宽度
      */
-    public static Task<List<FileNumBean>> tableViewNumImgAdaption(Task<List<FileNumBean>> readExcelTask,
-                                                                  TableColumn<FileNumBean, String> groupId,
-                                                                  TableView<FileNumBean> tableView,
+    public static void tableViewNumImgAdaption(TableColumn<FileNumBean, String> groupId, TableView<FileNumBean> tableView,
                                                                   DoubleProperty groupName, DoubleProperty groupNumber,
                                                                   TableColumn<FileNumBean, String> fileName) {
         groupId.prefWidthProperty().bind(tableView.widthProperty().multiply(0.1));
         groupName.bind(tableView.widthProperty().multiply(0.1));
         groupNumber.bind(tableView.widthProperty().multiply(0.1));
         fileName.prefWidthProperty().bind(tableView.widthProperty().multiply(0.7));
-        return readExcelTask;
     }
 
     /**

@@ -177,14 +177,6 @@ public class FileNameToExcelController extends ToolsProperties {
         bindingProgressBarTask(readFileTask, taskBean);
         readFileTask.setOnSucceeded(t -> taskUnbind(taskBean));
         executorService.execute(readFileTask);
-        //设置javafx单元格宽度
-        id_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.04));
-        name_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.14));
-        fileType_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.06));
-        path_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.36));
-        size_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.08));
-        creatDate_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.16));
-        updateDate_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.16));
     }
 
     /**
@@ -217,6 +209,14 @@ public class FileNameToExcelController extends ToolsProperties {
         addToolTip(startRow_Name, "只能填自然数，不填默认为0，不预留行");
         addToolTip(startCell_Name, "只能填自然数，不填默认为 " + defaultStartCell);
         addToolTip(removeExcelButton_Name, "删除excel模板路径");
+        //设置javafx单元格宽度
+        id_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.04));
+        name_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.14));
+        fileType_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.06));
+        path_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.36));
+        size_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.08));
+        creatDate_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.16));
+        updateDate_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.16));
     }
 
     /**
