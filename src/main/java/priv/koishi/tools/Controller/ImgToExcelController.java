@@ -254,7 +254,7 @@ public class ImgToExcelController extends ToolsProperties {
         Task<List<FileNumBean>> readExcelTask = readExcel(excelConfig, taskBean);
         //绑定带进度条的线程
         bindingProgressBarTask(readExcelTask, taskBean);
-        readExcelTask.setOnSucceeded(t -> taskUnbind(taskBean));
+        readExcelTask.setOnSucceeded(event -> taskUnbind(taskBean));
         executorService.execute(readExcelTask);
         return readExcelTask;
     }
@@ -412,7 +412,7 @@ public class ImgToExcelController extends ToolsProperties {
                 .setImgWidth(imgWidth)
                 .setSheet(sheetName);
         Task<List<FileNumBean>> reselectTask = reselect();
-        reselectTask.setOnSucceeded(t -> {
+        reselectTask.setOnSucceeded(event -> {
             TaskBean<FileNumBean> taskBean = new TaskBean<>();
             taskBean.setShowFileType(showFileType_Img.isSelected())
                     .setReselectButton(reselectButton_Img)
@@ -544,6 +544,7 @@ public class ImgToExcelController extends ToolsProperties {
         if (StringUtils.isEmpty(inFilePath)) {
             throw new Exception("excel模板文件位置为空，需要先设置excel模板文件位置再继续");
         }
+        updateLabel(log_Img, "");
         return addInData();
     }
 

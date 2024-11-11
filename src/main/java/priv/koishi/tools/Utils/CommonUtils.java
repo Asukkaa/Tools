@@ -112,17 +112,17 @@ public class CommonUtils {
      * map分组并按key排序
      */
     public static Map<String, List<String>> getSortedByMap(List<String> keys, String nameSubstring, int maxValue) {
-        Map<String, String> namMap = new HashMap<>();
+        Map<String, String> nameMap = new HashMap<>();
         Map<String, List<String>> groupedMap;
         keys.forEach(k -> {
             String leftName = getLeftName(k, nameSubstring);
-            namMap.put(k, leftName);
+            nameMap.put(k, leftName);
         });
         //根据名称分组
-        if (maxValue != 0) {
-            groupedMap = groupByValueWithLimit(namMap, maxValue);
+        if (maxValue > 0) {
+            groupedMap = groupByValueWithLimit(nameMap, maxValue);
         } else {
-            groupedMap = namMap.entrySet().stream().collect(Collectors.groupingBy(Map.Entry::getValue,
+            groupedMap = nameMap.entrySet().stream().collect(Collectors.groupingBy(Map.Entry::getValue,
                     Collectors.mapping(Map.Entry::getKey, Collectors.toList())));
         }
         //根据完整路径排序

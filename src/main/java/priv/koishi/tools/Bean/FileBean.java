@@ -2,6 +2,10 @@ package priv.koishi.tools.Bean;
 
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.io.File;
 
 /**
  * @author KOISHI
@@ -49,6 +53,13 @@ public class FileBean {
      * 文件修改时间
      */
     private final SimpleStringProperty updateDate;
+
+    /**
+     * 文件重命名功能临时名称文件
+     */
+    @Getter
+    @Setter
+    File tempFile;
 
     public FileBean() {
         this.id = new SimpleIntegerProperty();

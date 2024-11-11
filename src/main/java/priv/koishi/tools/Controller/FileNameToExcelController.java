@@ -12,7 +12,6 @@ import javafx.scene.input.DragEvent;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.commons.collections4.CollectionUtils;
@@ -175,7 +174,7 @@ public class FileNameToExcelController extends ToolsProperties {
         Task<Void> readFileTask = readFile(taskBean);
         //绑定带进度条的线程
         bindingProgressBarTask(readFileTask, taskBean);
-        readFileTask.setOnSucceeded(t -> taskUnbind(taskBean));
+        readFileTask.setOnSucceeded(event -> taskUnbind(taskBean));
         executorService.execute(readFileTask);
     }
 
@@ -287,12 +286,10 @@ public class FileNameToExcelController extends ToolsProperties {
      */
     @FXML
     private void removeAll() {
-        List<FileBean> nullFileBeans = new ArrayList<>();
-        ObservableList<FileBean> nullData = FXCollections.observableArrayList(nullFileBeans);
+        ObservableList<FileBean> nullData = FXCollections.observableArrayList(new ArrayList<>());
         tableView_Name.setItems(nullData);
-        // 解除绑定，设置文本，然后重新绑定
-        fileNumber_Name.textProperty().unbind();
-        fileNumber_Name.setText("列表为空");
+        updateLabel(fileNumber_Name, "列表为空");
+        updateLabel(log_Name, "");
         System.gc();
     }
 
@@ -313,8 +310,7 @@ public class FileNameToExcelController extends ToolsProperties {
         int startCellValue = setDefaultIntValue(startCell_Name, defaultStartCell, 0, null);
         String excelNameValue = setDefaultFileName(excelName_Name, "NameList");
         String sheetName = setDefaultStrValue(sheetOutName_Name, "Sheet1");
-        log_Name.setTextFill(Color.BLACK);
-        log_Name.setText("");
+        updateLabel(log_Name, "");
         ExcelConfig excelConfig = new ExcelConfig();
         excelConfig.setOutExcelExtension(excelType_Name.getValue())
                 .setInPath(excelPath_Name.getText())
@@ -425,15 +421,14 @@ public class FileNameToExcelController extends ToolsProperties {
         if (StringUtils.isEmpty(inFilePath)) {
             throw new Exception("要查询的文件夹位置为空，需要先设置要查询的文件夹位置再继续");
         }
+        updateLabel(log_Name, "");
         FileConfig fileConfig = new FileConfig();
-        List<String> filterExtensionList = getFilterExtensionList(filterFileType_Name);
-        fileConfig.setShowDirectoryName(directoryNameType_Name.getValue())
+        fileConfig.setFilterExtensionList(getFilterExtensionList(filterFileType_Name))
+                .setShowDirectoryName(directoryNameType_Name.getValue())
                 .setShowHideFile(hideFileType_Name.getValue())
-                .setFilterExtensionList(filterExtensionList)
                 .setRecursion(recursion_Name.isSelected())
                 .setInFile(new File(inFilePath));
-        List<File> inFileList = readAllFiles(fileConfig);
-        addInData(inFileList);
+        addInData(readAllFiles(fileConfig));
     }
 
     /**

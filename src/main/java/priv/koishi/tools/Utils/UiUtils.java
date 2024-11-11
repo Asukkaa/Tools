@@ -90,7 +90,7 @@ public class UiUtils {
             if (file.isDirectory()) {
                 fileChooser.setInitialDirectory(file);
             } else if (file.isFile()) {
-                file = new File(getFileMkdir(file));
+                file = new File(file.getParent());
                 fileChooser.setInitialDirectory(file);
             }
         }
@@ -230,26 +230,34 @@ public class UiUtils {
      * 处理异常的统一弹窗
      */
     public static void showExceptionDialog(Throwable ex) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("异常信息");
+        Alert alert = creatErrorDialog(errToString(ex));
         if (ex.getCause().getCause() instanceof Exception) {
             alert.setHeaderText(ex.getCause().getCause().getMessage());
         } else {
             alert.setHeaderText(ex.getMessage());
         }
+        ex.printStackTrace();
+        // 展示弹窗
+        alert.showAndWait();
+    }
+
+    /**
+     * 创建一个错误弹窗
+     */
+    public static Alert creatErrorDialog(String errString) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("异常信息");
         // 创建展示异常信息的TextArea
         TextArea textArea = new TextArea();
         textArea.setEditable(false);
         textArea.setWrapText(true);
-        textArea.setText(errToString(ex));
-        ex.printStackTrace();
+        textArea.setText(errString);
         // 创建VBox并添加TextArea
         VBox details = new VBox();
         details.heightProperty().addListener((v1, v2, v3) -> Platform.runLater(() -> textArea.setPrefHeight(details.getHeight())));
         details.getChildren().add(textArea);
         alert.getDialogPane().setExpandableContent(details);
-        // 展示弹窗
-        alert.showAndWait();
+        return alert;
     }
 
     /**
@@ -279,15 +287,10 @@ public class UiUtils {
      * 清空excel统计文件名或插入图片页面的列表
      */
     public static void removeNumImgAll(TableView<FileNumBean> tableView, Label fileNumber, Label log) {
-        List<FileNumBean> nullFileBeans = new ArrayList<>();
-        ObservableList<FileNumBean> nullData = FXCollections.observableArrayList(nullFileBeans);
+        ObservableList<FileNumBean> nullData = FXCollections.observableArrayList(new ArrayList<>());
         tableView.setItems(nullData);
-        // 解除绑定，设置文本，然后重新绑定
-        fileNumber.textProperty().unbind();
-        fileNumber.setText("列表为空");
-        log.textProperty().unbind();
-        log.setText("");
-        log.setTextFill(Color.BLACK);
+        updateLabel(fileNumber, "列表为空");
+        updateLabel(log, "");
     }
 
     /**
@@ -363,8 +366,8 @@ public class UiUtils {
      * 为统计文件名和插入图片页面列表设置字段宽度
      */
     public static void tableViewNumImgAdaption(TableColumn<FileNumBean, String> groupId, TableView<FileNumBean> tableView,
-                                                                  DoubleProperty groupName, DoubleProperty groupNumber,
-                                                                  TableColumn<FileNumBean, String> fileName) {
+                                               DoubleProperty groupName, DoubleProperty groupNumber,
+                                               TableColumn<FileNumBean, String> fileName) {
         groupId.prefWidthProperty().bind(tableView.widthProperty().multiply(0.1));
         groupName.bind(tableView.widthProperty().multiply(0.1));
         groupNumber.bind(tableView.widthProperty().multiply(0.1));
@@ -408,6 +411,15 @@ public class UiUtils {
         if (!isInIntegerRange(textField.getText(), min, max)) {
             textField.setText("");
         }
+    }
+
+    /**
+     * 修改label信息
+     */
+    public static void updateLabel(Label label, String text) {
+        label.textProperty().unbind();
+        label.setText(text);
+        label.setTextFill(Color.BLACK);
     }
 
 }

@@ -46,17 +46,6 @@ public class FileUtils {
     }
 
     /**
-     * 获取文件夹路径
-     *
-     * @param file 文件
-     * @return 文件夹路径
-     */
-    public static String getFileMkdir(File file) {
-        String filePath = file.getPath();
-        return filePath.substring(0, filePath.lastIndexOf("\\"));
-    }
-
-    /**
      * 根据操作系统计算文件大小
      *
      * @return ret 带单位的文件大小
@@ -240,7 +229,7 @@ public class FileUtils {
      */
     public static String saveExcel(SXSSFWorkbook workbook, ExcelConfig excelConfig) throws Exception {
         String filePath = excelConfig.getOutPath() + "\\" + excelConfig.getOutName() + excelConfig.getOutExcelExtension();
-        checkDirectory(getFileMkdir(new File(filePath)));
+        checkDirectory(new File(filePath).getParent());
         // 将Excel写入文件
         try (workbook) {
             BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(Files.newOutputStream(Paths.get(filePath)));

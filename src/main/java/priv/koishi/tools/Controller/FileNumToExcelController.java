@@ -234,7 +234,7 @@ public class FileNumToExcelController extends ToolsProperties {
                 .setTabId(tabId);
         //获取Task任务
         Task<List<FileNumBean>> readExcelTask = readExcel(excelConfig, taskBean);
-        readExcelTask.setOnSucceeded(t -> taskUnbind(taskBean));
+        readExcelTask.setOnSucceeded(event -> taskUnbind(taskBean));
         //绑定带进度条的线程
         bindingProgressBarTask(readExcelTask, taskBean);
         //使用新线程启动
@@ -510,6 +510,7 @@ public class FileNumToExcelController extends ToolsProperties {
         if (StringUtils.isEmpty(inFilePath)) {
             throw new Exception("excel模板文件位置为空，需要先设置excel模板文件位置再继续");
         }
+        updateLabel(log_Num, "");
         return addInData();
     }
 

@@ -1,9 +1,15 @@
 package priv.koishi.tools.Service;
 
+import javafx.concurrent.Task;
 import org.apache.commons.lang3.StringUtils;
 import priv.koishi.tools.Bean.FileBean;
+import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.CodeRenameConfig;
 import priv.koishi.tools.Configuration.StringRenameConfig;
+
+import java.io.File;
+import java.util.List;
+import java.util.UUID;
 
 import static priv.koishi.tools.Utils.CommonUtils.*;
 
@@ -13,6 +19,66 @@ import static priv.koishi.tools.Utils.CommonUtils.*;
  * Time:下午5:47
  */
 public class RenameService {
+
+    public static Task<String> fileRename(TaskBean<FileBean> taskBean) {
+        return new Task<>() {
+            @Override
+            protected String call() throws Exception {
+                //防止命名重复先将所有慰文件重命名为uuid生成的临时名称
+                updateMessage("正在将文件重命名为临时名称");
+                List<FileBean> fileBeanList = taskBean.getBeanList();
+                int fileBeanListSize = fileBeanList.size();
+                for (int i = 0; i < fileBeanListSize; i++) {
+                    FileBean fileBean = fileBeanList.get(i);
+                    String oldName = fileBean.getName();
+                    String ext = fileBean.getFileType();
+                    if ("文件夹".equals(ext) || "文件".equals(ext)) {
+                        ext = "";
+                    }
+                    String tempName = UUID.randomUUID() + ext;
+                    File tempFile = tempRename(fileBean, tempName);
+                    fileBean.setTempFile(tempFile);
+                    updateMessage("已修改编号为 " + fileBean.getId() + " 的文件 " + oldName + " 临时名称为 " + tempName);
+                    updateProgress(i, fileBeanListSize);
+                }
+                //将重命名为临时名称的文件重命名为正式名称
+                updateMessage("正在将文件重命名为正式名称");
+                updateProgress(0, fileBeanListSize);
+                for (int i = 0; i < fileBeanListSize; i++) {
+                    FileBean fileBean = taskBean.getBeanList().get(i);
+                    File tempFile = fileBean.getTempFile();
+                    String oldName = fileBean.getName();
+                    String ext = fileBean.getFileType();
+                    if ("文件夹".equals(ext) || "文件".equals(ext)) {
+                        ext = "";
+                    }
+                    String newName = fileBean.getRename() + ext;
+                    File newFile = new File(tempFile.getParent(), newName);
+                    if (!tempFile.renameTo(newFile)) {
+                        throw new Exception("修改编号为 " + fileBean.getId() + " 的文件名称失败");
+                    }
+                    updateMessage("已修改编号为 " + fileBean.getId() + " 的文件 " + oldName + " 临时名称为 " + newName);
+                    updateProgress(i, fileBeanListSize);
+                }
+                updateMessage("所有文件已重命名完毕");
+                return new File(fileBeanList.getFirst().getPath()).getParent();
+            }
+
+            //给文件一个临时重命名
+            private static File tempRename(FileBean fileBean, String tempName) throws Exception {
+                String oldPath = fileBean.getPath();
+                File oldFile = new File(oldPath);
+                if (!oldFile.exists()) {
+                    throw new Exception("编号为 " + fileBean.getId() + " 的文件不存在，列表中的地址为 " + oldPath);
+                }
+                File tempFile = new File(oldFile.getParent(), tempName);
+                if (!oldFile.renameTo(tempFile)) {
+                    throw new Exception("修改编号为 " + fileBean.getId() + " 的文件临时名称失败");
+                }
+                return tempFile;
+            }
+        };
+    }
 
     /**
      * 构建文件重命名

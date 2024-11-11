@@ -40,14 +40,14 @@ public class FileNumBean {
      */
     @Getter
     @Setter
-    private List<String> filePathList;
+    List<String> filePathList;
 
     /**
      * 文件名称列表
      */
     @Getter
     @Setter
-    private List<String> fileNameList;
+    List<String> fileNameList;
 
     public FileNumBean() {
         this.fileNameList = new ArrayList<>();

@@ -54,7 +54,7 @@ public class TaskUtils {
     public static void saveExcelOnSucceeded(ExcelConfig excelConfig, TaskBean<?> taskBean, Task<SXSSFWorkbook> buildExcelTask,
                                             CheckBox openDirectory, CheckBox openFile, ExecutorService executorService) {
         bindingProgressBarTask(buildExcelTask, taskBean);
-        buildExcelTask.setOnSucceeded(t -> {
+        buildExcelTask.setOnSucceeded(event ->{
             SXSSFWorkbook workbook = buildExcelTask.getValue();
             Task<String> saveExceltask = saveExceltask(excelConfig, workbook);
             bindingProgressBarTask(saveExceltask, taskBean);
@@ -62,7 +62,7 @@ public class TaskUtils {
                 String excelPath = saveExceltask.getValue();
                 try {
                     if (openDirectory.isSelected()) {
-                        openFile(getFileMkdir(new File(excelPath)));
+                        openFile(new File(excelPath).getParent());
                     }
                     if (openFile.isSelected()) {
                         openFile(excelPath);
