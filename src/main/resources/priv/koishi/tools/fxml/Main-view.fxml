@@ -32,6 +32,12 @@
             </AnchorPane>
         </Tab>
 
+        <Tab style="-fx-cursor: hand" fx:id="settingTab" text="关于">
+            <AnchorPane>
+                <fx:include source="Setting-tab.fxml"/>
+            </AnchorPane>
+        </Tab>
+
     </TabPane>
 
 </VBox>

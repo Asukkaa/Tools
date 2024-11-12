@@ -10,6 +10,7 @@ import static priv.koishi.tools.Controller.FileNameToExcelController.fileNameToE
 import static priv.koishi.tools.Controller.FileNumToExcelController.fileNumToExcelAdaption;
 import static priv.koishi.tools.Controller.FileRenameController.fileRenameAdaption;
 import static priv.koishi.tools.Controller.ImgToExcelController.imgToExcelAdaption;
+import static priv.koishi.tools.Controller.SettingTabController.settingToExcelAdaption;
 
 /**
  * @author KOISHI Date:2024-10-02
@@ -21,7 +22,7 @@ public class MainController {
     private TabPane tabPane;
 
     @FXML
-    private Tab fileNumToExcelTab, fileNameToExcelTab, imgToExcelTab, fileRenameTab;
+    private Tab fileNumToExcelTab, fileNameToExcelTab, imgToExcelTab, fileRenameTab, settingTab;
 
     /**
      * 组件自适应宽高
@@ -35,6 +36,7 @@ public class MainController {
         fileNumToExcelAdaption(stage, scene);
         imgToExcelAdaption(stage, scene);
         fileRenameAdaption(stage, scene);
+        settingToExcelAdaption(stage, scene);
     }
 
 }
