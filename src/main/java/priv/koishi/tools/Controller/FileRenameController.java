@@ -57,11 +57,6 @@ public class FileRenameController extends ToolsProperties {
     static String inFilePath;
 
     /**
-     * 导出文件名称
-     */
-    static String outFileName;
-
-    /**
      * excel模板路径
      */
     static String excelInPath;
@@ -169,8 +164,8 @@ public class FileRenameController extends ToolsProperties {
         Button removeAll = (Button) scene.lookup("#clearButton_Re");
         Button exportAll = (Button) scene.lookup("#exportButton_Re");
         Button reselect = (Button) scene.lookup("#reselectButton_Re");
-        Button updateButton = (Button) scene.lookup("#updateButton_Re");
-        fileNum.setPrefWidth(tableWidth - removeAll.getWidth() - exportAll.getWidth() - reselect.getWidth() - updateButton.getWidth() - 50);
+        Button updateRenameButton = (Button) scene.lookup("#updateRenameButton_Re");
+        fileNum.setPrefWidth(tableWidth - removeAll.getWidth() - exportAll.getWidth() - reselect.getWidth() - updateRenameButton.getWidth() - 50);
     }
 
     /**
@@ -204,8 +199,60 @@ public class FileRenameController extends ToolsProperties {
                 rename_Re.setCellFactory((tableColumn) -> new EditingCell<>(FileBean::setRename));
                 taskUnbind(taskBean);
             }
+            //构建右键菜单
+            buildContextMenu();
         });
         executorService.execute(readFileTask);
+    }
+
+    /**
+     * 构建右键菜单
+     */
+    private void buildContextMenu() {
+        //设置可以选中多行
+        tableView_Re.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        //添加右键菜单
+        ContextMenu contextMenu = new ContextMenu();
+        MenuItem deleteDataMenuItem = new MenuItem("删除所选数据");
+        contextMenu.getItems().add(deleteDataMenuItem);
+        MenuItem openDirectoryMenuItem = new MenuItem("打开所选文件所在文件夹");
+        contextMenu.getItems().add(openDirectoryMenuItem);
+        MenuItem openFileMenuItem = new MenuItem("打开所选文件");
+        contextMenu.getItems().add(openFileMenuItem);
+        tableView_Re.setContextMenu(contextMenu);
+        tableView_Re.setOnMousePressed(event -> {
+            if (event.isSecondaryButtonDown()) {
+                contextMenu.show(tableView_Re, event.getScreenX(), event.getScreenY());
+            }
+        });
+        //设置右键菜单行为
+        deleteDataMenuItem.setOnAction(event -> {
+            List<FileBean> fileBeans = tableView_Re.getSelectionModel().getSelectedItems();
+            ObservableList<FileBean> items = tableView_Re.getItems();
+            items.removeAll(fileBeans);
+            fileNumber_Re.setText("共有" + items.size() + " 个文件");
+        });
+        openFileMenuItem.setOnAction(event -> {
+            List<FileBean> fileBeans = tableView_Re.getSelectionModel().getSelectedItems();
+            fileBeans.forEach(fileBean -> {
+                try {
+                    openFile(fileBean.getPath());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        });
+        openDirectoryMenuItem.setOnAction(event -> {
+            List<FileBean> fileBeans = tableView_Re.getSelectionModel().getSelectedItems();
+            List<String> pathList = fileBeans.stream().map(FileBean::getPath).distinct().toList();
+            pathList.forEach(path -> {
+                try {
+                    openFile(new File(path).getParent());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        });
     }
 
     /**
@@ -357,7 +404,6 @@ public class FileRenameController extends ToolsProperties {
         prop.load(input);
         // 根据key读取value
         inFilePath = prop.getProperty("inFilePath");
-        outFileName = prop.getProperty("outFileName");
         excelInPath = prop.getProperty("excelInPath");
         defaultReadRow = Integer.parseInt(prop.getProperty("defaultReadRow"));
         defaultReadCell = Integer.parseInt(prop.getProperty("defaultReadCell"));
@@ -422,10 +468,8 @@ public class FileRenameController extends ToolsProperties {
                 .setFilterExtensionList(filterExtensionList)
                 .setInFile(selectedFile);
         if (selectedFile != null) {
-            String selectedFilePath = selectedFile.getAbsolutePath();
-            updatePath(configFile, "inFilePath", selectedFilePath);
-            inPath_Re.setText(selectedFilePath);
-            addToolTip(inPath_Re, selectedFilePath);
+            //更新所选文件路径显示
+            inFilePath = updatePathLabel(selectedFile.getAbsolutePath(), inFilePath, "inFilePath", inPath_Re, configFile);
             //读取数据
             List<File> inFileList = readAllFiles(fileConfig);
             addInData(inFileList);
@@ -485,6 +529,7 @@ public class FileRenameController extends ToolsProperties {
      */
     @FXML
     private void renameAll() throws Exception {
+        updateLabel(log_Re, "");
         ObservableList<FileBean> fileBeans = tableView_Re.getItems();
         if (CollectionUtils.isEmpty(fileBeans)) {
             throw new Exception("要读取的文件列表为空，需要选择一个有文件的文件夹");
@@ -544,11 +589,7 @@ public class FileRenameController extends ToolsProperties {
         List<FileChooser.ExtensionFilter> extensionFilters = new ArrayList<>(Collections.singleton(new FileChooser.ExtensionFilter("Excel", "*.xlsx")));
         File selectedFile = creatFileChooser(actionEvent, excelInPath, extensionFilters, "选择excel模板文件");
         if (selectedFile != null) {
-            updatePath(configFile, "excelInPath", selectedFile.getPath());
-            //显示选择的路径
-            excelInPath = selectedFile.getPath();
-            excelPath_Re.setText(excelInPath);
-            addToolTip(excelPath_Re, excelInPath);
+            excelInPath = updatePathLabel(selectedFile.getAbsolutePath(), excelInPath, "excelInPath", excelPath_Re, configFile);
             readExcelRename();
         }
     }

@@ -36,8 +36,8 @@ import java.util.concurrent.ExecutorService;
 import static priv.koishi.tools.Service.FileNameToExcelService.buildFileNameExcel;
 import static priv.koishi.tools.Service.ReadDataService.readFile;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
-import static priv.koishi.tools.Utils.FileUtils.readAllFiles;
-import static priv.koishi.tools.Utils.FileUtils.updatePath;
+import static priv.koishi.tools.Utils.FileUtils.*;
+import static priv.koishi.tools.Utils.FileUtils.openFile;
 import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
@@ -54,9 +54,14 @@ public class FileNameToExcelController extends ToolsProperties {
     static String outFilePath;
 
     /**
-     * 导出文件名称
+     * 默认导出文件名称
      */
-    static String outFileName;
+    static String defaultOutFileName;
+
+    /**
+     * 默认读取表名称
+     */
+    static String defaultSheetName;
 
     /**
      * excel模板路径
@@ -174,8 +179,63 @@ public class FileNameToExcelController extends ToolsProperties {
         Task<Void> readFileTask = readFile(taskBean);
         //绑定带进度条的线程
         bindingProgressBarTask(readFileTask, taskBean);
-        readFileTask.setOnSucceeded(event -> taskUnbind(taskBean));
+        readFileTask.setOnSucceeded(event -> {
+            taskUnbind(taskBean);
+            //构建右键菜单
+            buildContextMenu();
+        });
         executorService.execute(readFileTask);
+    }
+
+
+    /**
+     * 构建右键菜单
+     */
+    private void buildContextMenu() {
+        //设置可以选中多行
+        tableView_Name.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        //添加右键菜单
+        ContextMenu contextMenu = new ContextMenu();
+        MenuItem deleteDataMenuItem = new MenuItem("删除所选数据");
+        contextMenu.getItems().add(deleteDataMenuItem);
+        MenuItem openDirectoryMenuItem = new MenuItem("打开所选文件所在文件夹");
+        contextMenu.getItems().add(openDirectoryMenuItem);
+        MenuItem openFileMenuItem = new MenuItem("打开所选文件");
+        contextMenu.getItems().add(openFileMenuItem);
+        tableView_Name.setContextMenu(contextMenu);
+        tableView_Name.setOnMousePressed(event -> {
+            if (event.isSecondaryButtonDown()) {
+                contextMenu.show(tableView_Name, event.getScreenX(), event.getScreenY());
+            }
+        });
+        //设置右键菜单行为
+        deleteDataMenuItem.setOnAction(event -> {
+            List<FileBean> fileBeans = tableView_Name.getSelectionModel().getSelectedItems();
+            ObservableList<FileBean> items = tableView_Name.getItems();
+            items.removeAll(fileBeans);
+            fileNumber_Name.setText("共有" + items.size() + " 个文件");
+        });
+        openFileMenuItem.setOnAction(event -> {
+            List<FileBean> fileBeans = tableView_Name.getSelectionModel().getSelectedItems();
+            fileBeans.forEach(fileBean -> {
+                try {
+                    openFile(fileBean.getPath());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        });
+        openDirectoryMenuItem.setOnAction(event -> {
+            List<FileBean> fileBeans = tableView_Name.getSelectionModel().getSelectedItems();
+            List<String> pathList = fileBeans.stream().map(FileBean::getPath).distinct().toList();
+            pathList.forEach(path -> {
+                try {
+                    openFile(new File(path).getParent());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        });
     }
 
     /**
@@ -189,7 +249,8 @@ public class FileNameToExcelController extends ToolsProperties {
         // 根据key读取value
         inFilePath = prop.getProperty("inFilePath");
         outFilePath = prop.getProperty("outFilePath");
-        outFileName = prop.getProperty("outFileName");
+        defaultOutFileName = prop.getProperty("defaultOutFileName");
+        defaultSheetName = prop.getProperty("defaultSheetName");
         excelInPath = prop.getProperty("excelInPath");
         defaultStartCell = Integer.parseInt(prop.getProperty("defaultStartCell"));
         input.close();
@@ -234,10 +295,8 @@ public class FileNameToExcelController extends ToolsProperties {
                 .setRecursion(recursion_Name.isSelected())
                 .setInFile(selectedFile);
         if (selectedFile != null) {
-            String selectedFilePath = selectedFile.getPath();
-            updatePath(configFile, "inFilePath", selectedFilePath);
-            inPath_Name.setText(selectedFilePath);
-            addToolTip(inPath_Name, selectedFilePath);
+            //更新所选文件路径显示
+            inFilePath = updatePathLabel(selectedFile.getPath(), inFilePath, "inFilePath", inPath_Name, configFile);
             //读取数据
             List<File> inFileList = readAllFiles(fileConfig);
             addInData(inFileList);
@@ -298,6 +357,7 @@ public class FileNameToExcelController extends ToolsProperties {
      */
     @FXML
     private void exportAll() throws Exception {
+        updateLabel(log_Name, "");
         String outFilePath = outPath_Name.getText();
         ObservableList<FileBean> fileBeans = tableView_Name.getItems();
         if (StringUtils.isEmpty(outFilePath)) {
@@ -308,8 +368,8 @@ public class FileNameToExcelController extends ToolsProperties {
         }
         int startRowValue = setDefaultIntValue(startRow_Name, 0, 0, null);
         int startCellValue = setDefaultIntValue(startCell_Name, defaultStartCell, 0, null);
-        String excelNameValue = setDefaultFileName(excelName_Name, "NameList");
-        String sheetName = setDefaultStrValue(sheetOutName_Name, "Sheet1");
+        String excelNameValue = setDefaultFileName(excelName_Name, defaultOutFileName);
+        String sheetName = setDefaultStrValue(sheetOutName_Name, defaultSheetName);
         updateLabel(log_Name, "");
         ExcelConfig excelConfig = new ExcelConfig();
         excelConfig.setOutExcelExtension(excelType_Name.getValue())
@@ -344,11 +404,8 @@ public class FileNameToExcelController extends ToolsProperties {
         getConfig();
         File selectedFile = creatDirectoryChooser(actionEvent, outFilePath, "选择文件夹");
         if (selectedFile != null) {
-            updatePath(configFile, "outFilePath", selectedFile.getPath());
-            //显示选择的路径
-            outFilePath = selectedFile.getPath();
-            outPath_Name.setText(outFilePath);
-            addToolTip(outPath_Name, outFilePath);
+            //更新所选文件路径显示
+            outFilePath = updatePathLabel(selectedFile.getPath(), outFilePath, "outFilePath", outPath_Name, configFile);
         }
     }
 
@@ -361,11 +418,8 @@ public class FileNameToExcelController extends ToolsProperties {
         List<FileChooser.ExtensionFilter> extensionFilters = new ArrayList<>(Collections.singleton(new FileChooser.ExtensionFilter("Excel", "*.xlsx")));
         File selectedFile = creatFileChooser(actionEvent, excelInPath, extensionFilters, "选择excel模板文件");
         if (selectedFile != null) {
-            updatePath(configFile, "excelInPath", selectedFile.getPath());
-            //显示选择的路径
-            excelInPath = selectedFile.getPath();
-            excelPath_Name.setText(excelInPath);
-            addToolTip(excelPath_Name, excelInPath);
+            //更新所选文件路径显示
+            excelInPath = updatePathLabel(selectedFile.getPath(), excelInPath, "excelInPath", excelPath_Name, configFile);
             removeExcelButton_Name.setVisible(true);
         }
     }

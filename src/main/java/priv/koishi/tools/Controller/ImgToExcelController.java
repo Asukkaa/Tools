@@ -62,9 +62,14 @@ public class ImgToExcelController extends ToolsProperties {
     static String outFilePath;
 
     /**
-     * 导出文件名称
+     * 默认导出文件名称
      */
-    static String outFileName;
+    static String defaultOutFileName;
+
+    /**
+     * 默认读取表名称
+     */
+    static String defaultSheetName;
 
     /**
      * excel模板路径
@@ -270,7 +275,8 @@ public class ImgToExcelController extends ToolsProperties {
         // 根据key读取value
         inFilePath = prop.getProperty("inFilePath");
         outFilePath = prop.getProperty("outFilePath");
-        outFileName = prop.getProperty("outFileName");
+        defaultOutFileName = prop.getProperty("defaultOutFileName");
+        defaultSheetName = prop.getProperty("defaultSheetName");
         excelInPath = prop.getProperty("excelInPath");
         defaultImgWidth = Integer.parseInt(prop.getProperty("defaultImgWidth"));
         defaultImgHeight = Integer.parseInt(prop.getProperty("defaultImgHeight"));
@@ -308,10 +314,8 @@ public class ImgToExcelController extends ToolsProperties {
         // 显示文件选择器
         File selectedFile = creatDirectoryChooser(actionEvent, inFilePath, "选择文件夹");
         if (selectedFile != null) {
-            String selectedFilePath = selectedFile.getPath();
-            updatePath(configFile, "inFilePath", selectedFilePath);
-            inPath_Img.setText(selectedFilePath);
-            addToolTip(inPath_Img, selectedFilePath);
+            //更新所选文件路径显示
+            inFilePath = updatePathLabel(selectedFile.getPath(), inFilePath, "inFilePath", inPath_Img, configFile);
             //读取文件数据
             addInFile(selectedFile, getFilterExtension());
         }
@@ -377,6 +381,7 @@ public class ImgToExcelController extends ToolsProperties {
      */
     @FXML
     private void exportAll() throws Exception {
+        updateLabel(log_Img, "");
         String subCode = subCode_Img.getText();
         String inDirectory = inPath_Img.getText();
         String outFilePath = outPath_Img.getText();
@@ -393,8 +398,8 @@ public class ImgToExcelController extends ToolsProperties {
         if (StringUtils.isEmpty(subCode)) {
             throw new Exception("文件名称分割符位置为空，需要先设置文件名称分割符再继续");
         }
-        String sheetName = setDefaultStrValue(sheetOutName_Img, "Sheet1");
-        String excelNameValue = setDefaultFileName(excelName_Img, "NameList");
+        String sheetName = setDefaultStrValue(sheetOutName_Img, defaultSheetName);
+        String excelNameValue = setDefaultFileName(excelName_Img, defaultOutFileName);
         int readRowValue = setDefaultIntValue(readRow_Img, defaultReadRow, 0, null);
         int imgWidth = setDefaultIntValue(imgWidth_Img, defaultImgWidth, 0, null);
         int imgHeight = setDefaultIntValue(imgHeight_Img, defaultImgHeight, 0, null);
@@ -436,13 +441,9 @@ public class ImgToExcelController extends ToolsProperties {
         getConfig();
         File selectedFile = creatDirectoryChooser(actionEvent, outFilePath, "选择文件夹");
         if (selectedFile != null) {
-            updatePath(configFile, "outFilePath", selectedFile.getPath());
-            //显示选择的路径
-            outFilePath = selectedFile.getPath();
-            outPath_Img.setText(outFilePath);
-            addToolTip(outPath_Img, outFilePath);
-            String inFilePath = excelPath_Img.getText();
-            if (StringUtils.isNotEmpty(inFilePath)) {
+            //更新所选文件路径显示
+            outFilePath = updatePathLabel(selectedFile.getPath(), outFilePath, "outFilePath", outPath_Img, configFile);
+            if (StringUtils.isNotEmpty(excelPath_Img.getText())) {
                 reselect();
             }
         }
@@ -457,11 +458,8 @@ public class ImgToExcelController extends ToolsProperties {
         List<FileChooser.ExtensionFilter> extensionFilters = new ArrayList<>(Collections.singleton(new FileChooser.ExtensionFilter("Excel", "*.xlsx")));
         File selectedFile = creatFileChooser(actionEvent, excelInPath, extensionFilters, "选择excel模板文件");
         if (selectedFile != null) {
-            updatePath(configFile, "excelInPath", selectedFile.getPath());
-            //显示选择的路径
-            excelInPath = selectedFile.getPath();
-            excelPath_Img.setText(excelInPath);
-            addToolTip(excelPath_Img, excelInPath);
+            //更新所选文件路径显示
+            excelInPath = updatePathLabel(selectedFile.getPath(), excelInPath, "excelInPath", excelPath_Img, configFile);
             addInData();
         }
     }

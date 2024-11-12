@@ -422,4 +422,18 @@ public class UiUtils {
         label.setTextFill(Color.BLACK);
     }
 
+    /**
+     * 更新所选文件路径显示
+     */
+    public static String updatePathLabel(String selectedFilePath, String filePath, String pathKey, Label pathLabel, String configFile) throws IOException {
+        //只有跟上次选的路径不一样才更新
+        if (!filePath.equals(selectedFilePath)) {
+            updatePath(configFile, pathKey, selectedFilePath);
+            filePath = selectedFilePath;
+        }
+        pathLabel.setText(selectedFilePath);
+        addToolTip(pathLabel, selectedFilePath);
+        return filePath;
+    }
+    
 }
