@@ -7,7 +7,7 @@ import java.util.concurrent.*;
  * Date:2024-10-30
  * Time:下午8:17
  */
-public class ToolsThreadPoolExecutor {
+public class CommonThreadPoolExecutor {
 
     /**
      * 核心线程池大小
@@ -37,17 +37,17 @@ public class ToolsThreadPoolExecutor {
     /**
      * 线程创建工厂
      */
-    ThreadFactory threadFactory = new ToolsTreadFactory();
+    ThreadFactory threadFactory = new CommonTreadFactory();
 
     /**
      * 拒绝策略
      */
-    RejectedExecutionHandler handler = new ToolsIgnorePolicy();
+    RejectedExecutionHandler handler = new CommonIgnorePolicy();
 
     /**
      * 构造函数
      */
-    public ToolsThreadPoolExecutor() {}
+    public CommonThreadPoolExecutor() {}
 
     /**
      * 默认线程池

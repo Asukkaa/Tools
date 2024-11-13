@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Date:2024-10-30
  * Time:下午8:18
  */
-public class ToolsTreadFactory implements ThreadFactory {
+public class CommonTreadFactory implements ThreadFactory {
 
     private final AtomicInteger threadNum = new AtomicInteger(1);
 

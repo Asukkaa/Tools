@@ -8,7 +8,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  * Date:2024-10-30
  * Time:下午8:19
  */
-public class ToolsIgnorePolicy implements RejectedExecutionHandler {
+public class CommonIgnorePolicy implements RejectedExecutionHandler {
 
     @Override
     public void rejectedExecution(Runnable r, ThreadPoolExecutor e) {

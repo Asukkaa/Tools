@@ -22,7 +22,7 @@ import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.ExcelConfig;
 import priv.koishi.tools.Configuration.FileConfig;
 import priv.koishi.tools.Properties.ToolsProperties;
-import priv.koishi.tools.ThreadPool.ToolsThreadPoolExecutor;
+import priv.koishi.tools.ThreadPool.CommonThreadPoolExecutor;
 
 import java.io.File;
 import java.io.IOException;
@@ -85,12 +85,12 @@ public class FileNameToExcelController extends ToolsProperties {
     /**
      * 线程池
      */
-    private final ToolsThreadPoolExecutor toolsThreadPoolExecutor = new ToolsThreadPoolExecutor();
+    private final CommonThreadPoolExecutor commonThreadPoolExecutor = new CommonThreadPoolExecutor();
 
     /**
      * 线程池实例
      */
-    ExecutorService executorService = toolsThreadPoolExecutor.createNewThreadPool();
+    ExecutorService executorService = commonThreadPoolExecutor.createNewThreadPool();
 
     @FXML
     private VBox vbox_Name;
