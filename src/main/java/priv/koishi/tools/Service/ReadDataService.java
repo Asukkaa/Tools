@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static priv.koishi.tools.Service.RenameService.buildRename;
+import static priv.koishi.tools.Text.CommonTexts.*;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
@@ -38,7 +39,7 @@ public class ReadDataService {
             @Override
             protected List<FileNumBean> call() throws Exception {
                 //Task的Message更新方法,这边修改之后,上面的监听方法会经过
-                updateMessage("正在读取数据");
+                updateMessage(text_readData);
                 List<FileNumBean> fileNumBeanList = new ArrayList<>();
                 String excelInPath = excelConfig.getInPath();
                 String sheetName = excelConfig.getSheet();
@@ -103,7 +104,7 @@ public class ReadDataService {
                 //如果是文件重命名的excel模板则无需匹配数据
                 if (taskBean.isReturnRenameList()) {
                     if (CollectionUtils.isEmpty(fileNumBeanList)) {
-                        throw new Exception("未查询到符合条件的数据，需修改查询条件后再继续");
+                        throw new Exception(text_selectNull);
                     }
                     return fileNumBeanList;
                 }
@@ -115,9 +116,9 @@ public class ReadDataService {
                             .setShowFileType(taskBean.isShowFileType())
                             .setSubCode(taskBean.getSubCode());
                     int imgNum = matchGroupData(fileNumBeanList, inFileList, fileConfig);
-                    updateMessage("共有 " + fileNumBeanList.size() + " 组数据，匹配到 " + imgNum + " 张图片");
+                    updateMessage(text_allHave + fileNumBeanList.size() + text_group + imgNum + text_picture);
                 } else {
-                    updateMessage("共有 " + fileNumBeanList.size() + " 组数据");
+                    updateMessage(text_allHave + fileNumBeanList.size() + text_data);
                 }
                 //匹配数据
                 return showReadExcelData(fileNumBeanList, taskBean);
@@ -130,7 +131,7 @@ public class ReadDataService {
      */
     public static List<FileNumBean> showReadExcelData(List<FileNumBean> fileBeans, TaskBean<FileNumBean> taskBean) throws Exception {
         if (CollectionUtils.isEmpty(fileBeans)) {
-            throw new Exception("未查询到符合条件的数据，需修改查询条件后再继续");
+            throw new Exception(text_selectNull);
         }
         autoBuildTableViewData(taskBean.getTableView(), fileBeans, taskBean.getTabId());
         return fileBeans;
@@ -143,7 +144,7 @@ public class ReadDataService {
         return new Task<>() {
             @Override
             protected Void call() throws IOException {
-                updateMessage("正在读取数据");
+                updateMessage(text_readData);
                 //判断是否为重命名功能的查询文件
                 Configuration configuration = taskBean.getConfiguration();
                 CodeRenameConfig codeRenameConfig = null;
@@ -196,7 +197,7 @@ public class ReadDataService {
                     //Task的Progress(进度)更新方法,进度条的进度与该属性挂钩
                     updateProgress(i + 1, inFileSize);
                 }
-                updateMessage("共有" + inFileSize + " 个文件");
+                updateMessage(text_allHave + inFileSize + text_file);
                 //渲染数据
                 showFileData(fileBeans, taskBean);
                 return null;

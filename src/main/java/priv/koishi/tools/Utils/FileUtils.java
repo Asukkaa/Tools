@@ -15,9 +15,12 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.*;
+import java.util.Properties;
 
+import static priv.koishi.tools.Text.CommonTexts.*;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningOutputStream;
 
@@ -27,6 +30,12 @@ import static priv.koishi.tools.Utils.CommonUtils.checkRunningOutputStream;
  * Time 下午3:16
  */
 public class FileUtils {
+
+    public static final String MacOSX = "Mac OS X";
+
+    public static final String MacOS = "Mac OS";
+
+    public static final String osName = "os.name";
 
     /**
      * 获取文件类型
@@ -52,12 +61,12 @@ public class FileUtils {
      */
     public static String getFileSize(File file) {
         long size = file.length();
-        String sys = System.getProperty("os.name");
+        String sys = System.getProperty(osName);
         long win = 1024;
         long mac = 1000;
         long kb;
         //macOS与Windows文件大小进制不同
-        if ("Mac OS X".equals(sys) || "Mac OS".equals(sys)) {
+        if (MacOSX.equals(sys) || MacOS.equals(sys)) {
             kb = mac;
         } else {
             kb = win;
@@ -76,9 +85,9 @@ public class FileUtils {
         double win = 1024;
         double mac = 1000;
         double kb;
-        String sys = System.getProperty("os.name");
+        String sys = System.getProperty(osName);
         //macOS与Windows文件大小进制不同
-        if ("Mac OS X".equals(sys) || "Mac OS".equals(sys)) {
+        if (MacOSX.equals(sys) || MacOS.equals(sys)) {
             kb = mac;
         } else {
             kb = win;
@@ -158,10 +167,10 @@ public class FileUtils {
         if (files != null) {
             for (File file : files) {
                 if (file.isFile()) {
-                    if (("不查询隐藏文件".equals(showHideFile) && file.isHidden()) || ("只查询隐藏文件".equals(showHideFile) && !file.isHidden())) {
+                    if ((text_noHideFile.equals(showHideFile) && file.isHidden()) || (text_onlyHideFile.equals(showHideFile) && !file.isHidden())) {
                         continue;
                     }
-                    if ("只查询文件".equals(showDirectoryName) || "文件和文件夹都查询".equals(showDirectoryName) || StringUtils.isEmpty(showDirectoryName)) {
+                    if (text_onlyFile.equals(showDirectoryName) || text_FileDirectory.equals(showDirectoryName) || StringUtils.isEmpty(showDirectoryName)) {
                         String extension = getFileType(file);
                         if (CollectionUtils.isEmpty(filterExtensionList) || filterExtensionList.contains(extension)) {
                             fileList.add(file);
@@ -171,10 +180,10 @@ public class FileUtils {
                         readFiles(fileConfig, fileList, file);
                     }
                 } else if (file.isDirectory()) {
-                    if (("不查询隐藏文件".equals(showHideFile) && file.isHidden()) || ("只查询隐藏文件".equals(showHideFile) && !file.isHidden())) {
+                    if ((text_noHideFile.equals(showHideFile) && file.isHidden()) || (text_onlyHideFile.equals(showHideFile) && !file.isHidden())) {
                         continue;
                     }
-                    if ("只查询文件夹".equals(showDirectoryName) || "文件和文件夹都查询".equals(showDirectoryName)) {
+                    if (text_onlyDirectory.equals(showDirectoryName) || text_FileDirectory.equals(showDirectoryName)) {
                         fileList.add(file);
                     }
                     if (recursion) {

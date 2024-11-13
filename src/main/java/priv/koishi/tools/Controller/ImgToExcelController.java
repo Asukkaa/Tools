@@ -34,6 +34,7 @@ import java.util.concurrent.ExecutorService;
 
 import static priv.koishi.tools.Service.ImgToExcelService.buildImgGroupExcel;
 import static priv.koishi.tools.Service.ReadDataService.readExcel;
+import static priv.koishi.tools.Text.CommonTexts.*;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.TaskUtils.*;
@@ -273,16 +274,16 @@ public class ImgToExcelController extends ToolsProperties {
         // 加载properties文件
         prop.load(input);
         // 根据key读取value
-        inFilePath = prop.getProperty("inFilePath");
-        outFilePath = prop.getProperty("outFilePath");
-        defaultOutFileName = prop.getProperty("defaultOutFileName");
-        defaultSheetName = prop.getProperty("defaultSheetName");
-        excelInPath = prop.getProperty("excelInPath");
-        defaultImgWidth = Integer.parseInt(prop.getProperty("defaultImgWidth"));
-        defaultImgHeight = Integer.parseInt(prop.getProperty("defaultImgHeight"));
-        defaultStartCell = Integer.parseInt(prop.getProperty("defaultStartCell"));
-        defaultReadRow = Integer.parseInt(prop.getProperty("defaultReadRow"));
-        defaultReadCell = Integer.parseInt(prop.getProperty("defaultReadCell"));
+        inFilePath = prop.getProperty(key_inFilePath);
+        excelInPath = prop.getProperty(key_excelInPath);
+        outFilePath = prop.getProperty(key_outFilePath);
+        defaultSheetName = prop.getProperty(key_defaultSheetName);
+        defaultOutFileName = prop.getProperty(key_defaultOutFileName);
+        defaultReadRow = Integer.parseInt(prop.getProperty(key_defaultReadRow));
+        defaultReadCell = Integer.parseInt(prop.getProperty(key_defaultReadCell));
+        defaultImgWidth = Integer.parseInt(prop.getProperty(key_defaultImgWidth));
+        defaultImgHeight = Integer.parseInt(prop.getProperty(key_defaultImgHeight));
+        defaultStartCell = Integer.parseInt(prop.getProperty(key_defaultStartCell));
         input.close();
     }
 
@@ -292,15 +293,15 @@ public class ImgToExcelController extends ToolsProperties {
     @FXML
     private void initialize() throws IOException {
         getConfig();
-        addToolTip(imgHeight_Img, "只能填正整数，不填默认为 " + defaultImgHeight);
-        addToolTip(imgWidth_Img, "只能填正整数，不填默认为 " + defaultImgWidth);
-        addToolTip(noImg_Img, "勾选后没有图片的数据将会在单元格中标记为 无图片");
-        addToolTip(startRow_Img, "只能填自然数，不填默认与读取预留行相同");
-        addToolTip(startCell_Img, "只能填自然数，不填默认为 " + defaultStartCell);
-        addToolTip(readRow_Img, "只能填自然数，不填默认为 " + defaultReadRow + " 从第 " + (defaultReadRow + 1) + " 行读取");
-        addToolTip(readCell_Img, "只能填自然数，不填默认为 " + defaultReadCell + " ，从第 " + (defaultReadCell + 1) + " 列读取");
-        addToolTip(maxImgNum_Img, "只能填正整数，不填默认为不限制");
+        addToolTip(noImg_Img, tip_noImg);
+        addToolTip(maxImgNum_Img, tip_maxImgNum);
+        addToolTip(startRow_Img, tip_startReadRow);
+        addToolTip(imgWidth_Img, tip_imgHeight + defaultImgWidth);
+        addToolTip(imgHeight_Img, tip_imgHeight + defaultImgHeight);
+        addToolTip(startCell_Img, text_onlyNaturalNumber + defaultStartCell);
         addNumImgToolTip(recursion_Img, subCode_Img, excelName_Img, sheetOutName_Img, maxRow_Img);
+        addToolTip(readRow_Img, text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row);
+        addToolTip(readCell_Img, text_onlyNaturalNumber + defaultReadCell + text_formThe + (defaultReadCell + 1) + text_cell);
         //设置javafx单元格宽度
         tableViewNumImgAdaption(groupId_Img, tableView_Img, groupName_Img.prefWidthProperty(), groupNumber_Img.prefWidthProperty(), fileName_Img);
     }
@@ -312,10 +313,10 @@ public class ImgToExcelController extends ToolsProperties {
     private void inDirectoryButton(ActionEvent actionEvent) throws Exception {
         getConfig();
         // 显示文件选择器
-        File selectedFile = creatDirectoryChooser(actionEvent, inFilePath, "选择文件夹");
+        File selectedFile = creatDirectoryChooser(actionEvent, inFilePath, text_selectDirectory);
         if (selectedFile != null) {
             //更新所选文件路径显示
-            inFilePath = updatePathLabel(selectedFile.getPath(), inFilePath, "inFilePath", inPath_Img, configFile);
+            inFilePath = updatePathLabel(selectedFile.getPath(), inFilePath, key_inFilePath, inPath_Img, configFile);
             //读取文件数据
             addInFile(selectedFile, getFilterExtension());
         }
@@ -327,13 +328,13 @@ public class ImgToExcelController extends ToolsProperties {
     private List<String> getFilterExtension() throws Exception {
         List<String> filterExtensionList = new ArrayList<>();
         if (jpg_Img.isSelected()) {
-            filterExtensionList.add(".jpg");
+            filterExtensionList.add(jpg);
         }
         if (png_Img.isSelected()) {
-            filterExtensionList.add(".png");
+            filterExtensionList.add(png);
         }
         if (jpeg_Img.isSelected()) {
-            filterExtensionList.add(".jpeg");
+            filterExtensionList.add(jpeg);
         }
         if (CollectionUtils.isEmpty(filterExtensionList)) {
             throw new Exception("未选择需要识别的图片格式");
@@ -359,7 +360,7 @@ public class ImgToExcelController extends ToolsProperties {
     private void acceptDrop(DragEvent dragEvent) {
         List<File> files = dragEvent.getDragboard().getFiles();
         files.forEach(file -> {
-            if (file.isFile() && ".xlsx".equals(getFileType(file))) {
+            if (file.isFile() && xlsx.equals(getFileType(file))) {
                 // 接受拖放
                 dragEvent.acceptTransferModes(TransferMode.COPY);
                 dragEvent.consume();
@@ -387,16 +388,13 @@ public class ImgToExcelController extends ToolsProperties {
         String outFilePath = outPath_Img.getText();
         String inFilePath = excelPath_Img.getText();
         if (StringUtils.isEmpty(outFilePath)) {
-            throw new Exception("导出文件夹位置为空，需要先设置导出文件夹位置再继续");
+            throw new Exception(text_outPathNull);
         }
         if (StringUtils.isEmpty(inDirectory)) {
-            throw new Exception("选择需要统计的文件夹位置再继续");
+            throw new Exception(text_filePathNull);
         }
         if (StringUtils.isEmpty(inFilePath)) {
-            throw new Exception("excel模板文件位置为空，需要先设置excel模板文件位置再继续");
-        }
-        if (StringUtils.isEmpty(subCode)) {
-            throw new Exception("文件名称分割符位置为空，需要先设置文件名称分割符再继续");
+            throw new Exception(text_excelPathNull);
         }
         String sheetName = setDefaultStrValue(sheetOutName_Img, defaultSheetName);
         String excelNameValue = setDefaultFileName(excelName_Img, defaultOutFileName);
@@ -439,10 +437,10 @@ public class ImgToExcelController extends ToolsProperties {
     @FXML
     private void exportPath(ActionEvent actionEvent) throws Exception {
         getConfig();
-        File selectedFile = creatDirectoryChooser(actionEvent, outFilePath, "选择文件夹");
+        File selectedFile = creatDirectoryChooser(actionEvent, outFilePath, text_selectDirectory);
         if (selectedFile != null) {
             //更新所选文件路径显示
-            outFilePath = updatePathLabel(selectedFile.getPath(), outFilePath, "outFilePath", outPath_Img, configFile);
+            outFilePath = updatePathLabel(selectedFile.getPath(), outFilePath, key_outFilePath, outPath_Img, configFile);
             if (StringUtils.isNotEmpty(excelPath_Img.getText())) {
                 reselect();
             }
@@ -456,10 +454,10 @@ public class ImgToExcelController extends ToolsProperties {
     private void getExcelPath(ActionEvent actionEvent) throws Exception {
         getConfig();
         List<FileChooser.ExtensionFilter> extensionFilters = new ArrayList<>(Collections.singleton(new FileChooser.ExtensionFilter("Excel", "*.xlsx")));
-        File selectedFile = creatFileChooser(actionEvent, excelInPath, extensionFilters, "选择excel模板文件");
+        File selectedFile = creatFileChooser(actionEvent, excelInPath, extensionFilters, text_selectExcel);
         if (selectedFile != null) {
             //更新所选文件路径显示
-            excelInPath = updatePathLabel(selectedFile.getPath(), excelInPath, "excelInPath", excelPath_Img, configFile);
+            excelInPath = updatePathLabel(selectedFile.getPath(), excelInPath, key_excelInPath, excelPath_Img, configFile);
             addInData();
         }
     }
@@ -470,7 +468,7 @@ public class ImgToExcelController extends ToolsProperties {
     @FXML
     private void rowHandleKeyTyped(KeyEvent event) {
         integerRangeTextField(startRow_Img, 0, null, event);
-        addValueToolTip(startRow_Img, "只能填自然数，不填默认与读取预留行相同");
+        addValueToolTip(startRow_Img, tip_startReadRow);
     }
 
     /**
@@ -479,7 +477,7 @@ public class ImgToExcelController extends ToolsProperties {
     @FXML
     private void cellHandleKeyTyped(KeyEvent event) {
         integerRangeTextField(startCell_Img, 0, null, event);
-        addValueToolTip(startCell_Img, "只能填自然数，不填默认为 " + defaultStartCell);
+        addValueToolTip(startCell_Img, text_onlyNaturalNumber + defaultStartCell);
     }
 
     /**
@@ -487,7 +485,7 @@ public class ImgToExcelController extends ToolsProperties {
      */
     @FXML
     private void nameHandleKeyTyped() {
-        addValueToolTip(excelName_Img, "如果导出地址和名称与模板一样则会覆盖模板excel文件");
+        addValueToolTip(excelName_Img, tip_excelName);
     }
 
     /**
@@ -495,7 +493,7 @@ public class ImgToExcelController extends ToolsProperties {
      */
     @FXML
     private void sheetHandleKeyTyped() {
-        addValueToolTip(sheetOutName_Img, "须填与excel模板相同的表名才能正常统计");
+        addValueToolTip(sheetOutName_Img, tip_sheetOutName);
     }
 
     /**
@@ -503,7 +501,7 @@ public class ImgToExcelController extends ToolsProperties {
      */
     @FXML
     private void subHandleKeyTyped() {
-        addValueToolTip(subCode_Img, "填写后会按所填写的字符串来分割文件名称，按照分割后的文件名称左侧字符串进行分组");
+        addValueToolTip(subCode_Img, tip_subCode);
     }
 
     /**
@@ -512,7 +510,7 @@ public class ImgToExcelController extends ToolsProperties {
     @FXML
     private void readRowHandleKeyTyped(KeyEvent event) {
         integerRangeTextField(readRow_Img, 0, null, event);
-        addValueToolTip(readRow_Img, "只能填自然数，不填默认为 " + defaultReadRow + " 从第 " + (defaultReadRow + 1) + " 行读取");
+        addValueToolTip(readRow_Img, text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row);
     }
 
     /**
@@ -521,7 +519,7 @@ public class ImgToExcelController extends ToolsProperties {
     @FXML
     private void readCellHandleKeyTyped(KeyEvent event) {
         integerRangeTextField(readCell_Img, 0, null, event);
-        addValueToolTip(readCell_Img, "只能填自然数，不填默认为 " + defaultReadCell + " ，从第 " + (defaultReadCell + 1) + " 列读取");
+        addValueToolTip(readCell_Img, text_onlyNaturalNumber + defaultReadCell + text_formThe + (defaultReadCell + 1) + text_cell);
     }
 
     /**
@@ -530,7 +528,7 @@ public class ImgToExcelController extends ToolsProperties {
     @FXML
     private void maxRowHandleKeyTyped(KeyEvent event) {
         integerRangeTextField(maxRow_Img, 1, null, event);
-        addValueToolTip(maxRow_Img, "只能填正整数，不填默认不限制，会读取到有数据的最后一行，最小值为1");
+        addValueToolTip(maxRow_Img, tip_maxRow);
     }
 
     /**
@@ -540,7 +538,7 @@ public class ImgToExcelController extends ToolsProperties {
     private Task<List<FileNumBean>> reselect() throws Exception {
         String inFilePath = excelPath_Img.getText();
         if (StringUtils.isEmpty(inFilePath)) {
-            throw new Exception("excel模板文件位置为空，需要先设置excel模板文件位置再继续");
+            throw new Exception(text_excelPathNull);
         }
         updateLabel(log_Img, "");
         return addInData();
@@ -563,7 +561,7 @@ public class ImgToExcelController extends ToolsProperties {
     @FXML
     private void imgWidthHandleKeyTyped(KeyEvent event) {
         integerRangeTextField(imgWidth_Img, 0, null, event);
-        addValueToolTip(imgWidth_Img, "只能填自然数，不填默认为 " + defaultImgWidth);
+        addValueToolTip(imgWidth_Img, text_onlyNaturalNumber + defaultImgWidth);
     }
 
     /**
@@ -572,7 +570,7 @@ public class ImgToExcelController extends ToolsProperties {
     @FXML
     private void imgHeightHandleKeyTyped(KeyEvent event) {
         integerRangeTextField(imgHeight_Img, 0, null, event);
-        addValueToolTip(imgHeight_Img, "只能填自然数，不填默认为 " + defaultImgHeight);
+        addValueToolTip(imgHeight_Img, text_onlyNaturalNumber + defaultImgHeight);
     }
 
     /**
@@ -581,7 +579,7 @@ public class ImgToExcelController extends ToolsProperties {
     @FXML
     public void maxImgNumKeyTyped(KeyEvent event) {
         integerRangeTextField(maxImgNum_Img, 1, null, event);
-        addValueToolTip(maxImgNum_Img, "只能填正整数，不填默不限制");
+        addValueToolTip(maxImgNum_Img, tip_maxImgNum);
     }
 
 }

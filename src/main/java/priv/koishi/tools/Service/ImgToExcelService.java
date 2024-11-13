@@ -21,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
+import static priv.koishi.tools.Text.CommonTexts.*;
 import static priv.koishi.tools.Utils.FileUtils.checkCopyDestination;
 import static priv.koishi.tools.Utils.FileUtils.getFileType;
 
@@ -41,9 +42,9 @@ public class ImgToExcelService {
                 checkCopyDestination(excelConfig);
                 File inputFile = new File(excelConfig.getInPath());
                 if (!inputFile.exists()) {
-                    throw new Exception("模板excel文件不存在");
+                    throw new Exception(text_excelNotExists);
                 }
-                updateMessage("正在导出数据");
+                updateMessage(text_printData);
                 FileInputStream inputStream = new FileInputStream(inputFile);
                 XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
                 SXSSFWorkbook sxssfWorkbook = new SXSSFWorkbook(workbook, 50);
@@ -52,7 +53,7 @@ public class ImgToExcelService {
                 int startCellNum = excelConfig.getStartCellNum();
                 List<FileNumBean> fileBeans = taskBean.getBeanList();
                 int fileNum = fileBeans.size();
-                updateMessage("已识别到 " + fileNum + " 组数据");
+                updateMessage(text_identify + fileNum + text_data);
                 XSSFSheet sheet;
                 if (StringUtils.isBlank(sheetName)) {
                     sheet = sxssfWorkbook.getXSSFWorkbook().getSheetAt(0);
@@ -63,11 +64,11 @@ public class ImgToExcelService {
                     FileNumBean fileBean = fileBeans.get(i);
                     List<String> imgList = fileBean.getFilePathList();
                     buildImgExcel(imgList, excelConfig, startCellNum, startRowNum, sheet, sxssfWorkbook);
-                    updateMessage("正在输出第" + (i + 1) + "/" + fileNum + "组数据");
+                    updateMessage(text_printing + (i + 1) + "/" + fileNum + text_data);
                     updateProgress(i + 1, fileNum);
                     startRowNum++;
                 }
-                updateMessage("所有数据已输出完毕");
+                updateMessage(text_printDown);
                 return sxssfWorkbook;
             }
         };
@@ -108,9 +109,9 @@ public class ImgToExcelService {
                 String extension = getFileType(new File(i));
                 // 读取图片文件
                 InputStream inputStream = Files.newInputStream(Paths.get(i));
-                if (".jpg".equals(extension) || ".jpeg".equals(extension)) {
+                if (jpg.equals(extension) || jpeg.equals(extension)) {
                     drawing.createPicture(anchor, sxssfWorkbook.addPicture(inputStream.readAllBytes(), Workbook.PICTURE_TYPE_JPEG));
-                } else if (".png".equals(extension)) {
+                } else if (png.equals(extension)) {
                     drawing.createPicture(anchor, sxssfWorkbook.addPicture(inputStream.readAllBytes(), Workbook.PICTURE_TYPE_PNG));
                 }
                 sxssfWorkbook.setCompressTempFiles(true);

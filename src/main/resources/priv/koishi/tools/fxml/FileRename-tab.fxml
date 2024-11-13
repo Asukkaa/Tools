@@ -146,7 +146,7 @@
                     <items>
                         <FXCollections fx:factory="observableArrayList">
                             <String fx:value="插入字符串为:"/>
-                            <String fx:value="替换所有字符串为:"/>
+                            <String fx:value="替换所有字符为:"/>
                             <String fx:value="删除指定位置字符"/>
                             <String fx:value="移除所有字符"/>
                             <String fx:value="全部英文字符转为大写"/>
@@ -165,7 +165,7 @@
                     <items>
                         <FXCollections fx:factory="observableArrayList">
                             <String fx:value="插入字符串为:"/>
-                            <String fx:value="替换所有字符串为:"/>
+                            <String fx:value="替换所有字符为:"/>
                             <String fx:value="删除指定位置字符"/>
                             <String fx:value="移除所有字符"/>
                             <String fx:value="全部英文字符转为大写"/>

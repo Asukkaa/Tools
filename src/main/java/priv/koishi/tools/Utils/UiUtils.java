@@ -31,6 +31,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static priv.koishi.tools.Service.ReadDataService.showReadExcelData;
+import static priv.koishi.tools.Text.CommonTexts.*;
 import static priv.koishi.tools.Utils.CommonUtils.*;
 import static priv.koishi.tools.Utils.FileUtils.*;
 
@@ -50,7 +51,7 @@ public class UiUtils {
     public static void addToolTip(Control control, String tip) {
         Tooltip tooltip = new Tooltip();
         tooltip.setText(tip);
-        tooltip.setShowDuration(new Duration(6000000));
+        tooltip.setShowDuration(showDuration);
         tooltip.setShowDelay(Duration.ZERO);
         tooltip.setAnchorLocation(PopupWindow.AnchorLocation.WINDOW_BOTTOM_LEFT);
         control.setTooltip(tooltip);
@@ -84,7 +85,7 @@ public class UiUtils {
         fileChooser.setTitle(title);
         // 设置初始目录
         if (StringUtils.isBlank(path)) {
-            fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+            fileChooser.setInitialDirectory(new File(System.getProperty(userHome)));
         } else {
             File file = new File(path);
             // 设置初始目录
@@ -110,7 +111,7 @@ public class UiUtils {
         directoryChooser.setTitle(title);
         // 设置初始目录
         if (StringUtils.isBlank(path) || !new File(path).isDirectory()) {
-            directoryChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+            directoryChooser.setInitialDirectory(new File(System.getProperty(userHome)));
         } else {
             directoryChooser.setInitialDirectory(new File(path));
         }
@@ -147,7 +148,7 @@ public class UiUtils {
                             setText(item.toString());
                             Tooltip tooltip = new Tooltip(item.toString());
                             tooltip.setWrapText(true);
-                            tooltip.setShowDuration(new Duration(6000000));
+                            tooltip.setShowDuration(showDuration);
                             tooltip.setShowDelay(Duration.ZERO);
                             tooltip.setAnchorLocation(PopupWindow.AnchorLocation.WINDOW_BOTTOM_LEFT);
                             setTooltip(tooltip);
@@ -177,7 +178,7 @@ public class UiUtils {
             throw new Exception("未读取到文件，excel模板路径设置有误");
         }
         String fileExtension = getFileType(file);
-        if (!".xlsx".equals(fileExtension)) {
+        if (!xlsx.equals(fileExtension)) {
             throw new Exception("当前读取的文件格式为：" + fileExtension + " 只能读取.xlsx格式的excel");
         }
     }
@@ -290,7 +291,7 @@ public class UiUtils {
     public static void removeNumImgAll(TableView<FileNumBean> tableView, Label fileNumber, Label log) {
         ObservableList<FileNumBean> nullData = FXCollections.observableArrayList(new ArrayList<>());
         tableView.setItems(nullData);
-        updateLabel(fileNumber, "列表为空");
+        updateLabel(fileNumber, text_dataListNull);
         updateLabel(log, "");
     }
 
@@ -356,11 +357,11 @@ public class UiUtils {
      * 为统计文件名和插入图片页面添加鼠标悬停提示
      */
     public static void addNumImgToolTip(CheckBox recursion, TextField subCode, TextField excelName, TextField sheetOutName, TextField maxRow) {
-        addToolTip(recursion, "勾选后将会查询文件夹中的文件夹里的文件");
-        addToolTip(sheetOutName, "须填与excel模板相同的表名才能正常统计");
-        addToolTip(excelName, "如果导出地址和名称与模板一样则会覆盖模板excel文件");
-        addToolTip(maxRow, "只能填正整数，不填默认不限制，会读取到有数据的最后一行，最小值为1");
-        addToolTip(subCode, "填写后会按所填写的字符串来分割文件名称，按照分割后的文件名称左侧字符串进行分组");
+        addToolTip(recursion, tip_recursion);
+        addToolTip(sheetOutName, tip_sheetOutName);
+        addToolTip(excelName, tip_excelName);
+        addToolTip(maxRow, tip_maxRow);
+        addToolTip(subCode, tip_subCode);
     }
 
     /**
@@ -398,7 +399,7 @@ public class UiUtils {
         taskBean.setTableView(tableViewImg)
                 .setTabId(tabId);
         showReadExcelData(fileNumList, taskBean);
-        fileNumberImg.setText("共有 " + fileNumList.size() + " 组数据，匹配到 " + imgNum + " 张图片");
+        fileNumberImg.setText(text_allHave + fileNumList.size() + text_group + imgNum + text_picture);
     }
 
     /**
@@ -512,7 +513,7 @@ public class UiUtils {
             List<FileBean> fileBeans = tableView.getSelectionModel().getSelectedItems();
             ObservableList<FileBean> items = tableView.getItems();
             items.removeAll(fileBeans);
-            label.setText("共有" + items.size() + " 个文件");
+            label.setText(text_allHave + items.size() + text_file);
         });
         openFileMenuItem.setOnAction(event -> {
             List<FileBean> fileBeans = tableView.getSelectionModel().getSelectedItems();

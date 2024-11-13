@@ -42,6 +42,7 @@ import static priv.koishi.tools.Utils.FileUtils.readAllFiles;
 import static priv.koishi.tools.Utils.TaskUtils.bindingProgressBarTask;
 import static priv.koishi.tools.Utils.TaskUtils.taskUnbind;
 import static priv.koishi.tools.Utils.UiUtils.*;
+import static priv.koishi.tools.Text.CommonTexts.*;
 
 /**
  * @author KOISHI
@@ -173,7 +174,7 @@ public class FileRenameController extends ToolsProperties {
     private void addInData(List<File> inFileList) throws Exception {
         removeAll();
         if (inFileList.isEmpty()) {
-            throw new Exception("未查询到符合条件的数据，需修改查询条件后再继续");
+            throw new Exception(text_selectNull);
         }
         TaskBean<FileBean> taskBean = new TaskBean<>();
         taskBean.setProgressBar(progressBar_Re)
@@ -190,7 +191,7 @@ public class FileRenameController extends ToolsProperties {
         //绑定带进度条的线程
         bindingProgressBarTask(readFileTask, taskBean);
         readFileTask.setOnSucceeded(event -> {
-            if ("按excel模板重命名".equals(renameType_Re.getValue()) && StringUtils.isNotBlank(excelPath_Re.getText())) {
+            if (text_excelRename.equals(renameType_Re.getValue()) && StringUtils.isNotBlank(excelPath_Re.getText())) {
                 readExcelRename();
             } else {
                 //表格设置为可编辑
@@ -282,11 +283,11 @@ public class FileRenameController extends ToolsProperties {
     private void matchRenameConfig(TaskBean<FileBean> taskBean) {
         String renameType = renameType_Re.getValue();
         switch (renameType) {
-            case "按编号规则重命名": {
+            case text_codeRename: {
                 matchCodeRename(taskBean);
                 break;
             }
-            case "按指定字符重命名": {
+            case text_strRename: {
                 matchStringRename(taskBean);
                 break;
             }
@@ -319,13 +320,13 @@ public class FileRenameController extends ToolsProperties {
         String targetStr = targetStr_Re.getValue();
         StringRenameConfig stringRenameConfig = new StringRenameConfig();
         stringRenameConfig.setTargetStr(targetStr);
-        if ("指定字符串".equals(targetStr) || "指定字符位置".equals(targetStr)) {
+        if (text_specifyString.equals(targetStr) || text_specifyIndex.equals(targetStr)) {
             String renameBehavior = renameBehavior_Re.getValue();
             stringRenameConfig.setRenameValue(renameValue_Re.getText())
                     .setRenameBehavior(renameBehavior);
-            if ("替换所有字符为:".equals(renameBehavior)) {
+            if (text_replace.equals(renameBehavior)) {
                 stringRenameConfig.setRenameStr(renameStr_Re.getText());
-            } else if ("处理两侧字符".equals(renameBehavior)) {
+            } else if (text_bothSides.equals(renameBehavior)) {
                 int left = setDefaultIntValue(left_Re, 0, 0, null);
                 int right = setDefaultIntValue(right_Re, 0, 0, null);
                 String leftBehavior = leftBehavior_Re.getValue();
@@ -334,10 +335,10 @@ public class FileRenameController extends ToolsProperties {
                         .setRightBehavior(rightBehavior)
                         .setRight(right)
                         .setLeft(left);
-                if ("插入字符串为:".equals(leftBehavior) || "替换所有字符串为:".equals(leftBehavior)) {
+                if (text_insert.equals(leftBehavior) || text_replace.equals(leftBehavior)) {
                     stringRenameConfig.setLeftValue(leftValue_Re.getText());
                 }
-                if ("插入字符串为:".equals(rightBehavior) || "替换所有字符串为:".equals(rightBehavior)) {
+                if (text_insert.equals(rightBehavior) || text_replace.equals(rightBehavior)) {
                     stringRenameConfig.setRightValue(rightValue_Re.getText());
                 }
             }
@@ -354,11 +355,11 @@ public class FileRenameController extends ToolsProperties {
         // 加载properties文件
         prop.load(input);
         // 根据key读取value
-        inFilePath = prop.getProperty("inFilePath");
-        excelInPath = prop.getProperty("excelInPath");
-        defaultReadRow = Integer.parseInt(prop.getProperty("defaultReadRow"));
-        defaultReadCell = Integer.parseInt(prop.getProperty("defaultReadCell"));
-        defaultStartNameNum = Integer.parseInt(prop.getProperty("defaultStartNameNum"));
+        inFilePath = prop.getProperty(key_inFilePath);
+        excelInPath = prop.getProperty(key_excelInPath);
+        defaultReadRow = Integer.parseInt(prop.getProperty(key_defaultReadRow));
+        defaultReadCell = Integer.parseInt(prop.getProperty(key_defaultReadCell));
+        defaultStartNameNum = Integer.parseInt(prop.getProperty(key_defaultStartNameNum));
         input.close();
     }
 
@@ -368,31 +369,26 @@ public class FileRenameController extends ToolsProperties {
     @FXML
     private void initialize() throws IOException {
         getConfig();
+        addToolTip(tag_Re, tip_tag);
+        addToolTip(left_Re, tip_left);
+        addToolTip(right_Re, tip_right);
+        addToolTip(maxRow_Re, tip_maxRow);
+        addToolTip(nameNum_Re, tip_nameNum);
+        addToolTip(addSpace_Re, tip_addSpace);
+        addToolTip(leftValue_Re, tip_leftValue);
+        addToolTip(leftBehavior_Re, tip_option);
+        addToolTip(startSize_Re, tip_startSize);
+        addToolTip(renameStr_Re, tip_renameStr);
+        addToolTip(rightBehavior_Re, tip_option);
+        addToolTip(rightValue_Re, tip_rightValue);
+        addToolTip(renameValue_Re, tip_renameValue);
+        addToolTip(sheetOutName_Re, tip_sheetOutName);
+        addToolTip(filterFileType_Re, tip_filterFileType);
+        addToolTip(startName_Re, text_onlyNaturalNumber + defaultStartNameNum);
+        addToolTip(readRow_Re, text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row);
+        addToolTip(readCell_Re, text_onlyNaturalNumber + defaultReadCell + text_formThe + (defaultReadCell + 1) + text_cell);
         vbox_Re.getChildren().remove(strRenameVBox_Re);
         vbox_Re.getChildren().remove(excelRenameVBox_Re);
-        String optionTip = """
-                插入：在匹配的字符位置插入所填写的字符串
-                替换：将匹配的字符串替换为所填写的字符串
-                删除：只删除指定位置的字符
-                移除：移除指定位置左侧或右侧所有字符串""";
-        addToolTip(rightBehavior_Re, optionTip);
-        addToolTip(leftBehavior_Re, optionTip);
-        addToolTip(startSize_Re, "只能填自然数，0为不限制编号位数，不填默认为0");
-        addToolTip(renameStr_Re, "填写后会将匹配到的字符串替换为所填写的字符串");
-        addToolTip(sheetOutName_Re, "须填与excel模板相同的表名才能正常读取模板");
-        addToolTip(renameValue_Re, "填写后会根据其他配置项处理文件名中所匹配的字符");
-        addToolTip(nameNum_Re, "只能填自然数，0为不使用分隔符进行分组重命名，不填默认为0");
-        addToolTip(startName_Re, "只能填自然数，不填默认为 " + defaultStartNameNum);
-        addToolTip(rightValue_Re, "将所填字符根据选项插入或替换目标字符左侧所匹配的字符");
-        addToolTip(tag_Re, "只能填自然数，不填默认为1，会根据所填值设置相同文件名起始尾缀");
-        addToolTip(leftValue_Re, "将所填字符根据选项插入或替换目标字符右侧所匹配的字符");
-        addToolTip(maxRow_Re, "只能填正整数，不填默认不限制，会读取到有数据的最后一行，最小值为1");
-        addToolTip(addSpace_Re, "win系统自动重命名规则为：文件名 + 空格 + 英文括号包裹的阿拉伯数字编号");
-        addToolTip(filterFileType_Re, "填写后只会识别所填写的后缀名文件，多个文件后缀名用空格隔开，后缀名需带 '.'");
-        addToolTip(left_Re, "只能填自然数，不填 0 默认匹配目标字符串左侧所有字符，填写后匹配目标字符串左侧所填写个数的单个字符");
-        addToolTip(right_Re, "只能填自然数，不填为 0 默认匹配目标字符串右侧所有字符，填写后匹配目标字符串右侧所填写个数的单个字符");
-        addToolTip(readRow_Re, "只能填自然数，不填默认为 " + defaultReadRow + " 从第 " + (defaultReadRow + 1) + " 行读取");
-        addToolTip(readCell_Re, "只能填自然数，不填默认为 " + defaultReadCell + " ，从第 " + (defaultReadCell + 1) + " 列读取");
         //设置javafx单元格宽度
         id_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.04));
         name_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.14));
@@ -412,7 +408,7 @@ public class FileRenameController extends ToolsProperties {
         getConfig();
         List<String> filterExtensionList = getFilterExtensionList(filterFileType_Re);
         // 显示文件选择器
-        File selectedFile = creatDirectoryChooser(actionEvent, inFilePath, "选择文件夹");
+        File selectedFile = creatDirectoryChooser(actionEvent, inFilePath, text_selectDirectory);
         FileConfig fileConfig = new FileConfig();
         fileConfig.setShowDirectoryName(directoryNameType_Re.getValue())
                 .setShowHideFile(hideFileType_Re.getValue())
@@ -420,7 +416,7 @@ public class FileRenameController extends ToolsProperties {
                 .setInFile(selectedFile);
         if (selectedFile != null) {
             //更新所选文件路径显示
-            inFilePath = updatePathLabel(selectedFile.getAbsolutePath(), inFilePath, "inFilePath", inPath_Re, configFile);
+            inFilePath = updatePathLabel(selectedFile.getAbsolutePath(), inFilePath, key_inFilePath, inPath_Re, configFile);
             //读取数据
             List<File> inFileList = readAllFiles(fileConfig);
             addInData(inFileList);
@@ -470,7 +466,7 @@ public class FileRenameController extends ToolsProperties {
     private void removeAll() {
         ObservableList<FileBean> nullData = FXCollections.observableArrayList(new ArrayList<>());
         tableView_Re.setItems(nullData);
-        updateLabel(fileNumber_Re, "列表为空");
+        updateLabel(fileNumber_Re, text_dataListNull);
         updateLabel(log_Re, "");
         System.gc();
     }
@@ -483,7 +479,7 @@ public class FileRenameController extends ToolsProperties {
         updateLabel(log_Re, "");
         ObservableList<FileBean> fileBeans = tableView_Re.getItems();
         if (CollectionUtils.isEmpty(fileBeans)) {
-            throw new Exception("要读取的文件列表为空，需要选择一个有文件的文件夹");
+            throw new Exception(text_fileListNull);
         }
         Map<String, List<FileBean>> fileBeanMap = fileBeans.stream().collect(Collectors.groupingBy(FileBean::getRename));
         List<String> errList = new ArrayList<>();
@@ -538,9 +534,9 @@ public class FileRenameController extends ToolsProperties {
     private void getExcelPath(ActionEvent actionEvent) throws IOException {
         getConfig();
         List<FileChooser.ExtensionFilter> extensionFilters = new ArrayList<>(Collections.singleton(new FileChooser.ExtensionFilter("Excel", "*.xlsx")));
-        File selectedFile = creatFileChooser(actionEvent, excelInPath, extensionFilters, "选择excel模板文件");
+        File selectedFile = creatFileChooser(actionEvent, excelInPath, extensionFilters, text_selectExcel);
         if (selectedFile != null) {
-            excelInPath = updatePathLabel(selectedFile.getAbsolutePath(), excelInPath, "excelInPath", excelPath_Re, configFile);
+            excelInPath = updatePathLabel(selectedFile.getAbsolutePath(), excelInPath, key_excelInPath, excelPath_Re, configFile);
             readExcelRename();
         }
     }
@@ -550,7 +546,7 @@ public class FileRenameController extends ToolsProperties {
      */
     @FXML
     private void sheetHandleKeyTyped() {
-        addValueToolTip(sheetOutName_Re, "须填与excel模板相同的表名才能正常读取模板");
+        addValueToolTip(sheetOutName_Re, tip_sheetOutName);
     }
 
     /**
@@ -559,7 +555,7 @@ public class FileRenameController extends ToolsProperties {
     @FXML
     private void startNameHandleKeyTyped(KeyEvent event) {
         integerRangeTextField(startName_Re, 0, null, event);
-        addValueToolTip(startName_Re, "只能填自然数，不填默认为 " + defaultStartNameNum);
+        addValueToolTip(startName_Re, text_onlyNaturalNumber + defaultStartNameNum);
     }
 
     /**
@@ -568,7 +564,7 @@ public class FileRenameController extends ToolsProperties {
     @FXML
     private void startSizeHandleKeyTyped(KeyEvent event) {
         integerRangeTextField(startSize_Re, 0, null, event);
-        addValueToolTip(startSize_Re, "只能填自然数，0为不限制编号位数，不填默认为0");
+        addValueToolTip(startSize_Re, tip_startSize);
     }
 
     /**
@@ -577,7 +573,7 @@ public class FileRenameController extends ToolsProperties {
     @FXML
     private void nameNumHandleKeyTyped(KeyEvent event) {
         integerRangeTextField(nameNum_Re, 0, null, event);
-        addValueToolTip(nameNum_Re, "只能填自然数，0为不使用分隔符进行分组重命名，不填默认为0");
+        addValueToolTip(nameNum_Re, tip_nameNum);
     }
 
     /**
@@ -585,7 +581,7 @@ public class FileRenameController extends ToolsProperties {
      */
     @FXML
     private void filterHandleKeyTyped() {
-        addValueToolTip(filterFileType_Re, "填写后只会识别所填写的后缀名文件，多个文件后缀名用空格隔开，后缀名需带 '.'");
+        addValueToolTip(filterFileType_Re, tip_filterFileType);
     }
 
     /**
@@ -595,7 +591,7 @@ public class FileRenameController extends ToolsProperties {
     private void reselect() throws Exception {
         String inFilePath = inPath_Re.getText();
         if (StringUtils.isEmpty(inFilePath)) {
-            throw new Exception("要查询的文件夹位置为空，需要先设置要查询的文件夹位置再继续");
+            throw new Exception(text_filePathNull);
         }
         updateLabel(log_Re, "");
         FileConfig fileConfig = new FileConfig();
@@ -620,7 +616,7 @@ public class FileRenameController extends ToolsProperties {
     @FXML
     private void readRowHandleKeyTyped(KeyEvent event) {
         integerRangeTextField(readRow_Re, 0, null, event);
-        addValueToolTip(readRow_Re, "只能填自然数，不填默认为 " + defaultReadRow + " 从第 " + (defaultReadRow + 1) + " 行读取");
+        addValueToolTip(readRow_Re, text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row);
     }
 
     /**
@@ -629,7 +625,7 @@ public class FileRenameController extends ToolsProperties {
     @FXML
     private void readCellHandleKeyTyped(KeyEvent event) {
         integerRangeTextField(readCell_Re, 0, null, event);
-        addValueToolTip(readCell_Re, "只能填自然数，不填默认为 " + defaultReadCell + " 从第 " + (defaultReadCell + 1) + " 列读取");
+        addValueToolTip(readCell_Re, text_onlyNaturalNumber + defaultReadCell + text_formThe + (defaultReadCell + 1) + text_cell);
     }
 
     /**
@@ -638,7 +634,7 @@ public class FileRenameController extends ToolsProperties {
     @FXML
     private void maxRowHandleKeyTyped(KeyEvent event) {
         integerRangeTextField(maxRow_Re, 1, null, event);
-        addValueToolTip(maxRow_Re, "只能填正整数，不填默认不限制，会读取到有数据的最后一行，最小值为1");
+        addValueToolTip(maxRow_Re, tip_maxRow);
     }
 
     /**
@@ -648,19 +644,19 @@ public class FileRenameController extends ToolsProperties {
     private void differenceCodeAction() {
         String item = differenceCode_Re.getValue();
         switch (item) {
-            case "阿拉伯数字：123": {
+            case text_arabicNumerals: {
                 updateSelectItems(addSpace_Re, subCode_Re, subCodeArabicNumItems);
                 break;
             }
-            case "中文数字：一二三": {
+            case text_chineseNumerals: {
                 updateSelectItems(addSpace_Re, subCode_Re, subCodeChineseNumItems);
                 break;
             }
-            case "小写英文字母：abc": {
+            case text_abc: {
                 updateSelectItems(addSpace_Re, subCode_Re, subCodeLowercaseItems);
                 break;
             }
-            case "大小英文字母：ABC": {
+            case text_ABC: {
                 updateSelectItems(addSpace_Re, subCode_Re, subCodeUppercaseNumItems);
                 break;
             }
@@ -675,20 +671,20 @@ public class FileRenameController extends ToolsProperties {
         String item = renameType_Re.getValue();
         int index = vbox_Re.getChildren().indexOf(renameTypeHBox_Re) + 1;
         switch (item) {
-            case "按编号规则重命名": {
+            case text_codeRename: {
                 vbox_Re.getChildren().add(index, codeRenameVBox_Re);
                 vbox_Re.getChildren().remove(strRenameVBox_Re);
                 vbox_Re.getChildren().remove(excelRenameVBox_Re);
                 break;
             }
-            case "按指定字符重命名": {
+            case text_strRename: {
                 vbox_Re.getChildren().remove(codeRenameVBox_Re);
                 vbox_Re.getChildren().add(index, strRenameVBox_Re);
                 vbox_Re.getChildren().remove(excelRenameVBox_Re);
                 targetStrAction();
                 break;
             }
-            case "按excel模板重命名": {
+            case text_excelRename: {
                 vbox_Re.getChildren().remove(codeRenameVBox_Re);
                 vbox_Re.getChildren().remove(strRenameVBox_Re);
                 vbox_Re.getChildren().add(index, excelRenameVBox_Re);
@@ -704,20 +700,20 @@ public class FileRenameController extends ToolsProperties {
     private void targetStrAction() {
         String item = targetStr_Re.getValue();
         switch (item) {
-            case "指定字符串": {
-                typeLabel_Re.setText("要匹配的字符串:");
+            case text_specifyString: {
+                typeLabel_Re.setText(text_matchString);
                 renameValue_Re.setText("");
-                addValueToolTip(renameValue_Re, "填写后会根据其他配置项处理文件名中所匹配的字符");
-                renameBehavior_Re.getItems().remove("处理两侧字符");
-                renameBehavior_Re.getItems().add("处理两侧字符");
+                addValueToolTip(renameValue_Re, tip_renameValue);
+                renameBehavior_Re.getItems().remove(text_bothSides);
+                renameBehavior_Re.getItems().add(text_bothSides);
                 behaviorAction();
                 break;
             }
-            case "指定字符位置": {
-                typeLabel_Re.setText("要匹配的字符位置:");
+            case text_specifyIndex: {
+                typeLabel_Re.setText(text_matchIndex);
                 renameValue_Re.setText("");
-                addValueToolTip(renameValue_Re, "填写后会根据其他配置项处理文件名中所匹配的字符");
-                renameBehavior_Re.getItems().remove("处理两侧字符");
+                addValueToolTip(renameValue_Re, tip_renameValue);
+                renameBehavior_Re.getItems().remove(text_bothSides);
                 renameBehavior_Re.setValue(renameBehavior_Re.getItems().getFirst());
                 behaviorAction();
                 break;
@@ -738,17 +734,17 @@ public class FileRenameController extends ToolsProperties {
         String item = renameBehavior_Re.getValue();
         targetStrHBox_Re.setVisible(true);
         switch (item) {
-            case "替换所有字符为:": {
+            case text_replace: {
                 renameStr_Re.setVisible(true);
                 behaviorHBox_Re.setVisible(false);
                 break;
             }
-            case "移除指定字符": {
+            case text_remove: {
                 renameStr_Re.setVisible(false);
                 behaviorHBox_Re.setVisible(false);
                 break;
             }
-            case "处理两侧字符": {
+            case text_bothSides: {
                 renameStr_Re.setVisible(false);
                 behaviorHBox_Re.setVisible(true);
                 break;
@@ -762,7 +758,7 @@ public class FileRenameController extends ToolsProperties {
     @FXML
     private void leftBehaviorAction() {
         String item = leftBehavior_Re.getValue();
-        leftValue_Re.setVisible("插入字符串为:".equals(item) || "替换所有字符串为:".equals(item));
+        leftValue_Re.setVisible(text_insert.equals(item) || text_replace.equals(item));
     }
 
     /**
@@ -771,7 +767,7 @@ public class FileRenameController extends ToolsProperties {
     @FXML
     public void rightBehaviorAction() {
         String item = rightBehavior_Re.getValue();
-        rightValue_Re.setVisible("插入字符串为:".equals(item) || "替换所有字符串为:".equals(item));
+        rightValue_Re.setVisible(text_insert.equals(item) || text_replace.equals(item));
     }
 
     /**
@@ -780,10 +776,10 @@ public class FileRenameController extends ToolsProperties {
     @FXML
     private void renameValueHandleKeyTyped(KeyEvent event) {
         //这个输入框只有在输入指定字符位置时才限制输入范围
-        if ("指定字符位置".equals(targetStr_Re.getValue())) {
+        if (text_specifyIndex.equals(targetStr_Re.getValue())) {
             integerRangeTextField(renameValue_Re, 0, null, event);
         }
-        addValueToolTip(renameValue_Re, "填写后会根据其他配置项处理文件名中所匹配的字符");
+        addValueToolTip(renameValue_Re, tip_renameValue);
     }
 
     /**
@@ -791,25 +787,25 @@ public class FileRenameController extends ToolsProperties {
      */
     @FXML
     private void renameStrHandleKeyTyped() {
-        addValueToolTip(renameStr_Re, "填写后会将匹配到的字符串替换为所填写的字符串");
+        addValueToolTip(renameStr_Re, tip_renameStr);
     }
 
     /**
-     * 限制向前匹配字符位置输入框内容
+     * 限制向左匹配字符位置输入框内容
      */
     @FXML
     private void leftHandleKeyTyped(KeyEvent event) {
         integerRangeTextField(left_Re, 0, null, event);
-        addValueToolTip(left_Re, "只能填自然数，不填默认匹配目标字符串左侧所有字符，填写后匹配目标字符串左侧所填写个数的单个字符");
+        addValueToolTip(left_Re, tip_left);
     }
 
     /**
-     * 限制向后匹配字符位置输入框内容
+     * 限制向右匹配字符位置输入框内容
      */
     @FXML
     private void rightHandleKeyTyped(KeyEvent event) {
         integerRangeTextField(right_Re, 0, null, event);
-        addValueToolTip(right_Re, "只能填自然数，不填默认匹配目标字符串右侧所有字符，填写后匹配目标字符串右侧所填写个数的单个字符");
+        addValueToolTip(right_Re, tip_right);
     }
 
     /**
@@ -817,7 +813,7 @@ public class FileRenameController extends ToolsProperties {
      */
     @FXML
     private void rightValueHandleKeyTyped() {
-        addValueToolTip(rightValue_Re, "将所填字符根据选项插入或替换目标字符左侧所匹配的字符");
+        addValueToolTip(rightValue_Re, tip_rightValue);
     }
 
     /**
@@ -825,7 +821,7 @@ public class FileRenameController extends ToolsProperties {
      */
     @FXML
     private void leftValueHandleKeyTyped() {
-        addValueToolTip(leftValue_Re, "将所填字符根据选项插入或替换目标字符右侧所匹配的字符");
+        addValueToolTip(leftValue_Re, tip_leftValue);
     }
 
     /**
@@ -834,7 +830,7 @@ public class FileRenameController extends ToolsProperties {
     @FXML
     private void tagHandleKeyTyped(KeyEvent event) {
         integerRangeTextField(tag_Re, 0, null, event);
-        addValueToolTip(tag_Re, "只能填自然数，不填默认为1，会根据所填值设置相同文件名起始尾缀");
+        addValueToolTip(tag_Re, tip_tag);
     }
 
     /**
@@ -844,11 +840,11 @@ public class FileRenameController extends ToolsProperties {
     private void updateRename() throws Exception {
         ObservableList<FileBean> fileBeans = tableView_Re.getItems();
         if (CollectionUtils.isEmpty(fileBeans)) {
-            throw new Exception("要读取的文件列表为空，需要选择一个有文件的文件夹");
+            throw new Exception(text_fileListNull);
         }
-        if ("按excel模板重命名".equals(renameType_Re.getValue()) && StringUtils.isNotBlank(excelPath_Re.getText())) {
+        if (text_excelRename.equals(renameType_Re.getValue()) && StringUtils.isNotBlank(excelPath_Re.getText())) {
             readExcelRename();
-        } else if (!"按excel模板重命名".equals(renameType_Re.getValue())) {
+        } else if (!text_excelRename.equals(renameType_Re.getValue())) {
             TaskBean<FileBean> taskBean = new TaskBean<>();
             //匹配重命名规则
             matchRenameConfig(taskBean);

@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static priv.koishi.tools.Utils.FileUtils.checkCopyDestination;
+import static priv.koishi.tools.Text.CommonTexts.*;
 import static priv.koishi.tools.Utils.UiUtils.checkExcelParam;
 
 /**
@@ -62,14 +63,14 @@ public class FileNameToExcelService {
         return new Task<>() {
             @Override
             protected SXSSFWorkbook call() {
-                updateMessage("正在导出数据");
+                updateMessage(text_printData);
                 List<FileBean> fileBeans = taskBean.getBeanList();
                 List<String> names = new ArrayList<>();
                 fileBeans.forEach(fileBean -> names.add(fileBean.getName()));
                 int startRowNum = excelConfig.getStartRowNum();
                 int startCellNum = excelConfig.getStartCellNum();
                 int nameSize = names.size();
-                updateMessage("已识别到 " + nameSize + " 个文件");
+                updateMessage(text_identify + nameSize + text_file);
                 for (int i = 0; i < nameSize; i++) {
                     String name = names.get(i);
                     XSSFRow row = sheet.getRow(startRowNum);
@@ -78,14 +79,14 @@ public class FileNameToExcelService {
                     }
                     XSSFCell cell = row.createCell(startCellNum);
                     cell.setCellValue(name);
-                    updateMessage("正在输出第 " + (i + 1) + "/" + nameSize + " 个文件：" + name + " 数据坐标：" + startRowNum + "," + startCellNum);
+                    updateMessage(text_printing + (i + 1) + "/" + nameSize + text_file + name + text_coordinate + startRowNum + "," + startCellNum);
                     startRowNum++;
                 }
                 sheet.autoSizeColumn(startCellNum);
                 //手动调整列宽，解决中文不能自适应问题,单元格单行最长支持255*256的宽度（每个单元格样式已经设置自动换行，超出即换行）,设置最低列宽度，列宽约六个中文字符
                 int width = Math.max(15 * 256, Math.min(255 * 256, sheet.getColumnWidth(startCellNum) * 12 / 10));
                 sheet.setColumnWidth(startCellNum, width);
-                updateMessage("所有数据已输出完毕");
+                updateMessage(text_printDown);
                 return workbook;
             }
         };

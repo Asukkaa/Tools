@@ -34,6 +34,7 @@ import java.util.concurrent.ExecutorService;
 
 import static priv.koishi.tools.Service.FileNumToExcelService.buildNameGroupNumExcel;
 import static priv.koishi.tools.Service.ReadDataService.readExcel;
+import static priv.koishi.tools.Text.CommonTexts.*;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.TaskUtils.*;
@@ -256,14 +257,14 @@ public class FileNumToExcelController extends ToolsProperties {
         // 加载properties文件
         prop.load(input);
         // 根据key读取value
-        inFilePath = prop.getProperty("inFilePath");
-        outFilePath = prop.getProperty("outFilePath");
-        defaultOutFileName = prop.getProperty("defaultOutFileName");
-        defaultSheetName = prop.getProperty("defaultSheetName");
-        excelInPath = prop.getProperty("excelInPath");
-        defaultStartCell = Integer.parseInt(prop.getProperty("defaultStartCell"));
-        defaultReadRow = Integer.parseInt(prop.getProperty("defaultReadRow"));
-        defaultReadCell = Integer.parseInt(prop.getProperty("defaultReadCell"));
+        inFilePath = prop.getProperty(key_inFilePath);
+        outFilePath = prop.getProperty(key_outFilePath);
+        defaultOutFileName = prop.getProperty(key_defaultOutFileName);
+        defaultSheetName = prop.getProperty(key_defaultSheetName);
+        excelInPath = prop.getProperty(key_excelInPath);
+        defaultStartCell = Integer.parseInt(prop.getProperty(key_defaultStartCell));
+        defaultReadRow = Integer.parseInt(prop.getProperty(key_defaultReadRow));
+        defaultReadCell = Integer.parseInt(prop.getProperty(key_defaultReadCell));
         input.close();
     }
 
@@ -273,11 +274,11 @@ public class FileNumToExcelController extends ToolsProperties {
     @FXML
     private void initialize() throws IOException {
         getConfig();
-        addToolTip(filterFileType_Num, "填写后只会识别所填写的后缀名文件，多个文件后缀名用空格隔开，后缀名需带 '.'");
-        addToolTip(startRow_Num, "只能填自然数，不填默认与读取预留行相同");
-        addToolTip(startCell_Num, "只能填自然数，不填默认为 " + defaultStartCell);
-        addToolTip(readRow_Num, "只能填自然数，不填默认为 " + defaultReadRow + " 从第 " + (defaultReadRow + 1) + " 行读取");
-        addToolTip(readCell_Num, "只能填自然数，不填默认为 " + defaultReadCell + " ，从第 " + (defaultReadCell + 1) + " 列读取");
+        addToolTip(filterFileType_Num, tip_filterFileType);
+        addToolTip(startRow_Num, tip_startReadRow);
+        addToolTip(startCell_Num, text_onlyNaturalNumber + defaultStartCell);
+        addToolTip(readRow_Num, text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row);
+        addToolTip(readCell_Num, text_onlyNaturalNumber + defaultReadCell + text_formThe + (defaultReadCell + 1) + text_cell);
         addNumImgToolTip(recursion_Num, subCode_Num, excelName_Num, sheetOutName_Num, maxRow_Num);
         //设置javafx单元格宽度
         tableViewNumImgAdaption(groupId_Num, tableView_Num, groupName_Num.prefWidthProperty(), groupNumber_Num.prefWidthProperty(), fileName_Num);
@@ -290,10 +291,10 @@ public class FileNumToExcelController extends ToolsProperties {
     private void inDirectoryButton(ActionEvent actionEvent) throws Exception {
         getConfig();
         // 显示文件选择器
-        File selectedFile = creatDirectoryChooser(actionEvent, inFilePath, "选择文件夹");
+        File selectedFile = creatDirectoryChooser(actionEvent, inFilePath, text_selectDirectory);
         if (selectedFile != null) {
             //更新所选文件路径显示
-            inFilePath = updatePathLabel(selectedFile.getPath(), inFilePath, "inFilePath", inPath_Num, configFile);
+            inFilePath = updatePathLabel(selectedFile.getPath(), inFilePath, key_inFilePath, inPath_Num, configFile);
             //读取文件数据
             addInFile(selectedFile, getFilterExtensionList(filterFileType_Num));
         }
@@ -317,7 +318,7 @@ public class FileNumToExcelController extends ToolsProperties {
     private void acceptDrop(DragEvent dragEvent) {
         List<File> files = dragEvent.getDragboard().getFiles();
         files.forEach(file -> {
-            if (file.isFile() && ".xlsx".equals(getFileType(file))) {
+            if (file.isFile() && xlsx.equals(getFileType(file))) {
                 // 接受拖放
                 dragEvent.acceptTransferModes(TransferMode.COPY);
                 dragEvent.consume();
@@ -345,16 +346,13 @@ public class FileNumToExcelController extends ToolsProperties {
         String outFilePath = outPath_Num.getText();
         String inFilePath = excelPath_Num.getText();
         if (StringUtils.isEmpty(outFilePath)) {
-            throw new Exception("导出文件夹位置为空，需要先设置导出文件夹位置再继续");
+            throw new Exception(text_outPathNull);
         }
         if (StringUtils.isEmpty(inDirectory)) {
-            throw new Exception("选择需要统计的文件夹位置再继续");
+            throw new Exception(text_filePathNull);
         }
         if (StringUtils.isEmpty(inFilePath)) {
-            throw new Exception("excel模板文件位置为空，需要先设置excel模板文件位置再继续");
-        }
-        if (StringUtils.isEmpty(subCode)) {
-            throw new Exception("文件名称分割符位置为空，需要先设置文件名称分割符再继续");
+            throw new Exception(text_excelPathNull);
         }
         String sheetName = setDefaultStrValue(sheetOutName_Num, defaultSheetName);
         String excelNameValue = setDefaultFileName(excelName_Num, defaultOutFileName);
@@ -397,10 +395,10 @@ public class FileNumToExcelController extends ToolsProperties {
     @FXML
     private void exportPath(ActionEvent actionEvent) throws Exception {
         getConfig();
-        File selectedFile = creatDirectoryChooser(actionEvent, outFilePath, "选择文件夹");
+        File selectedFile = creatDirectoryChooser(actionEvent, outFilePath, text_selectDirectory);
         if (selectedFile != null) {
             //更新所选文件路径显示
-            outFilePath = updatePathLabel(selectedFile.getPath(), outFilePath, "outFilePath", outPath_Num, configFile);
+            outFilePath = updatePathLabel(selectedFile.getPath(), outFilePath, key_outFilePath, outPath_Num, configFile);
             if (StringUtils.isNotEmpty(excelPath_Num.getText())) {
                 reselect();
             }
@@ -414,10 +412,10 @@ public class FileNumToExcelController extends ToolsProperties {
     private void getExcelPath(ActionEvent actionEvent) throws Exception {
         getConfig();
         List<FileChooser.ExtensionFilter> extensionFilters = new ArrayList<>(Collections.singleton(new FileChooser.ExtensionFilter("Excel", "*.xlsx")));
-        File selectedFile = creatFileChooser(actionEvent, excelInPath, extensionFilters, "选择excel模板文件");
+        File selectedFile = creatFileChooser(actionEvent, excelInPath, extensionFilters, text_selectExcel);
         if (selectedFile != null) {
             //更新所选文件路径显示
-            excelInPath = updatePathLabel(selectedFile.getPath(), excelInPath, "excelInPath", excelPath_Num, configFile);
+            excelInPath = updatePathLabel(selectedFile.getPath(), excelInPath, key_excelInPath, excelPath_Num, configFile);
             addInData();
         }
     }
@@ -428,7 +426,7 @@ public class FileNumToExcelController extends ToolsProperties {
     @FXML
     private void rowHandleKeyTyped(KeyEvent event) {
         integerRangeTextField(startRow_Num, 0, null, event);
-        addValueToolTip(startRow_Num, "只能填自然数，不填默认为0，不预留列");
+        addValueToolTip(startRow_Num, text_onlyNaturalNumber + defaultStartCell);
     }
 
     /**
@@ -437,7 +435,7 @@ public class FileNumToExcelController extends ToolsProperties {
     @FXML
     private void cellHandleKeyTyped(KeyEvent event) {
         integerRangeTextField(startCell_Num, 0, null, event);
-        addValueToolTip(startCell_Num, "只能填自然数，不填默认为 " + defaultStartCell);
+        addValueToolTip(startCell_Num, text_onlyNaturalNumber + defaultStartCell);
     }
 
     /**
@@ -445,7 +443,7 @@ public class FileNumToExcelController extends ToolsProperties {
      */
     @FXML
     private void nameHandleKeyTyped() {
-        addValueToolTip(excelName_Num, "如果导出地址和名称与模板一样则会覆盖模板excel文件");
+        addValueToolTip(excelName_Num, tip_excelName);
     }
 
     /**
@@ -453,7 +451,7 @@ public class FileNumToExcelController extends ToolsProperties {
      */
     @FXML
     private void sheetHandleKeyTyped() {
-        addValueToolTip(sheetOutName_Num, "须填与excel模板相同的表名才能正常统计");
+        addValueToolTip(sheetOutName_Num, tip_sheetOutName);
     }
 
     /**
@@ -461,7 +459,7 @@ public class FileNumToExcelController extends ToolsProperties {
      */
     @FXML
     private void filterHandleKeyTyped() {
-        addValueToolTip(filterFileType_Num, "填写后只会识别所填写的后缀名文件，多个文件后缀名用空格隔开，后缀名需带 '.'");
+        addValueToolTip(filterFileType_Num, tip_filterFileType);
     }
 
     /**
@@ -469,7 +467,7 @@ public class FileNumToExcelController extends ToolsProperties {
      */
     @FXML
     private void subHandleKeyTyped() {
-        addValueToolTip(subCode_Num, "填写后会按所填写的字符串来分割文件名称，按照分割后的文件名称左侧字符串进行分组");
+        addValueToolTip(subCode_Num, tip_subCode);
     }
 
     /**
@@ -478,7 +476,7 @@ public class FileNumToExcelController extends ToolsProperties {
     @FXML
     private void readRowHandleKeyTyped(KeyEvent event) {
         integerRangeTextField(readRow_Num, 0, null, event);
-        addValueToolTip(readRow_Num, "只能填自然数，不填默认为 " + defaultReadRow + " 从第 " + (defaultReadRow + 1) + " 行读取");
+        addValueToolTip(readRow_Num, text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row);
     }
 
     /**
@@ -487,7 +485,7 @@ public class FileNumToExcelController extends ToolsProperties {
     @FXML
     private void readCellHandleKeyTyped(KeyEvent event) {
         integerRangeTextField(readCell_Num, 0, null, event);
-        addValueToolTip(readCell_Num, "只能填自然数，不填默认为 " + defaultReadCell + " ，从第 " + (defaultReadCell + 1) + " 列读取");
+        addValueToolTip(readCell_Num, text_onlyNaturalNumber + defaultReadCell + text_formThe + (defaultReadCell + 1) + text_cell);
     }
 
     /**
@@ -496,7 +494,7 @@ public class FileNumToExcelController extends ToolsProperties {
     @FXML
     private void maxRowHandleKeyTyped(KeyEvent event) {
         integerRangeTextField(maxRow_Num, 1, null, event);
-        addValueToolTip(maxRow_Num, "只能填正整数，不填默认不限制，会读取到有数据的最后一行，最小值为1");
+        addValueToolTip(maxRow_Num, tip_maxRow);
     }
 
     /**
@@ -506,7 +504,7 @@ public class FileNumToExcelController extends ToolsProperties {
     private Task<List<FileNumBean>> reselect() throws Exception {
         String inFilePath = excelPath_Num.getText();
         if (StringUtils.isEmpty(inFilePath)) {
-            throw new Exception("excel模板文件位置为空，需要先设置excel模板文件位置再继续");
+            throw new Exception(text_excelPathNull);
         }
         updateLabel(log_Num, "");
         return addInData();

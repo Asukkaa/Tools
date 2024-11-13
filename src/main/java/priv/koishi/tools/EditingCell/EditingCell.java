@@ -9,6 +9,7 @@ import javafx.util.Duration;
 
 import java.util.Objects;
 
+import static priv.koishi.tools.Text.CommonTexts.showDuration;
 import static priv.koishi.tools.Utils.UiUtils.addValueToolTip;
 
 /**
@@ -39,7 +40,7 @@ public class EditingCell<T> extends TableCell<T, String> {
         this.itemConsumer = itemConsumer;
         Tooltip tooltip = new Tooltip(tip);
         tooltip.setWrapText(true);
-        tooltip.setShowDuration(new Duration(6000000));
+        tooltip.setShowDuration(showDuration);
         tooltip.setShowDelay(Duration.ZERO);
         tooltip.setAnchorLocation(PopupWindow.AnchorLocation.WINDOW_BOTTOM_LEFT);
         setTooltip(tooltip);

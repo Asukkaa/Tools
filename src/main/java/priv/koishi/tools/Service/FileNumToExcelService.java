@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.List;
 
+import static priv.koishi.tools.Text.CommonTexts.*;
 import static priv.koishi.tools.Utils.CommonUtils.autoSizeExcel;
 import static priv.koishi.tools.Utils.FileUtils.checkCopyDestination;
 
@@ -35,9 +36,9 @@ public class FileNumToExcelService {
                 checkCopyDestination(excelConfig);
                 File inputFile = new File(excelConfig.getInPath());
                 if (!inputFile.exists()) {
-                    throw new Exception("模板excel文件不存在");
+                    throw new Exception(text_excelNotExists);
                 }
-                updateMessage("正在导出数据");
+                updateMessage(text_printData);
                 FileInputStream inputStream = new FileInputStream(inputFile);
                 XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
                 SXSSFWorkbook sxssfWorkbook = new SXSSFWorkbook(workbook);
@@ -47,7 +48,7 @@ public class FileNumToExcelService {
                 int startCellNum = excelConfig.getStartCellNum();
                 int maxCellNum = startCellNum;
                 List<FileNumBean> fileBeans = taskBean.getBeanList();
-                updateMessage("已识别到 " + fileBeans.size() + " 组数据");
+                updateMessage(text_identify + fileBeans.size() + text_data);
                 XSSFSheet sheet;
                 if (StringUtils.isBlank(sheetName)) {
                     sheet = sxssfWorkbook.getXSSFWorkbook().getSheetAt(0);
@@ -79,13 +80,13 @@ public class FileNumToExcelService {
                             break;
                         }
                     }
-                    updateMessage("正在输出第" + (i + 1) + "/" + fileBeansSize + "组数据");
+                    updateMessage(text_printing + (i + 1) + "/" + fileBeansSize + text_data);
                     //Task的Progress(进度)更新方法,进度条的进度与该属性挂钩
                     updateProgress(i + 1, fileBeansSize);
                     startRowNum++;
                 }
                 autoSizeExcel(sheet, maxCellNum, startCellNum);
-                updateMessage("所有数据已输出完毕");
+                updateMessage(text_printDown);
                 return sxssfWorkbook;
             }
         };

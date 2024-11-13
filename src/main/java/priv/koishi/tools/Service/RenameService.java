@@ -11,6 +11,7 @@ import java.io.File;
 import java.util.List;
 import java.util.UUID;
 
+import static priv.koishi.tools.Text.CommonTexts.*;
 import static priv.koishi.tools.Utils.CommonUtils.*;
 
 /**
@@ -107,19 +108,19 @@ public class RenameService {
         }
         String fileRename = paddedNum;
         switch (differenceCode) {
-            case "阿拉伯数字：123": {
+            case text_arabicNumerals: {
                 fileRename = getSubCodeRename(codeRenameConfig, String.valueOf(tag), fileRename);
                 break;
             }
-            case "中文数字：一二三": {
+            case text_chineseNumerals: {
                 fileRename = getSubCodeRename(codeRenameConfig, intToChineseNum(tag), fileRename);
                 break;
             }
-            case "小写英文字母：abc": {
+            case text_abc: {
                 fileRename = getSubCodeRename(codeRenameConfig, convertToAlpha(tag, true), fileRename);
                 break;
             }
-            case "大小英文字母：ABC": {
+            case text_ABC: {
                 fileRename = getSubCodeRename(codeRenameConfig, convertToAlpha(tag, false), fileRename);
                 break;
             }
@@ -139,19 +140,19 @@ public class RenameService {
                 space = " ";
             }
             switch (subCode.substring(0, 4)) {
-                case "英文括号": {
+                case text_enBracket: {
                     fileRename += space + "(" + tag + ")";
                     break;
                 }
-                case "中文括号": {
+                case text_cnBracket: {
                     fileRename += space + "（" + tag + "）";
                     break;
                 }
-                case "英文横杠": {
+                case text_enHorizontal: {
                     fileRename += space + "-" + tag;
                     break;
                 }
-                case "中文横杠": {
+                case text_cnHorizontal: {
                     fileRename += space + "—" + tag;
                     break;
                 }
@@ -168,23 +169,23 @@ public class RenameService {
         String fileName = fileBean.getName();
         String fileRename = fileName;
         switch (targetStr) {
-            case "指定字符串": {
+            case text_specifyString: {
                 fileRename = getTargetStringRename(fileName, stringRenameConfig);
                 break;
             }
-            case "指定字符位置": {
+            case text_specifyIndex: {
                 fileRename = getTargetIndexRename(fileName, stringRenameConfig);
                 break;
             }
-            case "全部英文字符转为大写": {
+            case text_toUpperCase: {
                 fileRename = fileName.toUpperCase();
                 break;
             }
-            case "全部英文字符转为小写": {
+            case text_toLowerCase: {
                 fileRename = fileName.toLowerCase();
                 break;
             }
-            case "全部英文字符大小写互换": {
+            case text_swapCase: {
                 fileRename = swapCase(fileName);
                 break;
             }
@@ -202,7 +203,7 @@ public class RenameService {
             String renameBehavior = stringRenameConfig.getRenameBehavior();
             if (renameValueInt >= 0 && renameValueInt < fileName.length()) {
                 switch (renameBehavior) {
-                    case "替换所有字符为:": {
+                    case text_replace: {
                         String renameStr = stringRenameConfig.getRenameStr();
                         StringBuilder sb = new StringBuilder(fileName);
                         sb.deleteCharAt(renameValueInt);
@@ -210,7 +211,7 @@ public class RenameService {
                         fileName = sb.toString();
                         break;
                     }
-                    case "移除指定字符": {
+                    case text_remove: {
                         StringBuilder sb = new StringBuilder(fileName);
                         sb.deleteCharAt(renameValueInt);
                         fileName = sb.toString();
@@ -230,16 +231,16 @@ public class RenameService {
         if (StringUtils.isNotEmpty(renameValue)) {
             String renameBehavior = stringRenameConfig.getRenameBehavior();
             switch (renameBehavior) {
-                case "替换所有字符为:": {
+                case text_replace: {
                     String renameStr = stringRenameConfig.getRenameStr();
                     fileName = replaceString(fileName, renameValue, renameStr);
                     break;
                 }
-                case "移除指定字符": {
+                case text_remove: {
                     fileName = replaceString(fileName, renameValue, "");
                     break;
                 }
-                case "处理两侧字符": {
+                case text_bothSides: {
                     fileName = bothSidesRename(fileName, stringRenameConfig);
                     break;
                 }
@@ -282,33 +283,33 @@ public class RenameService {
      */
     private static String getOneSidesRename(String fileName, String behavior, boolean isLeft, String replaceString) {
         switch (behavior) {
-            case "插入字符串为:": {
+            case text_insert: {
                 fileName = isLeft ? (fileName + replaceString) : (replaceString + fileName);
                 break;
             }
-            case "替换所有字符串为:": {
+            case text_replace: {
                 fileName = replaceString;
                 break;
             }
-            case "删除指定位置字符": {
+            case text_delete: {
                 if (!fileName.isEmpty()) {
                     fileName = isLeft ? fileName.substring(0, fileName.length() - 1) : fileName.substring(1);
                 }
                 break;
             }
-            case "移除所有字符": {
+            case text_removeAll: {
                 fileName = "";
                 break;
             }
-            case "全部英文字符转为大写": {
+            case text_toUpperCase: {
                 fileName = fileName.toUpperCase();
                 break;
             }
-            case "全部英文字符转为小写": {
+            case text_toLowerCase: {
                 fileName = fileName.toLowerCase();
                 break;
             }
-            case "全部英文字符大小写互换": {
+            case text_swapCase: {
                 fileName = swapCase(fileName);
                 break;
             }
