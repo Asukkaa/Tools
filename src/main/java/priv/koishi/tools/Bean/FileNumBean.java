@@ -5,7 +5,6 @@ import javafx.beans.property.SimpleStringProperty;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -50,8 +49,6 @@ public class FileNumBean {
     List<String> fileNameList;
 
     public FileNumBean() {
-        this.fileNameList = new ArrayList<>();
-        this.filePathList = new ArrayList<>();
         this.groupId = new SimpleIntegerProperty();
         this.groupName = new SimpleStringProperty();
         this.groupNumber = new SimpleIntegerProperty();

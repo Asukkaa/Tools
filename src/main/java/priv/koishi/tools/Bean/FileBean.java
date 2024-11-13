@@ -136,4 +136,8 @@ public class FileBean {
         this.updateDate.set(updateDate);
     }
 
+    public String getFullName() {
+        return getRename() + getFileType();
+    }
+
 }

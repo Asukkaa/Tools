@@ -481,7 +481,7 @@ public class FileRenameController extends ToolsProperties {
         if (CollectionUtils.isEmpty(fileBeans)) {
             throw new Exception(text_fileListNull);
         }
-        Map<String, List<FileBean>> fileBeanMap = fileBeans.stream().collect(Collectors.groupingBy(FileBean::getRename));
+        Map<String, List<FileBean>> fileBeanMap = fileBeans.stream().collect(Collectors.groupingBy(FileBean::getFullName));
         List<String> errList = new ArrayList<>();
         fileBeanMap.forEach((rename, fileBeanList) -> {
             if (fileBeanList.size() > 1) {
@@ -490,7 +490,7 @@ public class FileRenameController extends ToolsProperties {
                     int id = fileBean.getId();
                     ids.add(String.valueOf(id));
                 });
-                String errString = "序号为： " + String.join("、", ids) + " 的文件重命名重复";
+                String errString = "序号为： " + String.join("、", ids) + " 的文件重命名重复为 " + rename;
                 errList.add(errString);
             }
         });
