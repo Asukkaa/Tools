@@ -9,103 +9,111 @@
             fx:controller="priv.koishi.tools.Controller.ImgToExcelController">
     <VBox fx:id="vbox_Img" spacing="10" AnchorPane.topAnchor="10">
         <HBox spacing="10">
-            <Label prefHeight="20" text="隐藏文件查询设置:" />
+            <Label prefHeight="20" text="隐藏文件查询设置:"/>
             <ChoiceBox fx:id="hideFileType_Img" prefHeight="20" prefWidth="120">
                 <items>
                     <FXCollections fx:factory="observableArrayList">
-                        <String fx:value="不查询隐藏文件" />
-                        <String fx:value="是否隐藏都查询" />
-                        <String fx:value="只查询隐藏文件" />
+                        <String fx:value="不查询隐藏文件"/>
+                        <String fx:value="是否隐藏都查询"/>
+                        <String fx:value="只查询隐藏文件"/>
                     </FXCollections>
                 </items>
                 <value>
-                    <String fx:value="不查询隐藏文件" />
+                    <String fx:value="不查询隐藏文件"/>
                 </value>
             </ChoiceBox>
-            <CheckBox fx:id="recursion_Img" prefHeight="20" style="-fx-cursor: hand" text="递归查询" />
-            <CheckBox fx:id="showFileType_Img" onAction="#handleCheckBoxAction" prefHeight="20" style="-fx-cursor: hand" text="显示文件拓展名" />
-            <CheckBox fx:id="openDirectory_Img" prefHeight="20" selected="true" style="-fx-cursor: hand" text="导出后打开文件夹" />
-            <CheckBox fx:id="openFile_Img" prefHeight="20" style="-fx-cursor: hand" text="导出后打开excel文件" />
-            <Label prefHeight="20" text="导出excel文件类型:" />
+            <CheckBox fx:id="recursion_Img" prefHeight="20" style="-fx-cursor: hand" text="递归查询"/>
+            <CheckBox fx:id="showFileType_Img" onAction="#handleCheckBoxAction" prefHeight="20" style="-fx-cursor: hand"
+                      text="显示文件拓展名"/>
+            <CheckBox fx:id="openDirectory_Img" prefHeight="20" selected="true" style="-fx-cursor: hand"
+                      text="导出后打开文件夹"/>
+            <CheckBox fx:id="openFile_Img" prefHeight="20" style="-fx-cursor: hand" text="导出后打开excel文件"/>
+            <Label prefHeight="20" text="导出excel文件类型:"/>
             <ChoiceBox fx:id="excelType_Img" prefHeight="20" prefWidth="80">
                 <items>
                     <FXCollections fx:factory="observableArrayList">
-                        <String fx:value=".xlsx" />
+                        <String fx:value=".xlsx"/>
                         <!--                    <String fx:value=".xls"/>-->
                     </FXCollections>
                 </items>
                 <value>
-                    <String fx:value=".xlsx" />
+                    <String fx:value=".xlsx"/>
                 </value>
             </ChoiceBox>
         </HBox>
 
         <HBox spacing="10">
-            <Label prefHeight="20" text="导出excel文件名称:" />
-            <TextField fx:id="excelName_Img" onKeyTyped="#nameHandleKeyTyped" prefHeight="20" prefWidth="100" />
-            <Label prefHeight="20" text="excel表名称:" />
-            <TextField fx:id="sheetOutName_Img" onKeyTyped="#sheetHandleKeyTyped" prefHeight="20" prefWidth="100" />
-            <Label prefHeight="20" text="文件名称分割符:" />
-            <TextField fx:id="subCode_Img" onKeyTyped="#subHandleKeyTyped" prefHeight="20" prefWidth="100" />
-            <Label prefHeight="20" text="需要识别的图片格式:" />
-            <CheckBox fx:id="jpg_Img" prefHeight="20" style="-fx-cursor: hand" selected="true" text=".jpg" />
-            <CheckBox fx:id="png_Img" prefHeight="20" style="-fx-cursor: hand" selected="true" text=".png" />
-            <CheckBox fx:id="jpeg_Img" prefHeight="20" style="-fx-cursor: hand" selected="true" text=".jpeg" />
+            <Label prefHeight="20" text="导出excel文件名称:"/>
+            <TextField fx:id="excelName_Img" onKeyTyped="#nameHandleKeyTyped" prefHeight="20" prefWidth="100"/>
+            <Label prefHeight="20" text="excel表名称:"/>
+            <TextField fx:id="sheetOutName_Img" onKeyTyped="#sheetHandleKeyTyped" prefHeight="20" prefWidth="100"/>
+            <Label prefHeight="20" text="文件名称分割符:"/>
+            <TextField fx:id="subCode_Img" onKeyTyped="#subHandleKeyTyped" prefHeight="20" prefWidth="100"/>
+            <Label prefHeight="20" text="需要识别的图片格式:"/>
+            <CheckBox fx:id="jpg_Img" prefHeight="20" style="-fx-cursor: hand" selected="true" text=".jpg"/>
+            <CheckBox fx:id="png_Img" prefHeight="20" style="-fx-cursor: hand" selected="true" text=".png"/>
+            <CheckBox fx:id="jpeg_Img" prefHeight="20" style="-fx-cursor: hand" selected="true" text=".jpeg"/>
         </HBox>
 
         <HBox spacing="10">
-            <Label prefHeight="20" text="导出预留行:" />
-            <TextField fx:id="startRow_Img" onKeyTyped="#rowHandleKeyTyped" prefHeight="20" prefWidth="50" />
-            <Label prefHeight="20" text="导出预留列:" />
-            <TextField fx:id="startCell_Img" onKeyTyped="#cellHandleKeyTyped" prefHeight="20" prefWidth="50" />
-            <Label prefHeight="20" text="读取预留行:" />
-            <TextField fx:id="readRow_Img" onKeyTyped="#readRowHandleKeyTyped" prefHeight="20" prefWidth="50" />
-            <Label prefHeight="20" text="读取预留列:" />
-            <TextField fx:id="readCell_Img" onKeyTyped="#readCellHandleKeyTyped" prefHeight="20" prefWidth="50" />
-            <Label prefHeight="20" text="读取行数:" />
-            <TextField fx:id="maxRow_Img" onKeyTyped="#maxRowHandleKeyTyped" prefHeight="20" prefWidth="50" />
-            <Label prefHeight="20" text="导出图片宽:" />
-            <TextField fx:id="imgWidth_Img" onKeyTyped="#imgWidthHandleKeyTyped" prefHeight="20" prefWidth="60" />
-            <Label prefHeight="20" text="导出图片高:" />
-            <TextField fx:id="imgHeight_Img" onKeyTyped="#imgHeightHandleKeyTyped" prefHeight="20" prefWidth="60" />
+            <Label prefHeight="20" text="导出预留行:"/>
+            <TextField fx:id="startRow_Img" onKeyTyped="#rowHandleKeyTyped" prefHeight="20" prefWidth="50"/>
+            <Label prefHeight="20" text="导出预留列:"/>
+            <TextField fx:id="startCell_Img" onKeyTyped="#cellHandleKeyTyped" prefHeight="20" prefWidth="50"/>
+            <Label prefHeight="20" text="读取预留行:"/>
+            <TextField fx:id="readRow_Img" onKeyTyped="#readRowHandleKeyTyped" prefHeight="20" prefWidth="50"/>
+            <Label prefHeight="20" text="读取预留列:"/>
+            <TextField fx:id="readCell_Img" onKeyTyped="#readCellHandleKeyTyped" prefHeight="20" prefWidth="50"/>
+            <Label prefHeight="20" text="读取行数:"/>
+            <TextField fx:id="maxRow_Img" onKeyTyped="#maxRowHandleKeyTyped" prefHeight="20" prefWidth="50"/>
+            <Label prefHeight="20" text="导出图片宽:"/>
+            <TextField fx:id="imgWidth_Img" onKeyTyped="#imgWidthHandleKeyTyped" prefHeight="20" prefWidth="60"/>
+            <Label prefHeight="20" text="导出图片高:"/>
+            <TextField fx:id="imgHeight_Img" onKeyTyped="#imgHeightHandleKeyTyped" prefHeight="20" prefWidth="60"/>
         </HBox>
 
         <HBox spacing="10">
-            <Button fx:id="fileButton_Img" onAction="#inDirectoryButton" style="-fx-cursor: hand" text="选择要统计的文件夹" />
-            <Label fx:id="inPath_Img" prefHeight="20" prefWidth="300" style="-fx-font-size: 15px;" />
-            <Button onAction="#exportPath" style="-fx-cursor: hand" text="选择导出文件夹位置" />
-            <Label fx:id="outPath_Img" prefHeight="20" style="-fx-font-size: 15px;" />
+            <Button fx:id="fileButton_Img" onAction="#inDirectoryButton" style="-fx-cursor: hand"
+                    text="选择要统计的文件夹"/>
+            <Label fx:id="inPath_Img" prefHeight="20" prefWidth="300" style="-fx-font-size: 15px;"/>
+            <Button onAction="#exportPath" style="-fx-cursor: hand" text="选择导出文件夹位置"/>
+            <Label fx:id="outPath_Img" prefHeight="20" style="-fx-font-size: 15px;"/>
         </HBox>
 
         <HBox spacing="10">
-            <Button onAction="#getExcelPath" style="-fx-cursor: hand" text="选择excel模板位置" />
-            <Label fx:id="excelPath_Img" prefHeight="20" style="-fx-font-size: 15px;" />
+            <Button onAction="#getExcelPath" style="-fx-cursor: hand" text="选择excel模板位置"/>
+            <Label fx:id="excelPath_Img" prefHeight="20" style="-fx-font-size: 15px;"/>
         </HBox>
 
         <HBox spacing="10">
-            <Button fx:id="reselectButton_Img" onAction="#reselect" style="-fx-cursor: hand" text="重新查询" />
-            <Button fx:id="clearButton_Img" onAction="#removeAll" style="-fx-cursor: hand" text="清空列表" />
-            <Button fx:id="exportButton_Img" onAction="#exportAll" style="-fx-cursor: hand" text="开始导出" />
-            <Label fx:id="maxImg_Img" prefHeight="20" text="最大图片匹配数量:" />
-            <TextField fx:id="maxImgNum_Img" onKeyTyped="#maxImgNumKeyTyped" prefHeight="20" prefWidth="60" />
-            <CheckBox fx:id="noImg_Img" prefHeight="20" style="-fx-cursor: hand" text="标记没有图片的数据" />
-            <Label fx:id="fileNumber_Img" prefHeight="20" text="列表为空" alignment="CENTER_RIGHT" />
+            <Button fx:id="reselectButton_Img" onAction="#reselect" style="-fx-cursor: hand" text="重新查询"/>
+            <Button fx:id="clearButton_Img" onAction="#removeAll" style="-fx-cursor: hand" text="清空列表"/>
+            <Button fx:id="exportButton_Img" onAction="#exportAll" style="-fx-cursor: hand" text="开始导出"/>
+            <Label fx:id="maxImg_Img" prefHeight="20" text="最大图片匹配数量:"/>
+            <TextField fx:id="maxImgNum_Img" onKeyTyped="#maxImgNumKeyTyped" prefHeight="20" prefWidth="60"/>
+            <CheckBox fx:id="noImg_Img" prefHeight="20" style="-fx-cursor: hand" text="标记没有图片的数据"/>
+            <Label fx:id="fileNumber_Img" prefHeight="20" text="列表为空" alignment="CENTER_RIGHT"/>
         </HBox>
 
         <TableView fx:id="tableView_Img" onDragDropped="#handleDrop" onDragOver="#acceptDrop">
             <placeholder>
-                <Label text="拖拽 或点击 选择excel模板位置 按钮向列表添加文件" />
+                <Label text="拖拽 或点击 选择excel模板位置 按钮向列表添加文件"/>
             </placeholder>
 
             <columns>
-                <TableColumn fx:id="groupId_Img" text="序号" />
-                <TableColumn fx:id="groupName_Img" text="分组名称" />
-                <TableColumn fx:id="groupNumber_Img" text="文件数量" />
-                <TableColumn fx:id="fileName_Img" text="文件名称" />
+                <TableColumn fx:id="groupId_Img" text="序号"/>
+                <TableColumn fx:id="groupName_Img" text="分组名称"/>
+                <TableColumn fx:id="groupNumber_Img" text="文件数量"/>
+                <TableColumn fx:id="fileName_Img" text="文件名称"/>
             </columns>
         </TableView>
 
-        <ProgressBar fx:id="progressBar_Img" visible="false" prefWidth="200.0" progress="0.0" />
+        <HBox spacing="10">
+            <ProgressBar fx:id="progressBar_Img" visible="false" prefWidth="200.0" progress="0.0"/>
+            <Label fx:id="tip_Img" prefHeight="20" textFill="red" alignment="CENTER_RIGHT"
+                   text="插入图片数量不易过多，图片最好压缩后再使用，导出的excel大小超过4GB后可能打不开"/>
+        </HBox>
         <Label fx:id="log_Img" prefHeight="20"/>
+
     </VBox>
 </AnchorPane>

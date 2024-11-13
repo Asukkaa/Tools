@@ -138,10 +138,10 @@ public class ImgToExcelController extends ToolsProperties {
     private ChoiceBox<String> hideFileType_Img, excelType_Img;
 
     @FXML
-    private Label inPath_Img, outPath_Img, excelPath_Img, fileNumber_Img, log_Img, maxImg_Img;
+    private Button fileButton_Img, reselectButton_Img, clearButton_Img, exportButton_Img;
 
     @FXML
-    private Button fileButton_Img, reselectButton_Img, clearButton_Img, exportButton_Img;
+    private Label inPath_Img, outPath_Img, excelPath_Img, fileNumber_Img, log_Img, maxImg_Img, tip_Img;
 
     @FXML
     private CheckBox jpg_Img, png_Img, jpeg_Img, recursion_Img, showFileType_Img, openDirectory_Img, openFile_Img, noImg_Img;
@@ -179,7 +179,10 @@ public class ImgToExcelController extends ToolsProperties {
         CheckBox noImg = (CheckBox) scene.lookup("#noImg_Img");
         Label maxImg = (Label) scene.lookup("#maxImg_Img");
         TextField maxImgNum = (TextField) scene.lookup("#maxImgNum_Img");
+        Label tip_Img = (Label) scene.lookup("#tip_Img");
+        ProgressBar progressBar = (ProgressBar) scene.lookup("#progressBar_Img");
         fileNum.setPrefWidth(tableWidth - removeAll.getWidth() - exportAll.getWidth() - reselect.getWidth() - noImg.getWidth() - maxImg.getWidth() - maxImgNum.getWidth() - 70);
+        tip_Img.setPrefWidth(tableWidth - progressBar.getWidth() - 10);
     }
 
     /**
@@ -294,6 +297,7 @@ public class ImgToExcelController extends ToolsProperties {
     private void initialize() throws IOException {
         getConfig();
         addToolTip(noImg_Img, tip_noImg);
+        addToolTip(tip_Img, tip_Img.getText());
         addToolTip(maxImgNum_Img, tip_maxImgNum);
         addToolTip(startRow_Img, tip_startReadRow);
         addToolTip(imgWidth_Img, tip_imgHeight + defaultImgWidth);

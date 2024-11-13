@@ -109,13 +109,13 @@ public class FileNameToExcelController extends ToolsProperties {
     private TableColumn<FileBean, String> name_Name, path_Name, size_Name, fileType_Name, creatDate_Name, updateDate_Name;
 
     @FXML
-    private Label outPath_Name, excelPath_Name, fileNumber_Name, inPath_Name, log_Name;
-
-    @FXML
     private ChoiceBox<String> excelType_Name, hideFileType_Name, directoryNameType_Name;
 
     @FXML
     private CheckBox recursion_Name, openDirectory_Name, openFile_Name, showFileType_Name;
+
+    @FXML
+    private Label outPath_Name, excelPath_Name, fileNumber_Name, inPath_Name, log_Name, tip_Name;
 
     @FXML
     private TextField excelName_Name, sheetOutName_Name, startRow_Name, startCell_Name, filterFileType_Name;
@@ -156,7 +156,10 @@ public class FileNameToExcelController extends ToolsProperties {
         Button removeAll = (Button) scene.lookup("#clearButton_Name");
         Button exportAll = (Button) scene.lookup("#exportButton_Name");
         Button reselect = (Button) scene.lookup("#reselectButton_Name");
+        ProgressBar progressBar = (ProgressBar) scene.lookup("#progressBar_Name");
+        Label tip = (Label) scene.lookup("#tip_Name");
         fileNum.setPrefWidth(tableWidth - removeAll.getWidth() - exportAll.getWidth() - reselect.getWidth() - 40);
+        tip.setPrefWidth(tableWidth - progressBar.getWidth() - 10);
     }
 
     /**
@@ -214,6 +217,7 @@ public class FileNameToExcelController extends ToolsProperties {
     private void initialize() throws IOException {
         getConfig();
         addToolTip(startRow_Name, tip_startRow);
+        addToolTip(tip_Name, tip_Name.getText());
         addToolTip(recursion_Name, tip_recursion);
         addToolTip(excelName_Name, tip_excelName);
         addToolTip(sheetOutName_Name, tip_sheetOut);

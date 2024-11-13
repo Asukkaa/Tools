@@ -122,7 +122,8 @@
                 </ChoiceBox>
                 <HBox fx:id="targetStrHBox_Re" spacing="10" visible="false">
                     <Label fx:id="typeLabel_Re" prefHeight="20" text="要匹配的字符串:"/>
-                    <TextField fx:id="renameValue_Re" onKeyTyped="#renameValueHandleKeyTyped" prefHeight="20" prefWidth="100"/>
+                    <TextField fx:id="renameValue_Re" onKeyTyped="#renameValueHandleKeyTyped" prefHeight="20"
+                               prefWidth="100"/>
                     <Label prefHeight="20" text="重命名方法:"/>
                     <ChoiceBox onAction="#behaviorAction" fx:id="renameBehavior_Re" prefHeight="20" prefWidth="120">
                         <items>
@@ -135,7 +136,8 @@
                             <String fx:value="替换所有字符为:"/>
                         </value>
                     </ChoiceBox>
-                    <TextField fx:id="renameStr_Re" onKeyTyped="#renameStrHandleKeyTyped" prefHeight="20" prefWidth="100" visible="false"/>
+                    <TextField fx:id="renameStr_Re" onKeyTyped="#renameStrHandleKeyTyped" prefHeight="20"
+                               prefWidth="100" visible="false"/>
                 </HBox>
             </HBox>
 
@@ -177,7 +179,8 @@
                         <String fx:value="插入字符串为:"/>
                     </value>
                 </ChoiceBox>
-                <TextField fx:id="rightValue_Re" onKeyTyped="#rightValueHandleKeyTyped" prefHeight="20" prefWidth="100"/>
+                <TextField fx:id="rightValue_Re" onKeyTyped="#rightValueHandleKeyTyped" prefHeight="20"
+                           prefWidth="100"/>
             </HBox>
         </VBox>
 
@@ -230,7 +233,12 @@
             </columns>
         </TableView>
 
-        <ProgressBar fx:id="progressBar_Re" visible="false" prefWidth="200.0" progress="0.0"/>
+        <HBox spacing="10">
+            <ProgressBar fx:id="progressBar_Re" visible="false" prefWidth="200.0" progress="0.0"/>
+            <Label fx:id="tip_Re" prefHeight="20" textFill="red" alignment="CENTER_RIGHT"
+                   text="读取数据后上下拖拽数据行可调整数据顺序，右键点击数据行可进行调整操作，双击 修改后文件名称 可进行编辑"/>
+        </HBox>
         <Label fx:id="log_Re" prefHeight="20"/>
+
     </VBox>
 </AnchorPane>

@@ -115,7 +115,7 @@ public class FileRenameController extends ToolsProperties {
     private VBox vbox_Re, codeRenameVBox_Re, strRenameVBox_Re, excelRenameVBox_Re;
 
     @FXML
-    private Label excelPath_Re, fileNumber_Re, inPath_Re, log_Re, typeLabel_Re;
+    private Label excelPath_Re, fileNumber_Re, inPath_Re, log_Re, typeLabel_Re, tip_Re;
 
     @FXML
     private Button fileButton_Re, clearButton_Re, exportButton_Re, reselectButton_Re, updateRenameButton_Re;
@@ -165,7 +165,10 @@ public class FileRenameController extends ToolsProperties {
         Button exportAll = (Button) scene.lookup("#exportButton_Re");
         Button reselect = (Button) scene.lookup("#reselectButton_Re");
         Button updateRenameButton = (Button) scene.lookup("#updateRenameButton_Re");
+        ProgressBar progressBar = (ProgressBar) scene.lookup("#progressBar_Re");
+        Label tip = (Label) scene.lookup("#tip_Re");
         fileNum.setPrefWidth(tableWidth - removeAll.getWidth() - exportAll.getWidth() - reselect.getWidth() - updateRenameButton.getWidth() - 50);
+        tip.setPrefWidth(tableWidth - progressBar.getWidth() - 10);
     }
 
     /**
@@ -374,6 +377,7 @@ public class FileRenameController extends ToolsProperties {
         addToolTip(right_Re, tip_right);
         addToolTip(maxRow_Re, tip_maxRow);
         addToolTip(nameNum_Re, tip_nameNum);
+        addToolTip(tip_Re, tip_Re.getText());
         addToolTip(addSpace_Re, tip_addSpace);
         addToolTip(leftValue_Re, tip_leftValue);
         addToolTip(leftBehavior_Re, tip_option);
