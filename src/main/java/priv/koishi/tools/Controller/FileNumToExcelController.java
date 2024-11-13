@@ -36,7 +36,8 @@ import static priv.koishi.tools.Service.FileNumToExcelService.buildNameGroupNumE
 import static priv.koishi.tools.Service.ReadDataService.readExcel;
 import static priv.koishi.tools.Text.CommonTexts.*;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
-import static priv.koishi.tools.Utils.FileUtils.*;
+import static priv.koishi.tools.Utils.FileUtils.getFileType;
+import static priv.koishi.tools.Utils.FileUtils.readAllFiles;
 import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
@@ -341,7 +342,6 @@ public class FileNumToExcelController extends ToolsProperties {
     @FXML
     private void exportAll() throws Exception {
         updateLabel(log_Num, "");
-        String subCode = subCode_Num.getText();
         String inDirectory = inPath_Num.getText();
         String outFilePath = outPath_Num.getText();
         String inFilePath = excelPath_Num.getText();

@@ -383,7 +383,6 @@ public class ImgToExcelController extends ToolsProperties {
     @FXML
     private void exportAll() throws Exception {
         updateLabel(log_Img, "");
-        String subCode = subCode_Img.getText();
         String inDirectory = inPath_Img.getText();
         String outFilePath = outPath_Img.getText();
         String inFilePath = excelPath_Img.getText();
