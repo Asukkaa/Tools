@@ -18,6 +18,7 @@ public class CommonIgnorePolicy implements RejectedExecutionHandler {
     private void doLog(Runnable r, ThreadPoolExecutor e) {
         // 可做日志记录等
         System.err.println(r.toString());
+        System.err.println(e.toString());
     }
 
 }
