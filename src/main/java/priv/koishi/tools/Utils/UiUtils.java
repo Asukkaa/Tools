@@ -8,7 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.KeyEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
@@ -18,6 +18,7 @@ import javafx.util.Callback;
 import javafx.util.Duration;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import priv.koishi.tools.Bean.FileBean;
 import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.FileConfig;
@@ -435,5 +436,105 @@ public class UiUtils {
         addToolTip(pathLabel, selectedFilePath);
         return filePath;
     }
-    
+
+    /**
+     * 设置列表通过拖拽排序行
+     */
+    public static <T> void tableViewDragRow(TableView<T> tableView) {
+        DataFormat dataFormat = new DataFormat("application/x-java-serialized-object");
+        tableView.setRowFactory(tv -> {
+            TableRow<T> row = new TableRow<>();
+            //拖拽-检测
+            row.setOnDragDetected(e -> {
+                if (!row.isEmpty()) {
+                    Integer index = row.getIndex();
+                    Dragboard db = row.startDragAndDrop(TransferMode.MOVE);
+                    db.setDragView(row.snapshot(null, null));
+                    ClipboardContent cc = new ClipboardContent();
+                    cc.put(dataFormat, index);
+                    db.setContent(cc);
+                    e.consume();
+                }
+            });
+            //释放-验证
+            row.setOnDragOver(e -> {
+                Dragboard db = e.getDragboard();
+                if (db.hasContent(dataFormat)) {
+                    if (row.getIndex() != (Integer) db.getContent(dataFormat)) {
+                        e.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+                        e.consume();
+                    }
+                }
+            });
+            //释放-执行
+            row.setOnDragDropped(e -> {
+                Dragboard db = e.getDragboard();
+                if (db.hasContent(dataFormat)) {
+                    int draggedIndex = (Integer) db.getContent(dataFormat);
+                    int dropIndex;
+                    if (row.isEmpty()) {
+                        dropIndex = tableView.getItems().size();
+                    } else {
+                        dropIndex = row.getIndex();
+                    }
+                    tableView.getItems().add(dropIndex, tableView.getItems().remove(draggedIndex));
+                    e.setDropCompleted(true);
+                    tableView.getSelectionModel().select(dropIndex);
+                    e.consume();
+                }
+            });
+            return row;
+        });
+    }
+
+    /**
+     * 构建右键菜单
+     */
+    public static void tableViewContextMenu(TableView<FileBean> tableView, Label label) {
+        //设置可以选中多行
+        tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        //添加右键菜单
+        ContextMenu contextMenu = new ContextMenu();
+        MenuItem deleteDataMenuItem = new MenuItem("删除所选数据");
+        contextMenu.getItems().add(deleteDataMenuItem);
+        MenuItem openDirectoryMenuItem = new MenuItem("打开所选文件所在文件夹");
+        contextMenu.getItems().add(openDirectoryMenuItem);
+        MenuItem openFileMenuItem = new MenuItem("打开所选文件");
+        contextMenu.getItems().add(openFileMenuItem);
+        tableView.setContextMenu(contextMenu);
+        tableView.setOnMousePressed(event -> {
+            if (event.isSecondaryButtonDown()) {
+                contextMenu.show(tableView, event.getScreenX(), event.getScreenY());
+            }
+        });
+        //设置右键菜单行为
+        deleteDataMenuItem.setOnAction(event -> {
+            List<FileBean> fileBeans = tableView.getSelectionModel().getSelectedItems();
+            ObservableList<FileBean> items = tableView.getItems();
+            items.removeAll(fileBeans);
+            label.setText("共有" + items.size() + " 个文件");
+        });
+        openFileMenuItem.setOnAction(event -> {
+            List<FileBean> fileBeans = tableView.getSelectionModel().getSelectedItems();
+            fileBeans.forEach(fileBean -> {
+                try {
+                    openFile(fileBean.getPath());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        });
+        openDirectoryMenuItem.setOnAction(event -> {
+            List<FileBean> fileBeans = tableView.getSelectionModel().getSelectedItems();
+            List<String> pathList = fileBeans.stream().map(FileBean::getPath).distinct().toList();
+            pathList.forEach(path -> {
+                try {
+                    openFile(new File(path).getParent());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        });
+    }
+
 }

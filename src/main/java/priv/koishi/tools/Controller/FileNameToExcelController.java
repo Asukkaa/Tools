@@ -36,8 +36,7 @@ import java.util.concurrent.ExecutorService;
 import static priv.koishi.tools.Service.FileNameToExcelService.buildFileNameExcel;
 import static priv.koishi.tools.Service.ReadDataService.readFile;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
-import static priv.koishi.tools.Utils.FileUtils.*;
-import static priv.koishi.tools.Utils.FileUtils.openFile;
+import static priv.koishi.tools.Utils.FileUtils.readAllFiles;
 import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
@@ -181,61 +180,12 @@ public class FileNameToExcelController extends ToolsProperties {
         bindingProgressBarTask(readFileTask, taskBean);
         readFileTask.setOnSucceeded(event -> {
             taskUnbind(taskBean);
+            //设置列表通过拖拽排序行
+            tableViewDragRow(tableView_Name);
             //构建右键菜单
-            buildContextMenu();
+            tableViewContextMenu(tableView_Name, fileNumber_Name);
         });
         executorService.execute(readFileTask);
-    }
-
-
-    /**
-     * 构建右键菜单
-     */
-    private void buildContextMenu() {
-        //设置可以选中多行
-        tableView_Name.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        //添加右键菜单
-        ContextMenu contextMenu = new ContextMenu();
-        MenuItem deleteDataMenuItem = new MenuItem("删除所选数据");
-        contextMenu.getItems().add(deleteDataMenuItem);
-        MenuItem openDirectoryMenuItem = new MenuItem("打开所选文件所在文件夹");
-        contextMenu.getItems().add(openDirectoryMenuItem);
-        MenuItem openFileMenuItem = new MenuItem("打开所选文件");
-        contextMenu.getItems().add(openFileMenuItem);
-        tableView_Name.setContextMenu(contextMenu);
-        tableView_Name.setOnMousePressed(event -> {
-            if (event.isSecondaryButtonDown()) {
-                contextMenu.show(tableView_Name, event.getScreenX(), event.getScreenY());
-            }
-        });
-        //设置右键菜单行为
-        deleteDataMenuItem.setOnAction(event -> {
-            List<FileBean> fileBeans = tableView_Name.getSelectionModel().getSelectedItems();
-            ObservableList<FileBean> items = tableView_Name.getItems();
-            items.removeAll(fileBeans);
-            fileNumber_Name.setText("共有" + items.size() + " 个文件");
-        });
-        openFileMenuItem.setOnAction(event -> {
-            List<FileBean> fileBeans = tableView_Name.getSelectionModel().getSelectedItems();
-            fileBeans.forEach(fileBean -> {
-                try {
-                    openFile(fileBean.getPath());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            });
-        });
-        openDirectoryMenuItem.setOnAction(event -> {
-            List<FileBean> fileBeans = tableView_Name.getSelectionModel().getSelectedItems();
-            List<String> pathList = fileBeans.stream().map(FileBean::getPath).distinct().toList();
-            pathList.forEach(path -> {
-                try {
-                    openFile(new File(path).getParent());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            });
-        });
     }
 
     /**

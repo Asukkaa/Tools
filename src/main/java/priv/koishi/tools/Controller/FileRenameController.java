@@ -8,9 +8,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.TransferMode;
+import javafx.scene.input.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -39,7 +37,8 @@ import static priv.koishi.tools.Service.ReadDataService.readFile;
 import static priv.koishi.tools.Service.RenameService.buildRename;
 import static priv.koishi.tools.Service.RenameService.fileRename;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
-import static priv.koishi.tools.Utils.FileUtils.*;
+import static priv.koishi.tools.Utils.FileUtils.openFile;
+import static priv.koishi.tools.Utils.FileUtils.readAllFiles;
 import static priv.koishi.tools.Utils.TaskUtils.bindingProgressBarTask;
 import static priv.koishi.tools.Utils.TaskUtils.taskUnbind;
 import static priv.koishi.tools.Utils.UiUtils.*;
@@ -199,60 +198,12 @@ public class FileRenameController extends ToolsProperties {
                 rename_Re.setCellFactory((tableColumn) -> new EditingCell<>(FileBean::setRename));
                 taskUnbind(taskBean);
             }
+            //设置列表通过拖拽排序行
+            tableViewDragRow(tableView_Re);
             //构建右键菜单
-            buildContextMenu();
+            tableViewContextMenu(tableView_Re, fileNumber_Re);
         });
         executorService.execute(readFileTask);
-    }
-
-    /**
-     * 构建右键菜单
-     */
-    private void buildContextMenu() {
-        //设置可以选中多行
-        tableView_Re.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        //添加右键菜单
-        ContextMenu contextMenu = new ContextMenu();
-        MenuItem deleteDataMenuItem = new MenuItem("删除所选数据");
-        contextMenu.getItems().add(deleteDataMenuItem);
-        MenuItem openDirectoryMenuItem = new MenuItem("打开所选文件所在文件夹");
-        contextMenu.getItems().add(openDirectoryMenuItem);
-        MenuItem openFileMenuItem = new MenuItem("打开所选文件");
-        contextMenu.getItems().add(openFileMenuItem);
-        tableView_Re.setContextMenu(contextMenu);
-        tableView_Re.setOnMousePressed(event -> {
-            if (event.isSecondaryButtonDown()) {
-                contextMenu.show(tableView_Re, event.getScreenX(), event.getScreenY());
-            }
-        });
-        //设置右键菜单行为
-        deleteDataMenuItem.setOnAction(event -> {
-            List<FileBean> fileBeans = tableView_Re.getSelectionModel().getSelectedItems();
-            ObservableList<FileBean> items = tableView_Re.getItems();
-            items.removeAll(fileBeans);
-            fileNumber_Re.setText("共有" + items.size() + " 个文件");
-        });
-        openFileMenuItem.setOnAction(event -> {
-            List<FileBean> fileBeans = tableView_Re.getSelectionModel().getSelectedItems();
-            fileBeans.forEach(fileBean -> {
-                try {
-                    openFile(fileBean.getPath());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            });
-        });
-        openDirectoryMenuItem.setOnAction(event -> {
-            List<FileBean> fileBeans = tableView_Re.getSelectionModel().getSelectedItems();
-            List<String> pathList = fileBeans.stream().map(FileBean::getPath).distinct().toList();
-            pathList.forEach(path -> {
-                try {
-                    openFile(new File(path).getParent());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            });
-        });
     }
 
     /**
