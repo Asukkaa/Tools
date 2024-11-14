@@ -76,12 +76,12 @@
             <Button fx:id="fileButton_Img" onAction="#inDirectoryButton" style="-fx-cursor: hand"
                     text="选择要统计的文件夹"/>
             <Label fx:id="inPath_Img" prefHeight="20" prefWidth="300" style="-fx-font-size: 15px;"/>
-            <Button onAction="#exportPath" style="-fx-cursor: hand" text="选择导出文件夹位置"/>
+            <Button fx:id="outButton_Img" onAction="#exportPath" style="-fx-cursor: hand" text="选择导出文件夹位置"/>
             <Label fx:id="outPath_Img" prefHeight="20" style="-fx-font-size: 15px;"/>
         </HBox>
 
         <HBox spacing="10">
-            <Button onAction="#getExcelPath" style="-fx-cursor: hand" text="选择excel模板位置"/>
+            <Button fx:id="excelPathButton_Img" onAction="#getExcelPath" style="-fx-cursor: hand" text="选择excel模板位置"/>
             <Label fx:id="excelPath_Img" prefHeight="20" style="-fx-font-size: 15px;"/>
         </HBox>
 
@@ -110,6 +110,7 @@
 
         <HBox spacing="10">
             <ProgressBar fx:id="progressBar_Img" visible="false" prefWidth="200.0" progress="0.0"/>
+            <Button fx:id="cancel_Img" visible="false" onAction="#cancelTask" text="取消"/>
             <Label fx:id="tip_Img" prefHeight="20" textFill="red" alignment="CENTER_RIGHT"
                    text="插入图片数量不易过多，图片最好压缩后再使用，导出的excel大小超过4GB后可能打不开"/>
         </HBox>

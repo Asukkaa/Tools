@@ -82,6 +82,11 @@ public class FileRenameController extends ToolsProperties {
     static int defaultReadCell = 0;
 
     /**
+     * 要防重复点击的组件
+     */
+    static List<Control> disableControls = new ArrayList<>();
+
+    /**
      * 配置文件路径
      */
     static String configFile = "config/fileRenameConfig.properties";
@@ -118,10 +123,10 @@ public class FileRenameController extends ToolsProperties {
     private Label excelPath_Re, fileNumber_Re, inPath_Re, log_Re, typeLabel_Re, tip_Re;
 
     @FXML
-    private Button fileButton_Re, clearButton_Re, exportButton_Re, reselectButton_Re, updateRenameButton_Re;
+    private TableColumn<FileBean, String> name_Re, rename_Re, path_Re, size_Re, fileType_Re, creatDate_Re, updateDate_Re;
 
     @FXML
-    private TableColumn<FileBean, String> name_Re, rename_Re, path_Re, size_Re, fileType_Re, creatDate_Re, updateDate_Re;
+    private Button fileButton_Re, clearButton_Re, exportButton_Re, reselectButton_Re, updateRenameButton_Re, excelPathButton_Img;
 
     @FXML
     private ChoiceBox<String> hideFileType_Re, directoryNameType_Re, renameType_Re, subCode_Re, differenceCode_Re, targetStr_Re, leftBehavior_Re, rightBehavior_Re, renameBehavior_Re;
@@ -180,7 +185,8 @@ public class FileRenameController extends ToolsProperties {
             throw new Exception(text_selectNull);
         }
         TaskBean<FileBean> taskBean = new TaskBean<>();
-        taskBean.setProgressBar(progressBar_Re)
+        taskBean.setDisableControls(disableControls)
+                .setProgressBar(progressBar_Re)
                 .setMassageLabel(fileNumber_Re)
                 .setTableView(tableView_Re)
                 .setInFileList(inFileList)
@@ -224,7 +230,8 @@ public class FileRenameController extends ToolsProperties {
                 .setReadRowNum(readRowValue)
                 .setMaxRowNum(maxRowValue);
         TaskBean<FileNumBean> taskBean = new TaskBean<>();
-        taskBean.setProgressBar(progressBar_Re)
+        taskBean.setDisableControls(disableControls)
+                .setProgressBar(progressBar_Re)
                 .setReturnRenameList(true)
                 .setMassageLabel(log_Re)
                 .setShowFileType(false)
@@ -371,7 +378,16 @@ public class FileRenameController extends ToolsProperties {
      */
     @FXML
     private void initialize() throws IOException {
+        //读取全局变量配置
         getConfig();
+        //设置要防重复点击的组件
+        disableControls.add(fileButton_Re);
+        disableControls.add(clearButton_Re);
+        disableControls.add(exportButton_Re);
+        disableControls.add(reselectButton_Re);
+        disableControls.add(excelPathButton_Img);
+        disableControls.add(updateRenameButton_Re);
+        //设置鼠标悬停提示
         addToolTip(tag_Re, tip_tag);
         addToolTip(left_Re, tip_left);
         addToolTip(right_Re, tip_right);
@@ -391,6 +407,7 @@ public class FileRenameController extends ToolsProperties {
         addToolTip(startName_Re, text_onlyNaturalNumber + defaultStartNameNum);
         addToolTip(readRow_Re, text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row);
         addToolTip(readCell_Re, text_onlyNaturalNumber + defaultReadCell + text_formThe + (defaultReadCell + 1) + text_cell);
+        //设置要暂时移除的组件
         vbox_Re.getChildren().remove(strRenameVBox_Re);
         vbox_Re.getChildren().remove(excelRenameVBox_Re);
         //设置javafx单元格宽度
@@ -506,7 +523,8 @@ public class FileRenameController extends ToolsProperties {
             alert.showAndWait();
         } else {
             TaskBean<FileBean> taskBean = new TaskBean<>();
-            taskBean.setProgressBar(progressBar_Re)
+            taskBean.setDisableControls(disableControls)
+                    .setProgressBar(progressBar_Re)
                     .setMassageLabel(log_Re)
                     .setBeanList(fileBeans)
                     .setTabId(tabId);

@@ -197,7 +197,7 @@
             </HBox>
 
             <HBox spacing="10">
-                <Button onAction="#getExcelPath" style="-fx-cursor: hand" text="选择excel模板位置"/>
+                <Button fx:id="excelPathButton_Img" onAction="#getExcelPath" style="-fx-cursor: hand" text="选择excel模板位置"/>
                 <Label fx:id="excelPath_Re" prefHeight="20" style="-fx-font-size: 15px;"/>
             </HBox>
         </VBox>

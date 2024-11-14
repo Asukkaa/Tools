@@ -31,11 +31,11 @@ import static priv.koishi.tools.Utils.CommonUtils.checkRunningOutputStream;
  */
 public class FileUtils {
 
-    public static final String MacOSX = "Mac OS X";
+    private static final String MacOSX = "Mac OS X";
 
-    public static final String MacOS = "Mac OS";
+    private static final String MacOS = "Mac OS";
 
-    public static final String osName = "os.name";
+    private static final String osName = "os.name";
 
     /**
      * 获取文件类型
@@ -239,14 +239,15 @@ public class FileUtils {
     public static String saveExcel(SXSSFWorkbook workbook, ExcelConfig excelConfig) throws Exception {
         String filePath = excelConfig.getOutPath() + "\\" + excelConfig.getOutName() + excelConfig.getOutExcelExtension();
         checkDirectory(new File(filePath).getParent());
+        BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(Files.newOutputStream(Paths.get(filePath)));
         // 将Excel写入文件
         try (workbook) {
-            BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(Files.newOutputStream(Paths.get(filePath)));
             workbook.write(bufferedOutputStream);
-            bufferedOutputStream.flush();
-            bufferedOutputStream.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
+        } finally {
+            bufferedOutputStream.flush();
+            bufferedOutputStream.close();
         }
         return filePath;
     }

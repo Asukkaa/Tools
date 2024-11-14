@@ -79,6 +79,11 @@ public class FileNameToExcelController extends ToolsProperties {
     static int defaultStartCell = 1;
 
     /**
+     * 要防重复点击的组件
+     */
+    static List<Control> disableControls = new ArrayList<>();
+
+    /**
      * 配置文件路径
      */
     static String configFile = "config/fileNameToExcelConfig.properties";
@@ -121,7 +126,7 @@ public class FileNameToExcelController extends ToolsProperties {
     private TextField excelName_Name, sheetOutName_Name, startRow_Name, startCell_Name, filterFileType_Name;
 
     @FXML
-    private Button fileButton_Name, clearButton_Name, exportButton_Name, reselectButton_Name, removeExcelButton_Name;
+    private Button fileButton_Name, clearButton_Name, exportButton_Name, reselectButton_Name, removeExcelButton_Name, excelPathButton_Img;
 
     /**
      * 组件自适应宽高
@@ -172,6 +177,7 @@ public class FileNameToExcelController extends ToolsProperties {
         }
         TaskBean<FileBean> taskBean = new TaskBean<>();
         taskBean.setShowFileType(showFileType_Name.isSelected())
+                .setDisableControls(disableControls)
                 .setProgressBar(progressBar_Name)
                 .setMassageLabel(fileNumber_Name)
                 .setTableView(tableView_Name)
@@ -215,7 +221,16 @@ public class FileNameToExcelController extends ToolsProperties {
      */
     @FXML
     private void initialize() throws IOException {
+        //读取全局变量配置
         getConfig();
+        //设置要防重复点击的组件
+        disableControls.add(fileButton_Name);
+        disableControls.add(clearButton_Name);
+        disableControls.add(exportButton_Name);
+        disableControls.add(showFileType_Name);
+        disableControls.add(reselectButton_Name);
+        disableControls.add(excelPathButton_Img);
+        //设置鼠标悬停提示
         addToolTip(startRow_Name, tip_startRow);
         addToolTip(tip_Name, tip_Name.getText());
         addToolTip(recursion_Name, tip_recursion);
@@ -336,7 +351,7 @@ public class FileNameToExcelController extends ToolsProperties {
                 .setSheet(sheetName);
         TaskBean<FileBean> taskBean = new TaskBean<>();
         taskBean.setShowFileType(showFileType_Name.isSelected())
-                .setReselectButton(reselectButton_Name)
+                .setDisableControls(disableControls)
                 .setProgressBar(progressBar_Name)
                 .setTableView(tableView_Name)
                 .setMassageLabel(log_Name)

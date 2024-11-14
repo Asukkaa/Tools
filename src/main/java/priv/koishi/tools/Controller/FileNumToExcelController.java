@@ -99,6 +99,11 @@ public class FileNumToExcelController extends ToolsProperties {
     static int defaultReadCell = 0;
 
     /**
+     * 要防重复点击的组件
+     */
+    static List<Control> disableControls = new ArrayList<>();
+
+    /**
      * 配置文件路径
      */
     static String configFile = "config/fileNumToExcelConfig.properties";
@@ -132,13 +137,13 @@ public class FileNumToExcelController extends ToolsProperties {
     private CheckBox recursion_Num, openDirectory_Num, openFile_Num, showFileType_Num;
 
     @FXML
-    private Button fileButton_Num, clearButton_Num, exportButton_Num, reselectButton_Num;
-
-    @FXML
     private ChoiceBox<String> excelType_Num, hideFileType_Num, directoryNameType_Num, exportType_Num;
 
     @FXML
     private Label outPath_Num, excelPath_Num, fileNumber_Num, inPath_Num, log_Num, exportTypeLabel_Num;
+
+    @FXML
+    private Button fileButton_Num, clearButton_Num, exportButton_Num, reselectButton_Num, excelPathButton_Img;
 
     @FXML
     private TextField excelName_Num, sheetOutName_Num, startRow_Num, startCell_Num, filterFileType_Num, subCode_Num, readRow_Num, readCell_Num, maxRow_Num;
@@ -233,6 +238,7 @@ public class FileNumToExcelController extends ToolsProperties {
                 .setMaxRowNum(maxRowValue);
         TaskBean<FileNumBean> taskBean = new TaskBean<>();
         taskBean.setShowFileType(showFileType_Num.isSelected())
+                .setDisableControls(disableControls)
                 .setSubCode(subCode_Num.getText())
                 .setProgressBar(progressBar_Num)
                 .setMassageLabel(fileNumber_Num)
@@ -274,9 +280,18 @@ public class FileNumToExcelController extends ToolsProperties {
      */
     @FXML
     private void initialize() throws IOException {
+        //读取全局变量配置
         getConfig();
-        addToolTip(filterFileType_Num, tip_filterFileType);
+        //设置要防重复点击的组件
+        disableControls.add(fileButton_Num);
+        disableControls.add(clearButton_Num);
+        disableControls.add(exportButton_Num);
+        disableControls.add(showFileType_Num);
+        disableControls.add(reselectButton_Num);
+        disableControls.add(excelPathButton_Img);
+        //设置鼠标悬停提示
         addToolTip(startRow_Num, tip_startReadRow);
+        addToolTip(filterFileType_Num, tip_filterFileType);
         addToolTip(startCell_Num, text_onlyNaturalNumber + defaultStartCell);
         addToolTip(readRow_Num, text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row);
         addToolTip(readCell_Num, text_onlyNaturalNumber + defaultReadCell + text_formThe + (defaultReadCell + 1) + text_cell);
@@ -372,8 +387,8 @@ public class FileNumToExcelController extends ToolsProperties {
         reselectTask.setOnSucceeded(event -> {
             TaskBean<FileNumBean> taskBean = new TaskBean<>();
             taskBean.setShowFileType(showFileType_Num.isSelected())
-                    .setReselectButton(reselectButton_Num)
                     .setBeanList(reselectTask.getValue())
+                    .setDisableControls(disableControls)
                     .setSubCode(subCode_Num.getText())
                     .setProgressBar(progressBar_Num)
                     .setTableView(tableView_Num)

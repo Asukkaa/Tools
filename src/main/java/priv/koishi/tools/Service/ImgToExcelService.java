@@ -1,6 +1,9 @@
 package priv.koishi.tools.Service;
 
+import javafx.animation.AnimationTimer;
 import javafx.concurrent.Task;
+import javafx.scene.control.Control;
+import javafx.scene.control.ProgressBar;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.ClientAnchor;
@@ -9,9 +12,9 @@ import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.*;
-import priv.koishi.tools.Configuration.ExcelConfig;
 import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Bean.TaskBean;
+import priv.koishi.tools.Configuration.ExcelConfig;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -22,8 +25,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import static priv.koishi.tools.Text.CommonTexts.*;
-import static priv.koishi.tools.Utils.FileUtils.checkCopyDestination;
-import static priv.koishi.tools.Utils.FileUtils.getFileType;
+import static priv.koishi.tools.Utils.FileUtils.*;
 
 /**
  * @author KOISHI
@@ -32,22 +34,35 @@ import static priv.koishi.tools.Utils.FileUtils.getFileType;
  */
 public class ImgToExcelService {
 
+    private static XSSFWorkbook workbook;
+
+    private static SXSSFWorkbook sxssfWorkbook;
+
+    private static FileInputStream fileInputStream;
+
+    private static InputStream inputStream;
+
     /**
      * 构建分组的图片excel
      */
-    public static Task<SXSSFWorkbook> buildImgGroupExcel(TaskBean<FileNumBean> taskBean, ExcelConfig excelConfig) {
+    public static Task<String> buildImgGroupExcel(TaskBean<FileNumBean> taskBean, ExcelConfig excelConfig) {
         return new Task<>() {
             @Override
-            protected SXSSFWorkbook call() throws Exception {
+            protected String call() throws Exception {
+                List<Control> disableControls = taskBean.getDisableControls();
+                if (CollectionUtils.isNotEmpty(disableControls)) {
+                    disableControls.forEach(dc -> dc.setDisable(true));
+                }
                 checkCopyDestination(excelConfig);
                 File inputFile = new File(excelConfig.getInPath());
                 if (!inputFile.exists()) {
                     throw new Exception(text_excelNotExists);
                 }
                 updateMessage(text_printData);
-                FileInputStream inputStream = new FileInputStream(inputFile);
-                XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
-                SXSSFWorkbook sxssfWorkbook = new SXSSFWorkbook(workbook, 50);
+                fileInputStream = new FileInputStream(inputFile);
+                workbook = new XSSFWorkbook(fileInputStream);
+                sxssfWorkbook = new SXSSFWorkbook(workbook, 50);
+                taskBean.getCancelButton().setVisible(true);
                 String sheetName = excelConfig.getSheet();
                 int startRowNum = excelConfig.getStartRowNum();
                 int startCellNum = excelConfig.getStartCellNum();
@@ -61,15 +76,37 @@ public class ImgToExcelService {
                     sheet = sxssfWorkbook.getXSSFWorkbook().getSheet(sheetName);
                 }
                 for (int i = 0; i < fileNum; i++) {
-                    FileNumBean fileBean = fileBeans.get(i);
-                    List<String> imgList = fileBean.getFilePathList();
+                    if (isCancelled()) {
+                        break;
+                    }
+                    List<String> imgList = fileBeans.get(i).getFilePathList();
                     buildImgExcel(imgList, excelConfig, startCellNum, startRowNum, sheet, sxssfWorkbook);
                     updateMessage(text_printing + (i + 1) + "/" + fileNum + text_data);
                     updateProgress(i + 1, fileNum);
                     startRowNum++;
                 }
-                updateMessage(text_printDown);
-                return sxssfWorkbook;
+                ProgressBar progressBar = taskBean.getProgressBar();
+                progressBar.progressProperty().unbind();
+                AnimationTimer timer = new AnimationTimer() {
+                    double progress = 0;
+                    @Override
+                    public void handle(long now) {
+                        // 每次调用handle方法时，进度条的进度值增加或减少一点点
+                        progress += 0.001;
+                        if (progress > 1) {
+                            progress -= 1;
+                        }
+                        progressBar.setProgress(progress);
+                    }
+                };
+                progressBar.setProgress(0);
+                timer.start();
+                updateMessage("正在保存excel");
+                String path = saveExcel(sxssfWorkbook, excelConfig);
+                timer.stop();
+                progressBar.setProgress(1);
+                closeStream();
+                return path;
             }
         };
     }
@@ -108,7 +145,7 @@ public class ImgToExcelService {
                 anchor.setAnchorType(ClientAnchor.AnchorType.MOVE_DONT_RESIZE);
                 String extension = getFileType(new File(i));
                 // 读取图片文件
-                InputStream inputStream = Files.newInputStream(Paths.get(i));
+                inputStream = Files.newInputStream(Paths.get(i));
                 if (jpg.equals(extension) || jpeg.equals(extension)) {
                     drawing.createPicture(anchor, sxssfWorkbook.addPicture(inputStream.readAllBytes(), Workbook.PICTURE_TYPE_JPEG));
                 } else if (png.equals(extension)) {
@@ -120,6 +157,28 @@ public class ImgToExcelService {
                 sheet.getRow(startRowNum).setHeightInPoints(imgHeight);
                 cellNum++;
             }
+        }
+    }
+
+    /**
+     * 线程取消时关闭所有流
+     */
+    public static void closeStream() throws IOException {
+        if (workbook != null) {
+            workbook.close();
+            workbook = null;
+        }
+        if (sxssfWorkbook != null) {
+            sxssfWorkbook.close();
+            sxssfWorkbook = null;
+        }
+        if (fileInputStream != null) {
+            fileInputStream.close();
+            fileInputStream = null;
+        }
+        if (inputStream != null) {
+            inputStream.close();
+            inputStream = null;
         }
     }
 

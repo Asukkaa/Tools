@@ -11,16 +11,17 @@ import javafx.scene.input.DragEvent;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.ExcelConfig;
 import priv.koishi.tools.Configuration.FileConfig;
 import priv.koishi.tools.Properties.ToolsProperties;
+import priv.koishi.tools.Service.ImgToExcelService;
 import priv.koishi.tools.ThreadPool.CommonThreadPoolExecutor;
 
 import java.io.File;
@@ -37,7 +38,8 @@ import static priv.koishi.tools.Service.ReadDataService.readExcel;
 import static priv.koishi.tools.Text.CommonTexts.*;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
 import static priv.koishi.tools.Utils.FileUtils.*;
-import static priv.koishi.tools.Utils.TaskUtils.*;
+import static priv.koishi.tools.Utils.TaskUtils.bindingProgressBarTask;
+import static priv.koishi.tools.Utils.TaskUtils.taskUnbind;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
 /**
@@ -108,6 +110,11 @@ public class ImgToExcelController extends ToolsProperties {
     static int defaultReadCell = 0;
 
     /**
+     * 要防重复点击的组件
+     */
+    static List<Control> disableControls = new ArrayList<>();
+
+    /**
      * 配置文件路径
      */
     static String configFile = "config/imgToExcelConfig.properties";
@@ -121,6 +128,11 @@ public class ImgToExcelController extends ToolsProperties {
      * 线程池实例
      */
     ExecutorService executorService = commonThreadPoolExecutor.createNewThreadPool();
+
+    /**
+     * 构建excel线程
+     */
+    private Task<String> buildExcelTask;
 
     @FXML
     private VBox vbox_Img;
@@ -138,13 +150,13 @@ public class ImgToExcelController extends ToolsProperties {
     private ChoiceBox<String> hideFileType_Img, excelType_Img;
 
     @FXML
-    private Button fileButton_Img, reselectButton_Img, clearButton_Img, exportButton_Img;
-
-    @FXML
     private Label inPath_Img, outPath_Img, excelPath_Img, fileNumber_Img, log_Img, maxImg_Img, tip_Img;
 
     @FXML
     private CheckBox jpg_Img, png_Img, jpeg_Img, recursion_Img, showFileType_Img, openDirectory_Img, openFile_Img, noImg_Img;
+
+    @FXML
+    private Button fileButton_Img, reselectButton_Img, clearButton_Img, exportButton_Img, cancel_Img, outButton_Img, excelPathButton_Img;
 
     @FXML
     private TextField imgWidth_Img, imgHeight_Img, excelName_Img, sheetOutName_Img, subCode_Img, startRow_Img, startCell_Img, readRow_Img, readCell_Img, maxRow_Img, maxImgNum_Img;
@@ -181,8 +193,9 @@ public class ImgToExcelController extends ToolsProperties {
         TextField maxImgNum = (TextField) scene.lookup("#maxImgNum_Img");
         Label tip_Img = (Label) scene.lookup("#tip_Img");
         ProgressBar progressBar = (ProgressBar) scene.lookup("#progressBar_Img");
+        Button cancel = (Button) scene.lookup("#cancel_Img");
         fileNum.setPrefWidth(tableWidth - removeAll.getWidth() - exportAll.getWidth() - reselect.getWidth() - noImg.getWidth() - maxImg.getWidth() - maxImgNum.getWidth() - 70);
-        tip_Img.setPrefWidth(tableWidth - progressBar.getWidth() - 10);
+        tip_Img.setPrefWidth(tableWidth - progressBar.getWidth() - cancel.getWidth() - 20);
     }
 
     /**
@@ -252,6 +265,7 @@ public class ImgToExcelController extends ToolsProperties {
                 .setMaxRowNum(maxRowValue);
         TaskBean<FileNumBean> taskBean = new TaskBean<>();
         taskBean.setShowFileType(showFileType_Img.isSelected())
+                .setDisableControls(disableControls)
                 .setSubCode(subCode_Img.getText())
                 .setMassageLabel(fileNumber_Img)
                 .setProgressBar(progressBar_Img)
@@ -295,7 +309,17 @@ public class ImgToExcelController extends ToolsProperties {
      */
     @FXML
     private void initialize() throws IOException {
+        //读取全局变量配置
         getConfig();
+        //设置要防重复点击的组件
+        disableControls.add(outButton_Img);
+        disableControls.add(fileButton_Img);
+        disableControls.add(clearButton_Img);
+        disableControls.add(exportButton_Img);
+        disableControls.add(showFileType_Img);
+        disableControls.add(reselectButton_Img);
+        disableControls.add(excelPathButton_Img);
+        //设置鼠标悬停提示
         addToolTip(noImg_Img, tip_noImg);
         addToolTip(tip_Img, tip_Img.getText());
         addToolTip(maxImgNum_Img, tip_maxImgNum);
@@ -421,16 +445,36 @@ public class ImgToExcelController extends ToolsProperties {
         reselectTask.setOnSucceeded(event -> {
             TaskBean<FileNumBean> taskBean = new TaskBean<>();
             taskBean.setShowFileType(showFileType_Img.isSelected())
-                    .setReselectButton(reselectButton_Img)
                     .setBeanList(reselectTask.getValue())
+                    .setDisableControls(disableControls)
                     .setProgressBar(progressBar_Img)
+                    .setCancelButton(cancel_Img)
                     .setTableView(tableView_Img)
                     .setMassageLabel(log_Img)
                     .setTabId(tabId);
             //获取Task任务
-            Task<SXSSFWorkbook> buildExcelTask = buildImgGroupExcel(taskBean, excelConfig);
-            //线程成功后保存excel
-            saveExcelOnSucceeded(excelConfig, taskBean, buildExcelTask, openDirectory_Img, openFile_Img, executorService);
+            buildExcelTask = buildImgGroupExcel(taskBean, excelConfig);
+            bindingProgressBarTask(buildExcelTask, taskBean);
+            buildExcelTask.setOnSucceeded(e -> {
+                taskBean.getCancelButton().setVisible(false);
+                taskUnbind(taskBean);
+                String excelPath = buildExcelTask.getValue();
+                try {
+                    if (openDirectory_Img.isSelected()) {
+                        openFile(new File(excelPath).getParent());
+                    }
+                    if (openFile_Img.isSelected()) {
+                        openFile(excelPath);
+                    }
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                } finally {
+                    buildExcelTask = null;
+                }
+                taskBean.getMassageLabel().setText("所有数据已保存到： " + excelPath);
+                taskBean.getMassageLabel().setTextFill(Color.GREEN);
+            });
+            executorService.execute(buildExcelTask);
         });
     }
 
@@ -580,9 +624,28 @@ public class ImgToExcelController extends ToolsProperties {
      * 最大匹配数量设置监听
      */
     @FXML
-    public void maxImgNumKeyTyped(KeyEvent event) {
+    private void maxImgNumKeyTyped(KeyEvent event) {
         integerRangeTextField(maxImgNum_Img, 1, null, event);
         addValueToolTip(maxImgNum_Img, tip_maxImgNum);
+    }
+
+    /**
+     * 取消导出按钮
+     */
+    @FXML
+    private void cancelTask() throws IOException {
+        if (buildExcelTask != null && buildExcelTask.isRunning()) {
+            buildExcelTask.cancel();
+            buildExcelTask = null;
+        }
+        ImgToExcelService.closeStream();
+        TaskBean<FileNumBean> taskBean = new TaskBean<>();
+        taskBean.setProgressBar(progressBar_Img)
+                .setMassageLabel(log_Img);
+        taskUnbind(taskBean);
+        setDisableControls(taskBean, false);
+        log_Img.setText("任务已取消");
+        log_Img.setTextFill(Color.RED);
     }
 
 }

@@ -13,6 +13,7 @@ import java.util.UUID;
 
 import static priv.koishi.tools.Text.CommonTexts.*;
 import static priv.koishi.tools.Utils.CommonUtils.*;
+import static priv.koishi.tools.Utils.UiUtils.setDisableControls;
 
 /**
  * @author KOISHI
@@ -25,6 +26,7 @@ public class RenameService {
         return new Task<>() {
             @Override
             protected String call() throws Exception {
+                setDisableControls(taskBean, true);
                 //防止命名重复先将所有慰文件重命名为uuid生成的临时名称
                 updateMessage("正在将文件重命名为临时名称");
                 List<FileBean> fileBeanList = taskBean.getBeanList();

@@ -68,11 +68,6 @@ public class TaskBean<T> {
     int maxImgNum;
 
     /**
-     * 查询查询按钮
-     */
-    Button reselectButton;
-
-    /**
      * 文件批量重命名功能的设置
      */
     Configuration configuration;
@@ -81,5 +76,15 @@ public class TaskBean<T> {
      * 读取重命名功能excel模板标志
      */
     boolean returnRenameList;
+
+    /**
+     * 取消线程按钮
+     */
+    Button cancelButton;
+
+    /**
+     * 要防重复点击的组件
+     */
+    List<Control> disableControls;
 
 }

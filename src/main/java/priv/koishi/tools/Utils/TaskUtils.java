@@ -1,22 +1,22 @@
 package priv.koishi.tools.Utils;
 
 import javafx.concurrent.Task;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.paint.Color;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import priv.koishi.tools.Configuration.ExcelConfig;
 import priv.koishi.tools.Bean.TaskBean;
+import priv.koishi.tools.Configuration.ExcelConfig;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 
-import static priv.koishi.tools.Utils.FileUtils.*;
+import static priv.koishi.tools.Utils.FileUtils.openFile;
+import static priv.koishi.tools.Utils.FileUtils.saveExcel;
+import static priv.koishi.tools.Utils.UiUtils.setDisableControls;
 
 /**
  * @author KOISHI
@@ -36,7 +36,7 @@ public class TaskUtils {
             progressBar.progressProperty().unbind();
             progressBar.setVisible(true);
             //给进度条设置初始值
-            progressBar.setProgress(0.0);
+            progressBar.setProgress(0);
             progressBar.progressProperty().bind(task.progressProperty());
         }
         if (massageLabel != null) {
@@ -54,12 +54,12 @@ public class TaskUtils {
     public static void saveExcelOnSucceeded(ExcelConfig excelConfig, TaskBean<?> taskBean, Task<SXSSFWorkbook> buildExcelTask,
                                             CheckBox openDirectory, CheckBox openFile, ExecutorService executorService) {
         bindingProgressBarTask(buildExcelTask, taskBean);
-        buildExcelTask.setOnSucceeded(event ->{
+        buildExcelTask.setOnSucceeded(event -> {
             SXSSFWorkbook workbook = buildExcelTask.getValue();
-            Task<String> saveExceltask = saveExceltask(excelConfig, workbook);
-            bindingProgressBarTask(saveExceltask, taskBean);
-            saveExceltask.setOnSucceeded(s -> {
-                String excelPath = saveExceltask.getValue();
+            Task<String> saveExcelTask = saveExceltask(excelConfig, workbook);
+            bindingProgressBarTask(saveExcelTask, taskBean);
+            saveExcelTask.setOnSucceeded(s -> {
+                String excelPath = saveExcelTask.getValue();
                 try {
                     if (openDirectory.isSelected()) {
                         openFile(new File(excelPath).getParent());
@@ -70,20 +70,12 @@ public class TaskUtils {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 } finally {
-                    //导出结束后重新查询列表
-                    Button button = taskBean.getReselectButton();
-                    if (button != null) {
-                        EventHandler<ActionEvent> handler = button.getOnAction();
-                        if (handler != null) {
-                            handler.handle(new ActionEvent(button, button));
-                        }
-                    }
                     taskUnbind(taskBean);
                 }
                 taskBean.getMassageLabel().setText("所有数据已保存到： " + excelPath);
                 taskBean.getMassageLabel().setTextFill(Color.GREEN);
             });
-            executorService.execute(saveExceltask);
+            executorService.execute(saveExcelTask);
         });
         executorService.execute(buildExcelTask);
     }
@@ -94,6 +86,11 @@ public class TaskUtils {
     public static void throwTaskException(Task<?> task, TaskBean<?> taskBean) {
         task.setOnFailed(event -> {
             taskUnbind(taskBean);
+            Button cancelButton = taskBean.getCancelButton();
+            if (cancelButton != null) {
+                cancelButton.setVisible(false);
+            }
+            setDisableControls(taskBean, false);
             // 获取抛出的异常
             Throwable ex = task.getException();
             throw new RuntimeException(ex);
@@ -104,6 +101,7 @@ public class TaskUtils {
      * 线程组件解绑
      */
     public static void taskUnbind(TaskBean<?> taskBean) {
+        setDisableControls(taskBean, false);
         Label massageLabel = taskBean.getMassageLabel();
         ProgressBar progressBar = taskBean.getProgressBar();
         if (massageLabel != null) {
@@ -128,6 +126,5 @@ public class TaskUtils {
             }
         };
     }
-
 
 }

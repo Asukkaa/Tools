@@ -7,9 +7,9 @@ import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import priv.koishi.tools.Configuration.ExcelConfig;
 import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Bean.TaskBean;
+import priv.koishi.tools.Configuration.ExcelConfig;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,6 +18,7 @@ import java.util.List;
 import static priv.koishi.tools.Text.CommonTexts.*;
 import static priv.koishi.tools.Utils.CommonUtils.autoSizeExcel;
 import static priv.koishi.tools.Utils.FileUtils.checkCopyDestination;
+import static priv.koishi.tools.Utils.UiUtils.setDisableControls;
 
 /**
  * @author KOISHI
@@ -33,6 +34,7 @@ public class FileNumToExcelService {
         return new Task<>() {
             @Override
             protected SXSSFWorkbook call() throws Exception {
+                setDisableControls(taskBean, true);
                 checkCopyDestination(excelConfig);
                 File inputFile = new File(excelConfig.getInPath());
                 if (!inputFile.exists()) {
