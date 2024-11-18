@@ -220,15 +220,12 @@ public class FileRenameController extends ToolsProperties {
      * 读取excel重命名模板
      */
     private void readExcelRename() {
-        int readRowValue = setDefaultIntValue(readRow_Re, defaultReadRow, 0, null);
-        int readCellValue = setDefaultIntValue(readCell_Re, defaultReadCell, 0, null);
-        int maxRowValue = setDefaultIntValue(maxRow_Re, -1, 1, null);
         ExcelConfig excelConfig = new ExcelConfig();
-        excelConfig.setSheet(sheetOutName_Re.getText())
-                .setInPath(excelPath_Re.getText())
-                .setReadCellNum(readCellValue)
-                .setReadRowNum(readRowValue)
-                .setMaxRowNum(maxRowValue);
+        excelConfig.setReadCellNum(setDefaultIntValue(readCell_Re, defaultReadCell, 0, null))
+                .setReadRowNum(setDefaultIntValue(readRow_Re, defaultReadRow, 0, null))
+                .setMaxRowNum(setDefaultIntValue(maxRow_Re, -1, 1, null))
+                .setSheet(sheetOutName_Re.getText())
+                .setInPath(excelPath_Re.getText());
         TaskBean<FileNumBean> taskBean = new TaskBean<>();
         taskBean.setDisableControls(disableControls)
                 .setProgressBar(progressBar_Re)
@@ -308,18 +305,14 @@ public class FileRenameController extends ToolsProperties {
      * 按编号规则重命名
      */
     private void matchCodeRename(TaskBean<FileBean> taskBean) {
-        int startNameValue = setDefaultIntValue(startName_Re, 1, 0, null);
-        int startSizeValue = setDefaultIntValue(startSize_Re, 0, 0, null);
-        int nameNumValue = setDefaultIntValue(nameNum_Re, 0, 0, null);
-        int tagValue = setDefaultIntValue(tag_Re, 1, 0, null);
         CodeRenameConfig codeRenameConfig = new CodeRenameConfig();
-        codeRenameConfig.setDifferenceCode(differenceCode_Re.getValue())
+        codeRenameConfig.setStartName(setDefaultIntValue(startName_Re, 1, 0, null))
+                .setStartSize(setDefaultIntValue(startSize_Re, 0, 0, null))
+                .setNameNum( setDefaultIntValue(nameNum_Re, 0, 0, null))
+                .setTag(setDefaultIntValue(tag_Re, 1, 0, null))
+                .setDifferenceCode(differenceCode_Re.getValue())
                 .setAddSpace(addSpace_Re.isSelected())
-                .setSubCode(subCode_Re.getValue())
-                .setStartName(startNameValue)
-                .setStartSize(startSizeValue)
-                .setTag(tagValue)
-                .setNameNum(nameNumValue);
+                .setSubCode(subCode_Re.getValue());
         taskBean.setConfiguration(codeRenameConfig);
     }
 
@@ -337,14 +330,12 @@ public class FileRenameController extends ToolsProperties {
             if (text_replace.equals(renameBehavior)) {
                 stringRenameConfig.setRenameStr(renameStr_Re.getText());
             } else if (text_bothSides.equals(renameBehavior)) {
-                int left = setDefaultIntValue(left_Re, 0, 0, null);
-                int right = setDefaultIntValue(right_Re, 0, 0, null);
                 String leftBehavior = leftBehavior_Re.getValue();
                 String rightBehavior = rightBehavior_Re.getValue();
-                stringRenameConfig.setLeftBehavior(leftBehavior)
+                stringRenameConfig.setRight(setDefaultIntValue(right_Re, 0, 0, null))
+                        .setLeft(setDefaultIntValue(left_Re, 0, 0, null))
                         .setRightBehavior(rightBehavior)
-                        .setRight(right)
-                        .setLeft(left);
+                        .setLeftBehavior(leftBehavior);
                 if (text_insert.equals(leftBehavior) || text_replace.equals(leftBehavior)) {
                     stringRenameConfig.setLeftValue(leftValue_Re.getText());
                 }

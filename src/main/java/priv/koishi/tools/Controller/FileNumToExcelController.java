@@ -227,15 +227,12 @@ public class FileNumToExcelController extends ToolsProperties {
         //渲染表格前需要更新一下读取的文件
         updateInFileList();
         //组装数据
-        int readRowValue = setDefaultIntValue(readRow_Num, defaultReadRow, 0, null);
-        int readCellValue = setDefaultIntValue(readCell_Num, defaultReadCell, 0, null);
-        int maxRowValue = setDefaultIntValue(maxRow_Num, -1, 1, null);
         ExcelConfig excelConfig = new ExcelConfig();
-        excelConfig.setSheet(sheetOutName_Num.getText())
-                .setInPath(excelPath_Num.getText())
-                .setReadCellNum(readCellValue)
-                .setReadRowNum(readRowValue)
-                .setMaxRowNum(maxRowValue);
+        excelConfig.setReadCellNum(setDefaultIntValue(readCell_Num, defaultReadCell, 0, null))
+                .setReadRowNum(setDefaultIntValue(readRow_Num, defaultReadRow, 0, null))
+                .setMaxRowNum(setDefaultIntValue(maxRow_Num, -1, 1, null))
+                .setSheet(sheetOutName_Num.getText())
+                .setInPath(excelPath_Num.getText());
         TaskBean<FileNumBean> taskBean = new TaskBean<>();
         taskBean.setShowFileType(showFileType_Num.isSelected())
                 .setDisableControls(disableControls)
@@ -348,6 +345,7 @@ public class FileNumToExcelController extends ToolsProperties {
     @FXML
     private void removeAll() {
         removeNumImgAll(tableView_Num, fileNumber_Num, log_Num);
+        inFileList = null;
         System.gc();
     }
 
@@ -357,32 +355,26 @@ public class FileNumToExcelController extends ToolsProperties {
     @FXML
     private void exportAll() throws Exception {
         updateLabel(log_Num, "");
-        String inDirectory = inPath_Num.getText();
         String outFilePath = outPath_Num.getText();
-        String inFilePath = excelPath_Num.getText();
         if (StringUtils.isEmpty(outFilePath)) {
             throw new Exception(text_outPathNull);
         }
-        if (StringUtils.isEmpty(inDirectory)) {
+        if (StringUtils.isEmpty(inPath_Num.getText())) {
             throw new Exception(text_filePathNull);
         }
-        if (StringUtils.isEmpty(inFilePath)) {
+        if (StringUtils.isEmpty(excelPath_Num.getText())) {
             throw new Exception(text_excelPathNull);
         }
-        String sheetName = setDefaultStrValue(sheetOutName_Num, defaultSheetName);
-        String excelNameValue = setDefaultFileName(excelName_Num, defaultOutFileName);
         int readRowValue = setDefaultIntValue(readRow_Num, defaultReadRow, 0, null);
-        int startRowValue = setDefaultIntValue(startRow_Num, readRowValue, 0, null);
-        int startCellValue = setDefaultIntValue(startCell_Num, defaultStartCell, 0, null);
         ExcelConfig excelConfig = new ExcelConfig();
-        excelConfig.setOutExcelExtension(excelType_Num.getValue())
+        excelConfig.setStartCellNum(setDefaultIntValue(startCell_Num, defaultStartCell, 0, null))
+                .setStartRowNum(setDefaultIntValue(startRow_Num, readRowValue, 0, null))
+                .setOutName(setDefaultFileName(excelName_Num, defaultOutFileName))
+                .setSheet(setDefaultStrValue(sheetOutName_Num, defaultSheetName))
+                .setOutExcelExtension(excelType_Num.getValue())
                 .setExportType(exportType_Num.getValue())
                 .setInPath(excelPath_Num.getText())
-                .setStartCellNum(startCellValue)
-                .setStartRowNum(startRowValue)
-                .setOutName(excelNameValue)
-                .setOutPath(outFilePath)
-                .setSheet(sheetName);
+                .setOutPath(outFilePath);
         Task<List<FileNumBean>> reselectTask = reselect();
         reselectTask.setOnSucceeded(event -> {
             TaskBean<FileNumBean> taskBean = new TaskBean<>();

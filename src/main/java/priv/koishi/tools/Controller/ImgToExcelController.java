@@ -16,6 +16,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.ExcelConfig;
@@ -38,8 +39,7 @@ import static priv.koishi.tools.Service.ReadDataService.readExcel;
 import static priv.koishi.tools.Text.CommonTexts.*;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
 import static priv.koishi.tools.Utils.FileUtils.*;
-import static priv.koishi.tools.Utils.TaskUtils.bindingProgressBarTask;
-import static priv.koishi.tools.Utils.TaskUtils.taskUnbind;
+import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
 /**
@@ -87,7 +87,7 @@ public class ImgToExcelController extends ToolsProperties {
     /**
      * 默认图片宽度
      */
-    static int defaultImgWidth = 3000;
+    static int defaultImgWidth = 12;
 
     /**
      * 默认图片高度
@@ -132,7 +132,12 @@ public class ImgToExcelController extends ToolsProperties {
     /**
      * 构建excel线程
      */
-    private Task<String> buildExcelTask;
+    private Task<SXSSFWorkbook> buildExcelTask;
+
+    /**
+     * 保存excel线程
+     */
+    private Task<String> saveExcelTask;
 
     @FXML
     private VBox vbox_Img;
@@ -254,15 +259,12 @@ public class ImgToExcelController extends ToolsProperties {
         if (StringUtils.isNotBlank(maxImgValue)) {
             maxImgNum = Integer.parseInt(maxImgValue);
         }
-        int readRowValue = setDefaultIntValue(readRow_Img, defaultReadRow, 0, null);
-        int readCellValue = setDefaultIntValue(readCell_Img, defaultReadCell, 0, null);
-        int maxRowValue = setDefaultIntValue(maxRow_Img, -1, 1, null);
         ExcelConfig excelConfig = new ExcelConfig();
-        excelConfig.setSheet(sheetOutName_Img.getText())
-                .setInPath(excelPath_Img.getText())
-                .setReadCellNum(readCellValue)
-                .setReadRowNum(readRowValue)
-                .setMaxRowNum(maxRowValue);
+        excelConfig.setReadCellNum(setDefaultIntValue(readCell_Img, defaultReadCell, 0, null))
+                .setReadRowNum(setDefaultIntValue(readRow_Img, defaultReadRow, 0, null))
+                .setMaxRowNum(setDefaultIntValue(maxRow_Img, -1, 1, null))
+                .setSheet(sheetOutName_Img.getText())
+                .setInPath(excelPath_Img.getText());
         TaskBean<FileNumBean> taskBean = new TaskBean<>();
         taskBean.setShowFileType(showFileType_Img.isSelected())
                 .setDisableControls(disableControls)
@@ -324,9 +326,9 @@ public class ImgToExcelController extends ToolsProperties {
         addToolTip(tip_Img, tip_Img.getText());
         addToolTip(maxImgNum_Img, tip_maxImgNum);
         addToolTip(startRow_Img, tip_startReadRow);
-        addToolTip(imgWidth_Img, tip_imgHeight + defaultImgWidth);
-        addToolTip(imgHeight_Img, tip_imgHeight + defaultImgHeight);
         addToolTip(startCell_Img, text_onlyNaturalNumber + defaultStartCell);
+        addToolTip(imgWidth_Img, tip_imgHeightWidth + defaultImgWidth + tip_imgWidth);
+        addToolTip(imgHeight_Img, tip_imgHeightWidth + defaultImgHeight + tip_imgHeight);
         addNumImgToolTip(recursion_Img, subCode_Img, excelName_Img, sheetOutName_Img, maxRow_Img);
         addToolTip(readRow_Img, text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row);
         addToolTip(readCell_Img, text_onlyNaturalNumber + defaultReadCell + text_formThe + (defaultReadCell + 1) + text_cell);
@@ -402,6 +404,7 @@ public class ImgToExcelController extends ToolsProperties {
     @FXML
     private void removeAll() {
         removeNumImgAll(tableView_Img, fileNumber_Img, log_Img);
+        inFileList = null;
         System.gc();
     }
 
@@ -411,36 +414,28 @@ public class ImgToExcelController extends ToolsProperties {
     @FXML
     private void exportAll() throws Exception {
         updateLabel(log_Img, "");
-        String inDirectory = inPath_Img.getText();
         String outFilePath = outPath_Img.getText();
-        String inFilePath = excelPath_Img.getText();
         if (StringUtils.isEmpty(outFilePath)) {
             throw new Exception(text_outPathNull);
         }
-        if (StringUtils.isEmpty(inDirectory)) {
+        if (StringUtils.isEmpty(inPath_Img.getText())) {
             throw new Exception(text_filePathNull);
         }
-        if (StringUtils.isEmpty(inFilePath)) {
+        if (StringUtils.isEmpty(excelPath_Img.getText())) {
             throw new Exception(text_excelPathNull);
         }
-        String sheetName = setDefaultStrValue(sheetOutName_Img, defaultSheetName);
-        String excelNameValue = setDefaultFileName(excelName_Img, defaultOutFileName);
         int readRowValue = setDefaultIntValue(readRow_Img, defaultReadRow, 0, null);
-        int imgWidth = setDefaultIntValue(imgWidth_Img, defaultImgWidth, 0, null);
-        int imgHeight = setDefaultIntValue(imgHeight_Img, defaultImgHeight, 0, null);
-        int startRowValue = setDefaultIntValue(startRow_Img, readRowValue, 0, null);
-        int startCellValue = setDefaultIntValue(startCell_Img, defaultStartCell, 0, null);
         ExcelConfig excelConfig = new ExcelConfig();
-        excelConfig.setOutExcelExtension(excelType_Img.getValue())
+        excelConfig.setStartCellNum(setDefaultIntValue(startCell_Img, defaultStartCell, 0, null))
+                .setImgHeight(setDefaultIntValue(imgHeight_Img, defaultImgHeight, 0, null))
+                .setStartRowNum(setDefaultIntValue(startRow_Img, readRowValue, 0, null))
+                .setImgWidth(setDefaultIntValue(imgWidth_Img, defaultImgWidth, 0, null))
+                .setOutName(setDefaultFileName(excelName_Img, defaultOutFileName))
+                .setSheet(setDefaultStrValue(sheetOutName_Img, defaultSheetName))
+                .setOutExcelExtension(excelType_Img.getValue())
                 .setInPath(excelPath_Img.getText())
                 .setNoImg(noImg_Img.isSelected())
-                .setStartCellNum(startCellValue)
-                .setStartRowNum(startRowValue)
-                .setOutName(excelNameValue)
-                .setOutPath(outFilePath)
-                .setImgHeight(imgHeight)
-                .setImgWidth(imgWidth)
-                .setSheet(sheetName);
+                .setOutPath(outFilePath);
         Task<List<FileNumBean>> reselectTask = reselect();
         reselectTask.setOnSucceeded(event -> {
             TaskBean<FileNumBean> taskBean = new TaskBean<>();
@@ -456,23 +451,30 @@ public class ImgToExcelController extends ToolsProperties {
             buildExcelTask = buildImgGroupExcel(taskBean, excelConfig);
             bindingProgressBarTask(buildExcelTask, taskBean);
             buildExcelTask.setOnSucceeded(e -> {
-                taskBean.getCancelButton().setVisible(false);
-                taskUnbind(taskBean);
-                String excelPath = buildExcelTask.getValue();
-                try {
-                    if (openDirectory_Img.isSelected()) {
-                        openFile(new File(excelPath).getParent());
+                saveExcelTask = saveExceltask(excelConfig, buildExcelTask.getValue());
+                bindingProgressBarTask(saveExcelTask, taskBean);
+                saveExcelTask.setOnSucceeded(s -> {
+                    String excelPath = saveExcelTask.getValue();
+                    try {
+                        if (openDirectory_Img.isSelected()) {
+                            openFile(new File(excelPath).getParent());
+                        }
+                        if (openFile_Img.isSelected()) {
+                            openFile(excelPath);
+                        }
+                        ImgToExcelService.closeStream();
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    } finally {
+                        saveExcelTask = null;
+                        buildExcelTask = null;
+                        inFileList = null;
+                        taskUnbind(taskBean);
                     }
-                    if (openFile_Img.isSelected()) {
-                        openFile(excelPath);
-                    }
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                } finally {
-                    buildExcelTask = null;
-                }
-                taskBean.getMassageLabel().setText("所有数据已保存到： " + excelPath);
-                taskBean.getMassageLabel().setTextFill(Color.GREEN);
+                    taskBean.getMassageLabel().setText("所有数据已保存到： " + excelPath);
+                    taskBean.getMassageLabel().setTextFill(Color.GREEN);
+                });
+                executorService.execute(saveExcelTask);
             });
             executorService.execute(buildExcelTask);
         });
@@ -608,7 +610,7 @@ public class ImgToExcelController extends ToolsProperties {
     @FXML
     private void imgWidthHandleKeyTyped(KeyEvent event) {
         integerRangeTextField(imgWidth_Img, 0, null, event);
-        addValueToolTip(imgWidth_Img, text_onlyNaturalNumber + defaultImgWidth);
+        addValueToolTip(imgWidth_Img, text_onlyNaturalNumber + defaultImgWidth + tip_imgWidth);
     }
 
     /**
@@ -617,7 +619,7 @@ public class ImgToExcelController extends ToolsProperties {
     @FXML
     private void imgHeightHandleKeyTyped(KeyEvent event) {
         integerRangeTextField(imgHeight_Img, 0, null, event);
-        addValueToolTip(imgHeight_Img, text_onlyNaturalNumber + defaultImgHeight);
+        addValueToolTip(imgHeight_Img, text_onlyNaturalNumber + defaultImgHeight + tip_imgHeight);
     }
 
     /**
@@ -636,14 +638,20 @@ public class ImgToExcelController extends ToolsProperties {
     private void cancelTask() throws IOException {
         if (buildExcelTask != null && buildExcelTask.isRunning()) {
             buildExcelTask.cancel();
-            buildExcelTask = null;
         }
+        buildExcelTask = null;
+        if (saveExcelTask != null && saveExcelTask.isRunning()) {
+            saveExcelTask.cancel();
+        }
+        saveExcelTask = null;
+        inFileList = null;
         ImgToExcelService.closeStream();
         TaskBean<FileNumBean> taskBean = new TaskBean<>();
-        taskBean.setProgressBar(progressBar_Img)
+        taskBean.setDisableControls(disableControls)
+                .setProgressBar(progressBar_Img)
+                .setCancelButton(cancel_Img)
                 .setMassageLabel(log_Img);
         taskUnbind(taskBean);
-        setDisableControls(taskBean, false);
         log_Img.setText("任务已取消");
         log_Img.setTextFill(Color.RED);
     }

@@ -61,7 +61,7 @@
             <HBox spacing="10">
                 <Label prefHeight="20" text="文件名起始编号:"/>
                 <TextField fx:id="startName_Re" onKeyTyped="#startNameHandleKeyTyped" prefHeight="20" prefWidth="100"/>
-                <Label prefHeight="20" text="文件始编号位数:"/>
+                <Label prefHeight="20" text="文件编号位数:"/>
                 <TextField fx:id="startSize_Re" onKeyTyped="#startSizeHandleKeyTyped" prefHeight="20" prefWidth="50"/>
                 <Label prefHeight="20" text="相同编号文件数量:"/>
                 <TextField fx:id="nameNum_Re" onKeyTyped="#nameNumHandleKeyTyped" prefHeight="20" prefWidth="50"/>

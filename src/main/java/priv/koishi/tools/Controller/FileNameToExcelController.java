@@ -268,8 +268,7 @@ public class FileNameToExcelController extends ToolsProperties {
             //更新所选文件路径显示
             inFilePath = updatePathLabel(selectedFile.getPath(), inFilePath, key_inFilePath, inPath_Name, configFile);
             //读取数据
-            List<File> inFileList = readAllFiles(fileConfig);
-            addInData(inFileList);
+            addInData(readAllFiles(fileConfig));
         }
     }
 
@@ -288,11 +287,10 @@ public class FileNameToExcelController extends ToolsProperties {
                 .setFilterExtensionList(filterExtensionList)
                 .setRecursion(recursion_Name.isSelected())
                 .setInFile(file);
-        List<File> inFileList = readAllFiles(fileConfig);
         String filePath = file.getPath();
         inPath_Name.setText(filePath);
         addToolTip(inPath_Name, filePath);
-        addInData(inFileList);
+        addInData(readAllFiles(fileConfig));
     }
 
     /**
@@ -336,19 +334,15 @@ public class FileNameToExcelController extends ToolsProperties {
         if (CollectionUtils.isEmpty(fileBeans)) {
             throw new Exception(text_fileListNull);
         }
-        int startRowValue = setDefaultIntValue(startRow_Name, 0, 0, null);
-        int startCellValue = setDefaultIntValue(startCell_Name, defaultStartCell, 0, null);
-        String excelNameValue = setDefaultFileName(excelName_Name, defaultOutFileName);
-        String sheetName = setDefaultStrValue(sheetOutName_Name, defaultSheetName);
         updateLabel(log_Name, "");
         ExcelConfig excelConfig = new ExcelConfig();
-        excelConfig.setOutExcelExtension(excelType_Name.getValue())
+        excelConfig.setStartCellNum(setDefaultIntValue(startCell_Name, defaultStartCell, 0, null))
+                .setStartRowNum(setDefaultIntValue(startRow_Name, 0, 0, null))
+                .setOutName(setDefaultFileName(excelName_Name, defaultOutFileName))
+                .setSheet(setDefaultStrValue(sheetOutName_Name, defaultSheetName))
+                .setOutExcelExtension(excelType_Name.getValue())
                 .setInPath(excelPath_Name.getText())
-                .setStartCellNum(startCellValue)
-                .setStartRowNum(startRowValue)
-                .setOutName(excelNameValue)
-                .setOutPath(outFilePath)
-                .setSheet(sheetName);
+                .setOutPath(outFilePath);
         TaskBean<FileBean> taskBean = new TaskBean<>();
         taskBean.setShowFileType(showFileType_Name.isSelected())
                 .setDisableControls(disableControls)

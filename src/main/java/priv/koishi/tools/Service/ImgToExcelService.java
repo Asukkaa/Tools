@@ -1,9 +1,7 @@
 package priv.koishi.tools.Service;
 
-import javafx.animation.AnimationTimer;
 import javafx.concurrent.Task;
 import javafx.scene.control.Control;
-import javafx.scene.control.ProgressBar;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.ClientAnchor;
@@ -25,7 +23,8 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import static priv.koishi.tools.Text.CommonTexts.*;
-import static priv.koishi.tools.Utils.FileUtils.*;
+import static priv.koishi.tools.Utils.FileUtils.checkCopyDestination;
+import static priv.koishi.tools.Utils.FileUtils.getFileType;
 
 /**
  * @author KOISHI
@@ -34,21 +33,33 @@ import static priv.koishi.tools.Utils.FileUtils.*;
  */
 public class ImgToExcelService {
 
+    /**
+     * excel XSSFWorkbook工作簿
+     */
     private static XSSFWorkbook workbook;
 
+    /**
+     * excel SXSSFWorkbook工作簿
+     */
     private static SXSSFWorkbook sxssfWorkbook;
 
+    /**
+     * excel输入流
+     */
     private static FileInputStream fileInputStream;
 
+    /**
+     * 图片输入流
+     */
     private static InputStream inputStream;
 
     /**
      * 构建分组的图片excel
      */
-    public static Task<String> buildImgGroupExcel(TaskBean<FileNumBean> taskBean, ExcelConfig excelConfig) {
+    public static Task<SXSSFWorkbook> buildImgGroupExcel(TaskBean<FileNumBean> taskBean, ExcelConfig excelConfig) {
         return new Task<>() {
             @Override
-            protected String call() throws Exception {
+            protected SXSSFWorkbook call() throws Exception {
                 List<Control> disableControls = taskBean.getDisableControls();
                 if (CollectionUtils.isNotEmpty(disableControls)) {
                     disableControls.forEach(dc -> dc.setDisable(true));
@@ -77,6 +88,7 @@ public class ImgToExcelService {
                 }
                 for (int i = 0; i < fileNum; i++) {
                     if (isCancelled()) {
+                        closeStream();
                         break;
                     }
                     List<String> imgList = fileBeans.get(i).getFilePathList();
@@ -85,28 +97,7 @@ public class ImgToExcelService {
                     updateProgress(i + 1, fileNum);
                     startRowNum++;
                 }
-                ProgressBar progressBar = taskBean.getProgressBar();
-                progressBar.progressProperty().unbind();
-                AnimationTimer timer = new AnimationTimer() {
-                    double progress = 0;
-                    @Override
-                    public void handle(long now) {
-                        // 每次调用handle方法时，进度条的进度值增加或减少一点点
-                        progress += 0.001;
-                        if (progress > 1) {
-                            progress -= 1;
-                        }
-                        progressBar.setProgress(progress);
-                    }
-                };
-                progressBar.setProgress(0);
-                timer.start();
-                updateMessage("正在保存excel");
-                String path = saveExcel(sxssfWorkbook, excelConfig);
-                timer.stop();
-                progressBar.setProgress(1);
-                closeStream();
-                return path;
+                return sxssfWorkbook;
             }
         };
     }
@@ -116,8 +107,6 @@ public class ImgToExcelService {
      */
     private static void buildImgExcel(List<String> imgList, ExcelConfig excelConfig, int startCellNum,
                                       int startRowNum, XSSFSheet sheet, SXSSFWorkbook sxssfWorkbook) throws IOException {
-        int imgWidth = excelConfig.getImgWidth();
-        int imgHeight = excelConfig.getImgHeight();
         int cellNum = startCellNum;
         if (CollectionUtils.isEmpty(imgList)) {
             XSSFRow row = sheet.getRow(startRowNum);
@@ -132,6 +121,7 @@ public class ImgToExcelService {
                 cell.setCellValue("无图片");
             }
         } else {
+            sxssfWorkbook.setCompressTempFiles(true);
             for (String i : imgList) {
                 // 将图片插入Excel单元格
                 CreationHelper helper = sxssfWorkbook.getCreationHelper();
@@ -146,15 +136,17 @@ public class ImgToExcelService {
                 String extension = getFileType(new File(i));
                 // 读取图片文件
                 inputStream = Files.newInputStream(Paths.get(i));
-                if (jpg.equals(extension) || jpeg.equals(extension)) {
-                    drawing.createPicture(anchor, sxssfWorkbook.addPicture(inputStream.readAllBytes(), Workbook.PICTURE_TYPE_JPEG));
-                } else if (png.equals(extension)) {
-                    drawing.createPicture(anchor, sxssfWorkbook.addPicture(inputStream.readAllBytes(), Workbook.PICTURE_TYPE_PNG));
+                try {
+                    if (jpg.equals(extension) || jpeg.equals(extension)) {
+                        drawing.createPicture(anchor, sxssfWorkbook.addPicture(inputStream.readAllBytes(), Workbook.PICTURE_TYPE_JPEG));
+                    } else if (png.equals(extension)) {
+                        drawing.createPicture(anchor, sxssfWorkbook.addPicture(inputStream.readAllBytes(), Workbook.PICTURE_TYPE_PNG));
+                    }
+                } finally {
+                    inputStream.close();
                 }
-                sxssfWorkbook.setCompressTempFiles(true);
-                inputStream.close();
-                sheet.setColumnWidth(cellNum, imgWidth);
-                sheet.getRow(startRowNum).setHeightInPoints(imgHeight);
+                sheet.setColumnWidth(cellNum, 256 * excelConfig.getImgWidth());
+                sheet.getRow(startRowNum).setHeightInPoints(excelConfig.getImgHeight());
                 cellNum++;
             }
         }

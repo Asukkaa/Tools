@@ -51,7 +51,11 @@ public class CommonTexts {
 
     public static final String tip_maxImgNum = "只能填正整数，不填默认为不限制";
 
-    public static final String tip_imgHeight = "只能填正整数，不填默认为 ";
+    public static final String tip_imgHeightWidth = "只能填正整数，不填默认为 ";
+
+    public static final String tip_imgWidth = " 个字符宽度";
+
+    public static final String tip_imgHeight = " 个像素";
 
     public static final String tip_noImg = "勾选后没有图片的数据将会在单元格中标记为 无图片";
 
