@@ -53,6 +53,8 @@ public class CommonTexts {
 
     public static final String tip_imgHeightWidth = "只能填正整数，不填默认为 ";
 
+    public static final String tip_rename = "文件名不能包含 <>:\"/\\|?*";
+
     public static final String tip_imgWidth = " 个字符宽度";
 
     public static final String tip_imgHeight = " 个像素";

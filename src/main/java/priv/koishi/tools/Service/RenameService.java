@@ -69,11 +69,11 @@ public class RenameService {
                 String oldPath = fileBean.getPath();
                 File oldFile = new File(oldPath);
                 if (!oldFile.exists()) {
-                    throw new Exception("编号为 " + fileBean.getId() + " 的文件不存在，列表中的地址为 " + oldPath);
+                    throw new Exception("编号为 " + fileBean.getId() + " 的文件 " + fileBean.getFullName() + " 不存在，列表中的地址为 " + oldPath);
                 }
                 File tempFile = new File(oldFile.getParent(), tempName);
                 if (!oldFile.renameTo(tempFile)) {
-                    throw new Exception("修改编号为 " + fileBean.getId() + " 的文件临时名称失败");
+                    throw new Exception("修改编号为 " + fileBean.getId() + " 的文件临时名称 " + fileBean.getTempFile().getName() + " 失败");
                 }
                 return tempFile;
             }

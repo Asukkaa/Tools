@@ -125,7 +125,7 @@ public class FileRenameController extends ToolsProperties {
     private TableColumn<FileBean, String> name_Re, rename_Re, path_Re, size_Re, fileType_Re, creatDate_Re, updateDate_Re;
 
     @FXML
-    private Button fileButton_Re, clearButton_Re, exportButton_Re, reselectButton_Re, updateRenameButton_Re, excelPathButton_Img;
+    private Button fileButton_Re, clearButton_Re, renameButton_Re, reselectButton_Re, updateRenameButton_Re, excelPathButton_Img;
 
     @FXML
     private ChoiceBox<String> hideFileType_Re, directoryNameType_Re, renameType_Re, subCode_Re, differenceCode_Re, targetStr_Re, leftBehavior_Re, rightBehavior_Re, renameBehavior_Re;
@@ -166,12 +166,12 @@ public class FileRenameController extends ToolsProperties {
         updateDate.setStyle("-fx-pref-width: " + tableWidth * 0.16 + "px;");
         Label fileNum = (Label) scene.lookup("#fileNumber_Re");
         Button removeAll = (Button) scene.lookup("#clearButton_Re");
-        Button exportAll = (Button) scene.lookup("#exportButton_Re");
+        Button renameAll = (Button) scene.lookup("#renameButton_Re");
         Button reselect = (Button) scene.lookup("#reselectButton_Re");
         Button updateRenameButton = (Button) scene.lookup("#updateRenameButton_Re");
         ProgressBar progressBar = (ProgressBar) scene.lookup("#progressBar_Re");
         Label tip = (Label) scene.lookup("#tip_Re");
-        fileNum.setPrefWidth(tableWidth - removeAll.getWidth() - exportAll.getWidth() - reselect.getWidth() - updateRenameButton.getWidth() - 50);
+        fileNum.setPrefWidth(tableWidth - removeAll.getWidth() - renameAll.getWidth() - reselect.getWidth() - updateRenameButton.getWidth() - 50);
         tip.setPrefWidth(tableWidth - progressBar.getWidth() - 10);
     }
 
@@ -373,7 +373,7 @@ public class FileRenameController extends ToolsProperties {
         //设置要防重复点击的组件
         disableControls.add(fileButton_Re);
         disableControls.add(clearButton_Re);
-        disableControls.add(exportButton_Re);
+        disableControls.add(renameButton_Re);
         disableControls.add(reselectButton_Re);
         disableControls.add(excelPathButton_Img);
         disableControls.add(updateRenameButton_Re);
@@ -385,6 +385,7 @@ public class FileRenameController extends ToolsProperties {
         addToolTip(nameNum_Re, tip_nameNum);
         addToolTip(tip_Re, tip_Re.getText());
         addToolTip(addSpace_Re, tip_addSpace);
+        addToolTip(renameButton_Re, tip_rename);
         addToolTip(leftValue_Re, tip_leftValue);
         addToolTip(leftBehavior_Re, tip_option);
         addToolTip(startSize_Re, tip_startSize);
