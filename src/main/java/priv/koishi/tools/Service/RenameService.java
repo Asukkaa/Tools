@@ -33,15 +33,13 @@ public class RenameService {
                 int fileBeanListSize = fileBeanList.size();
                 for (int i = 0; i < fileBeanListSize; i++) {
                     FileBean fileBean = fileBeanList.get(i);
-                    String oldName = fileBean.getName();
                     String ext = fileBean.getFileType();
                     if ("文件夹".equals(ext) || "文件".equals(ext)) {
                         ext = "";
                     }
                     String tempName = UUID.randomUUID() + ext;
-                    File tempFile = tempRename(fileBean, tempName);
-                    fileBean.setTempFile(tempFile);
-                    updateMessage("已修改编号为 " + fileBean.getId() + " 的文件 " + oldName + " 临时名称为 " + tempName);
+                    fileBean.setTempFile(tempRename(fileBean, tempName));
+                    updateMessage("已修改编号为 " + fileBean.getId() + " 的文件 " + fileBean.getName() + " 临时名称为 " + tempName);
                     updateProgress(i, fileBeanListSize);
                 }
                 //将重命名为临时名称的文件重命名为正式名称
@@ -50,7 +48,6 @@ public class RenameService {
                 for (int i = 0; i < fileBeanListSize; i++) {
                     FileBean fileBean = taskBean.getBeanList().get(i);
                     File tempFile = fileBean.getTempFile();
-                    String oldName = fileBean.getName();
                     String ext = fileBean.getFileType();
                     if ("文件夹".equals(ext) || "文件".equals(ext)) {
                         ext = "";
@@ -60,7 +57,7 @@ public class RenameService {
                     if (!tempFile.renameTo(newFile)) {
                         throw new Exception("修改编号为 " + fileBean.getId() + " 的文件名称失败");
                     }
-                    updateMessage("已修改编号为 " + fileBean.getId() + " 的文件 " + oldName + " 临时名称为 " + newName);
+                    updateMessage("已修改编号为 " + fileBean.getId() + " 的文件 " + fileBean.getName() + " 临时名称为 " + newName);
                     updateProgress(i, fileBeanListSize);
                 }
                 updateMessage("所有文件已重命名完毕");

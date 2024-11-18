@@ -31,10 +31,19 @@ import static priv.koishi.tools.Utils.CommonUtils.checkRunningOutputStream;
  */
 public class FileUtils {
 
+    /**
+     * 旧版macos名称
+     */
     private static final String MacOSX = "Mac OS X";
 
+    /**
+     * 新版macos名称
+     */
     private static final String MacOS = "Mac OS";
 
+    /**
+     * 操作系统名称
+     */
     private static final String osName = "os.name";
 
     /**
@@ -149,9 +158,8 @@ public class FileUtils {
      * 读取文件夹下的文件名称
      */
     public static List<File> readAllFiles(FileConfig fileConfig) {
-        File file = fileConfig.getInFile();
         List<File> fileList = new ArrayList<>();
-        readFiles(fileConfig, fileList, file);
+        readFiles(fileConfig, fileList, fileConfig.getInFile());
         return fileList;
     }
 
@@ -257,8 +265,7 @@ public class FileUtils {
      */
     public static void openFile(String openPath) throws IOException {
         if (StringUtils.isNotEmpty(openPath)) {
-            Desktop desktop = Desktop.getDesktop();
-            desktop.open(new File(openPath));
+            Desktop.getDesktop().open(new File(openPath));
         }
     }
 
@@ -278,9 +285,8 @@ public class FileUtils {
      */
     public static String getFileUpdateTime(File file) {
         long lastModified = file.lastModified();
-        Date date = new Date(lastModified);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        return sdf.format(date);
+        return sdf.format(new Date(lastModified));
     }
 
     /**

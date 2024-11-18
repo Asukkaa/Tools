@@ -4,7 +4,6 @@ import javafx.concurrent.Task;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.DataFormatter;
-import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -48,8 +47,7 @@ public class ReadDataService {
                 int readCell = excelConfig.getReadCellNum();
                 int maxRow = excelConfig.getMaxRowNum();
                 checkExcelParam(excelInPath);
-                FileInputStream inputStream = new FileInputStream(excelInPath);
-                XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
+                XSSFWorkbook workbook = new XSSFWorkbook(new FileInputStream(excelInPath));
                 //读取指定sheet
                 XSSFSheet sheet;
                 if (StringUtils.isEmpty(sheetName)) {
@@ -67,9 +65,7 @@ public class ReadDataService {
                     XSSFRow row = sheet.getRow(i);
                     //过滤中间的空单元格
                     if (row != null) {
-                        XSSFCell cell = row.getCell(readCell);
-                        String stringCellValue = dataFormatter.formatCellValue(cell);
-                        if (StringUtils.isNotBlank(stringCellValue)) {
+                        if (StringUtils.isNotBlank(dataFormatter.formatCellValue(row.getCell(readCell)))) {
                             lastRowNum = i;
                             break;
                         }
@@ -90,8 +86,7 @@ public class ReadDataService {
                     XSSFRow row = sheet.getRow(i);
                     FileNumBean fileNumBean = new FileNumBean();
                     if (row != null) {
-                        XSSFCell cell = row.getCell(readCell);
-                        String stringCellValue = dataFormatter.formatCellValue(cell);
+                        String stringCellValue = dataFormatter.formatCellValue(row.getCell(readCell));
                         fileNumBean.setGroupName(stringCellValue);
                     } else {
                         fileNumBean.setGroupName("");

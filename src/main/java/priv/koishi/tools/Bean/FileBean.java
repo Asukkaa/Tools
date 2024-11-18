@@ -136,8 +136,18 @@ public class FileBean {
         this.updateDate.set(updateDate);
     }
 
-    public String getFullName() {
+    /**
+     * 获取完整重命名
+     */
+    public String getFullRename() {
         return getRename() + getFileType();
+    }
+
+    /**
+     * 获取完整文件名
+     */
+    public String getFullName() {
+        return getName() + getFileType();
     }
 
 }

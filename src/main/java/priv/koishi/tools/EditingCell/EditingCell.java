@@ -3,14 +3,11 @@ package priv.koishi.tools.EditingCell;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
-import javafx.stage.PopupWindow;
-import javafx.util.Duration;
 
 import java.util.Objects;
 
-import static priv.koishi.tools.Text.CommonTexts.showDuration;
 import static priv.koishi.tools.Utils.UiUtils.addValueToolTip;
+import static priv.koishi.tools.Utils.UiUtils.setTooltipConfig;
 
 /**
  * @author KOISHI
@@ -29,7 +26,7 @@ public class EditingCell<T> extends TableCell<T, String> {
     /**
      * 单元格鼠标悬停提示
      */
-    private final String tip = "双击单元格可编辑修改后的文件名称";
+    private final String tip = "双击单元格可进行编辑";
 
     /**
      * 构造EditingCell对象,并且明确将该cell的值保存进相应的JavaBean的属性值的方法
@@ -38,12 +35,7 @@ public class EditingCell<T> extends TableCell<T, String> {
      */
     public EditingCell(ItemConsumer<T> itemConsumer) {
         this.itemConsumer = itemConsumer;
-        Tooltip tooltip = new Tooltip(tip);
-        tooltip.setWrapText(true);
-        tooltip.setShowDuration(showDuration);
-        tooltip.setShowDelay(Duration.ZERO);
-        tooltip.setAnchorLocation(PopupWindow.AnchorLocation.WINDOW_BOTTOM_LEFT);
-        setTooltip(tooltip);
+        setTooltip(setTooltipConfig(tip));
     }
 
     @Override
@@ -106,6 +98,9 @@ public class EditingCell<T> extends TableCell<T, String> {
         itemConsumer.setTProperties(t, newValue);
     }
 
+    /**
+     * 在单元格中创建输入框
+     */
     private void createTextField() {
         textField = new TextField(getString());
         textField.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
@@ -117,6 +112,9 @@ public class EditingCell<T> extends TableCell<T, String> {
         addValueToolTip(textField, "双击单元格可编辑修改后的文件名称");
     }
 
+    /**
+     * 获取单元格值的字符串
+     */
     private String getString() {
         return getItem() == null ? "" : getItem();
     }

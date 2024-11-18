@@ -37,8 +37,7 @@ import static priv.koishi.tools.Service.ReadDataService.readFile;
 import static priv.koishi.tools.Service.RenameService.buildRename;
 import static priv.koishi.tools.Service.RenameService.fileRename;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
-import static priv.koishi.tools.Utils.FileUtils.openFile;
-import static priv.koishi.tools.Utils.FileUtils.readAllFiles;
+import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.TaskUtils.bindingProgressBarTask;
 import static priv.koishi.tools.Utils.TaskUtils.taskUnbind;
 import static priv.koishi.tools.Utils.UiUtils.*;
@@ -308,7 +307,7 @@ public class FileRenameController extends ToolsProperties {
         CodeRenameConfig codeRenameConfig = new CodeRenameConfig();
         codeRenameConfig.setStartName(setDefaultIntValue(startName_Re, 1, 0, null))
                 .setStartSize(setDefaultIntValue(startSize_Re, 0, 0, null))
-                .setNameNum( setDefaultIntValue(nameNum_Re, 0, 0, null))
+                .setNameNum(setDefaultIntValue(nameNum_Re, 0, 0, null))
                 .setTag(setDefaultIntValue(tag_Re, 1, 0, null))
                 .setDifferenceCode(differenceCode_Re.getValue())
                 .setAddSpace(addSpace_Re.isSelected())
@@ -493,23 +492,36 @@ public class FileRenameController extends ToolsProperties {
         if (CollectionUtils.isEmpty(fileBeans)) {
             throw new Exception(text_fileListNull);
         }
-        Map<String, List<FileBean>> fileBeanMap = fileBeans.stream().collect(Collectors.groupingBy(FileBean::getFullName));
-        List<String> errList = new ArrayList<>();
+        Map<String, List<FileBean>> fileBeanMap = fileBeans.stream().collect(Collectors.groupingBy(FileBean::getFullRename));
+        List<String> repeatNameList = new ArrayList<>();
         fileBeanMap.forEach((rename, fileBeanList) -> {
             if (fileBeanList.size() > 1) {
                 List<String> ids = new ArrayList<>();
-                fileBeanList.forEach(fileBean -> {
-                    int id = fileBean.getId();
-                    ids.add(String.valueOf(id));
-                });
-                String errString = "序号为： " + String.join("、", ids) + " 的文件重命名重复为 " + rename;
-                errList.add(errString);
+                fileBeanList.forEach(fileBean -> ids.add(String.valueOf(fileBean.getId())));
+                String errString = "序号为: " + String.join("、", ids) + " 的文件重命名重复为 " + rename;
+                repeatNameList.add(errString);
             }
         });
-        String errStrings = String.join("\n", errList);
-        if (StringUtils.isNotBlank(errStrings)) {
-            Alert alert = creatErrorDialog(errStrings);
-            alert.setHeaderText("文件重命名重复");
+        String repeatNames = String.join("\n", repeatNameList) + "\n";
+        List<String> errNameList = new ArrayList<>();
+        fileBeans.forEach(fileBean -> {
+            String rename = fileBean.getFullRename();
+            if (!isValidFileName(rename)) {
+                String errString = "序号为: " + fileBean.getId() + " 的文件 " + fileBean.getFullName() + " 非法重命名为 " + fileBean.getFullRename();
+                errNameList.add(errString);
+            }
+        });
+        String errNames = String.join("\n", errNameList) + "\n";
+        String errString = "";
+        if (StringUtils.isNotBlank(repeatNames)) {
+            errString += "重复的名称：\n" + repeatNames;
+        }
+        if (StringUtils.isNotBlank(errNames)) {
+            errString += "错误的名称：\n" + errNames;
+        }
+        if (StringUtils.isNotBlank(errString)) {
+            Alert alert = creatErrorDialog(errString);
+            alert.setHeaderText("文件重命名配置错误");
             // 展示弹窗
             alert.showAndWait();
         } else {

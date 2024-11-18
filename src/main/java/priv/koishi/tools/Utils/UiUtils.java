@@ -49,12 +49,19 @@ public class UiUtils {
      * @param tip     提示卡信息
      */
     public static void addToolTip(Control control, String tip) {
-        Tooltip tooltip = new Tooltip();
-        tooltip.setText(tip);
+        control.setTooltip(setTooltipConfig(tip));
+    }
+
+    /**
+     * 设置鼠标停留提示框参数
+     */
+    public static Tooltip setTooltipConfig(String tip) {
+        Tooltip tooltip = new Tooltip(tip);
+        tooltip.setWrapText(true);
         tooltip.setShowDuration(showDuration);
         tooltip.setShowDelay(Duration.ZERO);
         tooltip.setAnchorLocation(PopupWindow.AnchorLocation.WINDOW_BOTTOM_LEFT);
-        control.setTooltip(tooltip);
+        return tooltip;
     }
 
     /**
@@ -146,12 +153,7 @@ public class UiUtils {
                             setTooltip(null);
                         } else if (!item.toString().isEmpty()) {
                             setText(item.toString());
-                            Tooltip tooltip = new Tooltip(item.toString());
-                            tooltip.setWrapText(true);
-                            tooltip.setShowDuration(showDuration);
-                            tooltip.setShowDelay(Duration.ZERO);
-                            tooltip.setAnchorLocation(PopupWindow.AnchorLocation.WINDOW_BOTTOM_LEFT);
-                            setTooltip(tooltip);
+                            setTooltip(setTooltipConfig(item.toString()));
                         }
                     }
                 };
@@ -163,9 +165,9 @@ public class UiUtils {
      * 文件大小排序
      */
     public static void fileSizeColum(TableColumn<?, String> sizeColumn) {
-        // 自定义比较器
+        //自定义比较器
         Comparator<String> customComparator = Comparator.comparingDouble(FileUtils::fileSizeCompareValue);
-        // 应用自定义比较器
+        //应用自定义比较器
         sizeColumn.setComparator(customComparator);
     }
 

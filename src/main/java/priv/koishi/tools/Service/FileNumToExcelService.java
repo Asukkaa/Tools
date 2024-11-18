@@ -41,11 +41,9 @@ public class FileNumToExcelService {
                     throw new Exception(text_excelNotExists);
                 }
                 updateMessage(text_printData);
-                FileInputStream inputStream = new FileInputStream(inputFile);
-                XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
+                XSSFWorkbook workbook = new XSSFWorkbook(new FileInputStream(inputFile));
                 SXSSFWorkbook sxssfWorkbook = new SXSSFWorkbook(workbook);
                 String sheetName = excelConfig.getSheet();
-                String exportType = excelConfig.getExportType();
                 int startRowNum = excelConfig.getStartRowNum();
                 int startCellNum = excelConfig.getStartCellNum();
                 int maxCellNum = startCellNum;
@@ -67,7 +65,7 @@ public class FileNumToExcelService {
                         row = sheet.createRow(startRowNum);
                     }
                     XSSFCell numCell = row.createCell(startCellNum);
-                    switch (exportType) {
+                    switch (excelConfig.getExportType()) {
                         case "文件数量": {
                             numCell.setCellValue(groupNumber);
                             break;

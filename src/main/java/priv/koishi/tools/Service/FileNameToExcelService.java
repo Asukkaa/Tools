@@ -40,8 +40,7 @@ public class FileNameToExcelService {
             checkExcelParam(excelInPath);
             //输出路径与编辑路径不同先将要编辑的文件复制到输出路径
             checkCopyDestination(excelConfig);
-            FileInputStream inputStream = new FileInputStream(excelInPath);
-            workbook = new XSSFWorkbook(inputStream);
+            workbook = new XSSFWorkbook(new FileInputStream(excelInPath));
             sxssfWorkbook = new SXSSFWorkbook(workbook);
             if (sheetName == null || sheetName.isEmpty()) {
                 sheet = sxssfWorkbook.getXSSFWorkbook().getSheetAt(0);
@@ -67,9 +66,8 @@ public class FileNameToExcelService {
             protected SXSSFWorkbook call() {
                 setDisableControls(taskBean, true);
                 updateMessage(text_printData);
-                List<FileBean> fileBeans = taskBean.getBeanList();
                 List<String> names = new ArrayList<>();
-                fileBeans.forEach(fileBean -> names.add(fileBean.getName()));
+                taskBean.getBeanList().forEach(fileBean -> names.add(fileBean.getName()));
                 int startRowNum = excelConfig.getStartRowNum();
                 int startCellNum = excelConfig.getStartCellNum();
                 int nameSize = names.size();
