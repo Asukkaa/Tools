@@ -22,6 +22,9 @@ import static priv.koishi.tools.Utils.UiUtils.setDisableControls;
  */
 public class RenameService {
 
+    /**
+     * 批量重命名
+     */
     public static Task<String> fileRename(TaskBean<FileBean> taskBean) {
         return new Task<>() {
             @Override
@@ -101,7 +104,7 @@ public class RenameService {
         String differenceCode = codeRenameConfig.getDifferenceCode();
         int startSize = codeRenameConfig.getStartSize();
         String paddedNum = String.valueOf(startName);
-        // 使用String.format()函数进行补齐操作
+        //使用String.format()函数进行补齐操作
         if (startSize > 0) {
             paddedNum = String.format("%0" + startSize + "d", startName);
         }

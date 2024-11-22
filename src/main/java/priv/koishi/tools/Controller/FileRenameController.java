@@ -8,7 +8,9 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.input.*;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -36,12 +38,12 @@ import static priv.koishi.tools.Service.ReadDataService.readExcel;
 import static priv.koishi.tools.Service.ReadDataService.readFile;
 import static priv.koishi.tools.Service.RenameService.buildRename;
 import static priv.koishi.tools.Service.RenameService.fileRename;
+import static priv.koishi.tools.Text.CommonTexts.*;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.TaskUtils.bindingProgressBarTask;
 import static priv.koishi.tools.Utils.TaskUtils.taskUnbind;
 import static priv.koishi.tools.Utils.UiUtils.*;
-import static priv.koishi.tools.Text.CommonTexts.*;
 
 /**
  * @author KOISHI
@@ -352,9 +354,7 @@ public class FileRenameController extends ToolsProperties {
     private static void getConfig() throws IOException {
         Properties prop = new Properties();
         InputStream input = checkRunningInputStream(configFile);
-        // 加载properties文件
         prop.load(input);
-        // 根据key读取value
         inFilePath = prop.getProperty(key_inFilePath);
         excelInPath = prop.getProperty(key_excelInPath);
         defaultReadRow = Integer.parseInt(prop.getProperty(key_defaultReadRow));
@@ -881,11 +881,11 @@ public class FileRenameController extends ToolsProperties {
             int tag = -1;
             int nameNum = 1;
             if (configuration != null) {
-                if (configuration.getClass() == CodeRenameConfig.class) {
+                if (configuration instanceof CodeRenameConfig) {
                     codeRenameConfig = (CodeRenameConfig) configuration;
                     startName = codeRenameConfig.getStartName();
                     tag = codeRenameConfig.getTag();
-                } else if (configuration.getClass() == StringRenameConfig.class) {
+                } else if (configuration instanceof StringRenameConfig) {
                     stringRenameConfig = (StringRenameConfig) configuration;
                 }
             }

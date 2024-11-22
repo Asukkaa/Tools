@@ -432,7 +432,7 @@ public class UiUtils {
     public static String updatePathLabel(String selectedFilePath, String filePath, String pathKey, Label pathLabel, String configFile) throws IOException {
         //只有跟上次选的路径不一样才更新
         if (!filePath.equals(selectedFilePath)) {
-            updatePath(configFile, pathKey, selectedFilePath);
+            updateProperties(configFile, pathKey, selectedFilePath);
             filePath = selectedFilePath;
         }
         pathLabel.setText(selectedFilePath);
@@ -547,6 +547,36 @@ public class UiUtils {
         List<Control> disableControls = taskBean.getDisableControls();
         if (CollectionUtils.isNotEmpty(disableControls)) {
             disableControls.forEach(dc -> dc.setDisable(disable));
+        }
+    }
+
+    /**
+     * 为配置组件设置上次配置值
+     */
+    @SuppressWarnings("unchecked")
+    public static void setControlLastConfig(Control control, Properties prop, String Key, boolean canBlank) {
+        String lastValue = prop.getProperty(Key);
+        if (StringUtils.isNotBlank(lastValue)) {
+            if (control instanceof ChoiceBox) {
+                ChoiceBox<String> choiceBox = (ChoiceBox<String>) control;
+                choiceBox.setValue(lastValue);
+            }
+            if (control instanceof CheckBox checkBox) {
+                if (activation.equals(lastValue)) {
+                    checkBox.setSelected(true);
+                }
+            }
+            if (control instanceof Label label) {
+                label.setText(lastValue);
+            }
+            if (control instanceof TextField textField) {
+                textField.setText(lastValue);
+            }
+        }
+        if (StringUtils.isNotEmpty(lastValue) && canBlank) {
+            if (control instanceof TextField textField) {
+                textField.setText(lastValue);
+            }
         }
     }
 

@@ -150,11 +150,11 @@ public class ReadDataService {
                 int tag = -1;
                 int nameNum = 1;
                 if (configuration != null) {
-                    if (configuration.getClass() == CodeRenameConfig.class) {
+                    if (configuration instanceof CodeRenameConfig) {
                         codeRenameConfig = (CodeRenameConfig) configuration;
                         startName = codeRenameConfig.getStartName();
                         tag = codeRenameConfig.getTag();
-                    } else if (configuration.getClass() == StringRenameConfig.class) {
+                    } else if (configuration instanceof StringRenameConfig) {
                         stringRenameConfig = (StringRenameConfig) configuration;
                     }
                 }

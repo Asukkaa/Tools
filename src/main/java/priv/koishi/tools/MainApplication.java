@@ -13,6 +13,7 @@ import java.util.Objects;
 import java.util.Properties;
 
 import static priv.koishi.tools.Controller.MainController.mainAdaption;
+import static priv.koishi.tools.Controller.MainController.saveLastConfig;
 import static priv.koishi.tools.Utils.UiUtils.showExceptionDialog;
 
 public class MainApplication extends Application {
@@ -44,11 +45,18 @@ public class MainApplication extends Application {
         stage.setScene(scene);
         stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResource("icon/wrench.png")).toExternalForm()));
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("css/Styles.css")).toExternalForm());
-        // 监听窗口面板宽度变化
+        //监听窗口面板宽度变化
         stage.widthProperty().addListener((v1, v2, v3) -> Platform.runLater(() -> mainAdaption(stage, scene)));
-        // 监听窗口面板高度变化
+        //监听窗口面板高度变化
         stage.heightProperty().addListener((v1, v2, v3) -> Platform.runLater(() -> mainAdaption(stage, scene)));
-        stage.setOnCloseRequest(event -> System.exit(0));
+        stage.setOnCloseRequest(event -> {
+            try {
+                saveLastConfig(scene);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            System.exit(0);
+        });
         stage.show();
     }
 
@@ -67,17 +75,12 @@ public class MainApplication extends Application {
      */
     public static void getConfig() throws IOException {
         Properties prop = new Properties();
-        InputStream inputStream = Objects.requireNonNull(MainApplication.class.getResource("config/config.properties")).openStream();
-        // 加载输入流
-        prop.load(inputStream);
-        // 加载properties文件
-        prop.load(inputStream);
-        // 根据key读取value
+        InputStream input = Objects.requireNonNull(MainApplication.class.getResource("config/config.properties")).openStream();
+        prop.load(input);
         appWidth = Double.parseDouble(prop.getProperty("appWidth"));
         appHeight = Double.parseDouble(prop.getProperty("appHeight"));
         appTitle = prop.getProperty("appTitle");
-        // 关闭输入流
-        inputStream.close();
+        input.close();
     }
 
     /**

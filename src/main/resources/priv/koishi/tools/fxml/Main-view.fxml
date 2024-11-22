@@ -32,7 +32,7 @@
             </AnchorPane>
         </Tab>
 
-        <Tab style="-fx-cursor: hand" fx:id="settingTab" text="关于">
+        <Tab style="-fx-cursor: hand" fx:id="settingTab" text="设置">
             <AnchorPane>
                 <fx:include source="Setting-tab.fxml"/>
             </AnchorPane>

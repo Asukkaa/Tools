@@ -6,11 +6,14 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.stage.Stage;
 
+import java.io.IOException;
+
 import static priv.koishi.tools.Controller.FileNameToExcelController.fileNameToExcelAdaption;
+import static priv.koishi.tools.Controller.FileNameToExcelController.fileNameToExcelSaveLastConfig;
 import static priv.koishi.tools.Controller.FileNumToExcelController.fileNumToExcelAdaption;
 import static priv.koishi.tools.Controller.FileRenameController.fileRenameAdaption;
 import static priv.koishi.tools.Controller.ImgToExcelController.imgToExcelAdaption;
-import static priv.koishi.tools.Controller.SettingTabController.settingToExcelAdaption;
+import static priv.koishi.tools.Controller.SettingController.settingAdaption;
 
 /**
  * @author KOISHI Date:2024-10-02
@@ -36,7 +39,14 @@ public class MainController {
         fileNumToExcelAdaption(stage, scene);
         imgToExcelAdaption(stage, scene);
         fileRenameAdaption(stage, scene);
-        settingToExcelAdaption(stage, scene);
+        settingAdaption(stage, scene);
+    }
+
+    /**
+     * 保存各个功能最后一次设置值
+     */
+    public static void saveLastConfig(Scene scene) throws IOException {
+        fileNameToExcelSaveLastConfig(scene);
     }
 
 }

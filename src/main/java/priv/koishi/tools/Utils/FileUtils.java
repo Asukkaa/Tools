@@ -217,9 +217,9 @@ public class FileUtils {
     }
 
     /**
-     * 更新设置文件中的文件路径设置
+     * 更新配置文件
      */
-    public static void updatePath(String properties, String key, String value) throws IOException {
+    public static void updateProperties(String properties, String key, String value) throws IOException {
         InputStream input = checkRunningInputStream(properties);
         Properties prop = new Properties();
         prop.load(input);

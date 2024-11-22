@@ -1,5 +1,7 @@
 package priv.koishi.tools.Properties;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -33,8 +35,13 @@ public class ToolsProperties extends Properties {
             if (!line.startsWith("#") && !line.isEmpty()) {
                 //将读取的数据格式为’=‘分割,以key,Value方式存储properties属性类文件数据
                 String[] split = line.split("=");
-                //由于‘\’在Java中表示转义字符，需要将读取的路径进行转换为‘/’符号,这里“\\\\”代表一个‘\’
-                put(split[0], split[1].replaceAll("\\\\", "/"));
+                String value = split[1];
+                //value为空则不处理转义符
+                if (StringUtils.isNotBlank(value)) {
+                    //由于‘\’在Java中表示转义字符，需要将读取的路径进行转换为‘/’符号,这里“\\\\”代表一个‘\’
+                    value = value.replaceAll("\\\\", "/");
+                }
+                put(split[0], value);
             }
         }
     }

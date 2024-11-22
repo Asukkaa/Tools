@@ -183,6 +183,42 @@ public class CommonTexts {
 
     public static final String jpeg = ".jpeg";
 
+    public static final String activation = "1";
+
+    public static final String unActivation = "0";
+
+    public static final String key_loadLastConfig = "loadLastConfig";
+
+    public static final String key_lastDirectoryNameType = "lastDirectoryNameType";
+
+    public static final String key_lastHideFileType = "lastHideFileType";
+
+    public static final String key_lastRecursion = "lastRecursion";
+
+    public static final String key_lastShowFileType = "lastShowFileType";
+
+    public static final String key_lastOpenDirectory = "lastOpenDirectory";
+
+    public static final String key_lastOpenFile = "lastOpenFile";
+
+    public static final String key_lastExcelName = "lastExcelName";
+
+    public static final String key_lastSheetOutName = "lastSheetOutName";
+
+    public static final String key_lastExcelType = "lastExcelType";
+
+    public static final String key_lastStartRow = "lastStartRow";
+
+    public static final String key_lastStartCell = "lastStartCell";
+
+    public static final String key_lastFilterFileType = "lastFilterFileType";
+
+    public static final String key_lastInPath = "lastInPath";
+
+    public static final String key_lastOutPath = "lastOutPath";
+
+    public static final String key_lastExcelPath = "lastExcelPath";
+
     public static final String key_inFilePath = "inFilePath";
 
     public static final String key_excelInPath = "excelInPath";

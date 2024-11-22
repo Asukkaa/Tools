@@ -290,9 +290,7 @@ public class ImgToExcelController extends ToolsProperties {
     private static void getConfig() throws IOException {
         Properties prop = new Properties();
         InputStream input = checkRunningInputStream(configFile);
-        // 加载properties文件
         prop.load(input);
-        // 根据key读取value
         inFilePath = prop.getProperty(key_inFilePath);
         excelInPath = prop.getProperty(key_excelInPath);
         outFilePath = prop.getProperty(key_outFilePath);

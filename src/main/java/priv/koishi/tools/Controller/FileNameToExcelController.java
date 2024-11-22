@@ -27,6 +27,7 @@ import priv.koishi.tools.ThreadPool.CommonThreadPoolExecutor;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -37,6 +38,7 @@ import static priv.koishi.tools.Service.FileNameToExcelService.buildFileNameExce
 import static priv.koishi.tools.Service.ReadDataService.readFile;
 import static priv.koishi.tools.Text.CommonTexts.*;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
+import static priv.koishi.tools.Utils.CommonUtils.checkRunningOutputStream;
 import static priv.koishi.tools.Utils.FileUtils.readAllFiles;
 import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
@@ -168,6 +170,53 @@ public class FileNameToExcelController extends ToolsProperties {
     }
 
     /**
+     * 保存最后一次配置的值
+     */
+    public static void fileNameToExcelSaveLastConfig(Scene scene) throws IOException {
+        InputStream input = checkRunningInputStream(configFile);
+        Properties prop = new Properties();
+        prop.load(input);
+        ChoiceBox<?> directoryNameType = (ChoiceBox<?>) scene.lookup("#directoryNameType_Name");
+        prop.put(key_lastDirectoryNameType, directoryNameType.getValue());
+        ChoiceBox<?> hideFileType = (ChoiceBox<?>) scene.lookup("#hideFileType_Name");
+        prop.put(key_lastHideFileType, hideFileType.getValue());
+        CheckBox recursion = (CheckBox) scene.lookup("#recursion_Name");
+        String recursionValue = recursion.isSelected() ? "1" : "0";
+        prop.put(key_lastRecursion, recursionValue);
+        CheckBox showFileType = (CheckBox) scene.lookup("#showFileType_Name");
+        String showFileTypeValue = showFileType.isSelected() ? "1" : "0";
+        prop.put(key_lastShowFileType, showFileTypeValue);
+        CheckBox openDirectory = (CheckBox) scene.lookup("#openDirectory_Name");
+        String openDirectoryValue = openDirectory.isSelected() ? "1" : "0";
+        prop.put(key_lastOpenDirectory, openDirectoryValue);
+        CheckBox openFile = (CheckBox) scene.lookup("#openFile_Name");
+        String openFileValue = openFile.isSelected() ? "1" : "0";
+        prop.put(key_lastOpenFile, openFileValue);
+        TextField excelName = (TextField) scene.lookup("#excelName_Name");
+        prop.put(key_lastExcelName, excelName.getText());
+        TextField sheetOutName = (TextField) scene.lookup("#sheetOutName_Name");
+        prop.put(key_lastSheetOutName, sheetOutName.getText());
+        ChoiceBox<?> excelType = (ChoiceBox<?>) scene.lookup("#excelType_Name");
+        prop.put(key_lastExcelType, excelType.getValue());
+        TextField startRow = (TextField) scene.lookup("#startRow_Name");
+        prop.put(key_lastStartRow, startRow.getText());
+        TextField startCell = (TextField) scene.lookup("#startCell_Name");
+        prop.put(key_lastStartCell, startCell.getText());
+        TextField filterFileType = (TextField) scene.lookup("#filterFileType_Name");
+        prop.put(key_lastFilterFileType, filterFileType.getText());
+        Label inPath = (Label) scene.lookup("#inPath_Name");
+        prop.put(key_lastInPath, inPath.getText());
+        Label outPath = (Label) scene.lookup("#outPath_Name");
+        prop.put(key_lastOutPath, outPath.getText());
+        Label excelPath = (Label) scene.lookup("#excelPath_Name");
+        prop.put(key_lastExcelPath, excelPath.getText());
+        OutputStream output = checkRunningOutputStream(configFile);
+        prop.store(output, null);
+        input.close();
+        output.close();
+    }
+
+    /**
      * 添加数据渲染列表
      */
     private void addInData(List<File> inFileList) throws Exception {
@@ -204,9 +253,7 @@ public class FileNameToExcelController extends ToolsProperties {
     private static void getConfig() throws IOException {
         Properties prop = new Properties();
         InputStream input = checkRunningInputStream(configFile);
-        // 加载properties文件
         prop.load(input);
-        // 根据key读取value
         inFilePath = prop.getProperty(key_inFilePath);
         outFilePath = prop.getProperty(key_outFilePath);
         defaultOutFileName = prop.getProperty(key_defaultOutFileName);
@@ -217,12 +264,41 @@ public class FileNameToExcelController extends ToolsProperties {
     }
 
     /**
+     * 设置初始配置值为上次配置值
+     */
+    private void setLastConfig() throws IOException {
+        Properties prop = new Properties();
+        InputStream input = checkRunningInputStream(configFile);
+        prop.load(input);
+        if (activation.equals(prop.getProperty(key_loadLastConfig))) {
+            setControlLastConfig(directoryNameType_Name, prop, key_lastDirectoryNameType, false);
+            setControlLastConfig(hideFileType_Name, prop, key_lastHideFileType, false);
+            setControlLastConfig(recursion_Name, prop, key_lastRecursion, false);
+            setControlLastConfig(showFileType_Name, prop, key_lastShowFileType, false);
+            setControlLastConfig(openDirectory_Name, prop, key_lastOpenDirectory, false);
+            setControlLastConfig(openFile_Name, prop, key_lastOpenFile, false);
+            setControlLastConfig(excelName_Name, prop, key_lastExcelName, false);
+            setControlLastConfig(sheetOutName_Name, prop, key_lastSheetOutName, false);
+            setControlLastConfig(excelType_Name, prop, key_lastExcelType, false);
+            setControlLastConfig(startRow_Name, prop, key_lastStartRow, false);
+            setControlLastConfig(startCell_Name, prop, key_lastStartCell, false);
+            setControlLastConfig(filterFileType_Name, prop, key_lastFilterFileType, false);
+            setControlLastConfig(inPath_Name, prop, key_lastInPath, false);
+            setControlLastConfig(outPath_Name, prop, key_lastOutPath, false);
+            setControlLastConfig(excelPath_Name, prop, key_lastExcelPath, false);
+        }
+        input.close();
+    }
+
+    /**
      * 界面初始化
      */
     @FXML
     private void initialize() throws IOException {
         //读取全局变量配置
         getConfig();
+        //设置初始配置值为上次配置值
+        setLastConfig();
         //设置要防重复点击的组件
         disableControls.add(fileButton_Name);
         disableControls.add(clearButton_Name);
