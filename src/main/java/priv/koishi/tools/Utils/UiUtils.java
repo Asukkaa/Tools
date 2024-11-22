@@ -42,6 +42,8 @@ import static priv.koishi.tools.Utils.FileUtils.*;
  */
 public class UiUtils {
 
+    private static final DataFormat dataFormat = new DataFormat("application/x-java-serialized-object");
+
     /**
      * 鼠标停留提示框
      *
@@ -444,7 +446,6 @@ public class UiUtils {
      * 设置列表通过拖拽排序行
      */
     public static <T> void tableViewDragRow(TableView<T> tableView) {
-        DataFormat dataFormat = new DataFormat("application/x-java-serialized-object");
         tableView.setRowFactory(tv -> {
             TableRow<T> row = new TableRow<>();
             //拖拽-检测
