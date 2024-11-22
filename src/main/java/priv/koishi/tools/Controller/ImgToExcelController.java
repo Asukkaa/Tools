@@ -28,6 +28,7 @@ import priv.koishi.tools.ThreadPool.CommonThreadPoolExecutor;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -38,6 +39,7 @@ import static priv.koishi.tools.Service.ImgToExcelService.buildImgGroupExcel;
 import static priv.koishi.tools.Service.ReadDataService.readExcel;
 import static priv.koishi.tools.Text.CommonTexts.*;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
+import static priv.koishi.tools.Utils.CommonUtils.checkRunningOutputStream;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
@@ -164,7 +166,7 @@ public class ImgToExcelController extends ToolsProperties {
     private Button fileButton_Img, reselectButton_Img, clearButton_Img, exportButton_Img, cancel_Img, outButton_Img, excelPathButton_Img;
 
     @FXML
-    private TextField imgWidth_Img, imgHeight_Img, excelName_Img, sheetOutName_Img, subCode_Img, startRow_Img, startCell_Img, readRow_Img, readCell_Img, maxRow_Img, maxImgNum_Img;
+    private TextField imgWidth_Img, imgHeight_Img, excelName_Img, sheetName_Img, subCode_Img, startRow_Img, startCell_Img, readRow_Img, readCell_Img, maxRow_Img, maxImgNum_Img;
 
     /**
      * 组件自适应宽高
@@ -201,6 +203,49 @@ public class ImgToExcelController extends ToolsProperties {
         Button cancel = (Button) scene.lookup("#cancel_Img");
         fileNum.setPrefWidth(tableWidth - removeAll.getWidth() - exportAll.getWidth() - reselect.getWidth() - noImg.getWidth() - maxImg.getWidth() - maxImgNum.getWidth() - 70);
         tip_Img.setPrefWidth(tableWidth - progressBar.getWidth() - cancel.getWidth() - 20);
+    }
+
+    /**
+     * 保存最后一次配置的值
+     */
+    public static void imgToExcelSaveLastConfig(Scene scene) throws IOException {
+        InputStream input = checkRunningInputStream(configFile);
+        Properties prop = new Properties();
+        prop.load(input);
+        ChoiceBox<?> hideFileType = (ChoiceBox<?>) scene.lookup("#hideFileType_Img");
+        prop.put(key_lastHideFileType, hideFileType.getValue());
+        CheckBox recursion = (CheckBox) scene.lookup("#recursion_Img");
+        String recursionValue = recursion.isSelected() ? "1" : "0";
+        prop.put(key_lastRecursion, recursionValue);
+        CheckBox showFileType = (CheckBox) scene.lookup("#showFileType_Img");
+        String showFileTypeValue = showFileType.isSelected() ? "1" : "0";
+        prop.put(key_lastShowFileType, showFileTypeValue);
+        CheckBox openDirectory = (CheckBox) scene.lookup("#openDirectory_Img");
+        String openDirectoryValue = openDirectory.isSelected() ? "1" : "0";
+        prop.put(key_lastOpenDirectory, openDirectoryValue);
+        CheckBox openFile = (CheckBox) scene.lookup("#openFile_Img");
+        String openFileValue = openFile.isSelected() ? "1" : "0";
+        prop.put(key_lastOpenFile, openFileValue);
+        TextField excelName = (TextField) scene.lookup("#excelName_Img");
+        prop.put(key_lastExcelName, excelName.getText());
+        TextField sheetName = (TextField) scene.lookup("#sheetName_Img");
+        prop.put(key_lastSheetName,  sheetName.getText());
+        ChoiceBox<?> excelType = (ChoiceBox<?>) scene.lookup("#excelType_Img");
+        prop.put(key_lastExcelType, excelType.getValue());
+        TextField startRow = (TextField) scene.lookup("#startRow_Img");
+        prop.put(key_lastStartRow, startRow.getText());
+        TextField startCell = (TextField) scene.lookup("#startCell_Img");
+        prop.put(key_lastStartCell, startCell.getText());
+        Label inPath = (Label) scene.lookup("#inPath_Img");
+        prop.put(key_lastInPath, inPath.getText());
+        Label outPath = (Label) scene.lookup("#outPath_Img");
+        prop.put(key_lastOutPath, outPath.getText());
+        Label excelPath = (Label) scene.lookup("#excelPath_Img");
+        prop.put(key_lastExcelPath, excelPath.getText());
+        OutputStream output = checkRunningOutputStream(configFile);
+        prop.store(output, null);
+        input.close();
+        output.close();
     }
 
     /**
@@ -263,7 +308,7 @@ public class ImgToExcelController extends ToolsProperties {
         excelConfig.setReadCellNum(setDefaultIntValue(readCell_Img, defaultReadCell, 0, null))
                 .setReadRowNum(setDefaultIntValue(readRow_Img, defaultReadRow, 0, null))
                 .setMaxRowNum(setDefaultIntValue(maxRow_Img, -1, 1, null))
-                .setSheet(sheetOutName_Img.getText())
+                .setSheet(sheetName_Img.getText())
                 .setInPath(excelPath_Img.getText());
         TaskBean<FileNumBean> taskBean = new TaskBean<>();
         taskBean.setShowFileType(showFileType_Img.isSelected())
@@ -305,12 +350,39 @@ public class ImgToExcelController extends ToolsProperties {
     }
 
     /**
+     * 设置初始配置值为上次配置值
+     */
+    private void setLastConfig() throws IOException {
+        Properties prop = new Properties();
+        InputStream input = checkRunningInputStream(configFile);
+        prop.load(input);
+        if (activation.equals(prop.getProperty(key_loadLastConfig))) {
+            setControlLastConfig(hideFileType_Img, prop, key_lastHideFileType, false);
+            setControlLastConfig(recursion_Img, prop, key_lastRecursion, false);
+            setControlLastConfig(showFileType_Img, prop, key_lastShowFileType, false);
+            setControlLastConfig(openDirectory_Img, prop, key_lastOpenDirectory, false);
+            setControlLastConfig(openFile_Img, prop, key_lastOpenFile, false);
+            setControlLastConfig(excelName_Img, prop, key_lastExcelName, false);
+            setControlLastConfig(sheetName_Img, prop, key_lastSheetName, false);
+            setControlLastConfig(excelType_Img, prop, key_lastExcelType, false);
+            setControlLastConfig(startRow_Img, prop, key_lastStartRow, false);
+            setControlLastConfig(startCell_Img, prop, key_lastStartCell, false);
+            setControlLastConfig(inPath_Img, prop, key_lastInPath, false);
+            setControlLastConfig(outPath_Img, prop, key_lastOutPath, false);
+            setControlLastConfig(excelPath_Img, prop, key_lastExcelPath, false);
+        }
+        input.close();
+    }
+
+    /**
      * 界面初始化
      */
     @FXML
     private void initialize() throws IOException {
         //读取全局变量配置
         getConfig();
+        //设置初始配置值为上次配置值
+        setLastConfig();
         //设置要防重复点击的组件
         disableControls.add(outButton_Img);
         disableControls.add(fileButton_Img);
@@ -327,7 +399,7 @@ public class ImgToExcelController extends ToolsProperties {
         addToolTip(startCell_Img, text_onlyNaturalNumber + defaultStartCell);
         addToolTip(imgWidth_Img, tip_imgHeightWidth + defaultImgWidth + tip_imgWidth);
         addToolTip(imgHeight_Img, tip_imgHeightWidth + defaultImgHeight + tip_imgHeight);
-        addNumImgToolTip(recursion_Img, subCode_Img, excelName_Img, sheetOutName_Img, maxRow_Img);
+        addNumImgToolTip(recursion_Img, subCode_Img, excelName_Img, sheetName_Img, maxRow_Img);
         addToolTip(readRow_Img, text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row);
         addToolTip(readCell_Img, text_onlyNaturalNumber + defaultReadCell + text_formThe + (defaultReadCell + 1) + text_cell);
         //设置javafx单元格宽度
@@ -429,7 +501,7 @@ public class ImgToExcelController extends ToolsProperties {
                 .setStartRowNum(setDefaultIntValue(startRow_Img, readRowValue, 0, null))
                 .setImgWidth(setDefaultIntValue(imgWidth_Img, defaultImgWidth, 0, null))
                 .setOutName(setDefaultFileName(excelName_Img, defaultOutFileName))
-                .setSheet(setDefaultStrValue(sheetOutName_Img, defaultSheetName))
+                .setSheet(setDefaultStrValue(sheetName_Img, defaultSheetName))
                 .setOutExcelExtension(excelType_Img.getValue())
                 .setInPath(excelPath_Img.getText())
                 .setNoImg(noImg_Img.isSelected())
@@ -540,7 +612,7 @@ public class ImgToExcelController extends ToolsProperties {
      */
     @FXML
     private void sheetHandleKeyTyped() {
-        addValueToolTip(sheetOutName_Img, tip_sheetOutName);
+        addValueToolTip(sheetName_Img, tip_sheetName);
     }
 
     /**

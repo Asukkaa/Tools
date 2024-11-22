@@ -46,7 +46,7 @@
             <Label prefHeight="20" text="导出excel文件名称:"/>
             <TextField fx:id="excelName_Img" onKeyTyped="#nameHandleKeyTyped" prefHeight="20" prefWidth="100"/>
             <Label prefHeight="20" text="excel表名称:"/>
-            <TextField fx:id="sheetOutName_Img" onKeyTyped="#sheetHandleKeyTyped" prefHeight="20" prefWidth="100"/>
+            <TextField fx:id="sheetName_Img" onKeyTyped="#sheetHandleKeyTyped" prefHeight="20" prefWidth="100"/>
             <Label prefHeight="20" text="文件名称分割符:"/>
             <TextField fx:id="subCode_Img" onKeyTyped="#subHandleKeyTyped" prefHeight="20" prefWidth="100"/>
             <Label prefHeight="20" text="需要识别的图片格式:"/>

@@ -11,8 +11,11 @@ import java.io.IOException;
 import static priv.koishi.tools.Controller.FileNameToExcelController.fileNameToExcelAdaption;
 import static priv.koishi.tools.Controller.FileNameToExcelController.fileNameToExcelSaveLastConfig;
 import static priv.koishi.tools.Controller.FileNumToExcelController.fileNumToExcelAdaption;
+import static priv.koishi.tools.Controller.FileNumToExcelController.fileNumToExcelSaveLastConfig;
 import static priv.koishi.tools.Controller.FileRenameController.fileRenameAdaption;
+import static priv.koishi.tools.Controller.FileRenameController.fileRenameToExcelSaveLastConfig;
 import static priv.koishi.tools.Controller.ImgToExcelController.imgToExcelAdaption;
+import static priv.koishi.tools.Controller.ImgToExcelController.imgToExcelSaveLastConfig;
 import static priv.koishi.tools.Controller.SettingController.settingAdaption;
 
 /**
@@ -46,7 +49,10 @@ public class MainController {
      * 保存各个功能最后一次设置值
      */
     public static void saveLastConfig(Scene scene) throws IOException {
+        imgToExcelSaveLastConfig(scene);
+        fileNumToExcelSaveLastConfig(scene);
         fileNameToExcelSaveLastConfig(scene);
+        fileRenameToExcelSaveLastConfig(scene);
     }
 
 }

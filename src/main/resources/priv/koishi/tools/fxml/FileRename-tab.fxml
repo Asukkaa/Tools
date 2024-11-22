@@ -187,7 +187,7 @@
         <VBox fx:id="excelRenameVBox_Re" spacing="10">
             <HBox spacing="10">
                 <Label prefHeight="20" text="excel表名称:"/>
-                <TextField fx:id="sheetOutName_Re" onKeyTyped="#sheetHandleKeyTyped" prefHeight="20" prefWidth="100"/>
+                <TextField fx:id="sheetName_Re" onKeyTyped="#sheetHandleKeyTyped" prefHeight="20" prefWidth="100"/>
                 <Label prefHeight="20" text="读取预留行:"/>
                 <TextField fx:id="readRow_Re" onKeyTyped="#readRowHandleKeyTyped" prefHeight="20" prefWidth="50"/>
                 <Label prefHeight="20" text="读取预留列:"/>

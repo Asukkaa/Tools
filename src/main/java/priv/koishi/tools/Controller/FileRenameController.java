@@ -29,6 +29,7 @@ import priv.koishi.tools.ThreadPool.CommonThreadPoolExecutor;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
@@ -40,6 +41,7 @@ import static priv.koishi.tools.Service.RenameService.buildRename;
 import static priv.koishi.tools.Service.RenameService.fileRename;
 import static priv.koishi.tools.Text.CommonTexts.*;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
+import static priv.koishi.tools.Utils.CommonUtils.checkRunningOutputStream;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.TaskUtils.bindingProgressBarTask;
 import static priv.koishi.tools.Utils.TaskUtils.taskUnbind;
@@ -133,7 +135,7 @@ public class FileRenameController extends ToolsProperties {
     private ChoiceBox<String> hideFileType_Re, directoryNameType_Re, renameType_Re, subCode_Re, differenceCode_Re, targetStr_Re, leftBehavior_Re, rightBehavior_Re, renameBehavior_Re;
 
     @FXML
-    private TextField sheetOutName_Re, filterFileType_Re, readRow_Re, readCell_Re, maxRow_Re, startName_Re, nameNum_Re, startSize_Re, left_Re, right_Re, renameStr_Re, leftValue_Re, rightValue_Re, renameValue_Re, tag_Re;
+    private TextField sheetName_Re, filterFileType_Re, readRow_Re, readCell_Re, maxRow_Re, startName_Re, nameNum_Re, startSize_Re, left_Re, right_Re, renameStr_Re, leftValue_Re, rightValue_Re, renameValue_Re, tag_Re;
 
     /**
      * 组件自适应宽高
@@ -175,6 +177,30 @@ public class FileRenameController extends ToolsProperties {
         Label tip = (Label) scene.lookup("#tip_Re");
         fileNum.setPrefWidth(tableWidth - removeAll.getWidth() - renameAll.getWidth() - reselect.getWidth() - updateRenameButton.getWidth() - 50);
         tip.setPrefWidth(tableWidth - progressBar.getWidth() - 10);
+    }
+
+    /**
+     * 保存最后一次配置的值
+     */
+    public static void fileRenameToExcelSaveLastConfig(Scene scene) throws IOException {
+        InputStream input = checkRunningInputStream(configFile);
+        Properties prop = new Properties();
+        prop.load(input);
+        ChoiceBox<?> directoryNameType = (ChoiceBox<?>) scene.lookup("#directoryNameType_Re");
+        prop.put(key_lastDirectoryNameType, directoryNameType.getValue());
+        ChoiceBox<?> hideFileType = (ChoiceBox<?>) scene.lookup("#hideFileType_Re");
+        prop.put(key_lastHideFileType, hideFileType.getValue());
+        CheckBox openDirectory = (CheckBox) scene.lookup("#openDirectory_Re");
+        String openDirectoryValue = openDirectory.isSelected() ? "1" : "0";
+        prop.put(key_lastOpenDirectory, openDirectoryValue);
+        TextField filterFileType = (TextField) scene.lookup("#filterFileType_Re");
+        prop.put(key_lastFilterFileType, filterFileType.getText());
+        Label inPath = (Label) scene.lookup("#inPath_Re");
+        prop.put(key_lastInPath, inPath.getText());
+        OutputStream output = checkRunningOutputStream(configFile);
+        prop.store(output, null);
+        input.close();
+        output.close();
     }
 
     /**
@@ -225,7 +251,7 @@ public class FileRenameController extends ToolsProperties {
         excelConfig.setReadCellNum(setDefaultIntValue(readCell_Re, defaultReadCell, 0, null))
                 .setReadRowNum(setDefaultIntValue(readRow_Re, defaultReadRow, 0, null))
                 .setMaxRowNum(setDefaultIntValue(maxRow_Re, -1, 1, null))
-                .setSheet(sheetOutName_Re.getText())
+                .setSheet(sheetName_Re.getText())
                 .setInPath(excelPath_Re.getText());
         TaskBean<FileNumBean> taskBean = new TaskBean<>();
         taskBean.setDisableControls(disableControls)
@@ -364,6 +390,23 @@ public class FileRenameController extends ToolsProperties {
     }
 
     /**
+     * 设置初始配置值为上次配置值
+     */
+    private void setLastConfig() throws IOException {
+        Properties prop = new Properties();
+        InputStream input = checkRunningInputStream(configFile);
+        prop.load(input);
+        if (activation.equals(prop.getProperty(key_loadLastConfig))) {
+            setControlLastConfig(directoryNameType_Re, prop, key_lastDirectoryNameType, false);
+            setControlLastConfig(hideFileType_Re, prop, key_lastHideFileType, false);
+            setControlLastConfig(openDirectory_Re, prop, key_lastOpenDirectory, false);
+            setControlLastConfig(filterFileType_Re, prop, key_lastFilterFileType, false);
+            setControlLastConfig(inPath_Re, prop, key_lastInPath, false);
+        }
+        input.close();
+    }
+
+    /**
      * 界面初始化
      */
     @FXML
@@ -393,7 +436,7 @@ public class FileRenameController extends ToolsProperties {
         addToolTip(rightBehavior_Re, tip_option);
         addToolTip(rightValue_Re, tip_rightValue);
         addToolTip(renameValue_Re, tip_renameValue);
-        addToolTip(sheetOutName_Re, tip_sheetOutName);
+        addToolTip(sheetName_Re, tip_sheetName);
         addToolTip(filterFileType_Re, tip_filterFileType);
         addToolTip(startName_Re, text_onlyNaturalNumber + defaultStartNameNum);
         addToolTip(readRow_Re, text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row);
@@ -572,7 +615,7 @@ public class FileRenameController extends ToolsProperties {
      */
     @FXML
     private void sheetHandleKeyTyped() {
-        addValueToolTip(sheetOutName_Re, tip_sheetOutName);
+        addValueToolTip(sheetName_Re, tip_sheetName);
     }
 
     /**

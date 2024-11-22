@@ -48,7 +48,7 @@
             <Label prefHeight="20" text="导出excel文件名称:"/>
             <TextField fx:id="excelName_Name" onKeyTyped="#nameHandleKeyTyped" prefHeight="20" prefWidth="100"/>
             <Label prefHeight="20" text="excel表名称:"/>
-            <TextField fx:id="sheetOutName_Name" onKeyTyped="#sheetHandleKeyTyped" prefHeight="20" prefWidth="100"/>
+            <TextField fx:id="sheetName_Name" onKeyTyped="#sheetHandleKeyTyped" prefHeight="20" prefWidth="100"/>
             <Label prefHeight="20" text="导出excel文件类型:"/>
             <ChoiceBox fx:id="excelType_Name" prefHeight="20" prefWidth="80">
                 <items>

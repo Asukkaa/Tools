@@ -13,7 +13,7 @@ public class CommonTexts {
 
     public static final String tip_renameStr = "填写后会将匹配到的字符串替换为所填写的字符串";
 
-    public static final String tip_sheetOutName = "须填与excel模板相同的表名才能正常读取模板";
+    public static final String tip_sheetName = "须填与excel模板相同的表名才能正常读取模板";
 
     public static final String tip_renameValue = "填写后会根据其他配置项处理文件名中所匹配的字符";
 
@@ -39,7 +39,7 @@ public class CommonTexts {
 
     public static final String tip_excelName = "如果导出地址和名称与模板一样则会覆盖模板excel文件";
 
-    public static final String tip_sheetOut = "须填与excel模板相同的表名才能正常读取模板，若填表名不存在或不需要读取模板则会创建一个所填表";
+    public static final String tip_sheet = "须填与excel模板相同的表名才能正常读取模板，若填表名不存在或不需要读取模板则会创建一个所填表";
 
     public static final String tip_subCode = "填写后会按所填写的字符串来分割文件名称，按照分割后的文件名称左侧字符串进行分组";
 
@@ -203,7 +203,7 @@ public class CommonTexts {
 
     public static final String key_lastExcelName = "lastExcelName";
 
-    public static final String key_lastSheetOutName = "lastSheetOutName";
+    public static final String key_lastSheetName = "lastSheetName";
 
     public static final String key_lastExcelType = "lastExcelType";
 

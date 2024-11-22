@@ -26,6 +26,7 @@ import priv.koishi.tools.ThreadPool.CommonThreadPoolExecutor;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -36,6 +37,7 @@ import static priv.koishi.tools.Service.FileNumToExcelService.buildNameGroupNumE
 import static priv.koishi.tools.Service.ReadDataService.readExcel;
 import static priv.koishi.tools.Text.CommonTexts.*;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
+import static priv.koishi.tools.Utils.CommonUtils.checkRunningOutputStream;
 import static priv.koishi.tools.Utils.FileUtils.getFileType;
 import static priv.koishi.tools.Utils.FileUtils.readAllFiles;
 import static priv.koishi.tools.Utils.TaskUtils.*;
@@ -146,7 +148,7 @@ public class FileNumToExcelController extends ToolsProperties {
     private Button fileButton_Num, clearButton_Num, exportButton_Num, reselectButton_Num, excelPathButton_Img;
 
     @FXML
-    private TextField excelName_Num, sheetOutName_Num, startRow_Num, startCell_Num, filterFileType_Num, subCode_Num, readRow_Num, readCell_Num, maxRow_Num;
+    private TextField excelName_Num, sheetName_Num, startRow_Num, startCell_Num, filterFileType_Num, subCode_Num, readRow_Num, readCell_Num, maxRow_Num;
 
     /**
      * 组件自适应宽高
@@ -179,6 +181,53 @@ public class FileNumToExcelController extends ToolsProperties {
         Button reselect = (Button) scene.lookup("#reselectButton_Num");
         fileNum.setPrefWidth(tableWidth - removeAll.getWidth() - exportAll.getWidth() - exportTypeLabel.getWidth()
                 - exportType.getWidth() - reselect.getWidth() - 60);
+    }
+
+    /**
+     * 保存最后一次配置的值
+     */
+    public static void fileNumToExcelSaveLastConfig(Scene scene) throws IOException {
+        InputStream input = checkRunningInputStream(configFile);
+        Properties prop = new Properties();
+        prop.load(input);
+        ChoiceBox<?> directoryNameType = (ChoiceBox<?>) scene.lookup("#directoryNameType_Num");
+        prop.put(key_lastDirectoryNameType, directoryNameType.getValue());
+        ChoiceBox<?> hideFileType = (ChoiceBox<?>) scene.lookup("#hideFileType_Num");
+        prop.put(key_lastHideFileType, hideFileType.getValue());
+        CheckBox recursion = (CheckBox) scene.lookup("#recursion_Num");
+        String recursionValue = recursion.isSelected() ? "1" : "0";
+        prop.put(key_lastRecursion, recursionValue);
+        CheckBox showFileType = (CheckBox) scene.lookup("#showFileType_Num");
+        String showFileTypeValue = showFileType.isSelected() ? "1" : "0";
+        prop.put(key_lastShowFileType, showFileTypeValue);
+        CheckBox openDirectory = (CheckBox) scene.lookup("#openDirectory_Num");
+        String openDirectoryValue = openDirectory.isSelected() ? "1" : "0";
+        prop.put(key_lastOpenDirectory, openDirectoryValue);
+        CheckBox openFile = (CheckBox) scene.lookup("#openFile_Num");
+        String openFileValue = openFile.isSelected() ? "1" : "0";
+        prop.put(key_lastOpenFile, openFileValue);
+        TextField excelName = (TextField) scene.lookup("#excelName_Num");
+        prop.put(key_lastExcelName, excelName.getText());
+        TextField sheetName = (TextField) scene.lookup("#sheetName_Num");
+        prop.put(key_lastSheetName, sheetName.getText());
+        ChoiceBox<?> excelType = (ChoiceBox<?>) scene.lookup("#excelType_Num");
+        prop.put(key_lastExcelType, excelType.getValue());
+        TextField startRow = (TextField) scene.lookup("#startRow_Num");
+        prop.put(key_lastStartRow, startRow.getText());
+        TextField startCell = (TextField) scene.lookup("#startCell_Num");
+        prop.put(key_lastStartCell, startCell.getText());
+        TextField filterFileType = (TextField) scene.lookup("#filterFileType_Num");
+        prop.put(key_lastFilterFileType, filterFileType.getText());
+        Label inPath = (Label) scene.lookup("#inPath_Num");
+        prop.put(key_lastInPath, inPath.getText());
+        Label outPath = (Label) scene.lookup("#outPath_Num");
+        prop.put(key_lastOutPath, outPath.getText());
+        Label excelPath = (Label) scene.lookup("#excelPath_Num");
+        prop.put(key_lastExcelPath, excelPath.getText());
+        OutputStream output = checkRunningOutputStream(configFile);
+        prop.store(output, null);
+        input.close();
+        output.close();
     }
 
     /**
@@ -231,8 +280,8 @@ public class FileNumToExcelController extends ToolsProperties {
         excelConfig.setReadCellNum(setDefaultIntValue(readCell_Num, defaultReadCell, 0, null))
                 .setReadRowNum(setDefaultIntValue(readRow_Num, defaultReadRow, 0, null))
                 .setMaxRowNum(setDefaultIntValue(maxRow_Num, -1, 1, null))
-                .setSheet(sheetOutName_Num.getText())
-                .setInPath(excelPath_Num.getText());
+                .setInPath(excelPath_Num.getText())
+                .setSheet(sheetName_Num.getText());
         TaskBean<FileNumBean> taskBean = new TaskBean<>();
         taskBean.setShowFileType(showFileType_Num.isSelected())
                 .setDisableControls(disableControls)
@@ -271,12 +320,41 @@ public class FileNumToExcelController extends ToolsProperties {
     }
 
     /**
+     * 设置初始配置值为上次配置值
+     */
+    private void setLastConfig() throws IOException {
+        Properties prop = new Properties();
+        InputStream input = checkRunningInputStream(configFile);
+        prop.load(input);
+        if (activation.equals(prop.getProperty(key_loadLastConfig))) {
+            setControlLastConfig(directoryNameType_Num, prop, key_lastDirectoryNameType, false);
+            setControlLastConfig(hideFileType_Num, prop, key_lastHideFileType, false);
+            setControlLastConfig(recursion_Num, prop, key_lastRecursion, false);
+            setControlLastConfig(showFileType_Num, prop, key_lastShowFileType, false);
+            setControlLastConfig(openDirectory_Num, prop, key_lastOpenDirectory, false);
+            setControlLastConfig(openFile_Num, prop, key_lastOpenFile, false);
+            setControlLastConfig(excelName_Num, prop, key_lastExcelName, false);
+            setControlLastConfig(sheetName_Num, prop, key_lastSheetName, false);
+            setControlLastConfig(excelType_Num, prop, key_lastExcelType, false);
+            setControlLastConfig(startRow_Num, prop, key_lastStartRow, false);
+            setControlLastConfig(startCell_Num, prop, key_lastStartCell, false);
+            setControlLastConfig(filterFileType_Num, prop, key_lastFilterFileType, false);
+            setControlLastConfig(inPath_Num, prop, key_lastInPath, false);
+            setControlLastConfig(outPath_Num, prop, key_lastOutPath, false);
+            setControlLastConfig(excelPath_Num, prop, key_lastExcelPath, false);
+        }
+        input.close();
+    }
+    
+    /**
      * 界面初始化
      */
     @FXML
     private void initialize() throws IOException {
         //读取全局变量配置
         getConfig();
+        //设置初始配置值为上次配置值
+        setLastConfig();
         //设置要防重复点击的组件
         disableControls.add(fileButton_Num);
         disableControls.add(clearButton_Num);
@@ -290,7 +368,7 @@ public class FileNumToExcelController extends ToolsProperties {
         addToolTip(startCell_Num, text_onlyNaturalNumber + defaultStartCell);
         addToolTip(readRow_Num, text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row);
         addToolTip(readCell_Num, text_onlyNaturalNumber + defaultReadCell + text_formThe + (defaultReadCell + 1) + text_cell);
-        addNumImgToolTip(recursion_Num, subCode_Num, excelName_Num, sheetOutName_Num, maxRow_Num);
+        addNumImgToolTip(recursion_Num, subCode_Num, excelName_Num, sheetName_Num, maxRow_Num);
         //设置javafx单元格宽度
         tableViewNumImgAdaption(groupId_Num, tableView_Num, groupName_Num.prefWidthProperty(), groupNumber_Num.prefWidthProperty(), fileName_Num);
     }
@@ -368,7 +446,7 @@ public class FileNumToExcelController extends ToolsProperties {
         excelConfig.setStartCellNum(setDefaultIntValue(startCell_Num, defaultStartCell, 0, null))
                 .setStartRowNum(setDefaultIntValue(startRow_Num, readRowValue, 0, null))
                 .setOutName(setDefaultFileName(excelName_Num, defaultOutFileName))
-                .setSheet(setDefaultStrValue(sheetOutName_Num, defaultSheetName))
+                .setSheet(setDefaultStrValue(sheetName_Num, defaultSheetName))
                 .setOutExcelExtension(excelType_Num.getValue())
                 .setExportType(exportType_Num.getValue())
                 .setInPath(excelPath_Num.getText())
@@ -456,7 +534,7 @@ public class FileNumToExcelController extends ToolsProperties {
      */
     @FXML
     private void sheetHandleKeyTyped() {
-        addValueToolTip(sheetOutName_Num, tip_sheetOutName);
+        addValueToolTip(sheetName_Num, tip_sheetName);
     }
 
     /**

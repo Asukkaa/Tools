@@ -125,7 +125,7 @@ public class FileNameToExcelController extends ToolsProperties {
     private Label outPath_Name, excelPath_Name, fileNumber_Name, inPath_Name, log_Name, tip_Name;
 
     @FXML
-    private TextField excelName_Name, sheetOutName_Name, startRow_Name, startCell_Name, filterFileType_Name;
+    private TextField excelName_Name, sheetName_Name, startRow_Name, startCell_Name, filterFileType_Name;
 
     @FXML
     private Button fileButton_Name, clearButton_Name, exportButton_Name, reselectButton_Name, removeExcelButton_Name, excelPathButton_Img;
@@ -194,8 +194,8 @@ public class FileNameToExcelController extends ToolsProperties {
         prop.put(key_lastOpenFile, openFileValue);
         TextField excelName = (TextField) scene.lookup("#excelName_Name");
         prop.put(key_lastExcelName, excelName.getText());
-        TextField sheetOutName = (TextField) scene.lookup("#sheetOutName_Name");
-        prop.put(key_lastSheetOutName, sheetOutName.getText());
+        TextField sheetName = (TextField) scene.lookup("#sheetName_Name");
+        prop.put(key_lastSheetName, sheetName.getText());
         ChoiceBox<?> excelType = (ChoiceBox<?>) scene.lookup("#excelType_Name");
         prop.put(key_lastExcelType, excelType.getValue());
         TextField startRow = (TextField) scene.lookup("#startRow_Name");
@@ -278,7 +278,7 @@ public class FileNameToExcelController extends ToolsProperties {
             setControlLastConfig(openDirectory_Name, prop, key_lastOpenDirectory, false);
             setControlLastConfig(openFile_Name, prop, key_lastOpenFile, false);
             setControlLastConfig(excelName_Name, prop, key_lastExcelName, false);
-            setControlLastConfig(sheetOutName_Name, prop, key_lastSheetOutName, false);
+            setControlLastConfig(sheetName_Name, prop, key_lastSheetName, false);
             setControlLastConfig(excelType_Name, prop, key_lastExcelType, false);
             setControlLastConfig(startRow_Name, prop, key_lastStartRow, false);
             setControlLastConfig(startCell_Name, prop, key_lastStartCell, false);
@@ -311,7 +311,7 @@ public class FileNameToExcelController extends ToolsProperties {
         addToolTip(tip_Name, tip_Name.getText());
         addToolTip(recursion_Name, tip_recursion);
         addToolTip(excelName_Name, tip_excelName);
-        addToolTip(sheetOutName_Name, tip_sheetOut);
+        addToolTip(sheetName_Name, tip_sheet);
         addToolTip(filterFileType_Name, tip_filterFileType);
         addToolTip(removeExcelButton_Name, tip_removeExcelButton);
         addToolTip(startCell_Name, text_onlyNaturalNumber + defaultStartCell);
@@ -415,7 +415,7 @@ public class FileNameToExcelController extends ToolsProperties {
         excelConfig.setStartCellNum(setDefaultIntValue(startCell_Name, defaultStartCell, 0, null))
                 .setStartRowNum(setDefaultIntValue(startRow_Name, 0, 0, null))
                 .setOutName(setDefaultFileName(excelName_Name, defaultOutFileName))
-                .setSheet(setDefaultStrValue(sheetOutName_Name, defaultSheetName))
+                .setSheet(setDefaultStrValue(sheetName_Name, defaultSheetName))
                 .setOutExcelExtension(excelType_Name.getValue())
                 .setInPath(excelPath_Name.getText())
                 .setOutPath(outFilePath);
@@ -495,7 +495,7 @@ public class FileNameToExcelController extends ToolsProperties {
      */
     @FXML
     private void sheetHandleKeyTyped() {
-        addValueToolTip(sheetOutName_Name, tip_sheetOut);
+        addValueToolTip(sheetName_Name, tip_sheet);
     }
 
     /**

@@ -360,9 +360,9 @@ public class UiUtils {
     /**
      * 为统计文件名和插入图片页面添加鼠标悬停提示
      */
-    public static void addNumImgToolTip(CheckBox recursion, TextField subCode, TextField excelName, TextField sheetOutName, TextField maxRow) {
+    public static void addNumImgToolTip(CheckBox recursion, TextField subCode, TextField excelName, TextField sheetName, TextField maxRow) {
         addToolTip(recursion, tip_recursion);
-        addToolTip(sheetOutName, tip_sheetOutName);
+        addToolTip(sheetName, tip_sheetName);
         addToolTip(excelName, tip_excelName);
         addToolTip(maxRow, tip_maxRow);
         addToolTip(subCode, tip_subCode);

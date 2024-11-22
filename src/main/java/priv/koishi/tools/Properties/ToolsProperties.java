@@ -34,14 +34,14 @@ public class ToolsProperties extends Properties {
             //如果是#注释内容，则不做操作
             if (!line.startsWith("#") && !line.isEmpty()) {
                 //将读取的数据格式为’=‘分割,以key,Value方式存储properties属性类文件数据
-                String[] split = line.split("=");
-                String value = split[1];
+                String key = line.split("=")[0];
+                String value = line.split("=")[1];
                 //value为空则不处理转义符
                 if (StringUtils.isNotBlank(value)) {
                     //由于‘\’在Java中表示转义字符，需要将读取的路径进行转换为‘/’符号,这里“\\\\”代表一个‘\’
                     value = value.replaceAll("\\\\", "/");
                 }
-                put(split[0], value);
+                put(key, value);
             }
         }
     }
