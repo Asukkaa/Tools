@@ -721,6 +721,9 @@ public class ImgToExcelController extends ToolsProperties {
         if (StringUtils.isEmpty(inFilePath)) {
             throw new Exception(text_excelPathNull);
         }
+        if (!new File(inFilePath).exists()) {
+            throw new Exception(text_fileNotExists);
+        }
         updateLabel(log_Img, "");
         return addInData();
     }

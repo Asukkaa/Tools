@@ -18,7 +18,7 @@ import java.util.List;
 import static priv.koishi.tools.Text.CommonTexts.*;
 import static priv.koishi.tools.Utils.CommonUtils.autoSizeExcel;
 import static priv.koishi.tools.Utils.FileUtils.checkCopyDestination;
-import static priv.koishi.tools.Utils.UiUtils.setDisableControls;
+import static priv.koishi.tools.Utils.UiUtils.changeDisableControls;
 
 /**
  * @author KOISHI
@@ -34,7 +34,9 @@ public class FileNumToExcelService {
         return new Task<>() {
             @Override
             protected SXSSFWorkbook call() throws Exception {
-                setDisableControls(taskBean, true);
+                //改变要防重复点击的组件状态
+                changeDisableControls(taskBean, true);
+                //校验excel输出路径是否与模板一致，若不一致则复制一份模板文件到输出路径
                 checkCopyDestination(excelConfig);
                 File inputFile = new File(excelConfig.getInPath());
                 if (!inputFile.exists()) {

@@ -904,12 +904,16 @@ public class FileRenameController extends ToolsProperties {
         if (StringUtils.isEmpty(inFilePath)) {
             throw new Exception(text_filePathNull);
         }
+        File file = new File(inFilePath);
+        if (!file.exists()) {
+            throw new Exception(text_fileNotExists);
+        }
         updateLabel(log_Re, "");
         FileConfig fileConfig = new FileConfig();
         fileConfig.setFilterExtensionList(getFilterExtensionList(filterFileType_Re))
                 .setShowDirectoryName(directoryNameType_Re.getValue())
                 .setShowHideFile(hideFileType_Re.getValue())
-                .setInFile(new File(inFilePath));
+                .setInFile(file);
         addInData(readAllFiles(fileConfig));
     }
 

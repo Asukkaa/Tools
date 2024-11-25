@@ -143,6 +143,8 @@ public class CommonTexts {
 
     public static final String text_excelNotExists = "模板excel文件不存在";
 
+    public static final String text_fileNotExists = "要读取的文件夹不存在";
+
     public static final String text_allHave = "共有 ";
 
     public static final String text_group = " 组数据，匹配到 ";

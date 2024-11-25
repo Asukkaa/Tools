@@ -16,7 +16,7 @@ import java.util.concurrent.ExecutorService;
 
 import static priv.koishi.tools.Utils.FileUtils.openFile;
 import static priv.koishi.tools.Utils.FileUtils.saveExcel;
-import static priv.koishi.tools.Utils.UiUtils.setDisableControls;
+import static priv.koishi.tools.Utils.UiUtils.changeDisableControls;
 
 /**
  * @author KOISHI
@@ -102,7 +102,7 @@ public class TaskUtils {
             cancelButton.setVisible(false);
         }
         //解除防重复点击按钮不可点击限制
-        setDisableControls(taskBean, false);
+        changeDisableControls(taskBean, false);
         //隐藏和解绑消息通知组件
         Label massageLabel = taskBean.getMassageLabel();
         if (massageLabel != null) {

@@ -180,7 +180,7 @@ public class UiUtils {
     public static void checkExcelParam(String excelInPath) throws Exception {
         File file = new File(excelInPath);
         if (!file.exists() || !file.isFile()) {
-            throw new Exception("未读取到文件，excel模板路径设置有误");
+            throw new Exception(text_excelNotExists);
         }
         String fileExtension = getFileType(file);
         if (!xlsx.equals(fileExtension)) {
@@ -545,7 +545,7 @@ public class UiUtils {
     /**
      * 改变要防重复点击的组件状态
      */
-    public static void setDisableControls(TaskBean<?> taskBean, boolean disable) {
+    public static void changeDisableControls(TaskBean<?> taskBean, boolean disable) {
         List<Control> disableControls = taskBean.getDisableControls();
         if (CollectionUtils.isNotEmpty(disableControls)) {
             disableControls.forEach(dc -> dc.setDisable(disable));

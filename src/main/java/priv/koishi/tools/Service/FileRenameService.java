@@ -13,7 +13,7 @@ import java.util.UUID;
 
 import static priv.koishi.tools.Text.CommonTexts.*;
 import static priv.koishi.tools.Utils.CommonUtils.*;
-import static priv.koishi.tools.Utils.UiUtils.setDisableControls;
+import static priv.koishi.tools.Utils.UiUtils.changeDisableControls;
 
 /**
  * @author KOISHI
@@ -29,7 +29,8 @@ public class FileRenameService {
         return new Task<>() {
             @Override
             protected String call() throws Exception {
-                setDisableControls(taskBean, true);
+                //改变要防重复点击的组件状态
+                changeDisableControls(taskBean, true);
                 //防止命名重复先将所有慰文件重命名为uuid生成的临时名称
                 updateMessage("正在将文件重命名为临时名称");
                 List<FileBean> fileBeanList = taskBean.getBeanList();
@@ -91,7 +92,8 @@ public class FileRenameService {
         String fileRename = fileBean.getName();
         if (codeRenameConfig != null) {
             fileRename = getCodeRename(codeRenameConfig, startName, tag);
-        } else if (stringRenameConfig != null) {
+        }
+        if (stringRenameConfig != null) {
             fileRename = getStringRename(stringRenameConfig, fileBean);
         }
         fileBean.setRename(fileRename);

@@ -17,7 +17,7 @@ import java.util.List;
 import static priv.koishi.tools.Utils.FileUtils.checkCopyDestination;
 import static priv.koishi.tools.Text.CommonTexts.*;
 import static priv.koishi.tools.Utils.UiUtils.checkExcelParam;
-import static priv.koishi.tools.Utils.UiUtils.setDisableControls;
+import static priv.koishi.tools.Utils.UiUtils.changeDisableControls;
 
 /**
  * @author KOISHI
@@ -30,7 +30,8 @@ public class FileNameToExcelService {
      * 构建输出文件名称的excel
      */
     public static Task<SXSSFWorkbook> buildFileNameExcel(ExcelConfig excelConfig, TaskBean<FileBean> taskBean) throws Exception {
-        setDisableControls(taskBean, true);
+        //改变要防重复点击的组件状态
+        changeDisableControls(taskBean, true);
         XSSFWorkbook workbook = new XSSFWorkbook();
         SXSSFWorkbook sxssfWorkbook = new SXSSFWorkbook(workbook);
         XSSFSheet sheet;
@@ -64,7 +65,8 @@ public class FileNameToExcelService {
         return new Task<>() {
             @Override
             protected SXSSFWorkbook call() {
-                setDisableControls(taskBean, true);
+                //改变要防重复点击的组件状态
+                changeDisableControls(taskBean, true);
                 updateMessage(text_printData);
                 List<String> names = new ArrayList<>();
                 taskBean.getBeanList().forEach(fileBean -> names.add(fileBean.getName()));

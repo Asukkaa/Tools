@@ -37,7 +37,8 @@ public class ReadDataService {
         return new Task<>() {
             @Override
             protected List<FileNumBean> call() throws Exception {
-                setDisableControls(taskBean, true);
+                //改变要防重复点击的组件状态
+                changeDisableControls(taskBean, true);
                 //Task的Message更新方法,这边修改之后,上面的监听方法会经过
                 updateMessage(text_readData);
                 List<FileNumBean> fileNumBeanList = new ArrayList<>();
@@ -140,7 +141,8 @@ public class ReadDataService {
         return new Task<>() {
             @Override
             protected Void call() throws IOException {
-                setDisableControls(taskBean, true);
+                //改变要防重复点击的组件状态
+                changeDisableControls(taskBean, true);
                 updateMessage(text_readData);
                 //判断是否为重命名功能的查询文件
                 Configuration configuration = taskBean.getConfiguration();

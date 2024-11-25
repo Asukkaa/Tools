@@ -536,6 +536,9 @@ public class FileNameToExcelController extends ToolsProperties {
         if (StringUtils.isEmpty(inFilePath)) {
             throw new Exception(text_filePathNull);
         }
+        if (!new File(inFilePath).exists()){
+            throw new Exception(text_fileNotExists);
+        }
         updateLabel(log_Name, "");
         FileConfig fileConfig = new FileConfig();
         fileConfig.setFilterExtensionList(getFilterExtensionList(filterFileType_Name))

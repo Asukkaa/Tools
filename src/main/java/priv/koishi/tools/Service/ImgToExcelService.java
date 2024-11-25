@@ -1,7 +1,6 @@
 package priv.koishi.tools.Service;
 
 import javafx.concurrent.Task;
-import javafx.scene.control.Control;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.ClientAnchor;
@@ -25,6 +24,7 @@ import java.util.List;
 import static priv.koishi.tools.Text.CommonTexts.*;
 import static priv.koishi.tools.Utils.FileUtils.checkCopyDestination;
 import static priv.koishi.tools.Utils.FileUtils.getFileType;
+import static priv.koishi.tools.Utils.UiUtils.changeDisableControls;
 
 /**
  * @author KOISHI
@@ -60,10 +60,9 @@ public class ImgToExcelService {
         return new Task<>() {
             @Override
             protected SXSSFWorkbook call() throws Exception {
-                List<Control> disableControls = taskBean.getDisableControls();
-                if (CollectionUtils.isNotEmpty(disableControls)) {
-                    disableControls.forEach(dc -> dc.setDisable(true));
-                }
+                //改变要防重复点击的组件状态
+                changeDisableControls(taskBean, true);
+                //校验excel输出路径是否与模板一致，若不一致则复制一份模板文件到输出路径
                 checkCopyDestination(excelConfig);
                 File inputFile = new File(excelConfig.getInPath());
                 if (!inputFile.exists()) {
