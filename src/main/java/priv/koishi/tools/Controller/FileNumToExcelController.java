@@ -195,27 +195,35 @@ public class FileNumToExcelController extends ToolsProperties {
         ChoiceBox<?> hideFileType = (ChoiceBox<?>) scene.lookup("#hideFileType_Num");
         prop.put(key_lastHideFileType, hideFileType.getValue());
         CheckBox recursion = (CheckBox) scene.lookup("#recursion_Num");
-        String recursionValue = recursion.isSelected() ? "1" : "0";
+        String recursionValue = recursion.isSelected() ? activation : unActivation;
         prop.put(key_lastRecursion, recursionValue);
         CheckBox showFileType = (CheckBox) scene.lookup("#showFileType_Num");
-        String showFileTypeValue = showFileType.isSelected() ? "1" : "0";
+        String showFileTypeValue = showFileType.isSelected() ? activation : unActivation;
         prop.put(key_lastShowFileType, showFileTypeValue);
         CheckBox openDirectory = (CheckBox) scene.lookup("#openDirectory_Num");
-        String openDirectoryValue = openDirectory.isSelected() ? "1" : "0";
+        String openDirectoryValue = openDirectory.isSelected() ? activation : unActivation;
         prop.put(key_lastOpenDirectory, openDirectoryValue);
         CheckBox openFile = (CheckBox) scene.lookup("#openFile_Num");
-        String openFileValue = openFile.isSelected() ? "1" : "0";
+        String openFileValue = openFile.isSelected() ? activation : unActivation;
         prop.put(key_lastOpenFile, openFileValue);
         TextField excelName = (TextField) scene.lookup("#excelName_Num");
         prop.put(key_lastExcelName, excelName.getText());
         TextField sheetName = (TextField) scene.lookup("#sheetName_Num");
         prop.put(key_lastSheetName, sheetName.getText());
+        TextField subCode = (TextField) scene.lookup("#subCode_Num");
+        prop.put(key_lastSubCode, subCode.getText());
         ChoiceBox<?> excelType = (ChoiceBox<?>) scene.lookup("#excelType_Num");
         prop.put(key_lastExcelType, excelType.getValue());
         TextField startRow = (TextField) scene.lookup("#startRow_Num");
         prop.put(key_lastStartRow, startRow.getText());
         TextField startCell = (TextField) scene.lookup("#startCell_Num");
         prop.put(key_lastStartCell, startCell.getText());
+        TextField readRow = (TextField) scene.lookup("#readRow_Num");
+        prop.put(key_lastReadRow, readRow.getText());
+        TextField readCell = (TextField) scene.lookup("#readCell_Num");
+        prop.put(key_lastReadCell, readCell.getText());
+        TextField maxRow = (TextField) scene.lookup("#maxRow_Num");
+        prop.put(key_lastMaxRow, maxRow.getText());
         TextField filterFileType = (TextField) scene.lookup("#filterFileType_Num");
         prop.put(key_lastFilterFileType, filterFileType.getText());
         Label inPath = (Label) scene.lookup("#inPath_Num");
@@ -335,9 +343,13 @@ public class FileNumToExcelController extends ToolsProperties {
             setControlLastConfig(openFile_Num, prop, key_lastOpenFile, false);
             setControlLastConfig(excelName_Num, prop, key_lastExcelName, false);
             setControlLastConfig(sheetName_Num, prop, key_lastSheetName, false);
+            setControlLastConfig(subCode_Num, prop, key_lastSubCode, true);
             setControlLastConfig(excelType_Num, prop, key_lastExcelType, false);
             setControlLastConfig(startRow_Num, prop, key_lastStartRow, false);
             setControlLastConfig(startCell_Num, prop, key_lastStartCell, false);
+            setControlLastConfig(readRow_Num, prop, key_lastReadRow, false);
+            setControlLastConfig(readCell_Num, prop, key_lastReadCell, false);
+            setControlLastConfig(maxRow_Num, prop, key_lastMaxRow, false);
             setControlLastConfig(filterFileType_Num, prop, key_lastFilterFileType, false);
             setControlLastConfig(inPath_Num, prop, key_lastInPath, false);
             setControlLastConfig(outPath_Num, prop, key_lastOutPath, false);
@@ -345,7 +357,31 @@ public class FileNumToExcelController extends ToolsProperties {
         }
         input.close();
     }
-    
+
+    /**
+     * 设置要防重复点击的组件
+     */
+    private void setDisableControls() {
+        disableControls.add(fileButton_Num);
+        disableControls.add(clearButton_Num);
+        disableControls.add(exportButton_Num);
+        disableControls.add(showFileType_Num);
+        disableControls.add(reselectButton_Num);
+        disableControls.add(excelPathButton_Img);
+    }
+
+    /**
+     * 设置鼠标悬停提示
+     */
+    private void setToolTip() {
+        addToolTip(startRow_Num, tip_startReadRow);
+        addToolTip(filterFileType_Num, tip_filterFileType);
+        addToolTip(startCell_Num, text_onlyNaturalNumber + defaultStartCell);
+        addToolTip(readRow_Num, text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row);
+        addToolTip(readCell_Num, text_onlyNaturalNumber + defaultReadCell + text_formThe + (defaultReadCell + 1) + text_cell);
+        addNumImgToolTip(recursion_Num, subCode_Num, excelName_Num, sheetName_Num, maxRow_Num);
+    }
+
     /**
      * 界面初始化
      */
@@ -356,19 +392,9 @@ public class FileNumToExcelController extends ToolsProperties {
         //设置初始配置值为上次配置值
         setLastConfig();
         //设置要防重复点击的组件
-        disableControls.add(fileButton_Num);
-        disableControls.add(clearButton_Num);
-        disableControls.add(exportButton_Num);
-        disableControls.add(showFileType_Num);
-        disableControls.add(reselectButton_Num);
-        disableControls.add(excelPathButton_Img);
+        setDisableControls();
         //设置鼠标悬停提示
-        addToolTip(startRow_Num, tip_startReadRow);
-        addToolTip(filterFileType_Num, tip_filterFileType);
-        addToolTip(startCell_Num, text_onlyNaturalNumber + defaultStartCell);
-        addToolTip(readRow_Num, text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row);
-        addToolTip(readCell_Num, text_onlyNaturalNumber + defaultReadCell + text_formThe + (defaultReadCell + 1) + text_cell);
-        addNumImgToolTip(recursion_Num, subCode_Num, excelName_Num, sheetName_Num, maxRow_Num);
+        setToolTip();
         //设置javafx单元格宽度
         tableViewNumImgAdaption(groupId_Num, tableView_Num, groupName_Num.prefWidthProperty(), groupNumber_Num.prefWidthProperty(), fileName_Num);
     }

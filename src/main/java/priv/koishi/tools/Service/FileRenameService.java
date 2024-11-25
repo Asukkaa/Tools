@@ -20,7 +20,7 @@ import static priv.koishi.tools.Utils.UiUtils.setDisableControls;
  * Date:2024-11-06
  * Time:下午5:47
  */
-public class RenameService {
+public class FileRenameService {
 
     /**
      * 批量重命名
@@ -267,14 +267,14 @@ public class RenameService {
         int left = Math.min(stringRenameConfig.getLeft(), leftSize);
         String leftRename = leftName.substring(0, leftSize - left);
         String leftBehavior = stringRenameConfig.getLeftBehavior();
-        String renameLeft = getOneSidesRename(leftRename, leftBehavior, true, stringRenameConfig.getLeftValue());
+        String renameLeft = getOneSideRename(leftRename, leftBehavior, true, stringRenameConfig.getLeftValue());
         //组装右侧重命名
         String rightName = fileName.substring(lastIndexOf + renameValue.length());
         int rightSize = rightName.length();
         int right = Math.min(stringRenameConfig.getRight(), rightSize);
         String rightRename = rightName.substring(right);
         String rightBehavior = stringRenameConfig.getRightBehavior();
-        String renameRight = getOneSidesRename(rightRename, rightBehavior, false, stringRenameConfig.getRightValue());
+        String renameRight = getOneSideRename(rightRename, rightBehavior, false, stringRenameConfig.getRightValue());
         //中间字符串
         String middleName = leftName.substring(leftSize - left) + renameValue + rightName.substring(0, right);
         return renameLeft + middleName + renameRight;
@@ -283,7 +283,7 @@ public class RenameService {
     /**
      * 处理单侧字符
      */
-    private static String getOneSidesRename(String fileName, String behavior, boolean isLeft, String replaceString) {
+    private static String getOneSideRename(String fileName, String behavior, boolean isLeft, String replaceString) {
         switch (behavior) {
             case text_insert: {
                 fileName = isLeft ? (fileName + replaceString) : (replaceString + fileName);

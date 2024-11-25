@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static priv.koishi.tools.Service.RenameService.buildRename;
+import static priv.koishi.tools.Service.FileRenameService.buildRename;
 import static priv.koishi.tools.Text.CommonTexts.*;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
@@ -154,7 +154,8 @@ public class ReadDataService {
                         codeRenameConfig = (CodeRenameConfig) configuration;
                         startName = codeRenameConfig.getStartName();
                         tag = codeRenameConfig.getTag();
-                    } else if (configuration instanceof StringRenameConfig) {
+                    }
+                    if (configuration instanceof StringRenameConfig) {
                         stringRenameConfig = (StringRenameConfig) configuration;
                     }
                 }

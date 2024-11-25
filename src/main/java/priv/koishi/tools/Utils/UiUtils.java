@@ -100,7 +100,8 @@ public class UiUtils {
             // 设置初始目录
             if (file.isDirectory()) {
                 fileChooser.setInitialDirectory(file);
-            } else if (file.isFile()) {
+            }
+            if (file.isFile()) {
                 file = new File(file.getParent());
                 fileChooser.setInitialDirectory(file);
             }
@@ -563,9 +564,7 @@ public class UiUtils {
                 choiceBox.setValue(lastValue);
             }
             if (control instanceof CheckBox checkBox) {
-                if (activation.equals(lastValue)) {
-                    checkBox.setSelected(true);
-                }
+                checkBox.setSelected(activation.equals(lastValue));
             }
             if (control instanceof Label label) {
                 label.setText(lastValue);

@@ -139,7 +139,8 @@ public class ImgToExcelService {
                 try {
                     if (jpg.equals(extension) || jpeg.equals(extension)) {
                         drawing.createPicture(anchor, sxssfWorkbook.addPicture(inputStream.readAllBytes(), Workbook.PICTURE_TYPE_JPEG));
-                    } else if (png.equals(extension)) {
+                    }
+                    if (png.equals(extension)) {
                         drawing.createPicture(anchor, sxssfWorkbook.addPicture(inputStream.readAllBytes(), Workbook.PICTURE_TYPE_PNG));
                     }
                 } finally {

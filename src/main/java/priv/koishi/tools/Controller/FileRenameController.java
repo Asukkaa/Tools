@@ -37,15 +37,15 @@ import java.util.stream.Collectors;
 import static priv.koishi.tools.Enum.SelectItemsEnums.*;
 import static priv.koishi.tools.Service.ReadDataService.readExcel;
 import static priv.koishi.tools.Service.ReadDataService.readFile;
-import static priv.koishi.tools.Service.RenameService.buildRename;
-import static priv.koishi.tools.Service.RenameService.fileRename;
+import static priv.koishi.tools.Service.FileRenameService.buildRename;
+import static priv.koishi.tools.Service.FileRenameService.fileRename;
 import static priv.koishi.tools.Text.CommonTexts.*;
-import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
-import static priv.koishi.tools.Utils.CommonUtils.checkRunningOutputStream;
+import static priv.koishi.tools.Utils.CommonUtils.*;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.TaskUtils.bindingProgressBarTask;
 import static priv.koishi.tools.Utils.TaskUtils.taskUnbind;
 import static priv.koishi.tools.Utils.UiUtils.*;
+import static priv.koishi.tools.Utils.UiUtils.setControlLastConfig;
 
 /**
  * @author KOISHI
@@ -191,16 +191,121 @@ public class FileRenameController extends ToolsProperties {
         ChoiceBox<?> hideFileType = (ChoiceBox<?>) scene.lookup("#hideFileType_Re");
         prop.put(key_lastHideFileType, hideFileType.getValue());
         CheckBox openDirectory = (CheckBox) scene.lookup("#openDirectory_Re");
-        String openDirectoryValue = openDirectory.isSelected() ? "1" : "0";
+        String openDirectoryValue = openDirectory.isSelected() ? activation : unActivation;
         prop.put(key_lastOpenDirectory, openDirectoryValue);
         TextField filterFileType = (TextField) scene.lookup("#filterFileType_Re");
         prop.put(key_lastFilterFileType, filterFileType.getText());
         Label inPath = (Label) scene.lookup("#inPath_Re");
         prop.put(key_lastInPath, inPath.getText());
+        ChoiceBox<?> renameType = (ChoiceBox<?>) scene.lookup("#renameType_Re");
+        String renameTypeValue = (String) renameType.getValue();
+        prop.put(key_lastRenameType, renameTypeValue);
+        //根据文件重命名依据设置保存配置信息
+        saveLastConfigByRenameType(prop, renameTypeValue, scene);
         OutputStream output = checkRunningOutputStream(configFile);
         prop.store(output, null);
         input.close();
         output.close();
+    }
+
+    /**
+     * 根据文件重命名依据设置保存配置信息
+     */
+    private static void saveLastConfigByRenameType(Properties prop, String renameTypeValue, Scene scene) {
+        switch (renameTypeValue) {
+            case text_codeRename: {
+                //按编号规则重命名保存配置信息
+                saveLastConfigByCodeRename(prop, scene);
+                break;
+            }
+            case text_strRename: {
+                //按指定字符重命名保存配置信息
+                saveLastConfigByStrRename(prop, scene);
+                break;
+            }
+            case text_excelRename: {
+                //按excel模板重命名保存配置信息
+                saveLastConfigByExcelRename(prop, scene);
+                break;
+            }
+        }
+    }
+
+    /**
+     * 按编号规则重命名保存配置信息
+     */
+    private static void saveLastConfigByCodeRename(Properties prop, Scene scene) {
+        TextField startName = (TextField) scene.lookup("#startName_Re");
+        prop.put(key_lastStartName, startName.getText());
+        TextField startSize = (TextField) scene.lookup("#startSize_Re");
+        prop.put(key_lastStartSize, startSize.getText());
+        TextField nameNum = (TextField) scene.lookup("#nameNum_Re");
+        prop.put(key_lastNameNum, nameNum.getText());
+        TextField tag = (TextField) scene.lookup("#tag_Re");
+        prop.put(key_lastTag, tag.getText());
+        CheckBox addSpace = (CheckBox) scene.lookup("#addSpace_Re");
+        String addSpaceValue = addSpace.isSelected() ? activation : unActivation;
+        prop.put(key_lastAddSpace, addSpaceValue);
+        ChoiceBox<?> differenceCode = (ChoiceBox<?>) scene.lookup("#differenceCode_Re");
+        prop.put(key_lastDifferenceCode, differenceCode.getValue());
+        ChoiceBox<?> subCode = (ChoiceBox<?>) scene.lookup("#subCode_Re");
+        prop.put(key_lastSubCode, subCode.getValue());
+    }
+
+    /**
+     * 按指定字符重命名保存配置信息
+     */
+    private static void saveLastConfigByStrRename(Properties prop, Scene scene) {
+        ChoiceBox<?> targetStr = (ChoiceBox<?>) scene.lookup("#targetStr_Re");
+        String targetStrValue = (String) targetStr.getValue();
+        prop.put(key_lastTargetStr, targetStrValue);
+        if (text_specifyString.equals(targetStrValue) || text_specifyIndex.equals(targetStrValue)) {
+            TextField renameValue = (TextField) scene.lookup("#renameValue_Re");
+            prop.put(key_lastRenameValue, renameValue.getText());
+            ChoiceBox<?> renameBehavior = (ChoiceBox<?>) scene.lookup("#renameBehavior_Re");
+            String renameBehaviorValue = (String) renameBehavior.getValue();
+            prop.put(key_lastRenameBehavior, renameBehaviorValue);
+            if (text_replace.equals(renameBehaviorValue)) {
+                TextField renameStr = (TextField) scene.lookup("#renameStr_Re");
+                prop.put(key_lastRenameStr, renameStr.getText());
+            }
+            if (text_bothSides.equals(renameBehaviorValue)) {
+                TextField left = (TextField) scene.lookup("#left_Re");
+                prop.put(key_lastLeft, left.getText());
+                ChoiceBox<?> leftBehavior = (ChoiceBox<?>) scene.lookup("#leftBehavior_Re");
+                String leftBehaviorValue = (String) leftBehavior.getValue();
+                prop.put(key_lastLeftBehavior, leftBehaviorValue);
+                if (text_insert.equals(leftBehaviorValue) || text_replace.equals(leftBehaviorValue)) {
+                    TextField leftValue = (TextField) scene.lookup("#leftValue_Re");
+                    prop.put(key_lastLeftValue, leftValue.getText());
+                }
+                TextField right = (TextField) scene.lookup("#right_Re");
+                prop.put(key_lastRight, right.getText());
+                ChoiceBox<?> rightBehavior = (ChoiceBox<?>) scene.lookup("#rightBehavior_Re");
+                String rightBehaviorValue = (String) rightBehavior.getValue();
+                prop.put(key_lastRightBehavior, rightBehaviorValue);
+                if (text_insert.equals(rightBehaviorValue) || text_replace.equals(rightBehaviorValue)) {
+                    TextField rightValue = (TextField) scene.lookup("#rightValue_Re");
+                    prop.put(key_lastRightValue, rightValue.getText());
+                }
+            }
+        }
+    }
+
+    /**
+     * 按excel模板重命名保存配置信息
+     */
+    private static void saveLastConfigByExcelRename(Properties prop, Scene scene) {
+        TextField sheetName = (TextField) scene.lookup("#sheetName_Re");
+        prop.put(key_lastSheetName, sheetName.getText());
+        TextField readRow = (TextField) scene.lookup("#readRow_Re");
+        prop.put(key_lastReadRow, readRow.getText());
+        TextField readCell = (TextField) scene.lookup("#readCell_Re");
+        prop.put(key_lastReadCell, readCell.getText());
+        TextField maxRow = (TextField) scene.lookup("#maxRow_Re");
+        prop.put(key_lastMaxRow, maxRow.getText());
+        Label excelPath = (Label) scene.lookup("#excelPath_Re");
+        prop.put(key_lastExcelPath, excelPath.getText());
     }
 
     /**
@@ -356,7 +461,8 @@ public class FileRenameController extends ToolsProperties {
                     .setRenameBehavior(renameBehavior);
             if (text_replace.equals(renameBehavior)) {
                 stringRenameConfig.setRenameStr(renameStr_Re.getText());
-            } else if (text_bothSides.equals(renameBehavior)) {
+            }
+            if (text_bothSides.equals(renameBehavior)) {
                 String leftBehavior = leftBehavior_Re.getValue();
                 String rightBehavior = rightBehavior_Re.getValue();
                 stringRenameConfig.setRight(setDefaultIntValue(right_Re, 0, 0, null))
@@ -402,25 +508,135 @@ public class FileRenameController extends ToolsProperties {
             setControlLastConfig(openDirectory_Re, prop, key_lastOpenDirectory, false);
             setControlLastConfig(filterFileType_Re, prop, key_lastFilterFileType, false);
             setControlLastConfig(inPath_Re, prop, key_lastInPath, false);
+            setControlLastConfig(renameType_Re, prop, key_lastRenameType, false);
+            //根据重命名类型设置上次配置值
+            setLastConfigByRenameType(prop);
         }
         input.close();
     }
 
     /**
-     * 界面初始化
+     * 根据重命名类型设置上次配置值
      */
-    @FXML
-    private void initialize() throws IOException {
-        //读取全局变量配置
-        getConfig();
-        //设置要防重复点击的组件
-        disableControls.add(fileButton_Re);
-        disableControls.add(clearButton_Re);
-        disableControls.add(renameButton_Re);
-        disableControls.add(reselectButton_Re);
-        disableControls.add(excelPathButton_Img);
-        disableControls.add(updateRenameButton_Re);
-        //设置鼠标悬停提示
+    private void setLastConfigByRenameType(Properties prop) {
+        switch (prop.getProperty(key_lastRenameType)) {
+            case text_codeRename: {
+                //按编号规则重命名设置上次配置值
+                setLastConfigByCodeRename(prop);
+                break;
+            }
+            case text_strRename: {
+                //按指定字符重命名设置上次配置值
+                setLastConfigByStrRename(prop);
+                break;
+            }
+            case text_excelRename: {
+                //根据excel重命名设置上次配置值
+                setLastConfigByExcelRename(prop);
+                break;
+            }
+        }
+    }
+
+    /**
+     * 按编号规则重命名设置上次配置值
+     */
+    private void setLastConfigByCodeRename(Properties prop) {
+        setControlLastConfig(startName_Re, prop, key_lastStartName, false);
+        setControlLastConfig(startSize_Re, prop, key_lastStartSize, false);
+        setControlLastConfig(nameNum_Re, prop, key_lastNameNum, false);
+        setControlLastConfig(tag_Re, prop, key_lastTag, false);
+        setControlLastConfig(addSpace_Re, prop, key_lastAddSpace, false);
+        setControlLastConfig(differenceCode_Re, prop, key_lastDifferenceCode, false);
+        setControlLastConfig(subCode_Re, prop, key_lastSubCode, false);
+    }
+
+    /**
+     * 按指定字符重命名设置上次配置值
+     */
+    private void setLastConfigByStrRename(Properties prop) {
+        setControlLastConfig(targetStr_Re, prop, key_lastTargetStr, false);
+        String lastTargetStr = prop.getProperty(key_lastTargetStr);
+        if (text_specifyString.equals(lastTargetStr)) {
+            //指定字符串设置上次配置值
+            setLastConfigBySpecifyString(prop);
+        }
+        if (text_specifyIndex.equals(lastTargetStr)) {
+            //指定字符位置设置上次配置值
+            setLastConfigBySpecifyIndex(prop);
+        }
+    }
+
+    /**
+     * 指定字符串设置上次配置值
+     */
+    private void setLastConfigBySpecifyString(Properties prop) {
+        setControlLastConfig(renameValue_Re, prop, key_lastRenameValue, false);
+        setControlLastConfig(renameBehavior_Re, prop, key_lastRenameBehavior, false);
+        String lastRenameBehavior = prop.getProperty(key_lastRenameBehavior);
+        if (text_replace.equals(lastRenameBehavior)) {
+            setControlLastConfig(renameStr_Re, prop, key_lastRenameStr, false);
+        }
+        if (text_bothSides.equals(lastRenameBehavior)) {
+            //处理左侧字符设置上次配置值
+            setLastConfigByOneSide(prop, left_Re, key_lastLeft, leftBehavior_Re, key_lastLeftBehavior, leftValue_Re, key_lastLeftValue);
+            //处理右侧字符设置上次配置值
+            setLastConfigByOneSide(prop, right_Re, key_lastRight, rightBehavior_Re, key_lastRightBehavior, rightValue_Re, key_lastRightValue);
+        }
+    }
+
+    /**
+     * 处理单侧字符设置上次配置值
+     */
+    private void setLastConfigByOneSide(Properties prop, TextField side, String sideKey, ChoiceBox<String> sideBehavior, String sideBehaviorKey, TextField sideValue, String valueKey) {
+        setControlLastConfig(side, prop, sideKey, false);
+        setControlLastConfig(sideBehavior, prop, sideBehaviorKey, false);
+        String lastLeftBehavior = prop.getProperty(sideBehaviorKey);
+        if (text_insert.equals(lastLeftBehavior) || text_replace.equals(lastLeftBehavior)) {
+            setControlLastConfig(sideValue, prop, valueKey, false);
+        }
+    }
+
+    /**
+     * 指定字符位置设置上次配置值
+     */
+    private void setLastConfigBySpecifyIndex(Properties prop) {
+        setControlLastConfig(renameValue_Re, prop, key_lastRenameValue, false);
+        setControlLastConfig(renameBehavior_Re, prop, key_lastRenameBehavior, false);
+        if (text_replace.equals(prop.getProperty(key_lastRenameBehavior))) {
+            setControlLastConfig(renameStr_Re, prop, key_lastRenameStr, false);
+        }
+    }
+
+    /**
+     * 根据excel重命名设置上次配置值
+     */
+    private void setLastConfigByExcelRename(Properties prop) {
+        setControlLastConfig(sheetName_Re, prop, key_lastSheetName, false);
+        setControlLastConfig(readRow_Re, prop, key_lastReadRow, false);
+        setControlLastConfig(readCell_Re, prop, key_lastReadCell, false);
+        setControlLastConfig(maxRow_Re, prop, key_lastMaxRow, false);
+        setControlLastConfig(excelPath_Re, prop, key_lastExcelPath, false);
+    }
+
+    /**
+     * 设置javafx单元格宽度
+     */
+    private void bindPrefWidthProperty() {
+        id_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.04));
+        name_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.14));
+        rename_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.14));
+        fileType_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.06));
+        path_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.22));
+        size_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.08));
+        creatDate_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.16));
+        updateDate_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.16));
+    }
+
+    /**
+     * 设置鼠标悬停提示
+     */
+    private void setToolTip() {
         addToolTip(tag_Re, tip_tag);
         addToolTip(left_Re, tip_left);
         addToolTip(right_Re, tip_right);
@@ -441,18 +657,44 @@ public class FileRenameController extends ToolsProperties {
         addToolTip(startName_Re, text_onlyNaturalNumber + defaultStartNameNum);
         addToolTip(readRow_Re, text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row);
         addToolTip(readCell_Re, text_onlyNaturalNumber + defaultReadCell + text_formThe + (defaultReadCell + 1) + text_cell);
+    }
+
+    /**
+     * 设置要防重复点击的组件
+     */
+    private void setDisableControls() {
+        disableControls.add(fileButton_Re);
+        disableControls.add(clearButton_Re);
+        disableControls.add(renameButton_Re);
+        disableControls.add(reselectButton_Re);
+        disableControls.add(excelPathButton_Img);
+        disableControls.add(updateRenameButton_Re);
+    }
+
+    /**
+     * 设置要暂时移除的组件
+     */
+    private void removeChildren(VBox... vBoxes) {
+        vbox_Re.getChildren().removeAll(vBoxes);
+    }
+
+    /**
+     * 界面初始化
+     */
+    @FXML
+    private void initialize() throws IOException {
+        //读取全局变量配置
+        getConfig();
         //设置要暂时移除的组件
-        vbox_Re.getChildren().remove(strRenameVBox_Re);
-        vbox_Re.getChildren().remove(excelRenameVBox_Re);
+        removeChildren(strRenameVBox_Re, excelRenameVBox_Re);
+        //设置初始配置值为上次配置值
+        setLastConfig();
+        //设置要防重复点击的组件
+        setDisableControls();
+        //设置鼠标悬停提示
+        setToolTip();
         //设置javafx单元格宽度
-        id_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.04));
-        name_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.14));
-        rename_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.14));
-        fileType_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.06));
-        path_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.22));
-        size_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.08));
-        creatDate_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.16));
-        updateDate_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.16));
+        bindPrefWidthProperty();
     }
 
     /**
@@ -711,8 +953,7 @@ public class FileRenameController extends ToolsProperties {
      */
     @FXML
     private void differenceCodeAction() {
-        String item = differenceCode_Re.getValue();
-        switch (item) {
+        switch (differenceCode_Re.getValue()) {
             case text_arabicNumerals: {
                 updateSelectItems(addSpace_Re, subCode_Re, subCodeArabicNumItems);
                 break;
@@ -737,25 +978,20 @@ public class FileRenameController extends ToolsProperties {
      */
     @FXML
     private void renameTypeAction() {
-        String item = renameType_Re.getValue();
         int index = vbox_Re.getChildren().indexOf(renameTypeHBox_Re) + 1;
-        switch (item) {
+        removeChildren(strRenameVBox_Re, excelRenameVBox_Re, codeRenameVBox_Re);
+        switch (renameType_Re.getValue()) {
             case text_codeRename: {
                 vbox_Re.getChildren().add(index, codeRenameVBox_Re);
-                vbox_Re.getChildren().remove(strRenameVBox_Re);
-                vbox_Re.getChildren().remove(excelRenameVBox_Re);
                 break;
             }
             case text_strRename: {
-                vbox_Re.getChildren().remove(codeRenameVBox_Re);
                 vbox_Re.getChildren().add(index, strRenameVBox_Re);
-                vbox_Re.getChildren().remove(excelRenameVBox_Re);
+                //根据匹配字符规则选项展示组件
                 targetStrAction();
                 break;
             }
             case text_excelRename: {
-                vbox_Re.getChildren().remove(codeRenameVBox_Re);
-                vbox_Re.getChildren().remove(strRenameVBox_Re);
                 vbox_Re.getChildren().add(index, excelRenameVBox_Re);
                 break;
             }
@@ -767,14 +1003,14 @@ public class FileRenameController extends ToolsProperties {
      */
     @FXML
     private void targetStrAction() {
-        String item = targetStr_Re.getValue();
-        switch (item) {
+        switch (targetStr_Re.getValue()) {
             case text_specifyString: {
                 typeLabel_Re.setText(text_matchString);
                 renameValue_Re.setText("");
                 addValueToolTip(renameValue_Re, tip_renameValue);
                 renameBehavior_Re.getItems().remove(text_bothSides);
                 renameBehavior_Re.getItems().add(text_bothSides);
+                //根据重命名方法选项展示组件
                 behaviorAction();
                 break;
             }
@@ -784,6 +1020,7 @@ public class FileRenameController extends ToolsProperties {
                 addValueToolTip(renameValue_Re, tip_renameValue);
                 renameBehavior_Re.getItems().remove(text_bothSides);
                 renameBehavior_Re.setValue(renameBehavior_Re.getItems().getFirst());
+                //根据重命名方法选项展示组件
                 behaviorAction();
                 break;
             }
@@ -800,9 +1037,8 @@ public class FileRenameController extends ToolsProperties {
      */
     @FXML
     private void behaviorAction() {
-        String item = renameBehavior_Re.getValue();
         targetStrHBox_Re.setVisible(true);
-        switch (item) {
+        switch (renameBehavior_Re.getValue()) {
             case text_replace: {
                 renameStr_Re.setVisible(true);
                 behaviorHBox_Re.setVisible(false);
@@ -822,7 +1058,7 @@ public class FileRenameController extends ToolsProperties {
     }
 
     /**
-     * 监控指定位置之前处理方式下拉框
+     * 监控指定位置左侧处理方式下拉框
      */
     @FXML
     private void leftBehaviorAction() {
@@ -831,7 +1067,7 @@ public class FileRenameController extends ToolsProperties {
     }
 
     /**
-     * 监控指定位置之后处理方式下拉框
+     * 监控指定位置右侧处理方式下拉框
      */
     @FXML
     public void rightBehaviorAction() {
@@ -928,7 +1164,8 @@ public class FileRenameController extends ToolsProperties {
                     codeRenameConfig = (CodeRenameConfig) configuration;
                     startName = codeRenameConfig.getStartName();
                     tag = codeRenameConfig.getTag();
-                } else if (configuration instanceof StringRenameConfig) {
+                }
+                if (configuration instanceof StringRenameConfig) {
                     stringRenameConfig = (StringRenameConfig) configuration;
                 }
             }

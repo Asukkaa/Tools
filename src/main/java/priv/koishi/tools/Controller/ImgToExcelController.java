@@ -215,33 +215,64 @@ public class ImgToExcelController extends ToolsProperties {
         ChoiceBox<?> hideFileType = (ChoiceBox<?>) scene.lookup("#hideFileType_Img");
         prop.put(key_lastHideFileType, hideFileType.getValue());
         CheckBox recursion = (CheckBox) scene.lookup("#recursion_Img");
-        String recursionValue = recursion.isSelected() ? "1" : "0";
+        String recursionValue = recursion.isSelected() ? activation : unActivation;
         prop.put(key_lastRecursion, recursionValue);
         CheckBox showFileType = (CheckBox) scene.lookup("#showFileType_Img");
-        String showFileTypeValue = showFileType.isSelected() ? "1" : "0";
+        String showFileTypeValue = showFileType.isSelected() ? activation : unActivation;
         prop.put(key_lastShowFileType, showFileTypeValue);
         CheckBox openDirectory = (CheckBox) scene.lookup("#openDirectory_Img");
-        String openDirectoryValue = openDirectory.isSelected() ? "1" : "0";
+        String openDirectoryValue = openDirectory.isSelected() ? activation : unActivation;
         prop.put(key_lastOpenDirectory, openDirectoryValue);
         CheckBox openFile = (CheckBox) scene.lookup("#openFile_Img");
-        String openFileValue = openFile.isSelected() ? "1" : "0";
+        String openFileValue = openFile.isSelected() ? activation : unActivation;
         prop.put(key_lastOpenFile, openFileValue);
         TextField excelName = (TextField) scene.lookup("#excelName_Img");
         prop.put(key_lastExcelName, excelName.getText());
         TextField sheetName = (TextField) scene.lookup("#sheetName_Img");
-        prop.put(key_lastSheetName,  sheetName.getText());
+        prop.put(key_lastSheetName, sheetName.getText());
+        TextField subCode = (TextField) scene.lookup("#subCode_Img");
+        prop.put(key_lastSubCode, subCode.getText());
         ChoiceBox<?> excelType = (ChoiceBox<?>) scene.lookup("#excelType_Img");
         prop.put(key_lastExcelType, excelType.getValue());
         TextField startRow = (TextField) scene.lookup("#startRow_Img");
         prop.put(key_lastStartRow, startRow.getText());
         TextField startCell = (TextField) scene.lookup("#startCell_Img");
         prop.put(key_lastStartCell, startCell.getText());
+        TextField readRow = (TextField) scene.lookup("#readRow_Img");
+        prop.put(key_lastReadRow, readRow.getText());
+        TextField readCell = (TextField) scene.lookup("#readCell_Img");
+        prop.put(key_lastReadCell, readCell.getText());
+        TextField maxRow = (TextField) scene.lookup("#maxRow_Img");
+        prop.put(key_lastMaxRow, maxRow.getText());
+        TextField imgWidth = (TextField) scene.lookup("#imgWidth_Img");
+        prop.put(key_lastImgWidth, imgWidth.getText());
+        TextField imgHeight = (TextField) scene.lookup("#imgHeight_Img");
+        prop.put(key_lastImgHeight, imgHeight.getText());
         Label inPath = (Label) scene.lookup("#inPath_Img");
         prop.put(key_lastInPath, inPath.getText());
         Label outPath = (Label) scene.lookup("#outPath_Img");
         prop.put(key_lastOutPath, outPath.getText());
         Label excelPath = (Label) scene.lookup("#excelPath_Img");
         prop.put(key_lastExcelPath, excelPath.getText());
+        TextField maxImgNum = (TextField) scene.lookup("#maxImgNum_Img");
+        prop.put(key_lastMaxImgNum, maxImgNum.getText());
+        CheckBox noImg = (CheckBox) scene.lookup("#noImg_Img");
+        String noImgValue = noImg.isSelected() ? activation : unActivation;
+        prop.put(key_lastNoImg, noImgValue);
+        List<String> lastFilterFileTypes = new ArrayList<>();
+        CheckBox jpgCheckBox = (CheckBox) scene.lookup("#jpg_Img");
+        if (jpgCheckBox.isSelected()) {
+            lastFilterFileTypes.add(jpg);
+        }
+        CheckBox pngCheckBox = (CheckBox) scene.lookup("#png_Img");
+        if (pngCheckBox.isSelected()) {
+            lastFilterFileTypes.add(png);
+        }
+        CheckBox jpegCheckBox = (CheckBox) scene.lookup("#jpeg_Img");
+        if (jpegCheckBox.isSelected()) {
+            lastFilterFileTypes.add(jpeg);
+        }
+        prop.put(key_lastFilterFileType, String.join(" ", lastFilterFileTypes));
         OutputStream output = checkRunningOutputStream(configFile);
         prop.store(output, null);
         input.close();
@@ -364,14 +395,60 @@ public class ImgToExcelController extends ToolsProperties {
             setControlLastConfig(openFile_Img, prop, key_lastOpenFile, false);
             setControlLastConfig(excelName_Img, prop, key_lastExcelName, false);
             setControlLastConfig(sheetName_Img, prop, key_lastSheetName, false);
+            setControlLastConfig(subCode_Img, prop, key_lastSubCode, true);
             setControlLastConfig(excelType_Img, prop, key_lastExcelType, false);
             setControlLastConfig(startRow_Img, prop, key_lastStartRow, false);
             setControlLastConfig(startCell_Img, prop, key_lastStartCell, false);
+            setControlLastConfig(readRow_Img, prop, key_lastReadRow, false);
+            setControlLastConfig(readCell_Img, prop, key_lastReadCell, false);
+            setControlLastConfig(maxRow_Img, prop, key_lastMaxRow, false);
+            setControlLastConfig(imgWidth_Img, prop, key_lastImgWidth, false);
+            setControlLastConfig(imgHeight_Img, prop, key_lastImgHeight, false);
             setControlLastConfig(inPath_Img, prop, key_lastInPath, false);
             setControlLastConfig(outPath_Img, prop, key_lastOutPath, false);
             setControlLastConfig(excelPath_Img, prop, key_lastExcelPath, false);
+            setControlLastConfig(maxImgNum_Img, prop, key_lastMaxImgNum, false);
+            setControlLastConfig(noImg_Img, prop, key_lastNoImg, false);
+            String lastFilterFileTypes = prop.getProperty(key_lastFilterFileType);
+            if (StringUtils.isNotBlank(lastFilterFileTypes)) {
+                jpg_Img.setSelected(lastFilterFileTypes.contains(jpg));
+                png_Img.setSelected(lastFilterFileTypes.contains(png));
+                jpeg_Img.setSelected(lastFilterFileTypes.contains(jpeg));
+            }
         }
         input.close();
+    }
+
+    /**
+     * 设置鼠标悬停提示
+     */
+    private void setToolTip() {
+        addToolTip(noImg_Img, tip_noImg);
+        addToolTip(tip_Img, tip_Img.getText());
+        addToolTip(jpg_Img, tip_filterImgType);
+        addToolTip(png_Img, tip_filterImgType);
+        addToolTip(jpeg_Img, tip_filterImgType);
+        addToolTip(maxImgNum_Img, tip_maxImgNum);
+        addToolTip(startRow_Img, tip_startReadRow);
+        addToolTip(startCell_Img, text_onlyNaturalNumber + defaultStartCell);
+        addToolTip(imgWidth_Img, tip_imgHeightWidth + defaultImgWidth + tip_imgWidth);
+        addToolTip(imgHeight_Img, tip_imgHeightWidth + defaultImgHeight + tip_imgHeight);
+        addNumImgToolTip(recursion_Img, subCode_Img, excelName_Img, sheetName_Img, maxRow_Img);
+        addToolTip(readRow_Img, text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row);
+        addToolTip(readCell_Img, text_onlyNaturalNumber + defaultReadCell + text_formThe + (defaultReadCell + 1) + text_cell);
+    }
+
+    /**
+     * 设置要防重复点击的组件
+     */
+    private void setDisableControls() {
+        disableControls.add(outButton_Img);
+        disableControls.add(fileButton_Img);
+        disableControls.add(clearButton_Img);
+        disableControls.add(exportButton_Img);
+        disableControls.add(showFileType_Img);
+        disableControls.add(reselectButton_Img);
+        disableControls.add(excelPathButton_Img);
     }
 
     /**
@@ -384,24 +461,9 @@ public class ImgToExcelController extends ToolsProperties {
         //设置初始配置值为上次配置值
         setLastConfig();
         //设置要防重复点击的组件
-        disableControls.add(outButton_Img);
-        disableControls.add(fileButton_Img);
-        disableControls.add(clearButton_Img);
-        disableControls.add(exportButton_Img);
-        disableControls.add(showFileType_Img);
-        disableControls.add(reselectButton_Img);
-        disableControls.add(excelPathButton_Img);
+        setDisableControls();
         //设置鼠标悬停提示
-        addToolTip(noImg_Img, tip_noImg);
-        addToolTip(tip_Img, tip_Img.getText());
-        addToolTip(maxImgNum_Img, tip_maxImgNum);
-        addToolTip(startRow_Img, tip_startReadRow);
-        addToolTip(startCell_Img, text_onlyNaturalNumber + defaultStartCell);
-        addToolTip(imgWidth_Img, tip_imgHeightWidth + defaultImgWidth + tip_imgWidth);
-        addToolTip(imgHeight_Img, tip_imgHeightWidth + defaultImgHeight + tip_imgHeight);
-        addNumImgToolTip(recursion_Img, subCode_Img, excelName_Img, sheetName_Img, maxRow_Img);
-        addToolTip(readRow_Img, text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row);
-        addToolTip(readCell_Img, text_onlyNaturalNumber + defaultReadCell + text_formThe + (defaultReadCell + 1) + text_cell);
+        setToolTip();
         //设置javafx单元格宽度
         tableViewNumImgAdaption(groupId_Img, tableView_Img, groupName_Img.prefWidthProperty(), groupNumber_Img.prefWidthProperty(), fileName_Img);
     }

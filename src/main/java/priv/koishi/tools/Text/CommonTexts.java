@@ -61,6 +61,8 @@ public class CommonTexts {
 
     public static final String tip_noImg = "勾选后没有图片的数据将会在单元格中标记为 无图片";
 
+    public static final String tip_filterImgType = "只会识别勾选的图片格式，至少要勾选一种图片格式才能查询";
+
     public static final String tip_option = """
             插入：在匹配的字符位置插入所填写的字符串
             替换：将匹配的字符串替换为所填写的字符串
@@ -187,6 +189,12 @@ public class CommonTexts {
 
     public static final String unActivation = "0";
 
+    public static final String key_inFilePath = "inFilePath";
+
+    public static final String key_excelInPath = "excelInPath";
+
+    public static final String key_outFilePath = "outFilePath";
+
     public static final String key_loadLastConfig = "loadLastConfig";
 
     public static final String key_lastDirectoryNameType = "lastDirectoryNameType";
@@ -219,11 +227,55 @@ public class CommonTexts {
 
     public static final String key_lastExcelPath = "lastExcelPath";
 
-    public static final String key_inFilePath = "inFilePath";
+    public static final String key_lastSubCode = "lastSubCode";
 
-    public static final String key_excelInPath = "excelInPath";
+    public static final String key_lastReadRow = "lastReadRow";
 
-    public static final String key_outFilePath = "outFilePath";
+    public static final String key_lastReadCell = "lastReadCell";
+
+    public static final String key_lastMaxRow = "lastMaxRow";
+
+    public static final String key_lastImgWidth = "lastImgWidth";
+
+    public static final String key_lastImgHeight = "lastImgHeight";
+
+    public static final String key_lastMaxImgNum = "lastMaxImgNum";
+
+    public static final String key_lastNoImg = "lastNoImg";
+
+    public static final String key_lastRenameType = "lastRenameType";
+
+    public static final String key_lastStartName = "lastStartName";
+
+    public static final String key_lastStartSize = "lastStartSize";
+
+    public static final String key_lastNameNum = "lastNameNum";
+
+    public static final String key_lastTag = "lastTag";
+
+    public static final String key_lastAddSpace = "lastAddSpace";
+
+    public static final String key_lastDifferenceCode = "lastDifferenceCode";
+
+    public static final String key_lastTargetStr = "lastTargetStr";
+
+    public static final String key_lastRenameValue = "lastRenameValue";
+
+    public static final String key_lastRenameBehavior = "lastRenameBehavior";
+
+    public static final String key_lastRenameStr = "lastRenameStr";
+
+    public static final String key_lastLeft = "lastLeft";
+
+    public static final String key_lastLeftBehavior = "lastLeftBehavior";
+
+    public static final String key_lastLeftValue = "lastLeftValue";
+
+    public static final String key_lastRight = "lastRight";
+
+    public static final String key_lastRightBehavior = "lastRightBehavior";
+
+    public static final String key_lastRightValue = "lastRightValue";
 
     public static final String key_defaultOutFileName = "defaultOutFileName";
 

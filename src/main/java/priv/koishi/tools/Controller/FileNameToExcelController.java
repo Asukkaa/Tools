@@ -181,16 +181,16 @@ public class FileNameToExcelController extends ToolsProperties {
         ChoiceBox<?> hideFileType = (ChoiceBox<?>) scene.lookup("#hideFileType_Name");
         prop.put(key_lastHideFileType, hideFileType.getValue());
         CheckBox recursion = (CheckBox) scene.lookup("#recursion_Name");
-        String recursionValue = recursion.isSelected() ? "1" : "0";
+        String recursionValue = recursion.isSelected() ? activation : unActivation;
         prop.put(key_lastRecursion, recursionValue);
         CheckBox showFileType = (CheckBox) scene.lookup("#showFileType_Name");
-        String showFileTypeValue = showFileType.isSelected() ? "1" : "0";
+        String showFileTypeValue = showFileType.isSelected() ? activation : unActivation;
         prop.put(key_lastShowFileType, showFileTypeValue);
         CheckBox openDirectory = (CheckBox) scene.lookup("#openDirectory_Name");
-        String openDirectoryValue = openDirectory.isSelected() ? "1" : "0";
+        String openDirectoryValue = openDirectory.isSelected() ? activation : unActivation;
         prop.put(key_lastOpenDirectory, openDirectoryValue);
         CheckBox openFile = (CheckBox) scene.lookup("#openFile_Name");
-        String openFileValue = openFile.isSelected() ? "1" : "0";
+        String openFileValue = openFile.isSelected() ? activation : unActivation;
         prop.put(key_lastOpenFile, openFileValue);
         TextField excelName = (TextField) scene.lookup("#excelName_Name");
         prop.put(key_lastExcelName, excelName.getText());
@@ -291,6 +291,45 @@ public class FileNameToExcelController extends ToolsProperties {
     }
 
     /**
+     * 设置要防重复点击的组件
+     */
+    private void bindPrefWidthProperty() {
+        id_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.04));
+        name_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.14));
+        fileType_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.06));
+        path_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.36));
+        size_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.08));
+        creatDate_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.16));
+        updateDate_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.16));
+    }
+
+    /**
+     * 设置鼠标悬停提示
+     */
+    private void setToolTip() {
+        addToolTip(startRow_Name, tip_startRow);
+        addToolTip(tip_Name, tip_Name.getText());
+        addToolTip(recursion_Name, tip_recursion);
+        addToolTip(excelName_Name, tip_excelName);
+        addToolTip(sheetName_Name, tip_sheet);
+        addToolTip(filterFileType_Name, tip_filterFileType);
+        addToolTip(removeExcelButton_Name, tip_removeExcelButton);
+        addToolTip(startCell_Name, text_onlyNaturalNumber + defaultStartCell);
+    }
+
+    /**
+     * 设置javafx单元格宽度
+     */
+    private void setDisableControls() {
+        disableControls.add(fileButton_Name);
+        disableControls.add(clearButton_Name);
+        disableControls.add(exportButton_Name);
+        disableControls.add(showFileType_Name);
+        disableControls.add(reselectButton_Name);
+        disableControls.add(excelPathButton_Img);
+    }
+
+    /**
      * 界面初始化
      */
     @FXML
@@ -300,29 +339,11 @@ public class FileNameToExcelController extends ToolsProperties {
         //设置初始配置值为上次配置值
         setLastConfig();
         //设置要防重复点击的组件
-        disableControls.add(fileButton_Name);
-        disableControls.add(clearButton_Name);
-        disableControls.add(exportButton_Name);
-        disableControls.add(showFileType_Name);
-        disableControls.add(reselectButton_Name);
-        disableControls.add(excelPathButton_Img);
+        setDisableControls();
         //设置鼠标悬停提示
-        addToolTip(startRow_Name, tip_startRow);
-        addToolTip(tip_Name, tip_Name.getText());
-        addToolTip(recursion_Name, tip_recursion);
-        addToolTip(excelName_Name, tip_excelName);
-        addToolTip(sheetName_Name, tip_sheet);
-        addToolTip(filterFileType_Name, tip_filterFileType);
-        addToolTip(removeExcelButton_Name, tip_removeExcelButton);
-        addToolTip(startCell_Name, text_onlyNaturalNumber + defaultStartCell);
+        setToolTip();
         //设置javafx单元格宽度
-        id_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.04));
-        name_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.14));
-        fileType_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.06));
-        path_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.36));
-        size_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.08));
-        creatDate_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.16));
-        updateDate_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.16));
+        bindPrefWidthProperty();
     }
 
     /**
