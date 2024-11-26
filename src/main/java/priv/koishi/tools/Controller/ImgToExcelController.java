@@ -117,11 +117,6 @@ public class ImgToExcelController extends ToolsProperties {
     static List<Control> disableControls = new ArrayList<>();
 
     /**
-     * 配置文件路径
-     */
-    static String configFile = "config/imgToExcelConfig.properties";
-
-    /**
      * 线程池
      */
     private final CommonThreadPoolExecutor commonThreadPoolExecutor = new CommonThreadPoolExecutor();
@@ -209,7 +204,7 @@ public class ImgToExcelController extends ToolsProperties {
      * 保存最后一次配置的值
      */
     public static void imgToExcelSaveLastConfig(Scene scene) throws IOException {
-        InputStream input = checkRunningInputStream(configFile);
+        InputStream input = checkRunningInputStream(configFile_Img);
         Properties prop = new Properties();
         prop.load(input);
         ChoiceBox<?> hideFileType = (ChoiceBox<?>) scene.lookup("#hideFileType_Img");
@@ -273,7 +268,7 @@ public class ImgToExcelController extends ToolsProperties {
             lastFilterFileTypes.add(jpeg);
         }
         prop.put(key_lastFilterFileType, String.join(" ", lastFilterFileTypes));
-        OutputStream output = checkRunningOutputStream(configFile);
+        OutputStream output = checkRunningOutputStream(configFile_Img);
         prop.store(output, null);
         input.close();
         output.close();
@@ -365,7 +360,7 @@ public class ImgToExcelController extends ToolsProperties {
      */
     private static void getConfig() throws IOException {
         Properties prop = new Properties();
-        InputStream input = checkRunningInputStream(configFile);
+        InputStream input = checkRunningInputStream(configFile_Img);
         prop.load(input);
         inFilePath = prop.getProperty(key_inFilePath);
         excelInPath = prop.getProperty(key_excelInPath);
@@ -385,7 +380,7 @@ public class ImgToExcelController extends ToolsProperties {
      */
     private void setLastConfig() throws IOException {
         Properties prop = new Properties();
-        InputStream input = checkRunningInputStream(configFile);
+        InputStream input = checkRunningInputStream(configFile_Img);
         prop.load(input);
         if (activation.equals(prop.getProperty(key_loadLastConfig))) {
             setControlLastConfig(hideFileType_Img, prop, key_lastHideFileType, false);
@@ -478,7 +473,7 @@ public class ImgToExcelController extends ToolsProperties {
         File selectedFile = creatDirectoryChooser(actionEvent, inFilePath, text_selectDirectory);
         if (selectedFile != null) {
             //更新所选文件路径显示
-            inFilePath = updatePathLabel(selectedFile.getPath(), inFilePath, key_inFilePath, inPath_Img, configFile);
+            inFilePath = updatePathLabel(selectedFile.getPath(), inFilePath, key_inFilePath, inPath_Img, configFile_Img);
             //读取文件数据
             addInFile(selectedFile, getFilterExtension());
         }
@@ -621,7 +616,7 @@ public class ImgToExcelController extends ToolsProperties {
         File selectedFile = creatDirectoryChooser(actionEvent, outFilePath, text_selectDirectory);
         if (selectedFile != null) {
             //更新所选文件路径显示
-            outFilePath = updatePathLabel(selectedFile.getPath(), outFilePath, key_outFilePath, outPath_Img, configFile);
+            outFilePath = updatePathLabel(selectedFile.getPath(), outFilePath, key_outFilePath, outPath_Img, configFile_Img);
             if (StringUtils.isNotEmpty(excelPath_Img.getText())) {
                 reselect();
             }
@@ -638,7 +633,7 @@ public class ImgToExcelController extends ToolsProperties {
         File selectedFile = creatFileChooser(actionEvent, excelInPath, extensionFilters, text_selectExcel);
         if (selectedFile != null) {
             //更新所选文件路径显示
-            excelInPath = updatePathLabel(selectedFile.getPath(), excelInPath, key_excelInPath, excelPath_Img, configFile);
+            excelInPath = updatePathLabel(selectedFile.getPath(), excelInPath, key_excelInPath, excelPath_Img, configFile_Img);
             addInData();
         }
     }

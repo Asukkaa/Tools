@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.TabPane;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
@@ -14,24 +15,12 @@ import java.util.Properties;
 
 import static priv.koishi.tools.Controller.MainController.mainAdaption;
 import static priv.koishi.tools.Controller.MainController.saveLastConfig;
+import static priv.koishi.tools.Text.CommonTexts.activation;
+import static priv.koishi.tools.Text.CommonTexts.configFile;
+import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
 import static priv.koishi.tools.Utils.UiUtils.showExceptionDialog;
 
 public class MainApplication extends Application {
-
-    /**
-     * 程序启动窗口宽度
-     */
-    static double appWidth;
-
-    /**
-     * 程序启动窗口高度
-     */
-    static double appHeight;
-
-    /**
-     * 程序窗口名称
-     */
-    static String appTitle;
 
     /**
      * 加载fxml页面
@@ -39,19 +28,32 @@ public class MainApplication extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("fxml/Main-view.fxml"));
-        getConfig();
+        Properties prop = new Properties();
+        InputStream input = checkRunningInputStream(configFile);
+        prop.load(input);
+        double appWidth = Double.parseDouble(prop.getProperty("appWidth"));
+        double appHeight = Double.parseDouble(prop.getProperty("appHeight"));
+        if (activation.equals(prop.getProperty("lastFullWindow")) && activation.equals(prop.getProperty("loadLastFullWindow"))) {
+            stage.setMaximized(true);
+        }
         Scene scene = new Scene(fxmlLoader.load(), appWidth, appHeight);
-        stage.setTitle(appTitle);
+        stage.setTitle(prop.getProperty("appTitle"));
         stage.setScene(scene);
         stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResource("icon/wrench.png")).toExternalForm()));
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("css/Styles.css")).toExternalForm());
+        TabPane tabPane = (TabPane) scene.lookup("#tabPane");
+        if (activation.equals(prop.getProperty("loadLastConfig"))) {
+            //设置默认选中的Tab
+            tabPane.getSelectionModel().select(Integer.parseInt(prop.getProperty("lastTab")));
+        }
+        input.close();
         //监听窗口面板宽度变化
         stage.widthProperty().addListener((v1, v2, v3) -> Platform.runLater(() -> mainAdaption(stage, scene)));
         //监听窗口面板高度变化
         stage.heightProperty().addListener((v1, v2, v3) -> Platform.runLater(() -> mainAdaption(stage, scene)));
         stage.setOnCloseRequest(event -> {
             try {
-                saveLastConfig(scene);
+                saveLastConfig(scene, stage);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -68,19 +70,6 @@ public class MainApplication extends Application {
         super.init();
         // 在init()方法中设置全局异常处理器
         Platform.runLater(() -> Thread.setDefaultUncaughtExceptionHandler((e, exception) -> showExceptionDialog(exception)));
-    }
-
-    /**
-     * 读取配置文件
-     */
-    public static void getConfig() throws IOException {
-        Properties prop = new Properties();
-        InputStream input = Objects.requireNonNull(MainApplication.class.getResource("config/config.properties")).openStream();
-        prop.load(input);
-        appWidth = Double.parseDouble(prop.getProperty("appWidth"));
-        appHeight = Double.parseDouble(prop.getProperty("appHeight"));
-        appTitle = prop.getProperty("appTitle");
-        input.close();
     }
 
     /**

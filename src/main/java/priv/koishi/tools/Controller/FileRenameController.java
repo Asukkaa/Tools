@@ -90,11 +90,6 @@ public class FileRenameController extends ToolsProperties {
     static List<Control> disableControls = new ArrayList<>();
 
     /**
-     * 配置文件路径
-     */
-    static String configFile = "config/fileRenameConfig.properties";
-
-    /**
      * 线程池
      */
     private final CommonThreadPoolExecutor commonThreadPoolExecutor = new CommonThreadPoolExecutor();
@@ -182,8 +177,8 @@ public class FileRenameController extends ToolsProperties {
     /**
      * 保存最后一次配置的值
      */
-    public static void fileRenameToExcelSaveLastConfig(Scene scene) throws IOException {
-        InputStream input = checkRunningInputStream(configFile);
+    public static void fileRenameSaveLastConfig(Scene scene) throws IOException {
+        InputStream input = checkRunningInputStream(configFile_Rename);
         Properties prop = new Properties();
         prop.load(input);
         ChoiceBox<?> directoryNameType = (ChoiceBox<?>) scene.lookup("#directoryNameType_Re");
@@ -202,7 +197,7 @@ public class FileRenameController extends ToolsProperties {
         prop.put(key_lastRenameType, renameTypeValue);
         //根据文件重命名依据设置保存配置信息
         saveLastConfigByRenameType(prop, renameTypeValue, scene);
-        OutputStream output = checkRunningOutputStream(configFile);
+        OutputStream output = checkRunningOutputStream(configFile_Rename);
         prop.store(output, null);
         input.close();
         output.close();
@@ -485,7 +480,7 @@ public class FileRenameController extends ToolsProperties {
      */
     private static void getConfig() throws IOException {
         Properties prop = new Properties();
-        InputStream input = checkRunningInputStream(configFile);
+        InputStream input = checkRunningInputStream(configFile_Rename);
         prop.load(input);
         inFilePath = prop.getProperty(key_inFilePath);
         excelInPath = prop.getProperty(key_excelInPath);
@@ -500,7 +495,7 @@ public class FileRenameController extends ToolsProperties {
      */
     private void setLastConfig() throws IOException {
         Properties prop = new Properties();
-        InputStream input = checkRunningInputStream(configFile);
+        InputStream input = checkRunningInputStream(configFile_Rename);
         prop.load(input);
         if (activation.equals(prop.getProperty(key_loadLastConfig))) {
             setControlLastConfig(directoryNameType_Re, prop, key_lastDirectoryNameType, false);
@@ -713,7 +708,7 @@ public class FileRenameController extends ToolsProperties {
                 .setInFile(selectedFile);
         if (selectedFile != null) {
             //更新所选文件路径显示
-            inFilePath = updatePathLabel(selectedFile.getAbsolutePath(), inFilePath, key_inFilePath, inPath_Re, configFile);
+            inFilePath = updatePathLabel(selectedFile.getAbsolutePath(), inFilePath, key_inFilePath, inPath_Re, configFile_Rename);
             //读取数据
             List<File> inFileList = readAllFiles(fileConfig);
             addInData(inFileList);
@@ -847,7 +842,7 @@ public class FileRenameController extends ToolsProperties {
         List<FileChooser.ExtensionFilter> extensionFilters = new ArrayList<>(Collections.singleton(new FileChooser.ExtensionFilter("Excel", "*.xlsx")));
         File selectedFile = creatFileChooser(actionEvent, excelInPath, extensionFilters, text_selectExcel);
         if (selectedFile != null) {
-            excelInPath = updatePathLabel(selectedFile.getAbsolutePath(), excelInPath, key_excelInPath, excelPath_Re, configFile);
+            excelInPath = updatePathLabel(selectedFile.getAbsolutePath(), excelInPath, key_excelInPath, excelPath_Re, configFile_Rename);
             readExcelRename();
         }
     }

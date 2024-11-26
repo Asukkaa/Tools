@@ -86,11 +86,6 @@ public class FileNameToExcelController extends ToolsProperties {
     static List<Control> disableControls = new ArrayList<>();
 
     /**
-     * 配置文件路径
-     */
-    static String configFile = "config/fileNameToExcelConfig.properties";
-
-    /**
      * 线程池
      */
     private final CommonThreadPoolExecutor commonThreadPoolExecutor = new CommonThreadPoolExecutor();
@@ -173,7 +168,7 @@ public class FileNameToExcelController extends ToolsProperties {
      * 保存最后一次配置的值
      */
     public static void fileNameToExcelSaveLastConfig(Scene scene) throws IOException {
-        InputStream input = checkRunningInputStream(configFile);
+        InputStream input = checkRunningInputStream(configFile_Name);
         Properties prop = new Properties();
         prop.load(input);
         ChoiceBox<?> directoryNameType = (ChoiceBox<?>) scene.lookup("#directoryNameType_Name");
@@ -210,7 +205,7 @@ public class FileNameToExcelController extends ToolsProperties {
         prop.put(key_lastOutPath, outPath.getText());
         Label excelPath = (Label) scene.lookup("#excelPath_Name");
         prop.put(key_lastExcelPath, excelPath.getText());
-        OutputStream output = checkRunningOutputStream(configFile);
+        OutputStream output = checkRunningOutputStream(configFile_Name);
         prop.store(output, null);
         input.close();
         output.close();
@@ -252,7 +247,7 @@ public class FileNameToExcelController extends ToolsProperties {
      */
     private static void getConfig() throws IOException {
         Properties prop = new Properties();
-        InputStream input = checkRunningInputStream(configFile);
+        InputStream input = checkRunningInputStream(configFile_Name);
         prop.load(input);
         inFilePath = prop.getProperty(key_inFilePath);
         outFilePath = prop.getProperty(key_outFilePath);
@@ -268,7 +263,7 @@ public class FileNameToExcelController extends ToolsProperties {
      */
     private void setLastConfig() throws IOException {
         Properties prop = new Properties();
-        InputStream input = checkRunningInputStream(configFile);
+        InputStream input = checkRunningInputStream(configFile_Name);
         prop.load(input);
         if (activation.equals(prop.getProperty(key_loadLastConfig))) {
             setControlLastConfig(directoryNameType_Name, prop, key_lastDirectoryNameType, false);
@@ -363,7 +358,7 @@ public class FileNameToExcelController extends ToolsProperties {
                 .setInFile(selectedFile);
         if (selectedFile != null) {
             //更新所选文件路径显示
-            inFilePath = updatePathLabel(selectedFile.getPath(), inFilePath, key_inFilePath, inPath_Name, configFile);
+            inFilePath = updatePathLabel(selectedFile.getPath(), inFilePath, key_inFilePath, inPath_Name, configFile_Name);
             //读取数据
             addInData(readAllFiles(fileConfig));
         }
@@ -466,7 +461,7 @@ public class FileNameToExcelController extends ToolsProperties {
         File selectedFile = creatDirectoryChooser(actionEvent, outFilePath, text_selectDirectory);
         if (selectedFile != null) {
             //更新所选文件路径显示
-            outFilePath = updatePathLabel(selectedFile.getPath(), outFilePath, key_outFilePath, outPath_Name, configFile);
+            outFilePath = updatePathLabel(selectedFile.getPath(), outFilePath, key_outFilePath, outPath_Name, configFile_Name);
         }
     }
 
@@ -480,7 +475,7 @@ public class FileNameToExcelController extends ToolsProperties {
         File selectedFile = creatFileChooser(actionEvent, excelInPath, extensionFilters, text_selectExcel);
         if (selectedFile != null) {
             //更新所选文件路径显示
-            excelInPath = updatePathLabel(selectedFile.getPath(), excelInPath, key_excelInPath, excelPath_Name, configFile);
+            excelInPath = updatePathLabel(selectedFile.getPath(), excelInPath, key_excelInPath, excelPath_Name, configFile_Name);
             removeExcelButton_Name.setVisible(true);
         }
     }

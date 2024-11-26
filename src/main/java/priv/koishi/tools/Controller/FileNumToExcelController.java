@@ -106,11 +106,6 @@ public class FileNumToExcelController extends ToolsProperties {
     static List<Control> disableControls = new ArrayList<>();
 
     /**
-     * 配置文件路径
-     */
-    static String configFile = "config/fileNumToExcelConfig.properties";
-
-    /**
      * 线程池
      */
     private final CommonThreadPoolExecutor commonThreadPoolExecutor = new CommonThreadPoolExecutor();
@@ -187,7 +182,7 @@ public class FileNumToExcelController extends ToolsProperties {
      * 保存最后一次配置的值
      */
     public static void fileNumToExcelSaveLastConfig(Scene scene) throws IOException {
-        InputStream input = checkRunningInputStream(configFile);
+        InputStream input = checkRunningInputStream(configFile_Num);
         Properties prop = new Properties();
         prop.load(input);
         ChoiceBox<?> directoryNameType = (ChoiceBox<?>) scene.lookup("#directoryNameType_Num");
@@ -232,7 +227,7 @@ public class FileNumToExcelController extends ToolsProperties {
         prop.put(key_lastOutPath, outPath.getText());
         Label excelPath = (Label) scene.lookup("#excelPath_Num");
         prop.put(key_lastExcelPath, excelPath.getText());
-        OutputStream output = checkRunningOutputStream(configFile);
+        OutputStream output = checkRunningOutputStream(configFile_Num);
         prop.store(output, null);
         input.close();
         output.close();
@@ -314,7 +309,7 @@ public class FileNumToExcelController extends ToolsProperties {
      */
     private static void getConfig() throws IOException {
         Properties prop = new Properties();
-        InputStream input = checkRunningInputStream(configFile);
+        InputStream input = checkRunningInputStream(configFile_Num);
         prop.load(input);
         inFilePath = prop.getProperty(key_inFilePath);
         outFilePath = prop.getProperty(key_outFilePath);
@@ -332,7 +327,7 @@ public class FileNumToExcelController extends ToolsProperties {
      */
     private void setLastConfig() throws IOException {
         Properties prop = new Properties();
-        InputStream input = checkRunningInputStream(configFile);
+        InputStream input = checkRunningInputStream(configFile_Num);
         prop.load(input);
         if (activation.equals(prop.getProperty(key_loadLastConfig))) {
             setControlLastConfig(directoryNameType_Num, prop, key_lastDirectoryNameType, false);
@@ -409,7 +404,7 @@ public class FileNumToExcelController extends ToolsProperties {
         File selectedFile = creatDirectoryChooser(actionEvent, inFilePath, text_selectDirectory);
         if (selectedFile != null) {
             //更新所选文件路径显示
-            inFilePath = updatePathLabel(selectedFile.getPath(), inFilePath, key_inFilePath, inPath_Num, configFile);
+            inFilePath = updatePathLabel(selectedFile.getPath(), inFilePath, key_inFilePath, inPath_Num, configFile_Num);
             //读取文件数据
             addInFile(selectedFile, getFilterExtensionList(filterFileType_Num));
         }
@@ -507,7 +502,7 @@ public class FileNumToExcelController extends ToolsProperties {
         File selectedFile = creatDirectoryChooser(actionEvent, outFilePath, text_selectDirectory);
         if (selectedFile != null) {
             //更新所选文件路径显示
-            outFilePath = updatePathLabel(selectedFile.getPath(), outFilePath, key_outFilePath, outPath_Num, configFile);
+            outFilePath = updatePathLabel(selectedFile.getPath(), outFilePath, key_outFilePath, outPath_Num, configFile_Num);
             if (StringUtils.isNotEmpty(excelPath_Num.getText())) {
                 reselect();
             }
@@ -524,7 +519,7 @@ public class FileNumToExcelController extends ToolsProperties {
         File selectedFile = creatFileChooser(actionEvent, excelInPath, extensionFilters, text_selectExcel);
         if (selectedFile != null) {
             //更新所选文件路径显示
-            excelInPath = updatePathLabel(selectedFile.getPath(), excelInPath, key_excelInPath, excelPath_Num, configFile);
+            excelInPath = updatePathLabel(selectedFile.getPath(), excelInPath, key_excelInPath, excelPath_Num, configFile_Num);
             addInData();
         }
     }

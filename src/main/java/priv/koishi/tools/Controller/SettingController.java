@@ -31,34 +31,14 @@ import static priv.koishi.tools.Utils.FileUtils.updateProperties;
  */
 public class SettingController {
 
-    /**
-     * excel插入图片功能配置文件路径
-     */
-    static final String configFile_Img = "config/imgToExcelConfig.properties";
-
-    /**
-     * 重命名功能配置文件路径
-     */
-    static final String configFile_Rename = "config/fileRenameConfig.properties";
-
-    /**
-     * 统计文件数量功能配置文件路径
-     */
-    static final String configFile_Num = "config/fileNumToExcelConfig.properties";
-
-    /**
-     * 读取文件名称功能配置文件路径
-     */
-    static final String configFile_Name = "config/fileNameToExcelConfig.properties";
-
     @FXML
-    private VBox vBox_set;
+    private VBox vBox_Set;
 
     @FXML
     private Label mail_set, massage_set;
 
     @FXML
-    private CheckBox loadRename_Set, loadFileNum_Set, loadFileName_Set, loadImgToExcel_Set;
+    private CheckBox loadRename_Set, loadFileNum_Set, loadFileName_Set, loadImgToExcel_Set, lastTab_Set, fullWindow_Set;
 
     /**
      * 组件自适应宽高
@@ -66,37 +46,35 @@ public class SettingController {
     public static void settingAdaption(Stage stage, Scene scene) {
         //设置组件宽度
         double stageWidth = stage.getWidth();
-        Node settingVBox = scene.lookup("#vBox_set");
+        Node settingVBox = scene.lookup("#vBox_Set");
         settingVBox.setLayoutX(stageWidth * 0.03);
     }
 
     /**
      * 根据是否加载最后一次功能选项框选择值更新相关配置文件
      */
-    private void setLoadLastConfigCheckBox(CheckBox checkBox, String configFile) throws IOException {
+    private void setLoadLastConfigCheckBox(CheckBox checkBox, String configFile, String key) throws IOException {
         if (checkBox.isSelected()) {
-            updateProperties(configFile, key_loadLastConfig, activation);
+            updateProperties(configFile, key, activation);
         } else {
-            updateProperties(configFile, key_loadLastConfig, unActivation);
+            updateProperties(configFile, key, unActivation);
         }
     }
 
     /**
      * 设置是否加载最后一次功能配置信息初始值
      */
-    private void setLoadLastConfig(Properties prop, CheckBox checkBox, String configFile) throws IOException {
+    private void setLoadLastConfig(Properties prop, CheckBox checkBox, String configFile, String key) throws IOException {
         InputStream input = checkRunningInputStream(configFile);
         prop.load(input);
-        checkBox.setSelected(activation.equals(prop.getProperty(key_loadLastConfig)));
+        checkBox.setSelected(activation.equals(prop.getProperty(key)));
         input.close();
     }
 
     /**
-     * 界面初始化
+     * 添加右键菜单
      */
-    @FXML
-    private void initialize() throws IOException {
-        //添加右键菜单
+    private void setContextMenu() {
         ContextMenu contextMenu = new ContextMenu();
         MenuItem copyMailMenuItem = new MenuItem("复制反馈邮件");
         contextMenu.getItems().add(copyMailMenuItem);
@@ -120,12 +98,30 @@ public class SettingController {
             Timeline timeline = new Timeline(keyFrame);
             timeline.play();
         });
-        //设置是否加载最后一次功能配置信息初始值
+    }
+
+    /**
+     * 设置是否加载最后一次功能配置信息初始值
+     */
+    private void setLoadLastConfigs() throws IOException {
         Properties prop = new Properties();
-        setLoadLastConfig(prop, loadRename_Set, configFile_Rename);
-        setLoadLastConfig(prop, loadFileNum_Set, configFile_Num);
-        setLoadLastConfig(prop, loadFileName_Set, configFile_Name);
-        setLoadLastConfig(prop, loadImgToExcel_Set, configFile_Img);
+        setLoadLastConfig(prop, loadRename_Set, configFile_Rename, key_loadLastConfig);
+        setLoadLastConfig(prop, loadFileNum_Set, configFile_Num, key_loadLastConfig);
+        setLoadLastConfig(prop, loadFileName_Set, configFile_Name, key_loadLastConfig);
+        setLoadLastConfig(prop, loadImgToExcel_Set, configFile_Img, key_loadLastConfig);
+        setLoadLastConfig(prop, lastTab_Set, configFile, key_loadLastConfig);
+        setLoadLastConfig(prop, fullWindow_Set, configFile, key_loadLastFullWindow);
+    }
+
+    /**
+     * 界面初始化
+     */
+    @FXML
+    private void initialize() throws IOException {
+        //添加右键菜单
+        setContextMenu();
+        //设置是否加载最后一次功能配置信息初始值
+        setLoadLastConfigs();
     }
 
     /**
@@ -133,7 +129,7 @@ public class SettingController {
      */
     @FXML
     private void loadRenameAction() throws IOException {
-        setLoadLastConfigCheckBox(loadRename_Set, configFile_Rename);
+        setLoadLastConfigCheckBox(loadRename_Set, configFile_Rename, key_loadLastConfig);
     }
 
     /**
@@ -141,7 +137,7 @@ public class SettingController {
      */
     @FXML
     private void loadFileNumAction() throws IOException {
-        setLoadLastConfigCheckBox(loadFileNum_Set, configFile_Num);
+        setLoadLastConfigCheckBox(loadFileNum_Set, configFile_Num, key_loadLastConfig);
     }
 
     /**
@@ -149,7 +145,7 @@ public class SettingController {
      */
     @FXML
     private void loadFileNameAction() throws IOException {
-        setLoadLastConfigCheckBox(loadFileName_Set, configFile_Name);
+        setLoadLastConfigCheckBox(loadFileName_Set, configFile_Name, key_loadLastConfig);
     }
 
     /**
@@ -157,7 +153,23 @@ public class SettingController {
      */
     @FXML
     private void loadImgToExcelAction() throws IOException {
-        setLoadLastConfigCheckBox(loadImgToExcel_Set, configFile_Img);
+        setLoadLastConfigCheckBox(loadImgToExcel_Set, configFile_Img, key_loadLastConfig);
+    }
+
+    /**
+     * 记住关闭前打开的页面设置
+     */
+    @FXML
+    private void loadLastTabAction() throws IOException {
+        setLoadLastConfigCheckBox(lastTab_Set, configFile, key_loadLastConfig);
+    }
+
+    /**
+     * 记住窗口是否最大化设置
+     */
+    @FXML
+    private void loadFullWindowAction() throws IOException {
+        setLoadLastConfigCheckBox(fullWindow_Set, configFile, key_loadLastFullWindow);
     }
 
 }

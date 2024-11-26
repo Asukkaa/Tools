@@ -199,6 +199,8 @@ public class CommonTexts {
 
     public static final String key_loadLastConfig = "loadLastConfig";
 
+    public static final String key_loadLastFullWindow = "loadLastFullWindow";
+
     public static final String key_lastDirectoryNameType = "lastDirectoryNameType";
 
     public static final String key_lastHideFileType = "lastHideFileType";
@@ -279,6 +281,10 @@ public class CommonTexts {
 
     public static final String key_lastRightValue = "lastRightValue";
 
+    public static final String key_lastTab = "lastTab";
+
+    public static final String key_lastFullWindow = "lastFullWindow";
+
     public static final String key_defaultOutFileName = "defaultOutFileName";
 
     public static final String key_defaultSheetName = "defaultSheetName";
@@ -294,6 +300,31 @@ public class CommonTexts {
     public static final String key_defaultImgHeight = "defaultImgHeight";
 
     public static final String key_defaultStartNameNum = "defaultStartNameNum";
+
+    /**
+     * excel插入图片功能配置文件路径
+     */
+    public static final String configFile_Img = "config/imgToExcelConfig.properties";
+
+    /**
+     * 重命名功能配置文件路径
+     */
+    public static final String configFile_Rename = "config/fileRenameConfig.properties";
+
+    /**
+     * 统计文件数量功能配置文件路径
+     */
+    public static final String configFile_Num = "config/fileNumToExcelConfig.properties";
+
+    /**
+     * 读取文件名称功能配置文件路径
+     */
+    public static final String configFile_Name = "config/fileNameToExcelConfig.properties";
+
+    /**
+     * app配置文件路径
+     */
+    public static final String configFile = "config/config.properties";
 
     public static final Duration showDuration = Duration.seconds(6000000);
 
