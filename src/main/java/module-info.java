@@ -8,6 +8,7 @@ module priv.koishi.tools {
     requires org.apache.commons.collections4;
     requires org.apache.commons.lang3;
     requires org.apache.logging.log4j;
+    requires org.apache.logging.log4j.core;
 //    requires easyexcel.core;
 
     opens priv.koishi.tools to javafx.fxml;

@@ -7,7 +7,10 @@ import javafx.scene.Scene;
 import javafx.scene.control.TabPane;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import org.apache.logging.log4j.core.config.ConfigurationSource;
+import org.apache.logging.log4j.core.config.Configurator;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
@@ -18,6 +21,7 @@ import static priv.koishi.tools.Controller.MainController.saveLastConfig;
 import static priv.koishi.tools.Text.CommonTexts.activation;
 import static priv.koishi.tools.Text.CommonTexts.configFile;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
+import static priv.koishi.tools.Utils.CommonUtils.isRunningFromJar;
 import static priv.koishi.tools.Utils.UiUtils.showExceptionDialog;
 
 public class MainApplication extends Application {
@@ -75,7 +79,12 @@ public class MainApplication extends Application {
     /**
      * 启动程序
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
+        //打包后需要手动指定日志配置文件位置
+        if (!isRunningFromJar()) {
+            ConfigurationSource source = new ConfigurationSource(new FileInputStream("log4j2.xml"));
+            Configurator.initialize(null, source);
+        }
         launch();
     }
 
