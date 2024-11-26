@@ -5,7 +5,7 @@
 
 <AnchorPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
             fx:controller="priv.koishi.tools.Controller.SettingController">
-    <VBox fx:id="vBox_set" spacing="10" AnchorPane.topAnchor="10">
+    <VBox fx:id="vBox_Set" spacing="10" AnchorPane.topAnchor="10">
 
         <Label text="设置："/>
 
@@ -16,6 +16,9 @@
             <CheckBox fx:id="loadImgToExcel_Set" onAction="#loadImgToExcelAction" prefHeight="20"
                       style="-fx-cursor: hand"
                       selected="true" text="将图片与excel匹配并插入 功能加载上次设置信息"/>
+
+            <CheckBox fx:id="lastTab_Set" onAction="#loadLastTabAction" prefHeight="20" style="-fx-cursor: hand"
+                      selected="true" text="记住关闭前打开的页面"/>
         </HBox>
 
         <HBox spacing="50">
@@ -24,9 +27,14 @@
 
             <CheckBox fx:id="loadFileName_Set" onAction="#loadFileNameAction" prefHeight="20" style="-fx-cursor: hand"
                       selected="true" text="获取文件夹下的文件名称 功能加载上次设置信息"/>
+
+            <CheckBox fx:id="fullWindow_Set" onAction="#loadFullWindowAction" prefHeight="20" style="-fx-cursor: hand"
+                      selected="true" text="记住程序关闭时窗口是否最大化"/>
         </HBox>
 
         <Separator/>
+
+        <Label text="关于："/>
 
         <Label prefHeight="20"
                text="Tools 是一个由 javafx 实现的文件处理小工具，可以用来获取文件信息和批量修改文件名称，excel 相关功能目前只支持 .xlsx 格式文件，后续可能会增加更多格式的支持。"/>
@@ -42,7 +50,7 @@
 
         <HBox spacing="5">
             <Label prefHeight="20" text="当前版本："/>
-            <Label prefHeight="20" textFill="cornflowerblue" text="0.3.1"/>
+            <Label prefHeight="20" textFill="cornflowerblue" text="0.4.0"/>
         </HBox>
 
     </VBox>
