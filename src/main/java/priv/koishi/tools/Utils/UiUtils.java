@@ -18,6 +18,8 @@ import javafx.util.Callback;
 import javafx.util.Duration;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import priv.koishi.tools.Bean.FileBean;
 import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Bean.TaskBean;
@@ -43,6 +45,8 @@ import static priv.koishi.tools.Utils.FileUtils.*;
 public class UiUtils {
 
     private static final DataFormat dataFormat = new DataFormat("application/x-java-serialized-object");
+
+    private static final Logger logger = LogManager.getLogger(UiUtils.class);
 
     /**
      * 鼠标停留提示框
@@ -237,13 +241,14 @@ public class UiUtils {
      * 处理异常的统一弹窗
      */
     public static void showExceptionDialog(Throwable ex) {
-        Alert alert = creatErrorDialog(errToString(ex));
+        String errStr = errToString(ex);
+        logger.error(errStr);
+        Alert alert = creatErrorDialog(errStr);
         if (ex.getCause().getCause() instanceof Exception) {
             alert.setHeaderText(ex.getCause().getCause().getMessage());
         } else {
             alert.setHeaderText(ex.getMessage());
         }
-        ex.printStackTrace();
         // 展示弹窗
         alert.showAndWait();
     }
