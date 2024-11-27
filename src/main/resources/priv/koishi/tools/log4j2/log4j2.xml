@@ -7,17 +7,19 @@
 
         <RollingFile name="RollingFile" fileName="logs/log.log" filePattern="logs/log-%d{yyyy-MM-dd}.log">
             <PatternLayout>
-                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</Pattern>
+                <Pattern>%d{ISO8601} [%t] %-5p %c - %m%n</Pattern>
             </PatternLayout>
+
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
-                <SizeBasedTriggeringPolicy size="10MB" />
+                <SizeBasedTriggeringPolicy size="10MB"/>
             </Policies>
-            <!-- 这里设置最多保留日志文件数量 -->
-            <DefaultRolloverStrategy max="7"/>
-        </RollingFile>
 
+            <!-- 这里设置最多保留日志文件数量 -->
+            <DefaultRolloverStrategy max="3"/>
+        </RollingFile>
     </Appenders>
+
     <Loggers>
         <Root level="debug">
             <AppenderRef ref="Console"/>

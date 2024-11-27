@@ -241,9 +241,8 @@ public class UiUtils {
      * 处理异常的统一弹窗
      */
     public static void showExceptionDialog(Throwable ex) {
-        String errStr = errToString(ex);
-        logger.error(errStr);
-        Alert alert = creatErrorDialog(errStr);
+        logger.error(ex, ex);
+        Alert alert = creatErrorDialog(errToString(ex));
         if (ex.getCause().getCause() instanceof Exception) {
             alert.setHeaderText(ex.getCause().getCause().getMessage());
         } else {
