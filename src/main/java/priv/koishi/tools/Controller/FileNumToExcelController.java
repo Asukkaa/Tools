@@ -611,7 +611,7 @@ public class FileNumToExcelController extends ToolsProperties {
             throw new Exception(text_excelPathNull);
         }
         if (!new File(inFilePath).exists()) {
-            throw new Exception(text_fileNotExists);
+            throw new Exception(text_directoryNotExists);
         }
         updateLabel(log_Num, "");
         return addInData();

@@ -901,7 +901,7 @@ public class FileRenameController extends ToolsProperties {
         }
         File file = new File(inFilePath);
         if (!file.exists()) {
-            throw new Exception(text_fileNotExists);
+            throw new Exception(text_directoryNotExists);
         }
         updateLabel(log_Re, "");
         FileConfig fileConfig = new FileConfig();

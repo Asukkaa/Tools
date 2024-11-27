@@ -3,54 +3,89 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+<AnchorPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" stylesheets="@../css/Styles.css"
             fx:controller="priv.koishi.tools.Controller.SettingController">
     <VBox fx:id="vBox_Set" spacing="10" AnchorPane.topAnchor="10">
 
-        <Label text="设置："/>
+        <Label prefHeight="25" text="功能设置："/>
 
         <HBox spacing="50">
-            <CheckBox fx:id="loadRename_Set" onAction="#loadRenameAction" prefHeight="20" style="-fx-cursor: hand"
+            <CheckBox fx:id="loadRename_Set" onAction="#loadRenameAction" prefHeight="25" prefWidth="300"
+                      style="-fx-cursor: hand"
                       selected="true" text="按指定规则批量重命名文件 功能加载上次设置信息"/>
 
-            <CheckBox fx:id="loadImgToExcel_Set" onAction="#loadImgToExcelAction" prefHeight="20"
+            <CheckBox fx:id="loadImgToExcel_Set" onAction="#loadImgToExcelAction" prefHeight="25" prefWidth="300"
                       style="-fx-cursor: hand"
                       selected="true" text="将图片与excel匹配并插入 功能加载上次设置信息"/>
 
-            <CheckBox fx:id="lastTab_Set" onAction="#loadLastTabAction" prefHeight="20" style="-fx-cursor: hand"
+            <CheckBox fx:id="lastTab_Set" onAction="#loadLastTabAction" prefHeight="25" style="-fx-cursor: hand"
                       selected="true" text="记住关闭前打开的页面"/>
         </HBox>
 
         <HBox spacing="50">
-            <CheckBox fx:id="loadFileNum_Set" onAction="#loadFileNumAction" prefHeight="20" style="-fx-cursor: hand"
+            <CheckBox fx:id="loadFileNum_Set" onAction="#loadFileNumAction" prefHeight="25" prefWidth="300"
+                      style="-fx-cursor: hand"
                       selected="true" text="分组统计文件夹下文件数量 功能加载上次设置信息"/>
 
-            <CheckBox fx:id="loadFileName_Set" onAction="#loadFileNameAction" prefHeight="20" style="-fx-cursor: hand"
+            <CheckBox fx:id="loadFileName_Set" onAction="#loadFileNameAction" prefHeight="25" prefWidth="300"
+                      style="-fx-cursor: hand"
                       selected="true" text="获取文件夹下的文件名称 功能加载上次设置信息"/>
 
-            <CheckBox fx:id="fullWindow_Set" onAction="#loadFullWindowAction" prefHeight="20" style="-fx-cursor: hand"
+            <CheckBox fx:id="fullWindow_Set" onAction="#loadFullWindowAction" prefHeight="25" style="-fx-cursor: hand"
                       selected="true" text="记住程序关闭时窗口是否最大化"/>
         </HBox>
 
         <Separator/>
 
-        <Label text="关于："/>
+        <Label prefHeight="25" text="内存设置："/>
 
-        <Label prefHeight="20"
+        <HBox spacing="5">
+            <Label prefHeight="25" text="当前程序分配的最大内存："/>
+            <Label prefHeight="25" fx:id="memory_Set"/>
+        </HBox>
+
+        <HBox spacing="5">
+            <Label prefHeight="25" text="当前程序所在目录："/>
+            <Label prefHeight="25" fx:id="thisPath_Set" styleClass="label-button-style"/>
+        </HBox>
+
+        <HBox spacing="5">
+            <Label prefHeight="25" text="app.bat 分配的最大内存："/>
+            <TextField fx:id="batMemory_Set" onKeyTyped="#batMemoryKeyTyped" prefHeight="20" prefWidth="50"/>
+            <Label prefHeight="25" text="GB"/>
+        </HBox>
+
+        <HBox spacing="5">
+            <Label prefHeight="25" text="app.bat 所在目录："/>
+            <Label prefHeight="25" fx:id="batPath_Set" styleClass="label-button-style"/>
+        </HBox>
+
+        <Separator/>
+
+        <Label prefHeight="25" text="关于："/>
+
+        <Label prefHeight="25"
                text="Tools 是一个由 javafx 实现的文件处理小工具，可以用来获取文件信息和批量修改文件名称，excel 相关功能目前只支持 .xlsx 格式文件，后续可能会增加更多格式的支持。"/>
 
         <Label prefHeight="20"
                text="目前软件正在继续开发中，仍有很多功能还未实现，问题肯定也不少，有问题或建议可以给下面邮箱发邮件反馈。"/>
 
+        <Label prefHeight="20" text="如果遇到报错可到将 logs 文件夹压缩后发送给反馈邮件。"/>
+
         <HBox spacing="5">
-            <Label prefHeight="20" text="反馈邮箱："/>
-            <Label fx:id="mail_set" prefHeight="20" textFill="blue" text="csolxqt@foxmail.com"/>
-            <Label fx:id="massage_set" prefHeight="20" textFill="green" visible="false" text="    已复制反馈邮箱"/>
+            <Label prefHeight="25" text="logs 文件夹目录："/>
+            <Label prefHeight="25" fx:id="logsPath_Set" styleClass="label-button-style"/>
         </HBox>
 
         <HBox spacing="5">
-            <Label prefHeight="20" text="当前版本："/>
-            <Label prefHeight="20" textFill="cornflowerblue" text="0.4.0"/>
+            <Label prefHeight="25" text="反馈邮箱："/>
+            <Label fx:id="mail_set" prefHeight="25" textFill="blue" text="csolxqt@foxmail.com"/>
+            <Label fx:id="massage_set" prefHeight="25" textFill="green" visible="false" text="    已复制反馈邮箱"/>
+        </HBox>
+
+        <HBox spacing="5">
+            <Label prefHeight="25" text="当前版本："/>
+            <Label prefHeight="25" textFill="cornflowerblue" text="0.4.1"/>
         </HBox>
 
     </VBox>

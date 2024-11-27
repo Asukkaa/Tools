@@ -66,10 +66,18 @@ public class FileUtils {
     /**
      * 根据操作系统计算文件大小
      *
+     * @return 带单位的文件大小
+     */
+    public static String getFileUnitSize(File file) {
+       return getUnitSize(file.length());
+    }
+
+    /**
+     * 根据操作系统将数值转换为文件大小
+     *
      * @return ret 带单位的文件大小
      */
-    public static String getFileSize(File file) {
-        long size = file.length();
+    public static String getUnitSize(long size) {
         String sys = System.getProperty(osName);
         long win = 1024;
         long mac = 1000;
@@ -208,7 +216,7 @@ public class FileUtils {
      */
     public static String getFileName(File file) throws IOException {
         if (!file.exists()) {
-            throw new IOException("文件不存在");
+            throw new IOException(text_fileNotExists);
         }
         String fileName = file.getName();
         if (!file.isDirectory() && fileName.contains(".")) {

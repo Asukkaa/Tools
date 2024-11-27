@@ -190,7 +190,7 @@ public class ReadDataService {
                     //组装文件基础数据
                     fileBean.setPath(f.getPath());
                     fileBean.setFileType(getFileType(f));
-                    fileBean.setSize(getFileSize(f));
+                    fileBean.setSize(getFileUnitSize(f));
                     fileBean.setCreatDate(getFileCreatTime(f));
                     fileBean.setUpdateDate(getFileUpdateTime(f));
                     fileBeans.add(fileBean);

@@ -20,6 +20,7 @@ import static priv.koishi.tools.Controller.FileRenameController.fileRenameAdapti
 import static priv.koishi.tools.Controller.FileRenameController.fileRenameSaveLastConfig;
 import static priv.koishi.tools.Controller.ImgToExcelController.imgToExcelAdaption;
 import static priv.koishi.tools.Controller.ImgToExcelController.imgToExcelSaveLastConfig;
+import static priv.koishi.tools.Controller.SettingController.saveMemorySetting;
 import static priv.koishi.tools.Controller.SettingController.settingAdaption;
 import static priv.koishi.tools.Text.CommonTexts.*;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
@@ -62,6 +63,7 @@ public class MainController {
         fileNameToExcelSaveLastConfig(scene);
         fileRenameSaveLastConfig(scene);
         mainSavaLastConfig(scene, stage);
+        saveMemorySetting(scene);
     }
 
     /**

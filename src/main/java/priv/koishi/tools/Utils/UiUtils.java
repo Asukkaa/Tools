@@ -584,4 +584,22 @@ public class UiUtils {
         }
     }
 
+    /**
+     * 显示可打开的文件类路径
+     */
+    public static void setPathLabel(Label pathLabel, String showPath, String openPath) {
+        pathLabel.setText(showPath);
+        pathLabel.setOnMouseClicked(event -> {
+            try {
+                if (!new File(openPath).exists()) {
+                    throw new IOException(text_fileNotExists);
+                }
+                openFile(openPath);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        addToolTip(pathLabel, "点击打开目录");
+    }
+
 }

@@ -7,3 +7,8 @@
     -fx-border-radius: 0;
     -fx-background-insets: 0;
 }
+
+.label-button-style {
+    -fx-cursor: hand;
+    -fx-text-fill: #005880;
+}

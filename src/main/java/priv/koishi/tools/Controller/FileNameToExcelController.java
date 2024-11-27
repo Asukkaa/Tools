@@ -532,7 +532,7 @@ public class FileNameToExcelController extends ToolsProperties {
             throw new Exception(text_filePathNull);
         }
         if (!new File(inFilePath).exists()){
-            throw new Exception(text_fileNotExists);
+            throw new Exception(text_directoryNotExists);
         }
         updateLabel(log_Name, "");
         FileConfig fileConfig = new FileConfig();
