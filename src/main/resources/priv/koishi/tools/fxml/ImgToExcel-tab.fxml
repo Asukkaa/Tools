@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import java.lang.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+<AnchorPane fx:id="anchorPane_Img" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" stylesheets="@../css/Styles.css"
             fx:controller="priv.koishi.tools.Controller.ImgToExcelController">
     <VBox fx:id="vbox_Img" spacing="10" AnchorPane.topAnchor="10">
         <HBox spacing="10">
@@ -81,7 +81,8 @@
         </HBox>
 
         <HBox spacing="10">
-            <Button fx:id="excelPathButton_Img" onAction="#getExcelPath" style="-fx-cursor: hand" text="选择excel模板位置"/>
+            <Button fx:id="excelPathButton_Img" onAction="#getExcelPath" style="-fx-cursor: hand"
+                    text="选择excel模板位置"/>
             <Label fx:id="excelPath_Img" prefHeight="20" style="-fx-font-size: 15px;"/>
         </HBox>
 
@@ -114,7 +115,7 @@
             <Label fx:id="tip_Img" prefHeight="20" textFill="red" alignment="CENTER_RIGHT"
                    text="插入图片数量不易过多，图片最好压缩后再使用，导出的excel大小超过4GB后可能打不开"/>
         </HBox>
-        <Label fx:id="log_Img" prefHeight="20"/>
 
+        <Label fx:id="log_Img" prefHeight="20"/>
     </VBox>
 </AnchorPane>

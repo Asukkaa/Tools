@@ -10,6 +10,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.TransferMode;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
@@ -135,6 +136,9 @@ public class ImgToExcelController extends ToolsProperties {
      * 保存excel线程
      */
     private Task<String> saveExcelTask;
+
+    @FXML
+    private AnchorPane anchorPane_Img;
 
     @FXML
     private VBox vbox_Img;
@@ -383,27 +387,27 @@ public class ImgToExcelController extends ToolsProperties {
         InputStream input = checkRunningInputStream(configFile_Img);
         prop.load(input);
         if (activation.equals(prop.getProperty(key_loadLastConfig))) {
-            setControlLastConfig(hideFileType_Img, prop, key_lastHideFileType, false);
-            setControlLastConfig(recursion_Img, prop, key_lastRecursion, false);
-            setControlLastConfig(showFileType_Img, prop, key_lastShowFileType, false);
-            setControlLastConfig(openDirectory_Img, prop, key_lastOpenDirectory, false);
-            setControlLastConfig(openFile_Img, prop, key_lastOpenFile, false);
-            setControlLastConfig(excelName_Img, prop, key_lastExcelName, false);
-            setControlLastConfig(sheetName_Img, prop, key_lastSheetName, false);
-            setControlLastConfig(subCode_Img, prop, key_lastSubCode, true);
-            setControlLastConfig(excelType_Img, prop, key_lastExcelType, false);
-            setControlLastConfig(startRow_Img, prop, key_lastStartRow, false);
-            setControlLastConfig(startCell_Img, prop, key_lastStartCell, false);
-            setControlLastConfig(readRow_Img, prop, key_lastReadRow, false);
-            setControlLastConfig(readCell_Img, prop, key_lastReadCell, false);
-            setControlLastConfig(maxRow_Img, prop, key_lastMaxRow, false);
-            setControlLastConfig(imgWidth_Img, prop, key_lastImgWidth, false);
-            setControlLastConfig(imgHeight_Img, prop, key_lastImgHeight, false);
-            setControlLastConfig(inPath_Img, prop, key_lastInPath, false);
-            setControlLastConfig(outPath_Img, prop, key_lastOutPath, false);
-            setControlLastConfig(excelPath_Img, prop, key_lastExcelPath, false);
-            setControlLastConfig(maxImgNum_Img, prop, key_lastMaxImgNum, false);
-            setControlLastConfig(noImg_Img, prop, key_lastNoImg, false);
+            setControlLastConfig(hideFileType_Img, prop, key_lastHideFileType, false, null);
+            setControlLastConfig(recursion_Img, prop, key_lastRecursion, false, null);
+            setControlLastConfig(showFileType_Img, prop, key_lastShowFileType, false, null);
+            setControlLastConfig(openDirectory_Img, prop, key_lastOpenDirectory, false, null);
+            setControlLastConfig(openFile_Img, prop, key_lastOpenFile, false, null);
+            setControlLastConfig(excelName_Img, prop, key_lastExcelName, false, null);
+            setControlLastConfig(sheetName_Img, prop, key_lastSheetName, false, null);
+            setControlLastConfig(subCode_Img, prop, key_lastSubCode, true, null);
+            setControlLastConfig(excelType_Img, prop, key_lastExcelType, false, null);
+            setControlLastConfig(startRow_Img, prop, key_lastStartRow, false, null);
+            setControlLastConfig(startCell_Img, prop, key_lastStartCell, false, null);
+            setControlLastConfig(readRow_Img, prop, key_lastReadRow, false, null);
+            setControlLastConfig(readCell_Img, prop, key_lastReadCell, false, null);
+            setControlLastConfig(maxRow_Img, prop, key_lastMaxRow, false, null);
+            setControlLastConfig(imgWidth_Img, prop, key_lastImgWidth, false, null);
+            setControlLastConfig(imgHeight_Img, prop, key_lastImgHeight, false, null);
+            setControlLastConfig(inPath_Img, prop, key_lastInPath, false, anchorPane_Img);
+            setControlLastConfig(outPath_Img, prop, key_lastOutPath, false, anchorPane_Img);
+            setControlLastConfig(excelPath_Img, prop, key_lastExcelPath, false, anchorPane_Img);
+            setControlLastConfig(maxImgNum_Img, prop, key_lastMaxImgNum, false, null);
+            setControlLastConfig(noImg_Img, prop, key_lastNoImg, false, null);
             String lastFilterFileTypes = prop.getProperty(key_lastFilterFileType);
             if (StringUtils.isNotBlank(lastFilterFileTypes)) {
                 jpg_Img.setSelected(lastFilterFileTypes.contains(jpg));
@@ -453,14 +457,14 @@ public class ImgToExcelController extends ToolsProperties {
     private void initialize() throws IOException {
         //读取全局变量配置
         getConfig();
-        //设置初始配置值为上次配置值
-        setLastConfig();
         //设置要防重复点击的组件
         setDisableControls();
         //设置鼠标悬停提示
         setToolTip();
         //设置javafx单元格宽度
         tableViewNumImgAdaption(groupId_Img, tableView_Img, groupName_Img.prefWidthProperty(), groupNumber_Img.prefWidthProperty(), fileName_Img);
+        //设置初始配置值为上次配置值
+        setLastConfig();
     }
 
     /**
@@ -473,7 +477,7 @@ public class ImgToExcelController extends ToolsProperties {
         File selectedFile = creatDirectoryChooser(actionEvent, inFilePath, text_selectDirectory);
         if (selectedFile != null) {
             //更新所选文件路径显示
-            inFilePath = updatePathLabel(selectedFile.getPath(), inFilePath, key_inFilePath, inPath_Img, configFile_Img);
+            inFilePath = updatePathLabel(selectedFile.getPath(), inFilePath, key_inFilePath, inPath_Img, configFile_Img, anchorPane_Img);
             //读取文件数据
             addInFile(selectedFile, getFilterExtension());
         }
@@ -616,7 +620,7 @@ public class ImgToExcelController extends ToolsProperties {
         File selectedFile = creatDirectoryChooser(actionEvent, outFilePath, text_selectDirectory);
         if (selectedFile != null) {
             //更新所选文件路径显示
-            outFilePath = updatePathLabel(selectedFile.getPath(), outFilePath, key_outFilePath, outPath_Img, configFile_Img);
+            outFilePath = updatePathLabel(selectedFile.getPath(), outFilePath, key_outFilePath, outPath_Img, configFile_Img, anchorPane_Img);
             if (StringUtils.isNotEmpty(excelPath_Img.getText())) {
                 reselect();
             }
@@ -633,7 +637,7 @@ public class ImgToExcelController extends ToolsProperties {
         File selectedFile = creatFileChooser(actionEvent, excelInPath, extensionFilters, text_selectExcel);
         if (selectedFile != null) {
             //更新所选文件路径显示
-            excelInPath = updatePathLabel(selectedFile.getPath(), excelInPath, key_excelInPath, excelPath_Img, configFile_Img);
+            excelInPath = updatePathLabel(selectedFile.getPath(), excelInPath, key_excelInPath, excelPath_Img, configFile_Img, anchorPane_Img);
             addInData();
         }
     }

@@ -11,6 +11,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.TransferMode;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -98,6 +99,9 @@ public class FileRenameController extends ToolsProperties {
      * 线程池实例
      */
     ExecutorService executorService = commonThreadPoolExecutor.createNewThreadPool();
+
+    @FXML
+    private AnchorPane anchorPane_Re;
 
     @FXML
     private ProgressBar progressBar_Re;
@@ -498,12 +502,12 @@ public class FileRenameController extends ToolsProperties {
         InputStream input = checkRunningInputStream(configFile_Rename);
         prop.load(input);
         if (activation.equals(prop.getProperty(key_loadLastConfig))) {
-            setControlLastConfig(directoryNameType_Re, prop, key_lastDirectoryNameType, false);
-            setControlLastConfig(hideFileType_Re, prop, key_lastHideFileType, false);
-            setControlLastConfig(openDirectory_Re, prop, key_lastOpenDirectory, false);
-            setControlLastConfig(filterFileType_Re, prop, key_lastFilterFileType, false);
-            setControlLastConfig(inPath_Re, prop, key_lastInPath, false);
-            setControlLastConfig(renameType_Re, prop, key_lastRenameType, false);
+            setControlLastConfig(directoryNameType_Re, prop, key_lastDirectoryNameType, false, null);
+            setControlLastConfig(hideFileType_Re, prop, key_lastHideFileType, false, null);
+            setControlLastConfig(openDirectory_Re, prop, key_lastOpenDirectory, false, null);
+            setControlLastConfig(filterFileType_Re, prop, key_lastFilterFileType, false, null);
+            setControlLastConfig(inPath_Re, prop, key_lastInPath, false, anchorPane_Re);
+            setControlLastConfig(renameType_Re, prop, key_lastRenameType, false, null);
             //根据重命名类型设置上次配置值
             setLastConfigByRenameType(prop);
         }
@@ -537,20 +541,20 @@ public class FileRenameController extends ToolsProperties {
      * 按编号规则重命名设置上次配置值
      */
     private void setLastConfigByCodeRename(Properties prop) {
-        setControlLastConfig(startName_Re, prop, key_lastStartName, false);
-        setControlLastConfig(startSize_Re, prop, key_lastStartSize, false);
-        setControlLastConfig(nameNum_Re, prop, key_lastNameNum, false);
-        setControlLastConfig(tag_Re, prop, key_lastTag, false);
-        setControlLastConfig(addSpace_Re, prop, key_lastAddSpace, false);
-        setControlLastConfig(differenceCode_Re, prop, key_lastDifferenceCode, false);
-        setControlLastConfig(subCode_Re, prop, key_lastSubCode, false);
+        setControlLastConfig(startName_Re, prop, key_lastStartName, false, null);
+        setControlLastConfig(startSize_Re, prop, key_lastStartSize, false, null);
+        setControlLastConfig(nameNum_Re, prop, key_lastNameNum, false, null);
+        setControlLastConfig(tag_Re, prop, key_lastTag, false, null);
+        setControlLastConfig(addSpace_Re, prop, key_lastAddSpace, false, null);
+        setControlLastConfig(differenceCode_Re, prop, key_lastDifferenceCode, false, null);
+        setControlLastConfig(subCode_Re, prop, key_lastSubCode, false, null);
     }
 
     /**
      * 按指定字符重命名设置上次配置值
      */
     private void setLastConfigByStrRename(Properties prop) {
-        setControlLastConfig(targetStr_Re, prop, key_lastTargetStr, false);
+        setControlLastConfig(targetStr_Re, prop, key_lastTargetStr, false, null);
         String lastTargetStr = prop.getProperty(key_lastTargetStr);
         if (text_specifyString.equals(lastTargetStr)) {
             //指定字符串设置上次配置值
@@ -566,11 +570,11 @@ public class FileRenameController extends ToolsProperties {
      * 指定字符串设置上次配置值
      */
     private void setLastConfigBySpecifyString(Properties prop) {
-        setControlLastConfig(renameValue_Re, prop, key_lastRenameValue, false);
-        setControlLastConfig(renameBehavior_Re, prop, key_lastRenameBehavior, false);
+        setControlLastConfig(renameValue_Re, prop, key_lastRenameValue, false, null);
+        setControlLastConfig(renameBehavior_Re, prop, key_lastRenameBehavior, false, null);
         String lastRenameBehavior = prop.getProperty(key_lastRenameBehavior);
         if (text_replace.equals(lastRenameBehavior)) {
-            setControlLastConfig(renameStr_Re, prop, key_lastRenameStr, false);
+            setControlLastConfig(renameStr_Re, prop, key_lastRenameStr, false, null);
         }
         if (text_bothSides.equals(lastRenameBehavior)) {
             //处理左侧字符设置上次配置值
@@ -584,11 +588,11 @@ public class FileRenameController extends ToolsProperties {
      * 处理单侧字符设置上次配置值
      */
     private void setLastConfigByOneSide(Properties prop, TextField side, String sideKey, ChoiceBox<String> sideBehavior, String sideBehaviorKey, TextField sideValue, String valueKey) {
-        setControlLastConfig(side, prop, sideKey, false);
-        setControlLastConfig(sideBehavior, prop, sideBehaviorKey, false);
+        setControlLastConfig(side, prop, sideKey, false, null);
+        setControlLastConfig(sideBehavior, prop, sideBehaviorKey, false, null);
         String lastLeftBehavior = prop.getProperty(sideBehaviorKey);
         if (text_insert.equals(lastLeftBehavior) || text_replace.equals(lastLeftBehavior)) {
-            setControlLastConfig(sideValue, prop, valueKey, false);
+            setControlLastConfig(sideValue, prop, valueKey, false, null);
         }
     }
 
@@ -596,10 +600,10 @@ public class FileRenameController extends ToolsProperties {
      * 指定字符位置设置上次配置值
      */
     private void setLastConfigBySpecifyIndex(Properties prop) {
-        setControlLastConfig(renameValue_Re, prop, key_lastRenameValue, false);
-        setControlLastConfig(renameBehavior_Re, prop, key_lastRenameBehavior, false);
+        setControlLastConfig(renameValue_Re, prop, key_lastRenameValue, false, null);
+        setControlLastConfig(renameBehavior_Re, prop, key_lastRenameBehavior, false, null);
         if (text_replace.equals(prop.getProperty(key_lastRenameBehavior))) {
-            setControlLastConfig(renameStr_Re, prop, key_lastRenameStr, false);
+            setControlLastConfig(renameStr_Re, prop, key_lastRenameStr, false, null);
         }
     }
 
@@ -607,11 +611,11 @@ public class FileRenameController extends ToolsProperties {
      * 根据excel重命名设置上次配置值
      */
     private void setLastConfigByExcelRename(Properties prop) {
-        setControlLastConfig(sheetName_Re, prop, key_lastSheetName, false);
-        setControlLastConfig(readRow_Re, prop, key_lastReadRow, false);
-        setControlLastConfig(readCell_Re, prop, key_lastReadCell, false);
-        setControlLastConfig(maxRow_Re, prop, key_lastMaxRow, false);
-        setControlLastConfig(excelPath_Re, prop, key_lastExcelPath, false);
+        setControlLastConfig(sheetName_Re, prop, key_lastSheetName, false, null);
+        setControlLastConfig(readRow_Re, prop, key_lastReadRow, false, null);
+        setControlLastConfig(readCell_Re, prop, key_lastReadCell, false, null);
+        setControlLastConfig(maxRow_Re, prop, key_lastMaxRow, false, null);
+        setControlLastConfig(excelPath_Re, prop, key_lastExcelPath, false, anchorPane_Re);
     }
 
     /**
@@ -682,14 +686,14 @@ public class FileRenameController extends ToolsProperties {
         getConfig();
         //设置要暂时移除的组件
         removeChildren(strRenameVBox_Re, excelRenameVBox_Re);
-        //设置初始配置值为上次配置值
-        setLastConfig();
         //设置要防重复点击的组件
         setDisableControls();
         //设置鼠标悬停提示
         setToolTip();
         //设置javafx单元格宽度
         bindPrefWidthProperty();
+        //设置初始配置值为上次配置值
+        setLastConfig();
     }
 
     /**
@@ -708,7 +712,7 @@ public class FileRenameController extends ToolsProperties {
                 .setInFile(selectedFile);
         if (selectedFile != null) {
             //更新所选文件路径显示
-            inFilePath = updatePathLabel(selectedFile.getAbsolutePath(), inFilePath, key_inFilePath, inPath_Re, configFile_Rename);
+            inFilePath = updatePathLabel(selectedFile.getAbsolutePath(), inFilePath, key_inFilePath, inPath_Re, configFile_Rename, anchorPane_Re);
             //读取数据
             List<File> inFileList = readAllFiles(fileConfig);
             addInData(inFileList);
@@ -842,7 +846,7 @@ public class FileRenameController extends ToolsProperties {
         List<FileChooser.ExtensionFilter> extensionFilters = new ArrayList<>(Collections.singleton(new FileChooser.ExtensionFilter("Excel", "*.xlsx")));
         File selectedFile = creatFileChooser(actionEvent, excelInPath, extensionFilters, text_selectExcel);
         if (selectedFile != null) {
-            excelInPath = updatePathLabel(selectedFile.getAbsolutePath(), excelInPath, key_excelInPath, excelPath_Re, configFile_Rename);
+            excelInPath = updatePathLabel(selectedFile.getAbsolutePath(), excelInPath, key_excelInPath, excelPath_Re, configFile_Rename, anchorPane_Re);
             readExcelRename();
         }
     }

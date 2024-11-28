@@ -5,9 +5,7 @@
 
 <VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
       fx:controller="priv.koishi.tools.Controller.MainController">
-
     <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE">
-
         <Tab style="-fx-cursor: hand" fx:id="fileRenameTab" text="按指定规则批量重命名文件">
             <AnchorPane>
                 <fx:include source="FileRename-tab.fxml"/>
@@ -37,7 +35,5 @@
                 <fx:include source="Setting-tab.fxml"/>
             </AnchorPane>
         </Tab>
-
     </TabPane>
-
 </VBox>

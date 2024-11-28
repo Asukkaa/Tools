@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import java.lang.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+<AnchorPane fx:id="anchorPane_Re" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" stylesheets="@../css/Styles.css"
             fx:controller="priv.koishi.tools.Controller.FileRenameController">
     <VBox fx:id="vbox_Re" spacing="10" AnchorPane.topAnchor="10">
         <HBox spacing="10">
@@ -197,7 +197,8 @@
             </HBox>
 
             <HBox spacing="10">
-                <Button fx:id="excelPathButton_Img" onAction="#getExcelPath" style="-fx-cursor: hand" text="选择excel模板位置"/>
+                <Button fx:id="excelPathButton_Img" onAction="#getExcelPath" style="-fx-cursor: hand"
+                        text="选择excel模板位置"/>
                 <Label fx:id="excelPath_Re" prefHeight="20" style="-fx-font-size: 15px;"/>
             </HBox>
         </VBox>
@@ -238,7 +239,7 @@
             <Label fx:id="tip_Re" prefHeight="20" textFill="red" alignment="CENTER_RIGHT"
                    text="读取数据后上下拖拽数据行可调整数据顺序，右键点击数据行可进行调整操作，双击 修改后文件名称 下的单元格可进行编辑"/>
         </HBox>
-        <Label fx:id="log_Re" prefHeight="20"/>
 
+        <Label fx:id="log_Re" prefHeight="20"/>
     </VBox>
 </AnchorPane>

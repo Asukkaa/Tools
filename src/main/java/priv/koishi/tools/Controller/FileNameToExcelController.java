@@ -11,6 +11,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.TransferMode;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -94,6 +95,9 @@ public class FileNameToExcelController extends ToolsProperties {
      * 线程池实例
      */
     ExecutorService executorService = commonThreadPoolExecutor.createNewThreadPool();
+
+    @FXML
+    private AnchorPane anchorPane_Name;
 
     @FXML
     private VBox vbox_Name;
@@ -266,21 +270,21 @@ public class FileNameToExcelController extends ToolsProperties {
         InputStream input = checkRunningInputStream(configFile_Name);
         prop.load(input);
         if (activation.equals(prop.getProperty(key_loadLastConfig))) {
-            setControlLastConfig(directoryNameType_Name, prop, key_lastDirectoryNameType, false);
-            setControlLastConfig(hideFileType_Name, prop, key_lastHideFileType, false);
-            setControlLastConfig(recursion_Name, prop, key_lastRecursion, false);
-            setControlLastConfig(showFileType_Name, prop, key_lastShowFileType, false);
-            setControlLastConfig(openDirectory_Name, prop, key_lastOpenDirectory, false);
-            setControlLastConfig(openFile_Name, prop, key_lastOpenFile, false);
-            setControlLastConfig(excelName_Name, prop, key_lastExcelName, false);
-            setControlLastConfig(sheetName_Name, prop, key_lastSheetName, false);
-            setControlLastConfig(excelType_Name, prop, key_lastExcelType, false);
-            setControlLastConfig(startRow_Name, prop, key_lastStartRow, false);
-            setControlLastConfig(startCell_Name, prop, key_lastStartCell, false);
-            setControlLastConfig(filterFileType_Name, prop, key_lastFilterFileType, false);
-            setControlLastConfig(inPath_Name, prop, key_lastInPath, false);
-            setControlLastConfig(outPath_Name, prop, key_lastOutPath, false);
-            setControlLastConfig(excelPath_Name, prop, key_lastExcelPath, false);
+            setControlLastConfig(directoryNameType_Name, prop, key_lastDirectoryNameType, false, null);
+            setControlLastConfig(hideFileType_Name, prop, key_lastHideFileType, false, null);
+            setControlLastConfig(recursion_Name, prop, key_lastRecursion, false, null);
+            setControlLastConfig(showFileType_Name, prop, key_lastShowFileType, false, null);
+            setControlLastConfig(openDirectory_Name, prop, key_lastOpenDirectory, false, null);
+            setControlLastConfig(openFile_Name, prop, key_lastOpenFile, false, null);
+            setControlLastConfig(excelName_Name, prop, key_lastExcelName, false, null);
+            setControlLastConfig(sheetName_Name, prop, key_lastSheetName, false, null);
+            setControlLastConfig(excelType_Name, prop, key_lastExcelType, false, null);
+            setControlLastConfig(startRow_Name, prop, key_lastStartRow, false, null);
+            setControlLastConfig(startCell_Name, prop, key_lastStartCell, false, null);
+            setControlLastConfig(filterFileType_Name, prop, key_lastFilterFileType, false, null);
+            setControlLastConfig(inPath_Name, prop, key_lastInPath, false, anchorPane_Name);
+            setControlLastConfig(outPath_Name, prop, key_lastOutPath, false, anchorPane_Name);
+            setControlLastConfig(excelPath_Name, prop, key_lastExcelPath, false, anchorPane_Name);
         }
         input.close();
     }
@@ -331,14 +335,14 @@ public class FileNameToExcelController extends ToolsProperties {
     private void initialize() throws IOException {
         //读取全局变量配置
         getConfig();
-        //设置初始配置值为上次配置值
-        setLastConfig();
         //设置要防重复点击的组件
         setDisableControls();
         //设置鼠标悬停提示
         setToolTip();
         //设置javafx单元格宽度
         bindPrefWidthProperty();
+        //设置初始配置值为上次配置值
+        setLastConfig();
     }
 
     /**
@@ -358,7 +362,7 @@ public class FileNameToExcelController extends ToolsProperties {
                 .setInFile(selectedFile);
         if (selectedFile != null) {
             //更新所选文件路径显示
-            inFilePath = updatePathLabel(selectedFile.getPath(), inFilePath, key_inFilePath, inPath_Name, configFile_Name);
+            inFilePath = updatePathLabel(selectedFile.getPath(), inFilePath, key_inFilePath, inPath_Name, configFile_Name, anchorPane_Name);
             //读取数据
             addInData(readAllFiles(fileConfig));
         }
@@ -461,7 +465,7 @@ public class FileNameToExcelController extends ToolsProperties {
         File selectedFile = creatDirectoryChooser(actionEvent, outFilePath, text_selectDirectory);
         if (selectedFile != null) {
             //更新所选文件路径显示
-            outFilePath = updatePathLabel(selectedFile.getPath(), outFilePath, key_outFilePath, outPath_Name, configFile_Name);
+            outFilePath = updatePathLabel(selectedFile.getPath(), outFilePath, key_outFilePath, outPath_Name, configFile_Name, anchorPane_Name);
         }
     }
 
@@ -475,7 +479,7 @@ public class FileNameToExcelController extends ToolsProperties {
         File selectedFile = creatFileChooser(actionEvent, excelInPath, extensionFilters, text_selectExcel);
         if (selectedFile != null) {
             //更新所选文件路径显示
-            excelInPath = updatePathLabel(selectedFile.getPath(), excelInPath, key_excelInPath, excelPath_Name, configFile_Name);
+            excelInPath = updatePathLabel(selectedFile.getPath(), excelInPath, key_excelInPath, excelPath_Name, configFile_Name, anchorPane_Name);
             removeExcelButton_Name.setVisible(true);
         }
     }

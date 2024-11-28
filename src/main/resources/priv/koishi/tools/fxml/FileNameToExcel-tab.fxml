@@ -6,7 +6,7 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" stylesheets="@../css/Styles.css"
+<AnchorPane fx:id="anchorPane_Name" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" stylesheets="@../css/Styles.css"
             fx:controller="priv.koishi.tools.Controller.FileNameToExcelController">
     <VBox fx:id="vbox_Name" spacing="10" AnchorPane.topAnchor="10">
         <HBox spacing="10">
@@ -81,7 +81,8 @@
         </HBox>
 
         <HBox spacing="10">
-            <Button fx:id="excelPathButton_Img" onAction="#getExcelPath" style="-fx-cursor: hand" text="选择excel模板位置"/>
+            <Button fx:id="excelPathButton_Img" onAction="#getExcelPath" style="-fx-cursor: hand"
+                    text="选择excel模板位置"/>
             <Label fx:id="excelPath_Name" prefHeight="20" style="-fx-font-size: 15px;"/>
             <Button fx:id="removeExcelButton_Name" onAction="#removeExcelPath" prefHeight="20"
                     styleClass="delete-button-style" visible="false">
@@ -121,7 +122,7 @@
             <Label fx:id="tip_Name" prefHeight="20" textFill="red" alignment="CENTER_RIGHT"
                    text="读取数据后上下拖拽数据行可调整数据顺序，右键点击数据行可进行调整操作"/>
         </HBox>
-        <Label fx:id="log_Name" prefHeight="20"/>
 
+        <Label fx:id="log_Name" prefHeight="20"/>
     </VBox>
 </AnchorPane>

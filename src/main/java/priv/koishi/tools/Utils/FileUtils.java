@@ -69,7 +69,7 @@ public class FileUtils {
      * @return 带单位的文件大小
      */
     public static String getFileUnitSize(File file) {
-       return getUnitSize(file.length());
+        return getUnitSize(file.length());
     }
 
     /**
@@ -186,7 +186,7 @@ public class FileUtils {
                     if ((text_noHideFile.equals(showHideFile) && file.isHidden()) || (text_onlyHideFile.equals(showHideFile) && !file.isHidden())) {
                         continue;
                     }
-                    if (text_onlyFile.equals(showDirectoryName) || text_FileDirectory.equals(showDirectoryName) || StringUtils.isEmpty(showDirectoryName)) {
+                    if (text_onlyFile.equals(showDirectoryName) || text_fileDirectory.equals(showDirectoryName) || StringUtils.isEmpty(showDirectoryName)) {
                         String extension = getFileType(file);
                         if (CollectionUtils.isEmpty(filterExtensionList) || filterExtensionList.contains(extension)) {
                             fileList.add(file);
@@ -200,7 +200,7 @@ public class FileUtils {
                     if ((text_noHideFile.equals(showHideFile) && file.isHidden()) || (text_onlyHideFile.equals(showHideFile) && !file.isHidden())) {
                         continue;
                     }
-                    if (text_onlyDirectory.equals(showDirectoryName) || text_FileDirectory.equals(showDirectoryName)) {
+                    if (text_onlyDirectory.equals(showDirectoryName) || text_fileDirectory.equals(showDirectoryName)) {
                         fileList.add(file);
                     }
                     if (recursion) {
@@ -344,6 +344,18 @@ public class FileUtils {
                     throw new Exception("文件 " + destinationPath + " 设置为可写失败");
                 }
             }
+        }
+    }
+
+    /**
+     * 判断字符串是否为文件路径
+     */
+    public static boolean isValidPath(String path) {
+        try {
+            Paths.get(path);
+            return true;
+        } catch (Exception e) {
+            return false;
         }
     }
 

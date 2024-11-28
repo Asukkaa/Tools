@@ -1,23 +1,17 @@
 package priv.koishi.tools.Controller;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
-import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 import org.apache.commons.lang3.StringUtils;
 
-import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -48,18 +42,39 @@ public class SettingController {
      */
     static final String Xmx = "-Xmx";
 
+    /**
+     * 启动脚本名称
+     */
     static final String batName = "app.bat";
 
+    /**
+     * 启动脚本bin路径
+     */
     static final String bin = File.separator + "bin";
 
+    /**
+     * 启动脚本runtime路径
+     */
     static final String runtime = File.separator + "runtime";
 
+    /**
+     * logs路径
+     */
     static final String logs = File.separator + "logs";
 
     /**
      * 当前程序运行位置
      */
     static final String currentDir = System.getProperty("user.dir");
+
+    public static final String nowSetting = "当前配置值为 ";
+
+    public static final String memorySetting = " GB ，关闭程序即可保存修改，之后使用 ";
+
+    public static final String nowValue = " 启动程序即可生效\n当前所填值为 ";
+
+    @FXML
+    private AnchorPane anchorPane_Set;
 
     @FXML
     private VBox vBox_Set;
@@ -131,34 +146,6 @@ public class SettingController {
         input.close();
     }
 
-    /**
-     * 添加复制邮件右键菜单
-     */
-    private void setCopyMailContextMenu() {
-        ContextMenu contextMenu = new ContextMenu();
-        MenuItem copyMailMenuItem = new MenuItem("复制反馈邮件");
-        contextMenu.getItems().add(copyMailMenuItem);
-        mail_set.setContextMenu(contextMenu);
-        mail_set.setOnMousePressed(event -> {
-            if (event.isSecondaryButtonDown()) {
-                contextMenu.show(mail_set, event.getScreenX(), event.getScreenY());
-            }
-        });
-        //设置右键菜单行为
-        copyMailMenuItem.setOnAction(event -> {
-            // 获取当前系统剪贴板
-            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-            // 将文本转换为Transferable对象
-            StringSelection stringSelection = new StringSelection(mail_set.getText());
-            // 将Transferable对象设置到剪贴板中
-            clipboard.setContents(stringSelection, null);
-            massage_set.setVisible(true);
-            // 设置几秒后隐藏按钮
-            KeyFrame keyFrame = new KeyFrame(Duration.seconds(0.6), ae -> massage_set.setVisible(false));
-            Timeline timeline = new Timeline(keyFrame);
-            timeline.play();
-        });
-    }
 
     /**
      * 设置是否加载最后一次功能配置信息初始值
@@ -180,22 +167,21 @@ public class SettingController {
         long maxMemory = Runtime.getRuntime().maxMemory();
         memory_Set.setText(getUnitSize(maxMemory));
         addToolTip(memory_Set, "最大运行内存默认为系统内存四分之一，无法直接修改，如需修改则需编辑 app.bat 脚本后用该脚本运行");
-        setPathLabel(thisPath_Set, currentDir, currentDir);
+        setPathLabel(thisPath_Set, currentDir, false, anchorPane_Set);
         String batPath;
         if ("bin".equals(getFileName(new File(currentDir))) || isRunningFromJar()) {
             batPath = currentDir + File.separator + batName;
         } else {
             batPath = currentDir + runtime + bin + File.separator + batName;
         }
-        setPathLabel(batPath_Set, batPath, new File(batPath).getParent());
+        setPathLabel(batPath_Set, batPath, false, anchorPane_Set);
         try (BufferedReader reader = new BufferedReader(new FileReader(batPath))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 if (line.contains(Xmx)) {
                     batMemory = line.substring(line.lastIndexOf(Xmx) + Xmx.length(), line.lastIndexOf("g"));
                     batMemory_Set.setText(batMemory);
-                    addToolTip(batMemory_Set, "当前配置值为 " + batMemory +
-                            " GB ，关闭程序即可保存修改，之后使用 " + batName + " 启动程序即可生效\n当前所填值为 " + batMemory);
+                    addToolTip(batMemory_Set, nowSetting + batMemory + memorySetting + batName + nowValue + batMemory);
                     break;
                 }
             }
@@ -209,7 +195,7 @@ public class SettingController {
      */
     private void setLogsPath() {
         String logsPath = currentDir + logs;
-        setPathLabel(logsPath_Set, logsPath, logsPath);
+        setPathLabel(logsPath_Set, logsPath, false, anchorPane_Set);
     }
 
     /**
@@ -218,7 +204,7 @@ public class SettingController {
     @FXML
     private void initialize() throws IOException {
         //添加右键菜单
-        setCopyMailContextMenu();
+        setCopyValueContextMenu(mail_set, "复制反馈邮件", anchorPane_Set);
         //设置是否加载最后一次功能配置信息初始值
         setLoadLastConfigs();
         //获取最大运行内存并展示
@@ -281,7 +267,7 @@ public class SettingController {
     @FXML
     private void batMemoryKeyTyped(KeyEvent event) {
         integerRangeTextField(batMemory_Set, 1, null, event);
-        addToolTip(batMemory_Set, "当前配置值为 " + batMemory + " GB ，关闭程序即可保存修改，之后使用 app.bat 启动程序即可生效\n当前所填值为 " + batMemory_Set.getText());
+        addToolTip(batMemory_Set, nowSetting + batMemory + memorySetting + batName + nowValue + batMemory_Set.getText());
     }
 
 }

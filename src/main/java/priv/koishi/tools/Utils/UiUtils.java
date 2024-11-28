@@ -1,14 +1,21 @@
 package priv.koishi.tools.Utils;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.*;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
@@ -25,10 +32,15 @@ import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.FileConfig;
 import priv.koishi.tools.Enum.SelectItemsEnums;
+import priv.koishi.tools.MessageBubble.MessageBubble;
 
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.List;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -436,14 +448,13 @@ public class UiUtils {
     /**
      * 更新所选文件路径显示
      */
-    public static String updatePathLabel(String selectedFilePath, String filePath, String pathKey, Label pathLabel, String configFile) throws IOException {
+    public static String updatePathLabel(String selectedFilePath, String filePath, String pathKey, Label pathLabel, String configFile, AnchorPane anchorPane) throws IOException {
         //只有跟上次选的路径不一样才更新
         if (!filePath.equals(selectedFilePath)) {
             updateProperties(configFile, pathKey, selectedFilePath);
             filePath = selectedFilePath;
         }
-        pathLabel.setText(selectedFilePath);
-        addToolTip(pathLabel, selectedFilePath);
+        setPathLabel(pathLabel, selectedFilePath, false, anchorPane);
         return filePath;
     }
 
@@ -560,7 +571,7 @@ public class UiUtils {
      * 为配置组件设置上次配置值
      */
     @SuppressWarnings("unchecked")
-    public static void setControlLastConfig(Control control, Properties prop, String Key, boolean canBlank) {
+    public static void setControlLastConfig(Control control, Properties prop, String Key, boolean canBlank, AnchorPane anchorPane) {
         String lastValue = prop.getProperty(Key);
         if (StringUtils.isNotBlank(lastValue)) {
             if (control instanceof ChoiceBox) {
@@ -571,15 +582,27 @@ public class UiUtils {
                 checkBox.setSelected(activation.equals(lastValue));
             }
             if (control instanceof Label label) {
-                label.setText(lastValue);
+                if (isValidPath(lastValue)) {
+                    setPathLabel(label, lastValue, false, anchorPane);
+                } else {
+                    label.setText(lastValue);
+                }
             }
             if (control instanceof TextField textField) {
                 textField.setText(lastValue);
+                Tooltip tooltip = textField.getTooltip();
+                String tooltipText = tooltip.getText() + "\n" + lastValue;
+                tooltip.setText(tooltipText);
+                textField.setTooltip(tooltip);
             }
         }
         if (StringUtils.isNotEmpty(lastValue) && canBlank) {
             if (control instanceof TextField textField) {
                 textField.setText(lastValue);
+                Tooltip tooltip = textField.getTooltip();
+                String tooltipText = tooltip.getText() + "\n" + lastValue;
+                tooltip.setText(tooltipText);
+                textField.setTooltip(tooltip);
             }
         }
     }
@@ -587,19 +610,125 @@ public class UiUtils {
     /**
      * 显示可打开的文件类路径
      */
-    public static void setPathLabel(Label pathLabel, String showPath, String openPath) {
-        pathLabel.setText(showPath);
+    public static void setPathLabel(Label pathLabel, String path, boolean openFile, AnchorPane anchorPane) {
+        pathLabel.setText(path);
+        pathLabel.getStyleClass().add("label-button-style");
+        File file = new File(path);
+        String openPath;
+        //判断是否打开文件
+        if (!openFile && file.isFile()) {
+            openPath = file.getParent();
+        } else {
+            openPath = path;
+        }
         pathLabel.setOnMouseClicked(event -> {
+            //只接受左键点击
+            if (event.getButton() == MouseButton.PRIMARY) {
+                try {
+                    if (!file.exists()) {
+                        throw new IOException(text_fileNotExists);
+                    }
+                    openFile(openPath);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        addToolTip(pathLabel, path + "\n鼠标左键点击打开 " + openPath);
+        //设置右键菜单
+        setPathLabelContextMenu(pathLabel, anchorPane);
+    }
+
+    /**
+     * 给路径Label设置右键菜单
+     */
+    public static void setPathLabelContextMenu(Label valueLabel, AnchorPane anchorPane) {
+        String path = valueLabel.getText();
+        File file = new File(path);
+        ContextMenu contextMenu = new ContextMenu();
+        MenuItem openDirectoryMenuItem = new MenuItem("打开文件夹");
+        contextMenu.getItems().add(openDirectoryMenuItem);
+        openDirectoryMenuItem.setOnAction(event -> {
             try {
-                if (!new File(openPath).exists()) {
+                if (!file.exists()) {
                     throw new IOException(text_fileNotExists);
                 }
-                openFile(openPath);
+                openFile(file.getParent());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         });
-        addToolTip(pathLabel, "点击打开目录");
+        if (file.isFile()) {
+            MenuItem openFileMenuItem = new MenuItem("打开文件");
+            contextMenu.getItems().add(openFileMenuItem);
+            openFileMenuItem.setOnAction(event -> {
+                try {
+                    if (!file.exists()) {
+                        throw new IOException(text_fileNotExists);
+                    }
+                    openFile(path);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        }
+        MenuItem copyValueMenuItem = new MenuItem("复制路径");
+        contextMenu.getItems().add(copyValueMenuItem);
+        valueLabel.setContextMenu(contextMenu);
+        copyValueMenuItem.setOnAction(event -> copyText(valueLabel, anchorPane));
+        valueLabel.setOnMousePressed(event -> {
+            if (event.isSecondaryButtonDown()) {
+                contextMenu.show(valueLabel, event.getScreenX(), event.getScreenY());
+            }
+        });
+    }
+
+    /**
+     * 添加复制label值右键菜单
+     */
+    public static void setCopyValueContextMenu(Label valueLabel, String text, AnchorPane anchorPane) {
+        ContextMenu contextMenu = new ContextMenu();
+        MenuItem copyValueMenuItem = new MenuItem(text);
+        contextMenu.getItems().add(copyValueMenuItem);
+        valueLabel.setContextMenu(contextMenu);
+        valueLabel.setOnMousePressed(event -> {
+            if (event.isSecondaryButtonDown()) {
+                contextMenu.show(valueLabel, event.getScreenX(), event.getScreenY());
+            }
+        });
+        //设置右键菜单行为
+        copyValueMenuItem.setOnAction(event -> copyText(valueLabel, anchorPane));
+    }
+
+    /**
+     * 复制文本
+     */
+    public static void copyText(Label valueLabel, AnchorPane anchorPane) {
+        //获取当前系统剪贴板
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        //将文本转换为Transferable对象
+        StringSelection stringSelection = new StringSelection(valueLabel.getText());
+        //将Transferable对象设置到剪贴板中
+        clipboard.setContents(stringSelection, null);
+        buildMessageBubble(anchorPane, text_copySuccess, 1);
+    }
+
+    /**
+     * 创建消息弹窗
+     */
+    public static void buildMessageBubble(AnchorPane anchorPane, String text, double time) {
+        MessageBubble bubble = new MessageBubble(text);
+        anchorPane.getChildren().add(bubble);
+        anchorPane.addEventHandler(MouseEvent.MOUSE_MOVED, mouseEvent -> {
+            // 获取鼠标位置
+            double mouseX = mouseEvent.getX();
+            double mouseY = mouseEvent.getY();
+            bubble.setLayoutX(mouseX + 30);
+            bubble.setLayoutY(mouseY);
+        });
+        KeyFrame keyFrame = new KeyFrame(Duration.seconds(time), ae -> anchorPane.getChildren().remove(bubble));
+        Timeline timeline = new Timeline(keyFrame);
+        timeline.play();
     }
 
 }

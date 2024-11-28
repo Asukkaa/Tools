@@ -5,7 +5,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+<AnchorPane fx:id="anchorPane_Num" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" stylesheets="@../css/Styles.css"
             fx:controller="priv.koishi.tools.Controller.FileNumToExcelController">
     <VBox fx:id="vbox_Num" spacing="10" AnchorPane.topAnchor="10">
         <HBox spacing="10">
@@ -88,7 +88,8 @@
         </HBox>
 
         <HBox spacing="10">
-            <Button fx:id="excelPathButton_Img" onAction="#getExcelPath" style="-fx-cursor: hand" text="选择excel模板位置"/>
+            <Button fx:id="excelPathButton_Img" onAction="#getExcelPath" style="-fx-cursor: hand"
+                    text="选择excel模板位置"/>
             <Label fx:id="excelPath_Num" prefHeight="20" style="-fx-font-size: 15px;"/>
         </HBox>
 
@@ -127,6 +128,5 @@
 
         <ProgressBar fx:id="progressBar_Num" visible="false" prefWidth="200.0" progress="0.0"/>
         <Label fx:id="log_Num" prefHeight="20"/>
-
     </VBox>
 </AnchorPane>

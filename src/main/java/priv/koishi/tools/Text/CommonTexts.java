@@ -177,7 +177,9 @@ public class CommonTexts {
 
     public static final String text_onlyDirectory = "只查询文件夹";
 
-    public static final String text_FileDirectory = "文件和文件夹都查询";
+    public static final String text_fileDirectory = "文件和文件夹都查询";
+
+    public static final String text_copySuccess = "复制成功";
 
     public static final String userHome = "user.home";
 
