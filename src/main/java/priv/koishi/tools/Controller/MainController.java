@@ -5,7 +5,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.stage.Stage;
-import lombok.Getter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,7 +31,6 @@ import static priv.koishi.tools.Utils.CommonUtils.checkRunningOutputStream;
  */
 public class MainController {
 
-    @Getter
     @FXML
     private TabPane tabPane;
 
