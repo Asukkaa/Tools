@@ -648,10 +648,10 @@ public class FileRenameController extends ToolsProperties {
         addToolTip(leftBehavior_Re, tip_option);
         addToolTip(startSize_Re, tip_startSize);
         addToolTip(renameStr_Re, tip_renameStr);
+        addToolTip(sheetName_Re, tip_sheetName);
         addToolTip(rightBehavior_Re, tip_option);
         addToolTip(rightValue_Re, tip_rightValue);
         addToolTip(renameValue_Re, tip_renameValue);
-        addToolTip(sheetName_Re, tip_sheetName);
         addToolTip(filterFileType_Re, tip_filterFileType);
         addToolTip(startName_Re, text_onlyNaturalNumber + defaultStartNameNum);
         addToolTip(readRow_Re, text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row);

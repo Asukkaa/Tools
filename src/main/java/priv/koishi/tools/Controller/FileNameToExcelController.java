@@ -305,11 +305,11 @@ public class FileNameToExcelController extends ToolsProperties {
      * 设置鼠标悬停提示
      */
     private void setToolTip() {
+        addToolTip(sheetName_Name, tip_sheet);
         addToolTip(startRow_Name, tip_startRow);
         addToolTip(tip_Name, tip_Name.getText());
         addToolTip(recursion_Name, tip_recursion);
         addToolTip(excelName_Name, tip_excelName);
-        addToolTip(sheetName_Name, tip_sheet);
         addToolTip(filterFileType_Name, tip_filterFileType);
         addToolTip(removeExcelButton_Name, tip_removeExcelButton);
         addToolTip(startCell_Name, text_onlyNaturalNumber + defaultStartCell);

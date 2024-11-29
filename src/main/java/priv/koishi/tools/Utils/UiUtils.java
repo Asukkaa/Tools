@@ -514,36 +514,65 @@ public class UiUtils {
         tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         //添加右键菜单
         ContextMenu contextMenu = new ContextMenu();
-        MenuItem deleteDataMenuItem = new MenuItem("删除所选数据");
-        contextMenu.getItems().add(deleteDataMenuItem);
-        MenuItem openDirectoryMenuItem = new MenuItem("打开所选文件所在文件夹");
-        contextMenu.getItems().add(openDirectoryMenuItem);
-        MenuItem openFileMenuItem = new MenuItem("打开所选文件");
-        contextMenu.getItems().add(openFileMenuItem);
+        //所选行上移一行选项
+        buildUpMoveDataMenuItem(tableView, contextMenu);
+        //所选行下移一行选项
+        buildDownMoveDataMenuItem(tableView, contextMenu);
+        //打开所选文件选项
+        buildOpenFileMenuItem(tableView, contextMenu);
+        //打开所选文件所在文件夹选项
+        buildOpenDirectorMenuItem(tableView, contextMenu);
+        //删除所选数据选项
+        buildDeleteDataMenuItem(tableView, label, contextMenu);
         tableView.setContextMenu(contextMenu);
         tableView.setOnMousePressed(event -> {
             if (event.isSecondaryButtonDown()) {
                 contextMenu.show(tableView, event.getScreenX(), event.getScreenY());
             }
         });
-        //设置右键菜单行为
-        deleteDataMenuItem.setOnAction(event -> {
-            List<FileBean> fileBeans = tableView.getSelectionModel().getSelectedItems();
-            ObservableList<FileBean> items = tableView.getItems();
-            items.removeAll(fileBeans);
-            label.setText(text_allHave + items.size() + text_file);
-        });
-        openFileMenuItem.setOnAction(event -> {
-            List<FileBean> fileBeans = tableView.getSelectionModel().getSelectedItems();
-            fileBeans.forEach(fileBean -> {
-                try {
-                    openFile(fileBean.getPath());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+    }
+
+    /**
+     * 所选行上移一行选项
+     */
+    private static void buildUpMoveDataMenuItem(TableView<FileBean> tableView, ContextMenu contextMenu) {
+        MenuItem menuItem = new MenuItem("所选行上移一行");
+        menuItem.setOnAction(event -> {
+            var selectedCells = tableView.getSelectionModel().getSelectedCells();
+            for (int i = 0; i < selectedCells.size(); i++) {
+                int row = selectedCells.get(i).getRow();
+                List<FileBean> fileList = tableView.getItems();
+                if (row - i > 0) {
+                    fileList.add(row, fileList.remove(row - 1));
                 }
-            });
+            }
         });
-        openDirectoryMenuItem.setOnAction(event -> {
+        contextMenu.getItems().add(menuItem);
+    }
+
+    /**
+     * 所选行下移一行选项
+     */
+    private static void buildDownMoveDataMenuItem(TableView<FileBean> tableView, ContextMenu contextMenu) {
+        MenuItem menuItem = new MenuItem("所选行下移一行");
+        menuItem.setOnAction(event -> {
+            for (var position : tableView.getSelectionModel().getSelectedCells()) {
+                int row = position.getRow();
+                List<FileBean> fileList = tableView.getItems();
+                if (row < fileList.size() - 1) {
+                    fileList.add(row, fileList.remove(row + 1));
+                }
+            }
+        });
+        contextMenu.getItems().add(menuItem);
+    }
+
+    /**
+     * 打开所选文件所在文件夹选项
+     */
+    private static void buildOpenDirectorMenuItem(TableView<FileBean> tableView, ContextMenu contextMenu) {
+        MenuItem menuItem = new MenuItem("打开所选文件所在文件夹");
+        menuItem.setOnAction(event -> {
             List<FileBean> fileBeans = tableView.getSelectionModel().getSelectedItems();
             List<String> pathList = fileBeans.stream().map(FileBean::getPath).distinct().toList();
             pathList.forEach(path -> {
@@ -554,6 +583,39 @@ public class UiUtils {
                 }
             });
         });
+        contextMenu.getItems().add(menuItem);
+    }
+
+    /**
+     * 打开所选文件选项
+     */
+    private static void buildOpenFileMenuItem(TableView<FileBean> tableView, ContextMenu contextMenu) {
+        MenuItem menuItem = new MenuItem("打开所选文件");
+        menuItem.setOnAction(event -> {
+            List<FileBean> fileBeans = tableView.getSelectionModel().getSelectedItems();
+            fileBeans.forEach(fileBean -> {
+                try {
+                    openFile(fileBean.getPath());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        });
+        contextMenu.getItems().add(menuItem);
+    }
+
+    /**
+     * 删除所选数据选项
+     */
+    private static void buildDeleteDataMenuItem(TableView<FileBean> tableView, Label label, ContextMenu contextMenu) {
+        MenuItem deleteDataMenuItem = new MenuItem("删除所选数据");
+        deleteDataMenuItem.setOnAction(event -> {
+            List<FileBean> fileBeans = tableView.getSelectionModel().getSelectedItems();
+            ObservableList<FileBean> items = tableView.getItems();
+            items.removeAll(fileBeans);
+            label.setText(text_allHave + items.size() + text_file);
+        });
+        contextMenu.getItems().add(deleteDataMenuItem);
     }
 
     /**
@@ -638,7 +700,6 @@ public class UiUtils {
         File file = new File(path);
         ContextMenu contextMenu = new ContextMenu();
         MenuItem openDirectoryMenuItem = new MenuItem("打开文件夹");
-        contextMenu.getItems().add(openDirectoryMenuItem);
         openDirectoryMenuItem.setOnAction(event -> {
             try {
                 if (!file.exists()) {
@@ -649,9 +710,9 @@ public class UiUtils {
                 throw new RuntimeException(e);
             }
         });
+        contextMenu.getItems().add(openDirectoryMenuItem);
         if (file.isFile()) {
             MenuItem openFileMenuItem = new MenuItem("打开文件");
-            contextMenu.getItems().add(openFileMenuItem);
             openFileMenuItem.setOnAction(event -> {
                 try {
                     if (!file.exists()) {
@@ -662,6 +723,7 @@ public class UiUtils {
                     throw new RuntimeException(e);
                 }
             });
+            contextMenu.getItems().add(openFileMenuItem);
         }
         MenuItem copyValueMenuItem = new MenuItem("复制路径");
         contextMenu.getItems().add(copyValueMenuItem);
