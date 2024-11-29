@@ -80,7 +80,6 @@
         <HBox spacing="5">
             <Label prefHeight="25" text="反馈邮箱："/>
             <Label fx:id="mail_set" prefHeight="25" textFill="blue" text="csolxqt@foxmail.com"/>
-            <Label fx:id="massage_set" prefHeight="25" textFill="green" visible="false" text="    已复制反馈邮箱"/>
         </HBox>
 
         <HBox spacing="5">

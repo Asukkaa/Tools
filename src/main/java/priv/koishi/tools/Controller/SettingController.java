@@ -83,7 +83,7 @@ public class SettingController {
     private TextField batMemory_Set;
 
     @FXML
-    private Label mail_set, massage_set, memory_Set, thisPath_Set, batPath_Set, logsPath_Set;
+    private Label mail_set, memory_Set, thisPath_Set, batPath_Set, logsPath_Set;
 
     @FXML
     private CheckBox loadRename_Set, loadFileNum_Set, loadFileName_Set, loadImgToExcel_Set, lastTab_Set, fullWindow_Set;
