@@ -556,10 +556,13 @@ public class UiUtils {
     private static void buildDownMoveDataMenuItem(TableView<FileBean> tableView, ContextMenu contextMenu) {
         MenuItem menuItem = new MenuItem("所选行下移一行");
         menuItem.setOnAction(event -> {
-            for (var position : tableView.getSelectionModel().getSelectedCells()) {
-                int row = position.getRow();
+            var selectedCells = tableView.getSelectionModel().getSelectedCells();
+            int loopTime = 0;
+            for (int i = selectedCells.size(); i > 0; i--) {
+                int row = selectedCells.get(i - 1).getRow();
                 List<FileBean> fileList = tableView.getItems();
-                if (row < fileList.size() - 1) {
+                loopTime++;
+                if (row + loopTime < fileList.size()) {
                     fileList.add(row, fileList.remove(row + 1));
                 }
             }
