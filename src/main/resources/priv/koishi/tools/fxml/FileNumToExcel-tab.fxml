@@ -45,11 +45,11 @@
 
         <HBox spacing="10">
             <Label prefHeight="20" text="导出excel文件名称:"/>
-            <TextField fx:id="excelName_Num" onKeyTyped="#nameHandleKeyTyped" prefHeight="20" prefWidth="100"/>
+            <TextField fx:id="excelName_Num" prefHeight="20" prefWidth="100"/>
             <Label prefHeight="20" text="excel表名称:"/>
-            <TextField fx:id="sheetName_Num" onKeyTyped="#sheetHandleKeyTyped" prefHeight="20" prefWidth="100"/>
+            <TextField fx:id="sheetName_Num" prefHeight="20" prefWidth="100"/>
             <Label prefHeight="20" text="文件名称分割符:"/>
-            <TextField fx:id="subCode_Num" onKeyTyped="#subHandleKeyTyped" prefHeight="20" prefWidth="100"/>
+            <TextField fx:id="subCode_Num" prefHeight="20" prefWidth="100"/>
             <Label prefHeight="20" text="导出excel文件类型:"/>
             <ChoiceBox fx:id="excelType_Num" prefHeight="20" prefWidth="80">
                 <items>
@@ -66,17 +66,17 @@
 
         <HBox spacing="10">
             <Label prefHeight="20" text="导出预留行:"/>
-            <TextField fx:id="startRow_Num" onKeyTyped="#rowHandleKeyTyped" prefHeight="20" prefWidth="50"/>
+            <TextField fx:id="startRow_Num" prefHeight="20" prefWidth="50"/>
             <Label prefHeight="20" text="导出预留列:"/>
-            <TextField fx:id="startCell_Num" onKeyTyped="#cellHandleKeyTyped" prefHeight="20" prefWidth="50"/>
+            <TextField fx:id="startCell_Num" prefHeight="20" prefWidth="50"/>
             <Label prefHeight="20" text="读取预留行:"/>
-            <TextField fx:id="readRow_Num" onKeyTyped="#readRowHandleKeyTyped" prefHeight="20" prefWidth="50"/>
+            <TextField fx:id="readRow_Num" prefHeight="20" prefWidth="50"/>
             <Label prefHeight="20" text="读取预留列:"/>
-            <TextField fx:id="readCell_Num" onKeyTyped="#readCellHandleKeyTyped" prefHeight="20" prefWidth="50"/>
+            <TextField fx:id="readCell_Num" prefHeight="20" prefWidth="50"/>
             <Label prefHeight="20" text="读取行数:"/>
-            <TextField fx:id="maxRow_Num" onKeyTyped="#maxRowHandleKeyTyped" prefHeight="20" prefWidth="50"/>
+            <TextField fx:id="maxRow_Num" prefHeight="20" prefWidth="50"/>
             <Label prefHeight="20" text="需要识别的文件后缀名:"/>
-            <TextField fx:id="filterFileType_Num" onKeyTyped="#filterHandleKeyTyped" prefHeight="20" prefWidth="150"/>
+            <TextField fx:id="filterFileType_Num" prefHeight="20" prefWidth="150"/>
         </HBox>
 
         <HBox spacing="10">

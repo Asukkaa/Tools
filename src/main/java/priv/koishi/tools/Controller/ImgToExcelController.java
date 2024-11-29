@@ -8,7 +8,6 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.DragEvent;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -451,6 +450,34 @@ public class ImgToExcelController extends ToolsProperties {
     }
 
     /**
+     * 给输入框添加内容变化监听
+     */
+    private void textFieldChangeListener() {
+        //限制读取最大行数只能输入正整数
+        integerRangeTextField(maxRow_Img, 1, null, tip_maxRow);
+        //最大匹配数量设置监听
+        integerRangeTextField(maxImgNum_Img, 1, null, tip_maxImgNum);
+        //限制导出预留行只能输入自然数
+        integerRangeTextField(startRow_Img, 0, null, tip_startReadRow);
+        //限制导出预留列只能输入自然数
+        integerRangeTextField(startCell_Img, 0, null, text_onlyNaturalNumber + defaultStartCell);
+        //图片宽度设置监听
+        integerRangeTextField(imgWidth_Img, 0, null, text_onlyNaturalNumber + defaultImgWidth + tip_imgWidth);
+        //图片高度设置监听
+        integerRangeTextField(imgHeight_Img, 0, null, text_onlyNaturalNumber + defaultImgHeight + tip_imgHeight);
+        //限制读取起始列只能输入自然数
+        integerRangeTextField(readCell_Img, 0, null, text_onlyNaturalNumber + defaultReadCell + text_formThe + (defaultReadCell + 1) + text_cell);
+        //限制读取起始行只能输入自然数
+        integerRangeTextField(readRow_Img, 0, null, text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row);
+        //鼠标悬留提示输入的文件名称分割符
+        textFieldValueListener(subCode_Img, tip_subCode);
+        //鼠标悬留提示输入的导出excel表名称
+        textFieldValueListener(sheetName_Img, tip_sheetName);
+        //鼠标悬留提示输入的导出excel文件名称
+        textFieldValueListener(excelName_Img, tip_excelName);
+    }
+
+    /**
      * 界面初始化
      */
     @FXML
@@ -463,6 +490,8 @@ public class ImgToExcelController extends ToolsProperties {
         setToolTip();
         //设置javafx单元格宽度
         tableViewNumImgAdaption(groupId_Img, tableView_Img, groupName_Img.prefWidthProperty(), groupNumber_Img.prefWidthProperty(), fileName_Img);
+        //给输入框添加内容变化监听
+        textFieldChangeListener();
         //设置初始配置值为上次配置值
         setLastConfig();
     }
@@ -643,75 +672,6 @@ public class ImgToExcelController extends ToolsProperties {
     }
 
     /**
-     * 限制导出预留行只能输入自然数
-     */
-    @FXML
-    private void rowHandleKeyTyped(KeyEvent event) {
-        integerRangeTextField(startRow_Img, 0, null, event);
-        addValueToolTip(startRow_Img, tip_startReadRow);
-    }
-
-    /**
-     * 限制导出预留列只能输入自然数
-     */
-    @FXML
-    private void cellHandleKeyTyped(KeyEvent event) {
-        integerRangeTextField(startCell_Img, 0, null, event);
-        addValueToolTip(startCell_Img, text_onlyNaturalNumber + defaultStartCell);
-    }
-
-    /**
-     * 鼠标悬留提示输入的导出excel文件名称
-     */
-    @FXML
-    private void nameHandleKeyTyped() {
-        addValueToolTip(excelName_Img, tip_excelName);
-    }
-
-    /**
-     * 鼠标悬留提示输入的导出excel表名称
-     */
-    @FXML
-    private void sheetHandleKeyTyped() {
-        addValueToolTip(sheetName_Img, tip_sheetName);
-    }
-
-    /**
-     * 鼠标悬留提示输入的文件名称分割符
-     */
-    @FXML
-    private void subHandleKeyTyped() {
-        addValueToolTip(subCode_Img, tip_subCode);
-    }
-
-    /**
-     * 限制读取起始行只能输入自然数
-     */
-    @FXML
-    private void readRowHandleKeyTyped(KeyEvent event) {
-        integerRangeTextField(readRow_Img, 0, null, event);
-        addValueToolTip(readRow_Img, text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row);
-    }
-
-    /**
-     * 限制读取起始列只能输入自然数
-     */
-    @FXML
-    private void readCellHandleKeyTyped(KeyEvent event) {
-        integerRangeTextField(readCell_Img, 0, null, event);
-        addValueToolTip(readCell_Img, text_onlyNaturalNumber + defaultReadCell + text_formThe + (defaultReadCell + 1) + text_cell);
-    }
-
-    /**
-     * 限制读取最大行数只能输入正整数
-     */
-    @FXML
-    private void maxRowHandleKeyTyped(KeyEvent event) {
-        integerRangeTextField(maxRow_Img, 1, null, event);
-        addValueToolTip(maxRow_Img, tip_maxRow);
-    }
-
-    /**
      * 重新查询按钮
      */
     @FXML
@@ -736,33 +696,6 @@ public class ImgToExcelController extends ToolsProperties {
         if (CollectionUtils.isNotEmpty(fileBeans)) {
             reselect();
         }
-    }
-
-    /**
-     * 图片宽度设置监听
-     */
-    @FXML
-    private void imgWidthHandleKeyTyped(KeyEvent event) {
-        integerRangeTextField(imgWidth_Img, 0, null, event);
-        addValueToolTip(imgWidth_Img, text_onlyNaturalNumber + defaultImgWidth + tip_imgWidth);
-    }
-
-    /**
-     * 图片高度设置监听
-     */
-    @FXML
-    private void imgHeightHandleKeyTyped(KeyEvent event) {
-        integerRangeTextField(imgHeight_Img, 0, null, event);
-        addValueToolTip(imgHeight_Img, text_onlyNaturalNumber + defaultImgHeight + tip_imgHeight);
-    }
-
-    /**
-     * 最大匹配数量设置监听
-     */
-    @FXML
-    private void maxImgNumKeyTyped(KeyEvent event) {
-        integerRangeTextField(maxImgNum_Img, 1, null, event);
-        addValueToolTip(maxImgNum_Img, tip_maxImgNum);
     }
 
     /**

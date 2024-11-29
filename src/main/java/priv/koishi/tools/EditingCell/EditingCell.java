@@ -6,8 +6,7 @@ import javafx.scene.control.TextField;
 
 import java.util.Objects;
 
-import static priv.koishi.tools.Utils.UiUtils.addValueToolTip;
-import static priv.koishi.tools.Utils.UiUtils.setTooltipConfig;
+import static priv.koishi.tools.Utils.UiUtils.*;
 
 /**
  * @author KOISHI
@@ -50,7 +49,7 @@ public class EditingCell<T> extends TableCell<T, String> {
             textField.selectAll();
             textField.requestFocus();
         }
-        textField.setOnKeyTyped(event -> addValueToolTip(textField, tip));
+        textFieldValueListener(textField, tip);
     }
 
     @Override

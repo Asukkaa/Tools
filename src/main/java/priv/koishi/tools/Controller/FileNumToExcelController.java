@@ -8,7 +8,6 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.DragEvent;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -382,6 +381,30 @@ public class FileNumToExcelController extends ToolsProperties {
     }
 
     /**
+     * 给输入框添加内容变化监听
+     */
+    private void textFieldChangeListener() {
+        //限制读取最大行数只能输入正整数
+        integerRangeTextField(maxRow_Num, 1, null, tip_maxRow);
+        //限制导出预留行只能输入自然数
+        integerRangeTextField(startRow_Num, 0, null, text_onlyNaturalNumber + defaultStartCell);
+        //限制导出预留列只能输入自然数
+        integerRangeTextField(startCell_Num, 0, null, text_onlyNaturalNumber + defaultStartCell);
+        //限制读取起始行只能输入自然数
+        integerRangeTextField(readRow_Num, 0, null, text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row);
+        //限制读取起始列只能输入自然数
+        integerRangeTextField(readCell_Num, 0, null, text_onlyNaturalNumber + defaultReadCell + text_formThe + (defaultReadCell + 1) + text_cell);
+        //鼠标悬留提示输入的文件名称分割符
+        textFieldValueListener(subCode_Num, tip_subCode);
+        //鼠标悬留提示输入的导出excel表名称
+        textFieldValueListener(sheetName_Num, tip_sheetName);
+        //鼠标悬留提示输入的导出excel文件名称
+        textFieldValueListener(excelName_Num, tip_excelName);
+        //鼠标悬留提示输入的需要识别的文件后缀名
+        textFieldValueListener(filterFileType_Num, tip_filterFileType);
+    }
+
+    /**
      * 界面初始化
      */
     @FXML
@@ -394,6 +417,8 @@ public class FileNumToExcelController extends ToolsProperties {
         setToolTip();
         //设置javafx单元格宽度
         tableViewNumImgAdaption(groupId_Num, tableView_Num, groupName_Num.prefWidthProperty(), groupNumber_Num.prefWidthProperty(), fileName_Num);
+        //给输入框添加内容变化监听
+        textFieldChangeListener();
         //设置初始配置值为上次配置值
         setLastConfig();
     }
@@ -526,83 +551,6 @@ public class FileNumToExcelController extends ToolsProperties {
             excelInPath = updatePathLabel(selectedFile.getPath(), excelInPath, key_excelInPath, excelPath_Num, configFile_Num, anchorPane_Num);
             addInData();
         }
-    }
-
-    /**
-     * 限制导出预留行只能输入自然数
-     */
-    @FXML
-    private void rowHandleKeyTyped(KeyEvent event) {
-        integerRangeTextField(startRow_Num, 0, null, event);
-        addValueToolTip(startRow_Num, text_onlyNaturalNumber + defaultStartCell);
-    }
-
-    /**
-     * 限制导出预留列只能输入自然数
-     */
-    @FXML
-    private void cellHandleKeyTyped(KeyEvent event) {
-        integerRangeTextField(startCell_Num, 0, null, event);
-        addValueToolTip(startCell_Num, text_onlyNaturalNumber + defaultStartCell);
-    }
-
-    /**
-     * 鼠标悬留提示输入的导出excel文件名称
-     */
-    @FXML
-    private void nameHandleKeyTyped() {
-        addValueToolTip(excelName_Num, tip_excelName);
-    }
-
-    /**
-     * 鼠标悬留提示输入的导出excel表名称
-     */
-    @FXML
-    private void sheetHandleKeyTyped() {
-        addValueToolTip(sheetName_Num, tip_sheetName);
-    }
-
-    /**
-     * 鼠标悬留提示输入的需要识别的文件后缀名
-     */
-    @FXML
-    private void filterHandleKeyTyped() {
-        addValueToolTip(filterFileType_Num, tip_filterFileType);
-    }
-
-    /**
-     * 鼠标悬留提示输入的文件名称分割符
-     */
-    @FXML
-    private void subHandleKeyTyped() {
-        addValueToolTip(subCode_Num, tip_subCode);
-    }
-
-    /**
-     * 限制读取起始行只能输入自然数
-     */
-    @FXML
-    private void readRowHandleKeyTyped(KeyEvent event) {
-        integerRangeTextField(readRow_Num, 0, null, event);
-        addValueToolTip(readRow_Num, text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row);
-    }
-
-    /**
-     * 限制读取起始列只能输入自然数
-     */
-    @FXML
-    private void readCellHandleKeyTyped(KeyEvent event) {
-        integerRangeTextField(readCell_Num, 0, null, event);
-        addValueToolTip(readCell_Num, text_onlyNaturalNumber + defaultReadCell + text_formThe + (defaultReadCell + 1) + text_cell);
-    }
-
-    /**
-     * 限制读取最大行数只能输入正整数
-     */
-    @FXML
-    private void maxRowHandleKeyTyped(KeyEvent event) {
-        integerRangeTextField(maxRow_Num, 1, null, event);
-        addValueToolTip(maxRow_Num, tip_maxRow);
     }
 
     /**

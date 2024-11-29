@@ -9,7 +9,6 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.DragEvent;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -329,6 +328,22 @@ public class FileNameToExcelController extends ToolsProperties {
     }
 
     /**
+     * 给输入框添加内容变化监听
+     */
+    private void textFieldChangeListener() {
+        //限制导出预留行只能输入自然数
+        integerRangeTextField(startRow_Name, 0, null, tip_startRow);
+        //限制导出预留列只能输入自然数
+        integerRangeTextField(startCell_Name, 0, null, text_onlyNaturalNumber + defaultStartCell);
+        //鼠标悬留提示输入的需要识别的文件后缀名
+        textFieldValueListener(sheetName_Name, tip_sheet);
+        //鼠标悬留提示输入的需要识别的文件后缀名
+        textFieldValueListener(excelName_Name, tip_excelName);
+        //鼠标悬留提示输入的需要识别的文件后缀名
+        textFieldValueListener(filterFileType_Name, tip_filterFileType);
+    }
+
+    /**
      * 界面初始化
      */
     @FXML
@@ -341,6 +356,8 @@ public class FileNameToExcelController extends ToolsProperties {
         setToolTip();
         //设置javafx单元格宽度
         bindPrefWidthProperty();
+        //给输入框添加内容变化监听
+        textFieldChangeListener();
         //设置初始配置值为上次配置值
         setLastConfig();
     }
@@ -482,48 +499,6 @@ public class FileNameToExcelController extends ToolsProperties {
             excelInPath = updatePathLabel(selectedFile.getPath(), excelInPath, key_excelInPath, excelPath_Name, configFile_Name, anchorPane_Name);
             removeExcelButton_Name.setVisible(true);
         }
-    }
-
-    /**
-     * 限制导出预留行只能输入自然数
-     */
-    @FXML
-    private void rowHandleKeyTyped(KeyEvent event) {
-        integerRangeTextField(startRow_Name, 0, null, event);
-        addValueToolTip(startRow_Name, tip_startRow);
-    }
-
-    /**
-     * 限制导出预留列只能输入自然数
-     */
-    @FXML
-    private void cellHandleKeyTyped(KeyEvent event) {
-        integerRangeTextField(startCell_Name, 0, null, event);
-        addValueToolTip(startCell_Name, text_onlyNaturalNumber + defaultStartCell);
-    }
-
-    /**
-     * 鼠标悬留提示输入的导出excel文件名称
-     */
-    @FXML
-    private void nameHandleKeyTyped() {
-        addValueToolTip(excelName_Name, tip_excelName);
-    }
-
-    /**
-     * 鼠标悬留提示输入的导出excel表名称
-     */
-    @FXML
-    private void sheetHandleKeyTyped() {
-        addValueToolTip(sheetName_Name, tip_sheet);
-    }
-
-    /**
-     * 鼠标悬留提示输入的需要识别的文件后缀名
-     */
-    @FXML
-    private void filterHandleKeyTyped() {
-        addValueToolTip(filterFileType_Name, tip_filterFileType);
     }
 
     /**

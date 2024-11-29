@@ -8,10 +8,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.*;
@@ -34,13 +30,9 @@ import priv.koishi.tools.Configuration.FileConfig;
 import priv.koishi.tools.Enum.SelectItemsEnums;
 import priv.koishi.tools.MessageBubble.MessageBubble;
 
-import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.List;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -426,14 +418,21 @@ public class UiUtils {
     /**
      * 限制输入框只能输入指定范围内的整数
      */
-    public static void integerRangeTextField(TextField textField, Integer min, Integer max, KeyEvent event) {
-        if (!isInIntegerRange(textField.getText(), min, max)) {
-            textField.setText(replaceString(textField.getText(), event.getCharacter(), ""));
-        }
-        //如果复制的值有非范围内的字符直接清空
-        if (!isInIntegerRange(textField.getText(), min, max)) {
-            textField.setText("");
-        }
+    public static void integerRangeTextField(TextField textField, Integer min, Integer max, String tip) {
+        textField.textProperty().addListener((observable, oldValue, newValue) -> {
+            // 这里处理文本变化的逻辑
+            if (!isInIntegerRange(newValue, min, max) && StringUtils.isNotBlank(newValue)) {
+                textField.setText(oldValue);
+            }
+            addValueToolTip(textField, tip);
+        });
+    }
+
+    /**
+     * 监听输入框内容变化
+     */
+    public static void textFieldValueListener(TextField textField, String tip) {
+        textField.textProperty().addListener((observable, oldValue, newValue) -> addValueToolTip(textField, tip));
     }
 
     /**
@@ -590,19 +589,11 @@ public class UiUtils {
             }
             if (control instanceof TextField textField) {
                 textField.setText(lastValue);
-                Tooltip tooltip = textField.getTooltip();
-                String tooltipText = tooltip.getText() + "\n" + lastValue;
-                tooltip.setText(tooltipText);
-                textField.setTooltip(tooltip);
             }
         }
         if (StringUtils.isNotEmpty(lastValue) && canBlank) {
             if (control instanceof TextField textField) {
                 textField.setText(lastValue);
-                Tooltip tooltip = textField.getTooltip();
-                String tooltipText = tooltip.getText() + "\n" + lastValue;
-                tooltip.setText(tooltipText);
-                textField.setTooltip(tooltip);
             }
         }
     }
@@ -705,11 +696,14 @@ public class UiUtils {
      */
     public static void copyText(Label valueLabel, AnchorPane anchorPane) {
         //获取当前系统剪贴板
-        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-        //将文本转换为Transferable对象
-        StringSelection stringSelection = new StringSelection(valueLabel.getText());
-        //将Transferable对象设置到剪贴板中
-        clipboard.setContents(stringSelection, null);
+        Clipboard clipboard = Clipboard.getSystemClipboard();
+        //创建剪贴板内容对象
+        ClipboardContent content = new ClipboardContent();
+        //将文本区域选中的文本放入剪贴板内容中
+        content.putString(valueLabel.getText());
+        //设置剪贴板内容
+        clipboard.setContent(content);
+        //复制成功消息气泡
         buildMessageBubble(anchorPane, text_copySuccess, 1);
     }
 
@@ -729,6 +723,13 @@ public class UiUtils {
         KeyFrame keyFrame = new KeyFrame(Duration.seconds(time), ae -> anchorPane.getChildren().remove(bubble));
         Timeline timeline = new Timeline(keyFrame);
         timeline.play();
+    }
+
+    /**
+     * 设置要暂时移除的组件
+     */
+    public static void removeChildren(VBox vBox, VBox... vBoxes) {
+        vBox.getChildren().removeAll(vBoxes);
     }
 
 }

@@ -10,8 +10,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static org.apache.commons.lang3.StringUtils.isEmpty;
-
 /**
  * @author KOISHI
  * Date:2024-10-10
@@ -28,7 +26,7 @@ public class CommonUtils {
      * 正则表达式用于匹配指定范围的整数
      */
     public static boolean isInIntegerRange(String str, Integer min, Integer max) {
-        if (isEmpty(str)) {
+        if (StringUtils.isEmpty(str)) {
             return false;
         }
         //禁止出现0开头的非0数字

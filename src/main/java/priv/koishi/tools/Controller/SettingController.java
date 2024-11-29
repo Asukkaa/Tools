@@ -6,7 +6,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -199,6 +198,14 @@ public class SettingController {
     }
 
     /**
+     * 给输入框添加内容变化监听
+     */
+    private void textFieldChangeListener() {
+        //app.bat 分配的最大内存输入监听
+        integerRangeTextField(batMemory_Set, 1, null, nowSetting + batMemory + memorySetting + batName + nowValue + batMemory_Set.getText());
+    }
+
+    /**
      * 界面初始化
      */
     @FXML
@@ -207,10 +214,12 @@ public class SettingController {
         setCopyValueContextMenu(mail_set, "复制反馈邮件", anchorPane_Set);
         //设置是否加载最后一次功能配置信息初始值
         setLoadLastConfigs();
-        //获取最大运行内存并展示
-        getMaxMemory();
         //获取logs文件夹路径并展示
         setLogsPath();
+        //给输入框添加内容变化监听
+        textFieldChangeListener();
+        //获取最大运行内存并展示
+        getMaxMemory();
     }
 
     /**
@@ -259,15 +268,6 @@ public class SettingController {
     @FXML
     private void loadFullWindowAction() throws IOException {
         setLoadLastConfigCheckBox(fullWindow_Set, configFile, key_loadLastFullWindow);
-    }
-
-    /**
-     * app.bat 分配的最大内存输入监听
-     */
-    @FXML
-    private void batMemoryKeyTyped(KeyEvent event) {
-        integerRangeTextField(batMemory_Set, 1, null, event);
-        addToolTip(batMemory_Set, nowSetting + batMemory + memorySetting + batName + nowValue + batMemory_Set.getText());
     }
 
 }

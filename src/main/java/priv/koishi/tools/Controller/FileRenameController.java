@@ -9,7 +9,6 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.DragEvent;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -36,17 +35,18 @@ import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
 import static priv.koishi.tools.Enum.SelectItemsEnums.*;
-import static priv.koishi.tools.Service.ReadDataService.readExcel;
-import static priv.koishi.tools.Service.ReadDataService.readFile;
 import static priv.koishi.tools.Service.FileRenameService.buildRename;
 import static priv.koishi.tools.Service.FileRenameService.fileRename;
+import static priv.koishi.tools.Service.ReadDataService.readExcel;
+import static priv.koishi.tools.Service.ReadDataService.readFile;
 import static priv.koishi.tools.Text.CommonTexts.*;
-import static priv.koishi.tools.Utils.CommonUtils.*;
+import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
+import static priv.koishi.tools.Utils.CommonUtils.checkRunningOutputStream;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.TaskUtils.bindingProgressBarTask;
 import static priv.koishi.tools.Utils.TaskUtils.taskUnbind;
 import static priv.koishi.tools.Utils.UiUtils.*;
-import static priv.koishi.tools.Utils.UiUtils.setControlLastConfig;
+import static priv.koishi.tools.Utils.UiUtils.textFieldValueListener;
 
 /**
  * @author KOISHI
@@ -671,10 +671,41 @@ public class FileRenameController extends ToolsProperties {
     }
 
     /**
-     * 设置要暂时移除的组件
+     * 给输入框添加内容变化监听
      */
-    private void removeChildren(VBox... vBoxes) {
-        vbox_Re.getChildren().removeAll(vBoxes);
+    private void textFieldChangeListener() {
+        //要匹配的字符串鼠标悬停提示
+        if (text_specifyIndex.equals(targetStr_Re.getValue())) {
+            integerRangeTextField(renameValue_Re, 0, null, tip_renameValue);
+        }
+        //限制相同编号文件起始尾缀输入框内容
+        integerRangeTextField(tag_Re, 0, null, tip_tag);
+        //限制向左匹配字符位置输入框内容
+        integerRangeTextField(left_Re, 0, null, tip_left);
+        //限制向右匹配字符位置输入框内容
+        integerRangeTextField(right_Re, 0, null, tip_right);
+        //限制读取最大行数只能输入正整数
+        integerRangeTextField(maxRow_Re, 1, null, tip_maxRow);
+        //鼠标悬留提示输入的相同编号文件数量
+        integerRangeTextField(nameNum_Re, 0, null, tip_nameNum);
+        //鼠标悬留提示输入的文件名起始编号位数
+        integerRangeTextField(startSize_Re, 0, null, tip_startSize);
+        //鼠标悬留提示输入的文件名起始编号
+        integerRangeTextField(startName_Re, 0, null, text_onlyNaturalNumber + defaultStartNameNum);
+        //限制读取起始行只能输入自然数
+        integerRangeTextField(readRow_Re, 0, null, text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row);
+        //限制读取起始列只能输入自然数
+        integerRangeTextField(readCell_Re, 0, null, text_onlyNaturalNumber + defaultReadCell + text_formThe + (defaultReadCell + 1) + text_cell);
+        //给目标字符串右侧替换或插入输入框添加鼠标悬停提示
+        textFieldValueListener(leftValue_Re, tip_leftValue);
+        //指定字符串所替换的字符串鼠标悬停提示
+        textFieldValueListener(renameStr_Re, tip_renameStr);
+        //鼠标悬留提示输入的导出excel表名称
+        textFieldValueListener(sheetName_Re, tip_sheetName);
+        //给目标字符串左侧替换或插入输入框添加鼠标悬停提示
+        textFieldValueListener(rightValue_Re, tip_rightValue);
+        //鼠标悬留提示输入的需要识别的文件后缀名
+        textFieldValueListener(filterFileType_Re, tip_filterFileType);
     }
 
     /**
@@ -685,13 +716,15 @@ public class FileRenameController extends ToolsProperties {
         //读取全局变量配置
         getConfig();
         //设置要暂时移除的组件
-        removeChildren(strRenameVBox_Re, excelRenameVBox_Re);
+        removeChildren(vbox_Re, strRenameVBox_Re, excelRenameVBox_Re);
         //设置要防重复点击的组件
         setDisableControls();
         //设置鼠标悬停提示
         setToolTip();
         //设置javafx单元格宽度
         bindPrefWidthProperty();
+        //给输入框添加内容变化监听
+        textFieldChangeListener();
         //设置初始配置值为上次配置值
         setLastConfig();
     }
@@ -852,49 +885,6 @@ public class FileRenameController extends ToolsProperties {
     }
 
     /**
-     * 鼠标悬留提示输入的导出excel表名称
-     */
-    @FXML
-    private void sheetHandleKeyTyped() {
-        addValueToolTip(sheetName_Re, tip_sheetName);
-    }
-
-    /**
-     * 鼠标悬留提示输入的文件名起始编号
-     */
-    @FXML
-    private void startNameHandleKeyTyped(KeyEvent event) {
-        integerRangeTextField(startName_Re, 0, null, event);
-        addValueToolTip(startName_Re, text_onlyNaturalNumber + defaultStartNameNum);
-    }
-
-    /**
-     * 鼠标悬留提示输入的文件名起始编号位数
-     */
-    @FXML
-    private void startSizeHandleKeyTyped(KeyEvent event) {
-        integerRangeTextField(startSize_Re, 0, null, event);
-        addValueToolTip(startSize_Re, tip_startSize);
-    }
-
-    /**
-     * 鼠标悬留提示输入的相同编号文件数量
-     */
-    @FXML
-    private void nameNumHandleKeyTyped(KeyEvent event) {
-        integerRangeTextField(nameNum_Re, 0, null, event);
-        addValueToolTip(nameNum_Re, tip_nameNum);
-    }
-
-    /**
-     * 鼠标悬留提示输入的需要识别的文件后缀名
-     */
-    @FXML
-    private void filterHandleKeyTyped() {
-        addValueToolTip(filterFileType_Re, tip_filterFileType);
-    }
-
-    /**
      * 重新查询按钮
      */
     @FXML
@@ -922,33 +912,6 @@ public class FileRenameController extends ToolsProperties {
     @FXML
     private void handleCheckBoxAction() {
         differenceCodeAction();
-    }
-
-    /**
-     * 限制读取起始行只能输入自然数
-     */
-    @FXML
-    private void readRowHandleKeyTyped(KeyEvent event) {
-        integerRangeTextField(readRow_Re, 0, null, event);
-        addValueToolTip(readRow_Re, text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row);
-    }
-
-    /**
-     * 限制读取起始列只能输入自然数
-     */
-    @FXML
-    private void readCellHandleKeyTyped(KeyEvent event) {
-        integerRangeTextField(readCell_Re, 0, null, event);
-        addValueToolTip(readCell_Re, text_onlyNaturalNumber + defaultReadCell + text_formThe + (defaultReadCell + 1) + text_cell);
-    }
-
-    /**
-     * 限制读取最大行数只能输入正整数
-     */
-    @FXML
-    private void maxRowHandleKeyTyped(KeyEvent event) {
-        integerRangeTextField(maxRow_Re, 1, null, event);
-        addValueToolTip(maxRow_Re, tip_maxRow);
     }
 
     /**
@@ -982,7 +945,7 @@ public class FileRenameController extends ToolsProperties {
     @FXML
     private void renameTypeAction() {
         int index = vbox_Re.getChildren().indexOf(renameTypeHBox_Re) + 1;
-        removeChildren(strRenameVBox_Re, excelRenameVBox_Re, codeRenameVBox_Re);
+        removeChildren(vbox_Re, strRenameVBox_Re, excelRenameVBox_Re, codeRenameVBox_Re);
         switch (renameType_Re.getValue()) {
             case text_codeRename: {
                 vbox_Re.getChildren().add(index, codeRenameVBox_Re);
@@ -1079,69 +1042,6 @@ public class FileRenameController extends ToolsProperties {
     }
 
     /**
-     * 要匹配的字符串鼠标悬停提示
-     */
-    @FXML
-    private void renameValueHandleKeyTyped(KeyEvent event) {
-        //这个输入框只有在输入指定字符位置时才限制输入范围
-        if (text_specifyIndex.equals(targetStr_Re.getValue())) {
-            integerRangeTextField(renameValue_Re, 0, null, event);
-        }
-        addValueToolTip(renameValue_Re, tip_renameValue);
-    }
-
-    /**
-     * 指定字符串所替换的字符串鼠标悬停提示
-     */
-    @FXML
-    private void renameStrHandleKeyTyped() {
-        addValueToolTip(renameStr_Re, tip_renameStr);
-    }
-
-    /**
-     * 限制向左匹配字符位置输入框内容
-     */
-    @FXML
-    private void leftHandleKeyTyped(KeyEvent event) {
-        integerRangeTextField(left_Re, 0, null, event);
-        addValueToolTip(left_Re, tip_left);
-    }
-
-    /**
-     * 限制向右匹配字符位置输入框内容
-     */
-    @FXML
-    private void rightHandleKeyTyped(KeyEvent event) {
-        integerRangeTextField(right_Re, 0, null, event);
-        addValueToolTip(right_Re, tip_right);
-    }
-
-    /**
-     * 给目标字符串左侧替换或插入输入框添加鼠标悬停提示
-     */
-    @FXML
-    private void rightValueHandleKeyTyped() {
-        addValueToolTip(rightValue_Re, tip_rightValue);
-    }
-
-    /**
-     * 给目标字符串右侧替换或插入输入框添加鼠标悬停提示
-     */
-    @FXML
-    private void leftValueHandleKeyTyped() {
-        addValueToolTip(leftValue_Re, tip_leftValue);
-    }
-
-    /**
-     * 给相同编号文件起始尾缀输入框添加鼠标悬停提示
-     */
-    @FXML
-    private void tagHandleKeyTyped(KeyEvent event) {
-        integerRangeTextField(tag_Re, 0, null, event);
-        addValueToolTip(tag_Re, tip_tag);
-    }
-
-    /**
      * 更新重命名按钮
      */
     @FXML
@@ -1193,4 +1093,5 @@ public class FileRenameController extends ToolsProperties {
         }
         updateLabel(log_Re, "");
     }
+
 }

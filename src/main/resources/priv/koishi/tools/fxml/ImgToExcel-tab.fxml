@@ -44,11 +44,11 @@
 
         <HBox spacing="10">
             <Label prefHeight="20" text="导出excel文件名称:"/>
-            <TextField fx:id="excelName_Img" onKeyTyped="#nameHandleKeyTyped" prefHeight="20" prefWidth="100"/>
+            <TextField fx:id="excelName_Img" prefHeight="20" prefWidth="100"/>
             <Label prefHeight="20" text="excel表名称:"/>
-            <TextField fx:id="sheetName_Img" onKeyTyped="#sheetHandleKeyTyped" prefHeight="20" prefWidth="100"/>
+            <TextField fx:id="sheetName_Img" prefHeight="20" prefWidth="100"/>
             <Label prefHeight="20" text="文件名称分割符:"/>
-            <TextField fx:id="subCode_Img" onKeyTyped="#subHandleKeyTyped" prefHeight="20" prefWidth="100"/>
+            <TextField fx:id="subCode_Img" prefHeight="20" prefWidth="100"/>
             <Label prefHeight="20" text="需要识别的图片格式:"/>
             <CheckBox fx:id="jpg_Img" prefHeight="20" style="-fx-cursor: hand" selected="true" text=".jpg"/>
             <CheckBox fx:id="png_Img" prefHeight="20" style="-fx-cursor: hand" selected="true" text=".png"/>
@@ -57,19 +57,19 @@
 
         <HBox spacing="10">
             <Label prefHeight="20" text="导出预留行:"/>
-            <TextField fx:id="startRow_Img" onKeyTyped="#rowHandleKeyTyped" prefHeight="20" prefWidth="50"/>
+            <TextField fx:id="startRow_Img" prefHeight="20" prefWidth="50"/>
             <Label prefHeight="20" text="导出预留列:"/>
-            <TextField fx:id="startCell_Img" onKeyTyped="#cellHandleKeyTyped" prefHeight="20" prefWidth="50"/>
+            <TextField fx:id="startCell_Img" prefHeight="20" prefWidth="50"/>
             <Label prefHeight="20" text="读取预留行:"/>
-            <TextField fx:id="readRow_Img" onKeyTyped="#readRowHandleKeyTyped" prefHeight="20" prefWidth="50"/>
+            <TextField fx:id="readRow_Img" prefHeight="20" prefWidth="50"/>
             <Label prefHeight="20" text="读取预留列:"/>
-            <TextField fx:id="readCell_Img" onKeyTyped="#readCellHandleKeyTyped" prefHeight="20" prefWidth="50"/>
+            <TextField fx:id="readCell_Img" prefHeight="20" prefWidth="50"/>
             <Label prefHeight="20" text="读取行数:"/>
-            <TextField fx:id="maxRow_Img" onKeyTyped="#maxRowHandleKeyTyped" prefHeight="20" prefWidth="50"/>
+            <TextField fx:id="maxRow_Img" prefHeight="20" prefWidth="50"/>
             <Label prefHeight="20" text="导出图片宽:"/>
-            <TextField fx:id="imgWidth_Img" onKeyTyped="#imgWidthHandleKeyTyped" prefHeight="20" prefWidth="60"/>
+            <TextField fx:id="imgWidth_Img" prefHeight="20" prefWidth="60"/>
             <Label prefHeight="20" text="导出图片高:"/>
-            <TextField fx:id="imgHeight_Img" onKeyTyped="#imgHeightHandleKeyTyped" prefHeight="20" prefWidth="60"/>
+            <TextField fx:id="imgHeight_Img" prefHeight="20" prefWidth="60"/>
         </HBox>
 
         <HBox spacing="10">
@@ -91,7 +91,7 @@
             <Button fx:id="clearButton_Img" onAction="#removeAll" style="-fx-cursor: hand" text="清空列表"/>
             <Button fx:id="exportButton_Img" onAction="#exportAll" style="-fx-cursor: hand" text="开始导出"/>
             <Label fx:id="maxImg_Img" prefHeight="20" text="最大图片匹配数量:"/>
-            <TextField fx:id="maxImgNum_Img" onKeyTyped="#maxImgNumKeyTyped" prefHeight="20" prefWidth="60"/>
+            <TextField fx:id="maxImgNum_Img" prefHeight="20" prefWidth="60"/>
             <CheckBox fx:id="noImg_Img" prefHeight="20" style="-fx-cursor: hand" text="标记没有图片的数据"/>
             <Label fx:id="fileNumber_Img" prefHeight="20" text="列表为空" alignment="CENTER_RIGHT"/>
         </HBox>
