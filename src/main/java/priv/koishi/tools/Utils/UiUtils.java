@@ -538,7 +538,7 @@ public class UiUtils {
     private static void buildUpMoveDataMenuItem(TableView<FileBean> tableView, ContextMenu contextMenu) {
         MenuItem menuItem = new MenuItem("所选行上移一行");
         menuItem.setOnAction(event -> {
-            //通过getSelectedItems拿到的数据是实时变化的，需要一个新的list来存
+            //getSelectedCells处理上移操作有bug，通过getSelectedItems拿到的数据是实时变化的，需要一个新的list来存
             List<FileBean> selectionList = tableView.getSelectionModel().getSelectedItems();
             List<FileBean> selections = new ArrayList<>(selectionList);
             List<FileBean> fileList = tableView.getItems();
