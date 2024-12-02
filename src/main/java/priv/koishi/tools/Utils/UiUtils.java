@@ -538,12 +538,27 @@ public class UiUtils {
     private static void buildUpMoveDataMenuItem(TableView<FileBean> tableView, ContextMenu contextMenu) {
         MenuItem menuItem = new MenuItem("所选行上移一行");
         menuItem.setOnAction(event -> {
-            var selectedCells = tableView.getSelectionModel().getSelectedCells();
-            for (int i = 0; i < selectedCells.size(); i++) {
-                int row = selectedCells.get(i).getRow();
-                List<FileBean> fileList = tableView.getItems();
-                if (row - i > 0) {
-                    fileList.add(row, fileList.remove(row - 1));
+            //通过getSelectedItems拿到的数据是实时变化的，需要一个新的list来存
+            List<FileBean> selectionList = tableView.getSelectionModel().getSelectedItems();
+            List<FileBean> selections = new ArrayList<>(selectionList);
+            List<FileBean> fileList = tableView.getItems();
+            List<FileBean> tempList = new ArrayList<>(fileList);
+            //上移所选数据位置
+            for (int i = 0; i < selectionList.size(); i++) {
+                FileBean fileBean = selectionList.get(i);
+                int index = fileList.indexOf(fileBean);
+                if (index - i > 0) {
+                    tempList.set(index, tempList.get(index - 1));
+                    tempList.set(index - 1, fileBean);
+                }
+            }
+            fileList.clear();
+            fileList.addAll(tempList);
+            //重新选中移动后的数据
+            for (FileBean fileBean : selections) {
+                int index = fileList.indexOf(fileBean);
+                if (index != -1) {
+                    tableView.getSelectionModel().select(index);
                 }
             }
         });
