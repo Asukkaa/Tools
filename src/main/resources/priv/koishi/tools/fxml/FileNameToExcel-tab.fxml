@@ -39,9 +39,9 @@
             <CheckBox fx:id="recursion_Name" prefHeight="20" style="-fx-cursor: hand" text="递归查询"/>
             <CheckBox fx:id="showFileType_Name" onAction="#handleCheckBoxAction" prefHeight="20"
                       style="-fx-cursor: hand" text="显示文件拓展名"/>
-            <CheckBox fx:id="openDirectory_Name" prefHeight="20" selected="true" style="-fx-cursor: hand"
-                      text="导出后打开文件夹"/>
-            <CheckBox fx:id="openFile_Name" prefHeight="20" style="-fx-cursor: hand" text="导出后打开excel文件"/>
+            <CheckBox fx:id="exportTitle_Name" prefHeight="20" selected="true" style="-fx-cursor: hand" text="导出表头"/>
+            <CheckBox fx:id="exportFullList_Name" prefHeight="20" selected="true" style="-fx-cursor: hand"
+                      text="导出完整数据"/>
         </HBox>
 
         <HBox spacing="10">
@@ -61,6 +61,9 @@
                     <String fx:value=".xlsx"/>
                 </value>
             </ChoiceBox>
+            <CheckBox fx:id="openDirectory_Name" prefHeight="20" selected="true" style="-fx-cursor: hand"
+                      text="导出后打开文件夹"/>
+            <CheckBox fx:id="openFile_Name" prefHeight="20" style="-fx-cursor: hand" text="导出后打开excel文件"/>
         </HBox>
 
         <HBox spacing="10">

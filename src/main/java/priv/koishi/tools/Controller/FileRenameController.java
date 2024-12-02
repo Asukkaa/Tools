@@ -321,7 +321,7 @@ public class FileRenameController extends ToolsProperties {
                 .setMassageLabel(fileNumber_Re)
                 .setTableView(tableView_Re)
                 .setInFileList(inFileList)
-                .setTableColumn(size_Re)
+                .setComparatorTableColumn(size_Re)
                 .setShowFileType(false)
                 .setTabId(tabId);
         //匹配重命名规则

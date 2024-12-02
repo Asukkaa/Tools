@@ -210,7 +210,7 @@ public class ReadDataService {
      */
     public static void showFileData(List<FileBean> fileBeans, TaskBean<FileBean> taskBean) {
         autoBuildTableViewData(taskBean.getTableView(), fileBeans, taskBean.getTabId());
-        fileSizeColum(taskBean.getTableColumn());
+        fileSizeColum(taskBean.getComparatorTableColumn());
     }
 
 }

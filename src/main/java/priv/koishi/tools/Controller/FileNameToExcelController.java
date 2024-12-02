@@ -117,13 +117,13 @@ public class FileNameToExcelController extends ToolsProperties {
     private ChoiceBox<String> excelType_Name, hideFileType_Name, directoryNameType_Name;
 
     @FXML
-    private CheckBox recursion_Name, openDirectory_Name, openFile_Name, showFileType_Name;
-
-    @FXML
     private Label outPath_Name, excelPath_Name, fileNumber_Name, inPath_Name, log_Name, tip_Name;
 
     @FXML
     private TextField excelName_Name, sheetName_Name, startRow_Name, startCell_Name, filterFileType_Name;
+
+    @FXML
+    private CheckBox recursion_Name, openDirectory_Name, openFile_Name, showFileType_Name, exportTitle_Name, exportFullList_Name;
 
     @FXML
     private Button fileButton_Name, clearButton_Name, exportButton_Name, reselectButton_Name, removeExcelButton_Name, excelPathButton_Img;
@@ -208,6 +208,12 @@ public class FileNameToExcelController extends ToolsProperties {
         prop.put(key_lastOutPath, outPath.getText());
         Label excelPath = (Label) scene.lookup("#excelPath_Name");
         prop.put(key_lastExcelPath, excelPath.getText());
+        CheckBox exportTitle = (CheckBox) scene.lookup("#exportTitle_Name");
+        String lastExportTitleValue = exportTitle.isSelected() ? activation : unActivation;
+        prop.put(key_lastExportTitle, lastExportTitleValue);
+        CheckBox exportFullList = (CheckBox) scene.lookup("#exportFullList_Name");
+        String lastExportFullListValue = exportFullList.isSelected() ? activation : unActivation;
+        prop.put(key_lastExportFullList, lastExportFullListValue);
         OutputStream output = checkRunningOutputStream(configFile_Name);
         prop.store(output, null);
         input.close();
@@ -228,7 +234,7 @@ public class FileNameToExcelController extends ToolsProperties {
                 .setProgressBar(progressBar_Name)
                 .setMassageLabel(fileNumber_Name)
                 .setTableView(tableView_Name)
-                .setTableColumn(size_Name)
+                .setComparatorTableColumn(size_Name)
                 .setInFileList(inFileList)
                 .setTabId(tabId);
         //获取Task任务
@@ -284,6 +290,8 @@ public class FileNameToExcelController extends ToolsProperties {
             setControlLastConfig(inPath_Name, prop, key_lastInPath, false, anchorPane_Name);
             setControlLastConfig(outPath_Name, prop, key_lastOutPath, false, anchorPane_Name);
             setControlLastConfig(excelPath_Name, prop, key_lastExcelPath, false, anchorPane_Name);
+            setControlLastConfig(exportTitle_Name, prop, key_lastExportTitle, false, null);
+            setControlLastConfig(exportFullList_Name, prop, key_lastExportFullList, false, null);
         }
         input.close();
     }
@@ -310,6 +318,7 @@ public class FileNameToExcelController extends ToolsProperties {
         addToolTip(tip_Name, tip_Name.getText());
         addToolTip(recursion_Name, tip_recursion);
         addToolTip(excelName_Name, tip_excelName);
+        addToolTip(exportFullList_Name, tip_exportFullList);
         addToolTip(filterFileType_Name, tip_filterFileType);
         addToolTip(removeExcelButton_Name, tip_removeExcelButton);
         addToolTip(startCell_Name, text_onlyNaturalNumber + defaultStartCell);
@@ -453,7 +462,9 @@ public class FileNameToExcelController extends ToolsProperties {
                 .setStartRowNum(setDefaultIntValue(startRow_Name, 0, 0, null))
                 .setOutName(setDefaultFileName(excelName_Name, defaultOutFileName))
                 .setSheet(setDefaultStrValue(sheetName_Name, defaultSheetName))
+                .setExportFullList(exportFullList_Name.isSelected())
                 .setOutExcelExtension(excelType_Name.getValue())
+                .setExportTitle(exportTitle_Name.isSelected())
                 .setInPath(excelPath_Name.getText())
                 .setOutPath(outFilePath);
         TaskBean<FileBean> taskBean = new TaskBean<>();

@@ -24,7 +24,7 @@
             </AnchorPane>
         </Tab>
 
-        <Tab style="-fx-cursor: hand" fx:id="fileNameToExcelTab" text="获取文件夹下的文件名称">
+        <Tab style="-fx-cursor: hand" fx:id="fileNameToExcelTab" text="获取文件夹下的文件信息">
             <AnchorPane>
                 <fx:include source="FileNameToExcel-tab.fxml"/>
             </AnchorPane>

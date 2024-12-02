@@ -82,4 +82,14 @@ public class ExcelConfig {
      */
     boolean noImg;
 
+    /**
+     * 导出表头设置
+     */
+    boolean exportTitle;
+
+    /**
+     * 导出完整表设置
+     */
+    boolean exportFullList;
+
 }

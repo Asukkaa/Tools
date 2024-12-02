@@ -10,13 +10,13 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.ExcelConfig;
+import priv.koishi.tools.Utils.CommonUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.List;
 
 import static priv.koishi.tools.Text.CommonTexts.*;
-import static priv.koishi.tools.Utils.CommonUtils.autoSizeExcel;
 import static priv.koishi.tools.Utils.FileUtils.checkCopyDestination;
 import static priv.koishi.tools.Utils.UiUtils.changeDisableControls;
 
@@ -62,10 +62,7 @@ public class FileNumToExcelService {
                     FileNumBean fileBean = fileBeans.get(i);
                     int groupNumber = fileBean.getGroupNumber();
                     List<String> fileNameList = fileBean.getFileNameList();
-                    XSSFRow row = sheet.getRow(startRowNum);
-                    if (row == null) {
-                        row = sheet.createRow(startRowNum);
-                    }
+                    XSSFRow row = CommonUtils.getOrCreateRow(sheet, startRowNum);
                     XSSFCell numCell = row.createCell(startCellNum);
                     switch (excelConfig.getExportType()) {
                         case "文件数量": {
@@ -87,7 +84,7 @@ public class FileNumToExcelService {
                     updateProgress(i + 1, fileBeansSize);
                     startRowNum++;
                 }
-                autoSizeExcel(sheet, maxCellNum, startCellNum);
+                CommonUtils.autoSizeExcelCells(sheet, maxCellNum, startCellNum);
                 updateMessage(text_printDown);
                 return sxssfWorkbook;
             }

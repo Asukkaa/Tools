@@ -1,6 +1,7 @@
 package priv.koishi.tools.Utils;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 import java.io.*;
@@ -168,15 +169,33 @@ public class CommonUtils {
     }
 
     /**
-     * 单元格自适应
+     * 多列单元格自适应
      */
-    public static void autoSizeExcel(XSSFSheet sheet, int maxCellNum, int startCellNum) {
+    public static void autoSizeExcelCells(XSSFSheet sheet, int maxCellNum, int startCellNum) {
         for (int i = startCellNum; i < maxCellNum; i++) {
-            sheet.autoSizeColumn(i);
-            //手动调整列宽，解决中文不能自适应问题,单元格单行最长支持255*256的宽度（每个单元格样式已经设置自动换行，超出即换行）,设置最低列宽度，列宽约六个中文字符
-            int width = Math.max(15 * 256, Math.min(255 * 256, sheet.getColumnWidth(i) * 12 / 10));
-            sheet.setColumnWidth(i, width);
+            autoSizeExcelCell(sheet, i);
         }
+    }
+
+    /**
+     * 单列单元格自适应
+     */
+    public static void autoSizeExcelCell(XSSFSheet sheet, int cellNum) {
+        sheet.autoSizeColumn(cellNum);
+        //手动调整列宽，解决中文不能自适应问题,单元格单行最长支持255*256的宽度（每个单元格样式已经设置自动换行，超出即换行）,设置最低列宽度，列宽约六个中文字符
+        int width = Math.max(15 * 256, Math.min(255 * 256, sheet.getColumnWidth(cellNum) * 12 / 10));
+        sheet.setColumnWidth(cellNum, width);
+    }
+
+    /**
+     * 获取excel行
+     */
+    public static XSSFRow getOrCreateRow(XSSFSheet sheet, int rowNum) {
+        XSSFRow row = sheet.getRow(rowNum);
+        if (row == null) {
+            row = sheet.createRow(rowNum);
+        }
+        return row;
     }
 
     /**

@@ -63,6 +63,8 @@ public class CommonTexts {
 
     public static final String tip_filterImgType = "只会识别勾选的图片格式，至少要勾选一种图片格式才能查询";
 
+    public static final String tip_exportFullList = "勾选后将导出完整数据，不勾选只导出文件名称";
+
     public static final String tip_option = """
             插入：在匹配的字符位置插入所填写的字符串
             替换：将匹配的字符串替换为所填写的字符串
@@ -288,6 +290,10 @@ public class CommonTexts {
     public static final String key_lastTab = "lastTab";
 
     public static final String key_lastFullWindow = "lastFullWindow";
+
+    public static final String key_lastExportTitle = "lastExportTitle";
+
+    public static final String key_lastExportFullList = "lastExportFullList";
 
     public static final String key_defaultOutFileName = "defaultOutFileName";
 

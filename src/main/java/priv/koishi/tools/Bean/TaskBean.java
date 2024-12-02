@@ -45,7 +45,7 @@ public class TaskBean<T> {
     /**
      * 需要排序的列
      */
-    TableColumn<T, String> tableColumn;
+    TableColumn<T, String> comparatorTableColumn;
 
     /**
      * 线程进度条
