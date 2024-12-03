@@ -164,10 +164,10 @@ public class SettingController {
     /**
      * 设置是否加载最后一次功能配置信息初始值
      */
-    private void setLoadLastConfig(Properties prop, CheckBox checkBox, String configFile, String key) throws IOException {
+    private void setLoadLastConfig(Properties prop, CheckBox checkBox, String configFile) throws IOException {
         InputStream input = checkRunningInputStream(configFile);
         prop.load(input);
-        checkBox.setSelected(activation.equals(prop.getProperty(key)));
+        checkBox.setSelected(activation.equals(prop.getProperty(key_loadLastConfig)));
         input.close();
     }
 
@@ -188,10 +188,10 @@ public class SettingController {
      */
     private void setLoadLastConfigs() throws IOException {
         Properties prop = new Properties();
-        setLoadLastConfig(prop, loadRename_Set, configFile_Rename, key_loadLastConfig);
-        setLoadLastConfig(prop, loadFileNum_Set, configFile_Num, key_loadLastConfig);
-        setLoadLastConfig(prop, loadFileName_Set, configFile_Name, key_loadLastConfig);
-        setLoadLastConfig(prop, loadImgToExcel_Set, configFile_Img, key_loadLastConfig);
+        setLoadLastConfig(prop, loadRename_Set, configFile_Rename);
+        setLoadLastConfig(prop, loadFileNum_Set, configFile_Num);
+        setLoadLastConfig(prop, loadFileName_Set, configFile_Name);
+        setLoadLastConfig(prop, loadImgToExcel_Set, configFile_Img);
         getConfig(prop);
     }
 
@@ -247,16 +247,15 @@ public class SettingController {
      * 清理多余log文件
      */
     private void deleteLogs() {
-        int logsNum = Integer.parseInt(logsNum_Set.getText());
-        String logsPath = logsPath_Set.getText();
-        File[] files = new File(logsPath).listFiles();
-        List<File> logList = new ArrayList<>();
+        File[] files = new File(logsPath_Set.getText()).listFiles();
         if (files != null) {
+            List<File> logList = new ArrayList<>();
             for (File file : files) {
                 if (log.equals(getFileType(file))) {
                     logList.add(file);
                 }
             }
+            int logsNum = Integer.parseInt(logsNum_Set.getText());
             if (logList.size() > logsNum) {
                 logList.sort((f1, f2) -> Long.compare(f2.lastModified(), f1.lastModified()));
                 List<File> removeList = logList.stream().skip(logsNum).toList();
