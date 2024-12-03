@@ -484,7 +484,7 @@ public class FileRenameController extends ToolsProperties {
     /**
      * 读取配置文件
      */
-    private static void getConfig() throws IOException {
+    private void getConfig() throws IOException {
         Properties prop = new Properties();
         InputStream input = checkRunningInputStream(configFile_Rename);
         prop.load(input);

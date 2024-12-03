@@ -15,8 +15,6 @@
                 <SizeBasedTriggeringPolicy size="10MB"/>
             </Policies>
 
-            <!-- 这里设置最多保留日志文件数量 -->
-            <DefaultRolloverStrategy max="3"/>
         </RollingFile>
     </Appenders>
 

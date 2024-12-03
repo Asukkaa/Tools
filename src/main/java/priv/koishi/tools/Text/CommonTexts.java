@@ -65,6 +65,8 @@ public class CommonTexts {
 
     public static final String tip_exportFullList = "勾选后将导出完整数据，不勾选只导出文件名称";
 
+    public static final String tip_logsNum = "logs 文件夹下只会保留该配置所填写数量的 log 日志";
+
     public static final String tip_option = """
             插入：在匹配的字符位置插入所填写的字符串
             替换：将匹配的字符串替换为所填写的字符串
@@ -193,9 +195,13 @@ public class CommonTexts {
 
     public static final String jpeg = ".jpeg";
 
+    public static final String log = ".log";
+
     public static final String activation = "1";
 
     public static final String unActivation = "0";
+
+    public static final String key_logsNum = "logsNum";
 
     public static final String key_inFilePath = "inFilePath";
 

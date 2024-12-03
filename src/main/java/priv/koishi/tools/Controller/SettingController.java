@@ -15,12 +15,12 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
 import static priv.koishi.tools.Text.CommonTexts.*;
-import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
-import static priv.koishi.tools.Utils.CommonUtils.isRunningFromJar;
+import static priv.koishi.tools.Utils.CommonUtils.*;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
@@ -79,7 +79,7 @@ public class SettingController {
     private VBox vBox_Set;
 
     @FXML
-    private TextField batMemory_Set;
+    private TextField batMemory_Set, logsNum_Set;
 
     @FXML
     private Label mail_set, memory_Set, thisPath_Set, batPath_Set, logsPath_Set;
@@ -98,9 +98,35 @@ public class SettingController {
     }
 
     /**
+     * 保存设置
+     */
+    public static void saveSetting(Scene scene) throws IOException {
+        //保存最大运行内存设置
+        saveMemorySetting(scene);
+        //保存日志问文件数量设置
+        saveLogsNumSetting(scene);
+    }
+
+    /**
+     * 保存日志问文件数量设置
+     */
+    private static void saveLogsNumSetting(Scene scene) throws IOException {
+        InputStream input = checkRunningInputStream(configFile);
+        Properties prop = new Properties();
+        prop.load(input);
+        TextField logsNumTextField = (TextField) scene.lookup("#logsNum_Set");
+        String logsNumValue = logsNumTextField.getText();
+        prop.setProperty(key_logsNum, logsNumValue);
+        OutputStream output = checkRunningOutputStream(configFile);
+        prop.store(output, null);
+        input.close();
+        output.close();
+    }
+
+    /**
      * 保存最大运行内存设置
      */
-    public static void saveMemorySetting(Scene scene) {
+    private static void saveMemorySetting(Scene scene) {
         TextField batMemoryTextField = (TextField) scene.lookup("#batMemory_Set");
         String batMemoryValue = batMemoryTextField.getText();
         if (StringUtils.isNotBlank(batMemoryValue) && !batMemoryValue.equals(batMemory)) {
@@ -145,6 +171,17 @@ public class SettingController {
         input.close();
     }
 
+    /**
+     * 读取配置文件
+     */
+    private void getConfig(Properties prop) throws IOException {
+        InputStream input = checkRunningInputStream(configFile);
+        prop.load(input);
+        lastTab_Set.setSelected(activation.equals(prop.getProperty(key_loadLastConfig)));
+        fullWindow_Set.setSelected(activation.equals(prop.getProperty(key_loadLastFullWindow)));
+        setControlLastConfig(logsNum_Set, prop, key_logsNum, false, null);
+        input.close();
+    }
 
     /**
      * 设置是否加载最后一次功能配置信息初始值
@@ -155,8 +192,7 @@ public class SettingController {
         setLoadLastConfig(prop, loadFileNum_Set, configFile_Num, key_loadLastConfig);
         setLoadLastConfig(prop, loadFileName_Set, configFile_Name, key_loadLastConfig);
         setLoadLastConfig(prop, loadImgToExcel_Set, configFile_Img, key_loadLastConfig);
-        setLoadLastConfig(prop, lastTab_Set, configFile, key_loadLastConfig);
-        setLoadLastConfig(prop, fullWindow_Set, configFile, key_loadLastFullWindow);
+        getConfig(prop);
     }
 
     /**
@@ -203,6 +239,36 @@ public class SettingController {
     private void textFieldChangeListener() {
         //app.bat 分配的最大内存输入监听
         integerRangeTextField(batMemory_Set, 1, null, nowSetting + batMemory + memorySetting + batName + nowValue + batMemory_Set.getText());
+        //log 文件保留数量输入监听
+        integerRangeTextField(logsNum_Set, 0, null, tip_logsNum);
+    }
+
+    /**
+     * 清理多余log文件
+     */
+    private void deleteLogs() {
+        int logsNum = Integer.parseInt(logsNum_Set.getText());
+        String logsPath = logsPath_Set.getText();
+        File[] files = new File(logsPath).listFiles();
+        List<File> logList = new ArrayList<>();
+        if (files != null) {
+            for (File file : files) {
+                if (log.equals(getFileType(file))) {
+                    logList.add(file);
+                }
+            }
+            if (logList.size() > logsNum) {
+                logList.sort((f1, f2) -> Long.compare(f2.lastModified(), f1.lastModified()));
+                List<File> removeList = logList.stream().skip(logsNum).toList();
+                removeList.forEach(r -> {
+                    String path = r.getAbsolutePath();
+                    File file = new File(path);
+                    if (!file.delete()) {
+                        throw new RuntimeException("日志文件 " + path + " 删除失败");
+                    }
+                });
+            }
+        }
     }
 
     /**
@@ -212,14 +278,16 @@ public class SettingController {
     private void initialize() throws IOException {
         //添加右键菜单
         setCopyValueContextMenu(mail_set, "复制反馈邮件", anchorPane_Set);
+        //给输入框添加内容变化监听
+        textFieldChangeListener();
         //设置是否加载最后一次功能配置信息初始值
         setLoadLastConfigs();
         //获取logs文件夹路径并展示
         setLogsPath();
-        //给输入框添加内容变化监听
-        textFieldChangeListener();
         //获取最大运行内存并展示
         getMaxMemory();
+        //清理多余log文件
+        deleteLogs();
     }
 
     /**

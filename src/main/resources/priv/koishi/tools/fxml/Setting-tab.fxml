@@ -74,7 +74,10 @@
 
         <HBox spacing="5">
             <Label prefHeight="25" text="logs 文件夹目录："/>
-            <Label prefHeight="25" fx:id="logsPath_Set"/>
+            <Label prefHeight="25" prefWidth="400" fx:id="logsPath_Set"/>
+            <Label prefHeight="25" text="log 文件保留数量："/>
+            <TextField fx:id="logsNum_Set" prefHeight="20" prefWidth="50"/>
+            <Label prefHeight="25" text="个"/>
         </HBox>
 
         <HBox spacing="5">
