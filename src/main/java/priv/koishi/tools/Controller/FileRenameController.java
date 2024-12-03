@@ -113,6 +113,9 @@ public class FileRenameController extends ToolsProperties {
     private TableColumn<FileBean, Integer> id_Re;
 
     @FXML
+    private TableColumn<FileBean, String> name_Re, rename_Re, path_Re, size_Re, fileType_Re, creatDate_Re, updateDate_Re, showStatus_Re;
+
+    @FXML
     private CheckBox openDirectory_Re, addSpace_Re;
 
     @FXML
@@ -123,9 +126,6 @@ public class FileRenameController extends ToolsProperties {
 
     @FXML
     private Label excelPath_Re, fileNumber_Re, inPath_Re, log_Re, typeLabel_Re, tip_Re;
-
-    @FXML
-    private TableColumn<FileBean, String> name_Re, rename_Re, path_Re, size_Re, fileType_Re, creatDate_Re, updateDate_Re;
 
     @FXML
     private Button fileButton_Re, clearButton_Re, renameButton_Re, reselectButton_Re, updateRenameButton_Re, excelPathButton_Img;
@@ -154,15 +154,17 @@ public class FileRenameController extends ToolsProperties {
         Node id = scene.lookup("#id_Re");
         id.setStyle("-fx-pref-width: " + tableWidth * 0.04 + "px;");
         Node name = scene.lookup("#name_Re");
-        name.setStyle("-fx-pref-width: " + tableWidth * 0.14 + "px;");
+        name.setStyle("-fx-pref-width: " + tableWidth * 0.12 + "px;");
         Node rename = scene.lookup("#rename_Re");
-        rename.setStyle("-fx-pref-width: " + tableWidth * 0.14 + "px;");
+        rename.setStyle("-fx-pref-width: " + tableWidth * 0.12 + "px;");
         Node fileType = scene.lookup("#fileType_Re");
         fileType.setStyle("-fx-pref-width: " + tableWidth * 0.06 + "px;");
         Node path = scene.lookup("#path_Re");
-        path.setStyle("-fx-pref-width: " + tableWidth * 0.22 + "px;");
+        path.setStyle("-fx-pref-width: " + tableWidth * 0.2 + "px;");
         Node size = scene.lookup("#size_Re");
         size.setStyle("-fx-pref-width: " + tableWidth * 0.08 + "px;");
+        Node showStatus = scene.lookup("#showStatus_Re");
+        showStatus.setStyle("-fx-pref-width: " + tableWidth * 0.06 + "px;");
         Node creatDate = scene.lookup("#creatDate_Re");
         creatDate.setStyle("-fx-pref-width: " + tableWidth * 0.16 + "px;");
         Node updateDate = scene.lookup("#updateDate_Re");
@@ -623,11 +625,12 @@ public class FileRenameController extends ToolsProperties {
      */
     private void bindPrefWidthProperty() {
         id_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.04));
-        name_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.14));
-        rename_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.14));
+        name_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.12));
+        rename_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.12));
         fileType_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.06));
-        path_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.22));
+        path_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.2));
         size_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.08));
+        showStatus_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.06));
         creatDate_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.16));
         updateDate_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.16));
     }

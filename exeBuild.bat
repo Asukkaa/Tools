@@ -1,1 +1,1 @@
- jpackage --name Tools --type app-image -m priv.koishi.tools/priv.koishi.tools.MainApplication --runtime-image .\app\  --app-version 0.4.2 --icon C:\Users\ASUS\IdeaProjects\Tools\src\main\resources\priv\koishi\tools\icon\wrench.ico
+ jpackage --name Tools --type app-image -m priv.koishi.tools/priv.koishi.tools.MainApplication --runtime-image .\app\  --app-version 0.4.3 --icon C:\Users\ASUS\IdeaProjects\Tools\src\main\resources\priv\koishi\tools\icon\wrench.ico

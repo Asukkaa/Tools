@@ -55,6 +55,11 @@ public class FileBean {
     private final SimpleStringProperty updateDate;
 
     /**
+     * 文件是否隐藏
+     */
+    private final SimpleStringProperty showStatus;
+
+    /**
      * 文件重命名功能临时名称文件
      */
     @Getter
@@ -70,6 +75,7 @@ public class FileBean {
         this.size = new SimpleStringProperty();
         this.creatDate = new SimpleStringProperty();
         this.updateDate = new SimpleStringProperty();
+        this.showStatus = new SimpleStringProperty();
     }
 
     public int getId() {
@@ -148,6 +154,14 @@ public class FileBean {
      */
     public String getFullName() {
         return getName() + getFileType();
+    }
+
+    public String getShowStatus() {
+        return this.showStatus.get();
+    }
+
+    public void setShowStatus(String showStatus) {
+        this.showStatus.set(showStatus);
     }
 
 }

@@ -111,7 +111,7 @@ public class FileNameToExcelController extends ToolsProperties {
     private TableColumn<FileBean, Integer> id_Name;
 
     @FXML
-    private TableColumn<FileBean, String> name_Name, path_Name, size_Name, fileType_Name, creatDate_Name, updateDate_Name;
+    private TableColumn<FileBean, String> name_Name, path_Name, size_Name, fileType_Name, creatDate_Name, updateDate_Name, showStatus_Name;
 
     @FXML
     private ChoiceBox<String> excelType_Name, hideFileType_Name, directoryNameType_Name;
@@ -150,9 +150,11 @@ public class FileNameToExcelController extends ToolsProperties {
         Node fileType = scene.lookup("#fileType_Name");
         fileType.setStyle("-fx-pref-width: " + tableWidth * 0.06 + "px;");
         Node path = scene.lookup("#path_Name");
-        path.setStyle("-fx-pref-width: " + tableWidth * 0.36 + "px;");
+        path.setStyle("-fx-pref-width: " + tableWidth * 0.3 + "px;");
         Node size = scene.lookup("#size_Name");
         size.setStyle("-fx-pref-width: " + tableWidth * 0.08 + "px;");
+        Node showStatus = scene.lookup("#showStatus_Name");
+        showStatus.setStyle("-fx-pref-width: " + tableWidth * 0.06 + "px;");
         Node creatDate = scene.lookup("#creatDate_Name");
         creatDate.setStyle("-fx-pref-width: " + tableWidth * 0.16 + "px;");
         Node updateDate = scene.lookup("#updateDate_Name");
@@ -303,8 +305,9 @@ public class FileNameToExcelController extends ToolsProperties {
         id_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.04));
         name_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.14));
         fileType_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.06));
-        path_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.36));
+        path_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.3));
         size_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.08));
+        showStatus_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.06));
         creatDate_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.16));
         updateDate_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.16));
     }

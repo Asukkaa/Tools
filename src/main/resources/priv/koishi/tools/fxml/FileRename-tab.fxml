@@ -228,6 +228,7 @@
                 <TableColumn fx:id="fileType_Re" text="文件类型"/>
                 <TableColumn fx:id="path_Re" text="文件路径"/>
                 <TableColumn fx:id="size_Re" sortType="DESCENDING" text="文件大小"/>
+                <TableColumn fx:id="showStatus_Re" text="是否隐藏"/>
                 <TableColumn fx:id="creatDate_Re" text="创建时间"/>
                 <TableColumn fx:id="updateDate_Re" text="修改时间"/>
             </columns>
