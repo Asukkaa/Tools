@@ -137,18 +137,11 @@ public class FileNameToExcelService {
                                 properties.put(propertyName, propertyValue);
                             }
                         }
-                        //根据表头给属性值排序
-                        Map<String, Object> sortedProperties = new LinkedHashMap<>();
-                        for (String id : ids) {
-                            if (properties.containsKey(id)) {
-                                sortedProperties.put(id, properties.get(id));
-                            }
-                        }
                         //将数据写入单元格
                         for (int j = 0; j < ids.size(); j++) {
                             int cellNum = startCellNum + j;
                             XSSFCell cell = row.createCell(cellNum);
-                            cell.setCellValue(sortedProperties.get(ids.get(j)).toString());
+                            cell.setCellValue(properties.get(ids.get(j)).toString());
                             if (cellNum > maxCellNum) {
                                 maxCellNum = cellNum;
                             }
