@@ -126,7 +126,7 @@ public class SettingController {
     /**
      * 保存最大运行内存设置
      */
-    private static void saveMemorySetting(Scene scene) {
+    private static void saveMemorySetting(Scene scene) throws IOException {
         TextField batMemoryTextField = (TextField) scene.lookup("#batMemory_Set");
         String batMemoryValue = batMemoryTextField.getText();
         if (StringUtils.isNotBlank(batMemoryValue) && !batMemoryValue.equals(batMemory)) {
@@ -134,19 +134,15 @@ public class SettingController {
             Path batFilePath = Paths.get(batPath.getText());
             String originalLineContent = Xmx + batMemory;
             String newLineContent = Xmx + batMemoryValue;
-            try {
-                List<String> lines = Files.readAllLines(batFilePath);
-                for (int i = 0; i < lines.size(); i++) {
-                    String line = lines.get(i);
-                    if (line.contains(originalLineContent)) {
-                        lines.set(i, line.replace(originalLineContent, newLineContent));
-                        break;
-                    }
+            List<String> lines = Files.readAllLines(batFilePath);
+            for (int i = 0; i < lines.size(); i++) {
+                String line = lines.get(i);
+                if (line.contains(originalLineContent)) {
+                    lines.set(i, line.replace(originalLineContent, newLineContent));
+                    break;
                 }
-                Files.write(batFilePath, lines);
-            } catch (IOException e) {
-                e.printStackTrace();
             }
+            Files.write(batFilePath, lines);
         }
     }
 
