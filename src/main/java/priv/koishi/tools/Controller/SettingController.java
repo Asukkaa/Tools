@@ -206,19 +206,17 @@ public class SettingController {
             batPath = currentDir + runtime + bin + File.separator + batName;
         }
         setPathLabel(batPath_Set, batPath, false, anchorPane_Set);
-        try (BufferedReader reader = new BufferedReader(new FileReader(batPath))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                if (line.contains(Xmx)) {
-                    batMemory = line.substring(line.lastIndexOf(Xmx) + Xmx.length(), line.lastIndexOf("g"));
-                    batMemory_Set.setText(batMemory);
-                    addToolTip(batMemory_Set, nowSetting + batMemory + memorySetting + batName + nowValue + batMemory);
-                    break;
-                }
+        BufferedReader reader = new BufferedReader(new FileReader(batPath));
+        String line;
+        while ((line = reader.readLine()) != null) {
+            if (line.contains(Xmx)) {
+                batMemory = line.substring(line.lastIndexOf(Xmx) + Xmx.length(), line.lastIndexOf("g"));
+                batMemory_Set.setText(batMemory);
+                addToolTip(batMemory_Set, nowSetting + batMemory + memorySetting + batName + nowValue + batMemory);
+                break;
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+        reader.close();
     }
 
     /**
