@@ -120,8 +120,8 @@ public class SettingController {
             TextField batMemoryTextField = (TextField) scene.lookup("#batMemory_Set");
             String batMemoryValue = batMemoryTextField.getText();
             if (StringUtils.isNotBlank(batMemoryValue) && !batMemoryValue.equals(batMemory)) {
-                Label batPath = (Label) scene.lookup("#batPath_Set");
-                Path batFilePath = Paths.get(batPath.getText());
+                Label thisPath = (Label) scene.lookup("#thisPath_Set");
+                Path batFilePath = Paths.get(thisPath.getText() + File.separator + batName);
                 String originalLineContent = Xmx + batMemory;
                 String newLineContent = Xmx + batMemoryValue;
                 List<String> lines = Files.readAllLines(batFilePath);
