@@ -45,19 +45,14 @@
         </HBox>
 
         <HBox spacing="5">
-            <Label prefHeight="25" text="当前程序所在目录："/>
-            <Label prefHeight="25" fx:id="thisPath_Set" styleClass="label-button-style"/>
-        </HBox>
-
-        <HBox spacing="5">
-            <Label prefHeight="25" text="app.bat 分配的最大内存："/>
+            <Label prefHeight="25" text="下次启动时最大内存："/>
             <TextField fx:id="batMemory_Set" prefHeight="20" prefWidth="50"/>
             <Label prefHeight="25" text="GB"/>
         </HBox>
 
         <HBox spacing="5">
-            <Label prefHeight="25" text="app.bat 所在目录："/>
-            <Label prefHeight="25" fx:id="batPath_Set"/>
+            <Label prefHeight="25" text="当前程序所在目录："/>
+            <Label prefHeight="25" fx:id="thisPath_Set" styleClass="label-button-style"/>
         </HBox>
 
         <Separator/>

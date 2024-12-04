@@ -187,7 +187,7 @@ public class CommonTexts {
 
     public static final String text_nowSetting = "当前配置值为 ";
 
-    public static final String text_memorySetting = " GB ，关闭程序即可保存修改，之后使用 ";
+    public static final String text_memorySetting = " GB ，关闭程序即可保存修改";
 
     public static final String text_nowValue = " 启动程序即可生效\n当前所填值为 ";
 

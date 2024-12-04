@@ -71,7 +71,7 @@ public class SettingController {
     private TextField batMemory_Set, logsNum_Set;
 
     @FXML
-    private Label mail_set, memory_Set, thisPath_Set, batPath_Set, logsPath_Set;
+    private Label mail_set, memory_Set, thisPath_Set, logsPath_Set;
 
     @FXML
     private CheckBox loadRename_Set, loadFileNum_Set, loadFileName_Set, loadImgToExcel_Set, lastTab_Set, fullWindow_Set;
@@ -189,7 +189,6 @@ public class SettingController {
         if (!MacOSX.equals(systemName) && !MacOS.equals(systemName)) {
             long maxMemory = Runtime.getRuntime().maxMemory();
             memory_Set.setText(getUnitSize(maxMemory));
-            addToolTip(memory_Set, "最大运行内存默认为系统内存四分之一，无法直接修改，如需修改则需编辑 app.bat 脚本后用该脚本运行");
             setPathLabel(thisPath_Set, currentDir, false, anchorPane_Set);
             String batPath;
             if ("bin".equals(getFileName(new File(currentDir))) || isRunningFromJar()) {
@@ -197,14 +196,13 @@ public class SettingController {
             } else {
                 batPath = currentDir + runtime + bin + File.separator + batName;
             }
-            setPathLabel(batPath_Set, batPath, false, anchorPane_Set);
             BufferedReader reader = new BufferedReader(new FileReader(batPath));
             String line;
             while ((line = reader.readLine()) != null) {
                 if (line.contains(Xmx)) {
                     batMemory = line.substring(line.lastIndexOf(Xmx) + Xmx.length(), line.lastIndexOf("g"));
                     batMemory_Set.setText(batMemory);
-                    addToolTip(batMemory_Set, text_nowSetting + batMemory + text_memorySetting + batName + text_nowValue + batMemory);
+                    addToolTip(batMemory_Set, text_nowSetting + batMemory + text_memorySetting);
                     break;
                 }
             }
@@ -225,7 +223,7 @@ public class SettingController {
      */
     private void textFieldChangeListener() {
         //app.bat 分配的最大内存输入监听
-        integerRangeTextField(batMemory_Set, 1, null, text_nowSetting + batMemory + text_memorySetting + batName + text_nowValue + batMemory_Set.getText());
+        integerRangeTextField(batMemory_Set, 1, null, text_nowSetting + batMemory + text_memorySetting + text_nowValue + batMemory_Set.getText());
         //log 文件保留数量输入监听
         integerRangeTextField(logsNum_Set, 0, null, tip_logsNum);
     }
