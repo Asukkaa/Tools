@@ -102,7 +102,7 @@ public class UiUtils {
         fileChooser.setTitle(title);
         // 设置初始目录
         if (StringUtils.isBlank(path)) {
-            fileChooser.setInitialDirectory(new File(System.getProperty(userHome)));
+            fileChooser.setInitialDirectory(new File(userHome));
         } else {
             File file = new File(path);
             // 设置初始目录
@@ -129,7 +129,7 @@ public class UiUtils {
         directoryChooser.setTitle(title);
         // 设置初始目录
         if (StringUtils.isBlank(path) || !new File(path).isDirectory()) {
-            directoryChooser.setInitialDirectory(new File(System.getProperty(userHome)));
+            directoryChooser.setInitialDirectory(new File(userHome));
         } else {
             directoryChooser.setInitialDirectory(new File(path));
         }

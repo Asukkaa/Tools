@@ -61,17 +61,6 @@ public class SettingController {
      */
     static final String logs = File.separator + "logs";
 
-    /**
-     * 当前程序运行位置
-     */
-    static final String currentDir = System.getProperty("user.dir");
-
-    public static final String nowSetting = "当前配置值为 ";
-
-    public static final String memorySetting = " GB ，关闭程序即可保存修改，之后使用 ";
-
-    public static final String nowValue = " 启动程序即可生效\n当前所填值为 ";
-
     @FXML
     private AnchorPane anchorPane_Set;
 
@@ -127,22 +116,24 @@ public class SettingController {
      * 保存最大运行内存设置
      */
     private static void saveMemorySetting(Scene scene) throws IOException {
-        TextField batMemoryTextField = (TextField) scene.lookup("#batMemory_Set");
-        String batMemoryValue = batMemoryTextField.getText();
-        if (StringUtils.isNotBlank(batMemoryValue) && !batMemoryValue.equals(batMemory)) {
-            Label batPath = (Label) scene.lookup("#batPath_Set");
-            Path batFilePath = Paths.get(batPath.getText());
-            String originalLineContent = Xmx + batMemory;
-            String newLineContent = Xmx + batMemoryValue;
-            List<String> lines = Files.readAllLines(batFilePath);
-            for (int i = 0; i < lines.size(); i++) {
-                String line = lines.get(i);
-                if (line.contains(originalLineContent)) {
-                    lines.set(i, line.replace(originalLineContent, newLineContent));
-                    break;
+        if (!MacOSX.equals(systemName) && !MacOS.equals(systemName)) {
+            TextField batMemoryTextField = (TextField) scene.lookup("#batMemory_Set");
+            String batMemoryValue = batMemoryTextField.getText();
+            if (StringUtils.isNotBlank(batMemoryValue) && !batMemoryValue.equals(batMemory)) {
+                Label batPath = (Label) scene.lookup("#batPath_Set");
+                Path batFilePath = Paths.get(batPath.getText());
+                String originalLineContent = Xmx + batMemory;
+                String newLineContent = Xmx + batMemoryValue;
+                List<String> lines = Files.readAllLines(batFilePath);
+                for (int i = 0; i < lines.size(); i++) {
+                    String line = lines.get(i);
+                    if (line.contains(originalLineContent)) {
+                        lines.set(i, line.replace(originalLineContent, newLineContent));
+                        break;
+                    }
                 }
+                Files.write(batFilePath, lines);
             }
-            Files.write(batFilePath, lines);
         }
     }
 
@@ -195,28 +186,30 @@ public class SettingController {
      * 获取最大运行内存并展示
      */
     private void getMaxMemory() throws IOException {
-        long maxMemory = Runtime.getRuntime().maxMemory();
-        memory_Set.setText(getUnitSize(maxMemory));
-        addToolTip(memory_Set, "最大运行内存默认为系统内存四分之一，无法直接修改，如需修改则需编辑 app.bat 脚本后用该脚本运行");
-        setPathLabel(thisPath_Set, currentDir, false, anchorPane_Set);
-        String batPath;
-        if ("bin".equals(getFileName(new File(currentDir))) || isRunningFromJar()) {
-            batPath = currentDir + File.separator + batName;
-        } else {
-            batPath = currentDir + runtime + bin + File.separator + batName;
-        }
-        setPathLabel(batPath_Set, batPath, false, anchorPane_Set);
-        BufferedReader reader = new BufferedReader(new FileReader(batPath));
-        String line;
-        while ((line = reader.readLine()) != null) {
-            if (line.contains(Xmx)) {
-                batMemory = line.substring(line.lastIndexOf(Xmx) + Xmx.length(), line.lastIndexOf("g"));
-                batMemory_Set.setText(batMemory);
-                addToolTip(batMemory_Set, nowSetting + batMemory + memorySetting + batName + nowValue + batMemory);
-                break;
+        if (!MacOSX.equals(systemName) && !MacOS.equals(systemName)) {
+            long maxMemory = Runtime.getRuntime().maxMemory();
+            memory_Set.setText(getUnitSize(maxMemory));
+            addToolTip(memory_Set, "最大运行内存默认为系统内存四分之一，无法直接修改，如需修改则需编辑 app.bat 脚本后用该脚本运行");
+            setPathLabel(thisPath_Set, currentDir, false, anchorPane_Set);
+            String batPath;
+            if ("bin".equals(getFileName(new File(currentDir))) || isRunningFromJar()) {
+                batPath = currentDir + File.separator + batName;
+            } else {
+                batPath = currentDir + runtime + bin + File.separator + batName;
             }
+            setPathLabel(batPath_Set, batPath, false, anchorPane_Set);
+            BufferedReader reader = new BufferedReader(new FileReader(batPath));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.contains(Xmx)) {
+                    batMemory = line.substring(line.lastIndexOf(Xmx) + Xmx.length(), line.lastIndexOf("g"));
+                    batMemory_Set.setText(batMemory);
+                    addToolTip(batMemory_Set, text_nowSetting + batMemory + text_memorySetting + batName + text_nowValue + batMemory);
+                    break;
+                }
+            }
+            reader.close();
         }
-        reader.close();
     }
 
     /**
@@ -232,7 +225,7 @@ public class SettingController {
      */
     private void textFieldChangeListener() {
         //app.bat 分配的最大内存输入监听
-        integerRangeTextField(batMemory_Set, 1, null, nowSetting + batMemory + memorySetting + batName + nowValue + batMemory_Set.getText());
+        integerRangeTextField(batMemory_Set, 1, null, text_nowSetting + batMemory + text_memorySetting + batName + text_nowValue + batMemory_Set.getText());
         //log 文件保留数量输入监听
         integerRangeTextField(logsNum_Set, 0, null, tip_logsNum);
     }

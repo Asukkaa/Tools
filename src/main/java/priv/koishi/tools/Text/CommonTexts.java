@@ -185,7 +185,11 @@ public class CommonTexts {
 
     public static final String text_copySuccess = "复制成功";
 
-    public static final String userHome = "user.home";
+    public static final String text_nowSetting = "当前配置值为 ";
+
+    public static final String text_memorySetting = " GB ，关闭程序即可保存修改，之后使用 ";
+
+    public static final String text_nowValue = " 启动程序即可生效\n当前所填值为 ";
 
     public static final String xlsx = ".xlsx";
 
@@ -196,6 +200,20 @@ public class CommonTexts {
     public static final String jpeg = ".jpeg";
 
     public static final String log = ".log";
+
+    public static final String MacOSX = "Mac OS X";
+
+    public static final String MacOS = "Mac OS";
+
+    public static final String Byte = "Byte";
+
+    public static final String KB = "KB";
+
+    public static final String MB = "MB";
+
+    public static final String GB = "GB";
+
+    public static final String TB = "TB";
 
     public static final String activation = "1";
 
@@ -342,6 +360,24 @@ public class CommonTexts {
      */
     public static final String configFile = "config/config.properties";
 
+    /**
+     * 当前程序运行位置
+     */
+    public static final String currentDir = System.getProperty("user.dir");
+
+    /**
+     * 当前程序运行操作系统
+     */
+    public static final String systemName = System.getProperty("os.name");
+
+    /**
+     * 用户目录
+     */
+    public static final String userHome = System.getProperty("user.home");
+
+    /**
+     * ToolTip统一显示时长
+     */
     public static final Duration showDuration = Duration.seconds(6000000);
 
 }

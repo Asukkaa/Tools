@@ -32,21 +32,6 @@ import static priv.koishi.tools.Utils.CommonUtils.checkRunningOutputStream;
 public class FileUtils {
 
     /**
-     * 旧版macos名称
-     */
-    private static final String MacOSX = "Mac OS X";
-
-    /**
-     * 新版macos名称
-     */
-    private static final String MacOS = "Mac OS";
-
-    /**
-     * 操作系统名称
-     */
-    private static final String osName = "os.name";
-
-    /**
      * 获取文件类型
      *
      * @param file 文件
@@ -78,12 +63,11 @@ public class FileUtils {
      * @return ret 带单位的文件大小
      */
     public static String getUnitSize(long size) {
-        String sys = System.getProperty(osName);
         long win = 1024;
         long mac = 1000;
         long kb;
         //macOS与Windows文件大小进制不同
-        if (MacOSX.equals(sys) || MacOS.equals(sys)) {
+        if (MacOSX.equals(systemName) || MacOS.equals(systemName)) {
             kb = mac;
         } else {
             kb = win;
@@ -102,9 +86,8 @@ public class FileUtils {
         double win = 1024;
         double mac = 1000;
         double kb;
-        String sys = System.getProperty(osName);
         //macOS与Windows文件大小进制不同
-        if (MacOSX.equals(sys) || MacOS.equals(sys)) {
+        if (MacOSX.equals(systemName) || MacOS.equals(systemName)) {
             kb = mac;
         } else {
             kb = win;
@@ -113,23 +96,23 @@ public class FileUtils {
         double gb = mb * kb;
         double tb = gb * kb;
         switch (unit) {
-            case "Byte": {
+            case Byte: {
                 compareValue = Double.parseDouble(size);
                 break;
             }
-            case "KB": {
+            case KB: {
                 compareValue = Double.parseDouble(size) * kb;
                 break;
             }
-            case "MB": {
+            case MB: {
                 compareValue = Double.parseDouble(size) * mb;
                 break;
             }
-            case "GB": {
+            case GB: {
                 compareValue = Double.parseDouble(size) * gb;
                 break;
             }
-            case "TB": {
+            case TB: {
                 compareValue = Double.parseDouble(size) * tb;
                 break;
             }
@@ -149,15 +132,15 @@ public class FileUtils {
         String ret = "";
         DecimalFormat df = new DecimalFormat("0.00");
         if (size >= tb) {
-            ret = df.format(size / (tb * 1.0)) + " TB";
+            ret = df.format(size / (tb * 1.0)) + " " + TB;
         } else if (size >= gb) {
-            ret = df.format(size / (gb * 1.0)) + " GB";
+            ret = df.format(size / (gb * 1.0)) + " " + GB;
         } else if (size >= mb) {
-            ret = df.format(size / (mb * 1.0)) + " MB";
+            ret = df.format(size / (mb * 1.0)) + " " + MB;
         } else if (size >= kb) {
-            ret = df.format(size / (kb * 1.0)) + " KB";
+            ret = df.format(size / (kb * 1.0)) + " " + GB;
         } else if (size >= 0) {
-            ret = df.format(size) + " Byte";
+            ret = df.format(size) + " " + Byte;
         }
         return ret;
     }
