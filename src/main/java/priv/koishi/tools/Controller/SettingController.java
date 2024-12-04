@@ -1,5 +1,6 @@
 package priv.koishi.tools.Controller;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import static priv.koishi.tools.Controller.MainController.saveLastConfig;
 import static priv.koishi.tools.Text.CommonTexts.*;
 import static priv.koishi.tools.Utils.CommonUtils.*;
 import static priv.koishi.tools.Utils.FileUtils.*;
@@ -320,6 +322,18 @@ public class SettingController {
     @FXML
     private void loadFullWindowAction() throws IOException {
         setLoadLastConfigCheckBox(fullWindow_Set, configFile, key_loadLastFullWindow);
+    }
+
+    /**
+     * 重启程序按钮
+     */
+    @FXML
+    private void reLaunch() throws IOException {
+        Stage stage = (Stage) anchorPane_Set.getScene().getWindow();
+        saveLastConfig(stage);
+        Platform.exit();
+        ProcessBuilder processBuilder = new ProcessBuilder(currentDir + File.separator + "Tools.exe");
+        processBuilder.start();
     }
 
 }

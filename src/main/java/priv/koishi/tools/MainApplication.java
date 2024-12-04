@@ -26,6 +26,7 @@ import static priv.koishi.tools.Utils.UiUtils.showExceptionDialog;
 
 public class MainApplication extends Application {
 
+
     /**
      * 加载fxml页面
      */
@@ -57,7 +58,7 @@ public class MainApplication extends Application {
         stage.heightProperty().addListener((v1, v2, v3) -> Platform.runLater(() -> mainAdaption(stage, scene)));
         stage.setOnCloseRequest(event -> {
             try {
-                saveLastConfig(scene, stage);
+                saveLastConfig(stage);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

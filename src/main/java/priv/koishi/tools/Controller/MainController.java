@@ -55,22 +55,24 @@ public class MainController {
     /**
      * 保存各个功能最后一次设置值
      */
-    public static void saveLastConfig(Scene scene, Stage stage) throws IOException {
+    public static void saveLastConfig(Stage stage) throws IOException {
+        Scene scene = stage.getScene();
         imgToExcelSaveLastConfig(scene);
         fileNumToExcelSaveLastConfig(scene);
         fileNameToExcelSaveLastConfig(scene);
         fileRenameSaveLastConfig(scene);
-        mainSavaLastConfig(scene, stage);
+        mainSavaLastConfig(stage);
         saveSetting(scene);
     }
 
     /**
      * 保存关程序闭前页面状态
      */
-    private static void mainSavaLastConfig(Scene scene, Stage stage) throws IOException {
+    private static void mainSavaLastConfig(Stage stage) throws IOException {
         InputStream input = checkRunningInputStream(configFile);
         Properties prop = new Properties();
         prop.load(input);
+        Scene scene = stage.getScene();
         TabPane tabPane = (TabPane) scene.lookup("#tabPane");
         Tab selectedTab = tabPane.getSelectionModel().getSelectedItem();
         String position = String.valueOf(tabPane.getTabs().indexOf(selectedTab));
