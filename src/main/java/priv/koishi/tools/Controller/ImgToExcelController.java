@@ -617,7 +617,7 @@ public class ImgToExcelController extends ToolsProperties {
                     String excelPath = saveExcelTask.getValue();
                     try {
                         if (openDirectory_Img.isSelected()) {
-                            openFile(new File(excelPath).getParent());
+                            openDirectory(excelPath);
                         }
                         if (openFile_Img.isSelected()) {
                             openFile(excelPath);

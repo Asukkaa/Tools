@@ -862,7 +862,7 @@ public class FileRenameController extends ToolsProperties {
                 taskUnbind(taskBean);
                 if (openDirectory_Re.isSelected()) {
                     try {
-                        openFile(renameTask.getValue());
+                        openDirectory(renameTask.getValue());
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }

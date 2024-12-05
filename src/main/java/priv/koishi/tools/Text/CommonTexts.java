@@ -201,9 +201,9 @@ public class CommonTexts {
 
     public static final String log = ".log";
 
-    public static final String MacOSX = "Mac OS X";
+    public static final String macos = "mac";
 
-    public static final String MacOS = "Mac OS";
+    public static final String win = "win";
 
     public static final String Byte = "Byte";
 
@@ -368,7 +368,7 @@ public class CommonTexts {
     /**
      * 当前程序运行操作系统
      */
-    public static final String systemName = System.getProperty("os.name");
+    public static final String systemName = System.getProperty("os.name").toLowerCase();
 
     /**
      * 用户目录

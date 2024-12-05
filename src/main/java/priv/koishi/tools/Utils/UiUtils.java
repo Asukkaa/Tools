@@ -595,7 +595,7 @@ public class UiUtils {
             List<String> pathList = fileBeans.stream().map(FileBean::getPath).distinct().toList();
             pathList.forEach(path -> {
                 try {
-                    openFile(new File(path).getParent());
+                    openDirectory(path);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -696,10 +696,12 @@ public class UiUtils {
             //只接受左键点击
             if (event.getButton() == MouseButton.PRIMARY) {
                 try {
-                    if (!file.exists()) {
-                        throw new IOException(text_fileNotExists);
+                    //判断是否打开文件
+                    if (!openFile) {
+                        openDirectory(path);
+                    } else {
+                        openFile(path);
                     }
-                    openFile(openPath);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -715,27 +717,20 @@ public class UiUtils {
      */
     public static void setPathLabelContextMenu(Label valueLabel, AnchorPane anchorPane) {
         String path = valueLabel.getText();
-        File file = new File(path);
         ContextMenu contextMenu = new ContextMenu();
         MenuItem openDirectoryMenuItem = new MenuItem("打开文件夹");
         openDirectoryMenuItem.setOnAction(event -> {
             try {
-                if (!file.exists()) {
-                    throw new IOException(text_fileNotExists);
-                }
-                openFile(file.getParent());
+                openDirectory(path);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         });
         contextMenu.getItems().add(openDirectoryMenuItem);
-        if (file.isFile()) {
+        if (new File(path).isFile()) {
             MenuItem openFileMenuItem = new MenuItem("打开文件");
             openFileMenuItem.setOnAction(event -> {
                 try {
-                    if (!file.exists()) {
-                        throw new IOException(text_fileNotExists);
-                    }
                     openFile(path);
                 } catch (IOException e) {
                     throw new RuntimeException(e);

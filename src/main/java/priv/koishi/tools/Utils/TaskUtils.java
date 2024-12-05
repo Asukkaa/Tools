@@ -10,12 +10,10 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.ExcelConfig;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 
-import static priv.koishi.tools.Utils.FileUtils.openFile;
-import static priv.koishi.tools.Utils.FileUtils.saveExcel;
+import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.changeDisableControls;
 
 /**
@@ -62,7 +60,7 @@ public class TaskUtils {
                 String excelPath = saveExcelTask.getValue();
                 try {
                     if (openDirectory.isSelected()) {
-                        openFile(new File(excelPath).getParent());
+                        openDirectory(excelPath);
                     }
                     if (openFile.isSelected()) {
                         openFile(excelPath);

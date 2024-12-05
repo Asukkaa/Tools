@@ -67,7 +67,7 @@ public class FileUtils {
         long mac = 1000;
         long kb;
         //macOS与Windows文件大小进制不同
-        if (MacOSX.equals(systemName) || MacOS.equals(systemName)) {
+        if (systemName.contains(macos)) {
             kb = mac;
         } else {
             kb = win;
@@ -87,7 +87,7 @@ public class FileUtils {
         double mac = 1000;
         double kb;
         //macOS与Windows文件大小进制不同
-        if (MacOSX.equals(systemName) || MacOS.equals(systemName)) {
+        if (systemName.contains(macos)) {
             kb = mac;
         } else {
             kb = win;
@@ -257,7 +257,35 @@ public class FileUtils {
      */
     public static void openFile(String openPath) throws IOException {
         if (StringUtils.isNotEmpty(openPath)) {
-            Desktop.getDesktop().open(new File(openPath));
+            File file = new File(openPath);
+            if (!file.exists()) {
+                throw new IOException(text_fileNotExists);
+            }
+            Desktop.getDesktop().open(file);
+        }
+    }
+
+    /**
+     * 打开文件夹
+     */
+    public static void openDirectory(String openPath) throws IOException {
+        if (StringUtils.isNotEmpty(openPath)) {
+            File file = new File(openPath);
+            if (!file.exists()) {
+                throw new IOException(text_fileNotExists);
+            }
+            if (file.isDirectory()) {
+                Desktop.getDesktop().open(file);
+            }
+            if (file.isFile()) {
+                ProcessBuilder processBuilder;
+                if (systemName.contains(win)) {
+                    processBuilder = new ProcessBuilder("cmd.exe", "/C", "explorer /select, " + openPath);
+                } else {
+                    processBuilder = new ProcessBuilder("open -R " + openPath);
+                }
+                processBuilder.start();
+            }
         }
     }
 

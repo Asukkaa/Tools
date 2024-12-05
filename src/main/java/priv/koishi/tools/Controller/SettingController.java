@@ -122,7 +122,7 @@ public class SettingController {
      * 保存最大运行内存设置
      */
     private static void saveMemorySetting(Scene scene) throws IOException {
-        if (!MacOSX.equals(systemName) && !MacOS.equals(systemName)) {
+        if (systemName.contains(win)) {
             TextField batMemoryTextField = (TextField) scene.lookup("#batMemory_Set");
             String batMemoryValue = batMemoryTextField.getText();
             if (StringUtils.isNotBlank(batMemoryValue) && !batMemoryValue.equals(batMemory)) {
@@ -192,7 +192,7 @@ public class SettingController {
      * 获取最大运行内存并展示
      */
     private void getMaxMemory() throws IOException {
-        if (!MacOSX.equals(systemName) && !MacOS.equals(systemName)) {
+        if (systemName.contains(win)) {
             long maxMemory = Runtime.getRuntime().maxMemory();
             memory_Set.setText(getUnitSize(maxMemory));
             setPathLabel(thisPath_Set, currentDir, false, anchorPane_Set);
@@ -278,7 +278,7 @@ public class SettingController {
         getMaxMemory();
         //清理多余log文件
         deleteLogs();
-        if (MacOSX.equals(systemName) || MacOS.equals(systemName)) {
+        if (systemName.contains(macos)) {
             reLaunch_Set.setDisable(false);
         }
     }
