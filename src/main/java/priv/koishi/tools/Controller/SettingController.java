@@ -278,8 +278,9 @@ public class SettingController {
         getMaxMemory();
         //清理多余log文件
         deleteLogs();
+        //macos暂时不支持重启程序
         if (systemName.contains(macos)) {
-            reLaunch_Set.setDisable(false);
+            reLaunch_Set.setVisible(false);
         }
     }
 
