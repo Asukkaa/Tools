@@ -48,7 +48,7 @@
             <Label prefHeight="25" text="下次启动时最大内存："/>
             <TextField fx:id="batMemory_Set" prefHeight="20" prefWidth="50"/>
             <Label prefHeight="25" prefWidth="50" text="GB"/>
-            <Button onAction="#reLaunch" style="-fx-cursor: hand" text="立刻重启程序"/>
+            <Button fx:id="reLaunch_Set" onAction="#reLaunch" style="-fx-cursor: hand" text="立刻重启程序"/>
         </HBox>
 
         <HBox spacing="5">

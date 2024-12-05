@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -68,6 +69,9 @@ public class SettingController {
 
     @FXML
     private VBox vBox_Set;
+
+    @FXML
+    private Button reLaunch_Set;
 
     @FXML
     private TextField batMemory_Set, logsNum_Set;
@@ -274,6 +278,9 @@ public class SettingController {
         getMaxMemory();
         //清理多余log文件
         deleteLogs();
+        if (MacOSX.equals(systemName) || MacOS.equals(systemName)) {
+            reLaunch_Set.setDisable(false);
+        }
     }
 
     /**
