@@ -192,10 +192,10 @@ public class SettingController {
      * 获取最大运行内存并展示
      */
     private void getMaxMemory() throws IOException {
+        long maxMemory = Runtime.getRuntime().maxMemory();
+        memory_Set.setText(getUnitSize(maxMemory));
+        setPathLabel(thisPath_Set, currentDir, false, anchorPane_Set);
         if (systemName.contains(win)) {
-            long maxMemory = Runtime.getRuntime().maxMemory();
-            memory_Set.setText(getUnitSize(maxMemory));
-            setPathLabel(thisPath_Set, currentDir, false, anchorPane_Set);
             String batPath;
             if ("bin".equals(getFileName(new File(currentDir))) || isRunningFromJar()) {
                 batPath = currentDir + File.separator + batName;
