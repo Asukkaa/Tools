@@ -35,6 +35,18 @@ public class FileNumBean {
     private final SimpleStringProperty fileName;
 
     /**
+     * 带单位的文件总大小
+     */
+    private final SimpleStringProperty fileUnitSize;
+
+    /**
+     * 文件总大小
+     */
+    @Getter
+    @Setter
+    long fileSize;
+
+    /**
      * 文件路径列表
      */
     @Getter
@@ -53,6 +65,7 @@ public class FileNumBean {
         this.groupName = new SimpleStringProperty();
         this.groupNumber = new SimpleIntegerProperty();
         this.fileName = new SimpleStringProperty();
+        this.fileUnitSize = new SimpleStringProperty();
     }
 
     public int getGroupId() {
@@ -85,6 +98,14 @@ public class FileNumBean {
 
     public void setFileName(String fileName) {
         this.fileName.set(fileName);
+    }
+
+    public String getFileUnitSize() {
+        return this.fileUnitSize.get();
+    }
+
+    public void setFileUnitSize(String fileUnitSize) {
+        this.fileUnitSize.set(fileUnitSize);
     }
 
 }

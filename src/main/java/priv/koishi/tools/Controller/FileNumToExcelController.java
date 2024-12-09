@@ -128,10 +128,10 @@ public class FileNumToExcelController extends ToolsProperties {
     private TableView<FileNumBean> tableView_Num;
 
     @FXML
-    private TableColumn<FileNumBean, String> fileName_Num, groupId_Num;
+    private TableColumn<FileNumBean, Integer> groupName_Num, groupNumber_Num;
 
     @FXML
-    private TableColumn<FileNumBean, Integer> groupName_Num, groupNumber_Num;
+    private TableColumn<FileNumBean, String> fileName_Num, groupId_Num, fileUnitSize_Num;
 
     @FXML
     private CheckBox recursion_Num, openDirectory_Num, openFile_Num, showFileType_Num;
@@ -170,7 +170,9 @@ public class FileNumToExcelController extends ToolsProperties {
         Node groupNumberNum = scene.lookup("#groupNumber_Num");
         groupNumberNum.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
         Node fileNameNum = scene.lookup("#fileName_Num");
-        fileNameNum.setStyle("-fx-pref-width: " + tableWidth * 0.7 + "px;");
+        fileNameNum.setStyle("-fx-pref-width: " + tableWidth * 0.6 + "px;");
+        Node fileUnitSize = scene.lookup("#fileUnitSize_Num");
+        fileUnitSize.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
         Label fileNum = (Label) scene.lookup("#fileNumber_Num");
         Button removeAll = (Button) scene.lookup("#clearButton_Num");
         Button exportAll = (Button) scene.lookup("#exportButton_Num");
@@ -290,6 +292,7 @@ public class FileNumToExcelController extends ToolsProperties {
                 .setSheet(sheetName_Num.getText());
         TaskBean<FileNumBean> taskBean = new TaskBean<>();
         taskBean.setShowFileType(showFileType_Num.isSelected())
+                .setComparatorTableColumn(fileUnitSize_Num)
                 .setDisableControls(disableControls)
                 .setSubCode(subCode_Num.getText())
                 .setProgressBar(progressBar_Num)
@@ -416,7 +419,7 @@ public class FileNumToExcelController extends ToolsProperties {
         //设置鼠标悬停提示
         setToolTip();
         //设置javafx单元格宽度
-        tableViewNumImgAdaption(groupId_Num, tableView_Num, groupName_Num.prefWidthProperty(), groupNumber_Num.prefWidthProperty(), fileName_Num);
+        tableViewNumImgAdaption(groupId_Num, tableView_Num, groupName_Num.prefWidthProperty(), groupNumber_Num.prefWidthProperty(), fileName_Num, fileUnitSize_Num);
         //给输入框添加内容变化监听
         textFieldChangeListener();
         //设置初始配置值为上次配置值

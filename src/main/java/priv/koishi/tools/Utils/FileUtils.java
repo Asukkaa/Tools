@@ -80,6 +80,9 @@ public class FileUtils {
      * 将带单位的文件大小字符串转换为课比较类型
      */
     public static double fileSizeCompareValue(String value) {
+        if (StringUtils.isBlank(value)) {
+            return 0;
+        }
         String unit = value.substring(value.indexOf(" ") + 1);
         String size = value.substring(0, value.indexOf(" "));
         double compareValue;
@@ -138,7 +141,7 @@ public class FileUtils {
         } else if (size >= mb) {
             ret = df.format(size / (mb * 1.0)) + " " + MB;
         } else if (size >= kb) {
-            ret = df.format(size / (kb * 1.0)) + " " + GB;
+            ret = df.format(size / (kb * 1.0)) + " " + KB;
         } else if (size >= 0) {
             ret = df.format(size) + " " + Byte;
         }

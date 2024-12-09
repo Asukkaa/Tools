@@ -232,11 +232,11 @@ public class FileNameToExcelController extends ToolsProperties {
         }
         TaskBean<FileBean> taskBean = new TaskBean<>();
         taskBean.setShowFileType(showFileType_Name.isSelected())
+                .setComparatorTableColumn(size_Name)
                 .setDisableControls(disableControls)
                 .setProgressBar(progressBar_Name)
                 .setMassageLabel(fileNumber_Name)
                 .setTableView(tableView_Name)
-                .setComparatorTableColumn(size_Name)
                 .setInFileList(inFileList)
                 .setTabId(tabId);
         //获取Task任务

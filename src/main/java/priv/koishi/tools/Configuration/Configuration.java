@@ -7,5 +7,5 @@ package priv.koishi.tools.Configuration;
  * Date:2024-11-05
  * Time:下午4:06
  */
-public class Configuration {
+public abstract class Configuration {
 }

@@ -121,6 +121,7 @@ public class ImgToExcelController extends ToolsProperties {
      */
     private final CommonThreadPoolExecutor commonThreadPoolExecutor = new CommonThreadPoolExecutor();
 
+
     /**
      * 线程池实例
      */
@@ -149,7 +150,7 @@ public class ImgToExcelController extends ToolsProperties {
     private TableView<FileNumBean> tableView_Img;
 
     @FXML
-    private TableColumn<FileNumBean, String> groupId_Img, groupName_Img, groupNumber_Img, fileName_Img;
+    private TableColumn<FileNumBean, String> groupId_Img, groupName_Img, groupNumber_Img, fileName_Img, fileUnitSize_Img;
 
     @FXML
     private ChoiceBox<String> hideFileType_Img, excelType_Img;
@@ -188,7 +189,9 @@ public class ImgToExcelController extends ToolsProperties {
         Node groupNumberNum = scene.lookup("#groupNumber_Img");
         groupNumberNum.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
         Node fileNameNum = scene.lookup("#fileName_Img");
-        fileNameNum.setStyle("-fx-pref-width: " + tableWidth * 0.7 + "px;");
+        fileNameNum.setStyle("-fx-pref-width: " + tableWidth * 0.6 + "px;");
+        Node fileUnitSize = scene.lookup("#fileUnitSize_Img");
+        fileUnitSize.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
         Label fileNum = (Label) scene.lookup("#fileNumber_Img");
         Button removeAll = (Button) scene.lookup("#clearButton_Img");
         Button exportAll = (Button) scene.lookup("#exportButton_Img");
@@ -341,6 +344,7 @@ public class ImgToExcelController extends ToolsProperties {
                 .setInPath(excelPath_Img.getText());
         TaskBean<FileNumBean> taskBean = new TaskBean<>();
         taskBean.setShowFileType(showFileType_Img.isSelected())
+                .setComparatorTableColumn(fileUnitSize_Img)
                 .setDisableControls(disableControls)
                 .setSubCode(subCode_Img.getText())
                 .setMassageLabel(fileNumber_Img)
@@ -489,7 +493,7 @@ public class ImgToExcelController extends ToolsProperties {
         //设置鼠标悬停提示
         setToolTip();
         //设置javafx单元格宽度
-        tableViewNumImgAdaption(groupId_Img, tableView_Img, groupName_Img.prefWidthProperty(), groupNumber_Img.prefWidthProperty(), fileName_Img);
+        tableViewNumImgAdaption(groupId_Img, tableView_Img, groupName_Img.prefWidthProperty(), groupNumber_Img.prefWidthProperty(), fileName_Img, fileUnitSize_Img);
         //给输入框添加内容变化监听
         textFieldChangeListener();
         //设置初始配置值为上次配置值

@@ -11,6 +11,7 @@ import priv.koishi.tools.Bean.FileBean;
 import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.*;
+import priv.koishi.tools.Vo.FileNumVo;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -112,8 +113,8 @@ public class ReadDataService {
                     fileConfig.setMaxImgNum(taskBean.getMaxImgNum())
                             .setShowFileType(taskBean.isShowFileType())
                             .setSubCode(taskBean.getSubCode());
-                    int imgNum = matchGroupData(fileNumBeanList, inFileList, fileConfig);
-                    updateMessage(text_allHave + fileNumBeanList.size() + text_group + imgNum + text_picture);
+                    FileNumVo fileNumVo = matchGroupData(fileNumBeanList, inFileList, fileConfig);
+                    updateMessage(text_allHave + fileNumVo.getDataNum() + text_group + fileNumVo.getImgNum() + text_picture + fileNumVo.getImgSize());
                 } else {
                     updateMessage(text_allHave + fileNumBeanList.size() + text_data);
                 }
@@ -130,7 +131,7 @@ public class ReadDataService {
         if (CollectionUtils.isEmpty(fileBeans)) {
             throw new Exception(text_selectNull);
         }
-        autoBuildTableViewData(taskBean.getTableView(), fileBeans, taskBean.getTabId());
+        showFileSizeColumData(fileBeans, taskBean);
         return fileBeans;
     }
 
@@ -201,18 +202,10 @@ public class ReadDataService {
                 }
                 updateMessage(text_allHave + inFileSize + text_file);
                 //渲染数据
-                showFileData(fileBeans, taskBean);
+                showFileSizeColumData(fileBeans, taskBean);
                 return null;
             }
         };
-    }
-
-    /**
-     * 渲染文件数据
-     */
-    public static void showFileData(List<FileBean> fileBeans, TaskBean<FileBean> taskBean) {
-        autoBuildTableViewData(taskBean.getTableView(), fileBeans, taskBean.getTabId());
-        fileSizeColum(taskBean.getComparatorTableColumn());
     }
 
 }

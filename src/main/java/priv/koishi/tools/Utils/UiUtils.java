@@ -29,12 +29,14 @@ import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.FileConfig;
 import priv.koishi.tools.Enum.SelectItemsEnums;
 import priv.koishi.tools.MessageBubble.MessageBubble;
+import priv.koishi.tools.Vo.FileNumVo;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static priv.koishi.tools.Service.ReadDataService.showReadExcelData;
 import static priv.koishi.tools.Text.CommonTexts.*;
@@ -311,11 +313,12 @@ public class UiUtils {
     /**
      * 匹配excel分组与文件夹下文件
      */
-    public static int matchGroupData(List<FileNumBean> fileNumBeans, List<File> inFileList, FileConfig fileConfig) {
+    public static FileNumVo matchGroupData(List<FileNumBean> fileNumBeans, List<File> inFileList, FileConfig fileConfig) {
         List<String> paths = new ArrayList<>();
         inFileList.forEach(file -> paths.add(file.getPath()));
         List<FileNumBean> fileNumList = buildNameGroupData(paths, fileConfig);
         AtomicInteger imgNum = new AtomicInteger();
+        AtomicLong totalFileSize = new AtomicLong();
         fileNumBeans.forEach(bean1 -> {
             bean1.setGroupNumber(0);
             bean1.setFileName("");
@@ -327,10 +330,16 @@ public class UiUtils {
                 bean1.setGroupNumber(matched.getGroupNumber());
                 bean1.setFileNameList(matched.getFileNameList());
                 bean1.setFilePathList(matched.getFilePathList());
+                bean1.setFileUnitSize(getUnitSize(matched.getFileSize()));
+                totalFileSize.addAndGet(matched.getFileSize());
                 imgNum.addAndGet(matched.getFilePathList().size());
             });
         });
-        return imgNum.get();
+        FileNumVo fileNumVo = new FileNumVo();
+        fileNumVo.setImgNum(imgNum.get())
+                .setDataNum(fileNumBeans.size())
+                .setImgSize(getUnitSize(totalFileSize.get()));
+        return fileNumVo;
     }
 
     /**
@@ -343,24 +352,27 @@ public class UiUtils {
             FileNumBean fileNumBean = new FileNumBean();
             fileNumBean.setGroupName(k);
             List<String> names = new ArrayList<>();
-            v.forEach(p -> {
+            long fileSize = 0;
+            for (String path : v) {
                 try {
                     String fileName;
-                    File file = new File(p);
+                    File file = new File(path);
                     if (fileConfig.isShowFileType()) {
                         fileName = file.getName();
                     } else {
                         fileName = getFileName(file);
                     }
+                    fileSize += file.length();
                     names.add(fileName);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-            });
+            }
             fileNumBean.setFileNameList(names);
             fileNumBean.setFileName(String.join("、", names));
             fileNumBean.setGroupNumber(v.size());
             fileNumBean.setFilePathList(v);
+            fileNumBean.setFileSize(fileSize);
             fileNumBeans.add(fileNumBean);
         });
         return fileNumBeans;
@@ -382,11 +394,12 @@ public class UiUtils {
      */
     public static void tableViewNumImgAdaption(TableColumn<FileNumBean, String> groupId, TableView<FileNumBean> tableView,
                                                DoubleProperty groupName, DoubleProperty groupNumber,
-                                               TableColumn<FileNumBean, String> fileName) {
+                                               TableColumn<FileNumBean, String> fileName, TableColumn<FileNumBean, String> fileSize) {
         groupId.prefWidthProperty().bind(tableView.widthProperty().multiply(0.1));
         groupName.bind(tableView.widthProperty().multiply(0.1));
         groupNumber.bind(tableView.widthProperty().multiply(0.1));
-        fileName.prefWidthProperty().bind(tableView.widthProperty().multiply(0.7));
+        fileName.prefWidthProperty().bind(tableView.widthProperty().multiply(0.6));
+        fileSize.prefWidthProperty().bind(tableView.widthProperty().multiply(0.1));
     }
 
     /**
@@ -407,12 +420,12 @@ public class UiUtils {
      */
     public static void machGroup(FileConfig fileConfig, ObservableList<FileNumBean> fileNumList, List<File> inFileList,
                                  TableView<FileNumBean> tableViewImg, String tabId, Label fileNumberImg) throws Exception {
-        int imgNum = matchGroupData(fileNumList, inFileList, fileConfig);
+        FileNumVo fileNumVo = matchGroupData(fileNumList, inFileList, fileConfig);
         TaskBean<FileNumBean> taskBean = new TaskBean<>();
         taskBean.setTableView(tableViewImg)
                 .setTabId(tabId);
         showReadExcelData(fileNumList, taskBean);
-        fileNumberImg.setText(text_allHave + fileNumList.size() + text_group + imgNum + text_picture);
+        fileNumberImg.setText(text_allHave + fileNumVo.getDataNum() + text_group + fileNumVo.getImgNum() + text_picture + fileNumVo.getImgSize());
     }
 
     /**
@@ -805,6 +818,14 @@ public class UiUtils {
      */
     public static void removeChildren(VBox vBox, VBox... vBoxes) {
         vBox.getChildren().removeAll(vBoxes);
+    }
+
+    /**
+     * 渲染带文件大小排序的数据
+     */
+    public static<T> void showFileSizeColumData(List<T> fileBeans, TaskBean<T> taskBean) {
+        autoBuildTableViewData(taskBean.getTableView(), fileBeans, taskBean.getTabId());
+        fileSizeColum(taskBean.getComparatorTableColumn());
     }
 
 }

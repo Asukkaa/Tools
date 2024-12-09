@@ -85,7 +85,7 @@
 
         <HBox spacing="5">
             <Label prefHeight="25" text="当前版本："/>
-            <Label prefHeight="25" textFill="cornflowerblue" text="0.4.5.1"/>
+            <Label prefHeight="25" textFill="cornflowerblue" text="0.4.6.0"/>
         </HBox>
     </VBox>
 </AnchorPane>
