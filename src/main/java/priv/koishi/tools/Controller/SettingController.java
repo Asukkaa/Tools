@@ -14,6 +14,8 @@ import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
+import java.lang.management.ManagementFactory;
+import java.lang.management.OperatingSystemMXBean;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -77,7 +79,7 @@ public class SettingController {
     private TextField batMemory_Set, logsNum_Set;
 
     @FXML
-    private Label mail_set, memory_Set, thisPath_Set, logsPath_Set;
+    private Label mail_set, appMemory_Set, thisPath_Set, logsPath_Set, systemMemory_Set;
 
     @FXML
     private CheckBox loadRename_Set, loadFileNum_Set, loadFileName_Set, loadImgToExcel_Set, lastTab_Set, fullWindow_Set;
@@ -193,7 +195,10 @@ public class SettingController {
      */
     private void getMaxMemory() throws IOException {
         long maxMemory = Runtime.getRuntime().maxMemory();
-        memory_Set.setText(getUnitSize(maxMemory));
+        appMemory_Set.setText(getUnitSize(maxMemory));
+        OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
+        long totalMemory = ((com.sun.management.OperatingSystemMXBean) osBean).getTotalMemorySize();
+        systemMemory_Set.setText(getUnitSize(totalMemory));
         setPathLabel(thisPath_Set, currentDir, false, anchorPane_Set);
         if (systemName.contains(win)) {
             String batPath;
