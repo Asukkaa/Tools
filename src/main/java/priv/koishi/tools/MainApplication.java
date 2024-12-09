@@ -22,7 +22,7 @@ import static priv.koishi.tools.Text.CommonTexts.activation;
 import static priv.koishi.tools.Text.CommonTexts.configFile;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
 import static priv.koishi.tools.Utils.CommonUtils.isRunningFromJar;
-import static priv.koishi.tools.Utils.UiUtils.showExceptionDialog;
+import static priv.koishi.tools.Utils.UiUtils.showExceptionAlert;
 
 public class MainApplication extends Application {
 
@@ -74,7 +74,7 @@ public class MainApplication extends Application {
     public void init() throws Exception {
         super.init();
         // 在init()方法中设置全局异常处理器
-        Platform.runLater(() -> Thread.setDefaultUncaughtExceptionHandler((e, exception) -> showExceptionDialog(exception)));
+        Platform.runLater(() -> Thread.setDefaultUncaughtExceptionHandler((e, exception) -> showExceptionAlert(exception)));
     }
 
     /**

@@ -246,9 +246,9 @@ public class UiUtils {
     /**
      * 处理异常的统一弹窗
      */
-    public static void showExceptionDialog(Throwable ex) {
+    public static void showExceptionAlert(Throwable ex) {
         logger.error(ex, ex);
-        Alert alert = creatErrorDialog(errToString(ex));
+        Alert alert = creatErrorAlert(errToString(ex));
         if (ex.getCause().getCause() instanceof Exception) {
             alert.setHeaderText(ex.getCause().getCause().getMessage());
         } else {
@@ -261,7 +261,7 @@ public class UiUtils {
     /**
      * 创建一个错误弹窗
      */
-    public static Alert creatErrorDialog(String errString) {
+    public static Alert creatErrorAlert(String errString) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("异常信息");
         // 创建展示异常信息的TextArea
@@ -275,6 +275,18 @@ public class UiUtils {
         details.getChildren().add(textArea);
         alert.getDialogPane().setExpandableContent(details);
         return alert;
+    }
+
+    /**
+     * 创建一个确认弹窗
+     */
+    public static ButtonType creatConfirmDialog(String confirm, String ok, String cancel) {
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setHeaderText(confirm);
+        ButtonType cancelButton = new ButtonType(cancel, ButtonBar.ButtonData.CANCEL_CLOSE);
+        ButtonType okButton = new ButtonType(ok, ButtonBar.ButtonData.APPLY);
+        dialog.getDialogPane().getButtonTypes().addAll(okButton, cancelButton);
+        return dialog.showAndWait().orElse(cancelButton);
     }
 
     /**
@@ -419,13 +431,15 @@ public class UiUtils {
      * 分组匹配数
      */
     public static void machGroup(FileConfig fileConfig, ObservableList<FileNumBean> fileNumList, List<File> inFileList,
-                                 TableView<FileNumBean> tableViewImg, String tabId, Label fileNumberImg) throws Exception {
+                                 TableView<FileNumBean> tableViewImg, String tabId, Label fileNumberImg,
+                                 TableColumn<FileNumBean, String> comparatorTableColumn) throws Exception {
         FileNumVo fileNumVo = matchGroupData(fileNumList, inFileList, fileConfig);
         TaskBean<FileNumBean> taskBean = new TaskBean<>();
-        taskBean.setTableView(tableViewImg)
+        taskBean.setComparatorTableColumn(comparatorTableColumn)
+                .setTableView(tableViewImg)
                 .setTabId(tabId);
         showReadExcelData(fileNumList, taskBean);
-        fileNumberImg.setText(text_allHave + fileNumVo.getDataNum() + text_group + fileNumVo.getImgNum() + text_picture + fileNumVo.getImgSize());
+        fileNumberImg.setText(text_allHave + fileNumVo.getDataNum() + text_group + fileNumVo.getImgNum() + text_picture + text_totalFileSize + fileNumVo.getImgSize());
     }
 
     /**
@@ -823,7 +837,7 @@ public class UiUtils {
     /**
      * 渲染带文件大小排序的数据
      */
-    public static<T> void showFileSizeColumData(List<T> fileBeans, TaskBean<T> taskBean) {
+    public static <T> void showFileSizeColumData(List<T> fileBeans, TaskBean<T> taskBean) {
         autoBuildTableViewData(taskBean.getTableView(), fileBeans, taskBean.getTabId());
         fileSizeColum(taskBean.getComparatorTableColumn());
     }

@@ -246,7 +246,7 @@ public class FileNumToExcelController extends ToolsProperties {
         //列表中有excel分组后再匹配数据
         ObservableList<FileNumBean> fileNumList = tableView_Num.getItems();
         if (CollectionUtils.isNotEmpty(fileNumList)) {
-            machGroup(fileConfig, fileNumList, inFileList, tableView_Num, tabId, fileNumber_Num);
+            machGroup(fileConfig, fileNumList, inFileList, tableView_Num, tabId, fileNumber_Num, fileUnitSize_Num);
         }
     }
 

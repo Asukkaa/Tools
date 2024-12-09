@@ -54,7 +54,7 @@ public class TaskUtils {
         bindingProgressBarTask(buildExcelTask, taskBean);
         buildExcelTask.setOnSucceeded(event -> {
             SXSSFWorkbook workbook = buildExcelTask.getValue();
-            Task<String> saveExcelTask = saveExceltask(excelConfig, workbook);
+            Task<String> saveExcelTask = saveExcelTask(excelConfig, workbook);
             bindingProgressBarTask(saveExcelTask, taskBean);
             saveExcelTask.setOnSucceeded(s -> {
                 String excelPath = saveExcelTask.getValue();
@@ -118,7 +118,7 @@ public class TaskUtils {
     /**
      * 保存excel线程
      */
-    public static Task<String> saveExceltask(ExcelConfig excelConfig, SXSSFWorkbook workbook) {
+    public static Task<String> saveExcelTask(ExcelConfig excelConfig, SXSSFWorkbook workbook) {
         return new Task<>() {
             @Override
             protected String call() throws Exception {

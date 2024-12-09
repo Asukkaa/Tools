@@ -288,7 +288,7 @@ public class ImgToExcelController extends ToolsProperties {
         //列表中有excel分组后再匹配数据
         ObservableList<FileNumBean> fileNumList = tableView_Img.getItems();
         if (CollectionUtils.isNotEmpty(fileNumList)) {
-            machGroup(fileConfig, fileNumList, inFileList, tableView_Img, tabId, fileNumber_Img);
+            machGroup(fileConfig, fileNumList, inFileList, tableView_Img, tabId, fileNumber_Img, fileUnitSize_Img);
         }
     }
 
@@ -482,6 +482,30 @@ public class ImgToExcelController extends ToolsProperties {
     }
 
     /**
+     * 校验匹配文件总大小是否能够正常导出
+     */
+    private boolean checkFileSize() {
+        String fileNumberText = fileNumber_Img.getText();
+        String totalFileSize = fileNumberText.substring(fileNumberText.lastIndexOf(text_totalFileSize) + text_totalFileSize.length());
+        double totalFileSizeValue = fileSizeCompareValue(totalFileSize) * 2;
+        Scene scene = anchorPane_Img.getScene();
+        Label appMemory = (Label) scene.lookup("#appMemory_Set");
+        String appMemoryText = appMemory.getText();
+        double appMemoryValue = fileSizeCompareValue(appMemoryText);
+        if (totalFileSizeValue >= appMemoryValue) {
+            ButtonType result = creatConfirmDialog("要导出的文件需要占用内存过多，当前内存设置可能无法导出，是否继续导出？", "继续导出", "取消导出");
+            return !result.getButtonData().isCancelButton();
+        }
+        String maxExcelSize = "4 GB";
+        double maxExcelSizeValue = fileSizeCompareValue(maxExcelSize);
+        if (totalFileSizeValue >= maxExcelSizeValue) {
+            ButtonType result = creatConfirmDialog("当前匹配的文件导出后 excel 总大小可能超过 4 GB ，可能无法正常打开，是否继续导出？", "继续导出", "取消导出");
+            return !result.getButtonData().isCancelButton();
+        }
+        return true;
+    }
+
+    /**
      * 界面初始化
      */
     @FXML
@@ -600,6 +624,7 @@ public class ImgToExcelController extends ToolsProperties {
                 .setInPath(excelPath_Img.getText())
                 .setNoImg(noImg_Img.isSelected())
                 .setOutPath(outFilePath);
+        //重新查询任务
         Task<List<FileNumBean>> reselectTask = reselect();
         reselectTask.setOnSucceeded(event -> {
             TaskBean<FileNumBean> taskBean = new TaskBean<>();
@@ -611,36 +636,41 @@ public class ImgToExcelController extends ToolsProperties {
                     .setTableView(tableView_Img)
                     .setMassageLabel(log_Img)
                     .setTabId(tabId);
-            //获取Task任务
-            buildExcelTask = buildImgGroupExcel(taskBean, excelConfig);
-            bindingProgressBarTask(buildExcelTask, taskBean);
-            buildExcelTask.setOnSucceeded(e -> {
-                saveExcelTask = saveExceltask(excelConfig, buildExcelTask.getValue());
-                bindingProgressBarTask(saveExcelTask, taskBean);
-                saveExcelTask.setOnSucceeded(s -> {
-                    String excelPath = saveExcelTask.getValue();
-                    try {
-                        if (openDirectory_Img.isSelected()) {
-                            openDirectory(excelPath);
+            taskUnbind(taskBean);
+            //校验匹配文件总大小是否能够正常导出
+            if (checkFileSize()) {
+                //组装excel任务
+                buildExcelTask = buildImgGroupExcel(taskBean, excelConfig);
+                bindingProgressBarTask(buildExcelTask, taskBean);
+                buildExcelTask.setOnSucceeded(e -> {
+                    //保存excel任务
+                    saveExcelTask = saveExcelTask(excelConfig, buildExcelTask.getValue());
+                    bindingProgressBarTask(saveExcelTask, taskBean);
+                    saveExcelTask.setOnSucceeded(s -> {
+                        String excelPath = saveExcelTask.getValue();
+                        try {
+                            if (openDirectory_Img.isSelected()) {
+                                openDirectory(excelPath);
+                            }
+                            if (openFile_Img.isSelected()) {
+                                openFile(excelPath);
+                            }
+                            ImgToExcelService.closeStream();
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        } finally {
+                            saveExcelTask = null;
+                            buildExcelTask = null;
+                            inFileList = null;
+                            taskUnbind(taskBean);
                         }
-                        if (openFile_Img.isSelected()) {
-                            openFile(excelPath);
-                        }
-                        ImgToExcelService.closeStream();
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
-                    } finally {
-                        saveExcelTask = null;
-                        buildExcelTask = null;
-                        inFileList = null;
-                        taskUnbind(taskBean);
-                    }
-                    taskBean.getMassageLabel().setText("所有数据已保存到： " + excelPath);
-                    taskBean.getMassageLabel().setTextFill(Color.GREEN);
+                        taskBean.getMassageLabel().setText("所有数据已保存到： " + excelPath);
+                        taskBean.getMassageLabel().setTextFill(Color.GREEN);
+                    });
+                    executorService.execute(saveExcelTask);
                 });
-                executorService.execute(saveExcelTask);
-            });
-            executorService.execute(buildExcelTask);
+                executorService.execute(buildExcelTask);
+            }
         });
     }
 

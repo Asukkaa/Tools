@@ -841,7 +841,7 @@ public class FileRenameController extends ToolsProperties {
             errString += "错误的名称：\n" + errNames;
         }
         if (StringUtils.isNotBlank(errString)) {
-            Alert alert = creatErrorDialog(errString);
+            Alert alert = creatErrorAlert(errString);
             alert.setHeaderText("文件重命名配置错误");
             // 展示弹窗
             alert.showAndWait();

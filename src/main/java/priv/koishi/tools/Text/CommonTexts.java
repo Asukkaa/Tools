@@ -155,7 +155,9 @@ public class CommonTexts {
 
     public static final String text_group = " 组数据，匹配到 ";
 
-    public static final String text_picture = " 张图片，总大小 ";
+    public static final String text_picture = " 张图片，";
+
+    public static final String text_totalFileSize = "总大小 ";
 
     public static final String text_file = " 个文件 ";
 
