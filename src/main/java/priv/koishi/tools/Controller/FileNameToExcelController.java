@@ -230,14 +230,20 @@ public class FileNameToExcelController extends ToolsProperties {
         if (inFileList.isEmpty()) {
             throw new Exception(text_selectNull);
         }
+        Scene scene = anchorPane_Name.getScene();
+        ChoiceBox<?> sort = (ChoiceBox<?>) scene.lookup("#sort_Set");
+        String sortValue = (String) sort.getValue();
+        CheckBox reverseSort = (CheckBox) scene.lookup("#reverseSort_Set");
         TaskBean<FileBean> taskBean = new TaskBean<>();
         taskBean.setShowFileType(showFileType_Name.isSelected())
+                .setReverseSort(reverseSort.isSelected())
                 .setComparatorTableColumn(size_Name)
                 .setDisableControls(disableControls)
                 .setProgressBar(progressBar_Name)
                 .setMassageLabel(fileNumber_Name)
                 .setTableView(tableView_Name)
                 .setInFileList(inFileList)
+                .setSortType(sortValue)
                 .setTabId(tabId);
         //获取Task任务
         Task<Void> readFileTask = readFile(taskBean);

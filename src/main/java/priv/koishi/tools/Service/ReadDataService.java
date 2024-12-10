@@ -16,7 +16,10 @@ import priv.koishi.tools.Vo.FileNumVo;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import static priv.koishi.tools.Service.FileRenameService.buildRename;
@@ -40,7 +43,6 @@ public class ReadDataService {
             protected List<FileNumBean> call() throws Exception {
                 //改变要防重复点击的组件状态
                 changeDisableControls(taskBean, true);
-                //Task的Message更新方法,这边修改之后,上面的监听方法会经过
                 updateMessage(text_readData);
                 List<FileNumBean> fileNumBeanList = new ArrayList<>();
                 String excelInPath = excelConfig.getInPath();
@@ -95,7 +97,6 @@ public class ReadDataService {
                     }
                     fileNumBean.setGroupId(++id);
                     fileNumBeanList.add(fileNumBean);
-                    //Task的Progress(进度)更新方法,进度条的进度与该属性挂钩
                     updateProgress(i, maxRow);
                 }
                 workbook.close();
@@ -164,6 +165,8 @@ public class ReadDataService {
                 }
                 //组装文件数据
                 List<File> inFileList = taskBean.getInFileList();
+                //数据排序
+                comparingData(taskBean, inFileList);
                 List<FileBean> fileBeans = new ArrayList<>();
                 int inFileSize = inFileList.size();
                 for (int i = 0; i < inFileSize; i++) {
@@ -197,7 +200,6 @@ public class ReadDataService {
                     fileBean.setCreatDate(getFileCreatTime(f));
                     fileBean.setUpdateDate(getFileUpdateTime(f));
                     fileBeans.add(fileBean);
-                    //Task的Progress(进度)更新方法,进度条的进度与该属性挂钩
                     updateProgress(i + 1, inFileSize);
                 }
                 updateMessage(text_allHave + inFileSize + text_file);
@@ -206,6 +208,118 @@ public class ReadDataService {
                 return null;
             }
         };
+    }
+
+    /**
+     * 数据排序
+     */
+    private static void comparingData(TaskBean<?> taskBean, List<File> fileList) {
+        String sortType = taskBean.getSortType();
+        //是否倒序排序
+        boolean reverseSort = taskBean.isReverseSort();
+        switch (sortType) {
+            case "按文件名称排序": {
+                comparingByName(fileList, reverseSort);
+                break;
+            }
+            case "按文件创建时间排序": {
+                comparingByCreatTime(fileList, reverseSort);
+                break;
+            }
+            case "按文件修改时间排序": {
+                comparingByUpdateTime(fileList, reverseSort);
+                break;
+            }
+            case "按文件大小排序": {
+                comparingBySize(fileList, reverseSort);
+                break;
+            }
+            case "按文件类型排序": {
+                comparingByType(fileList, reverseSort);
+                break;
+            }
+        }
+    }
+
+    /**
+     * 按文件类型排序
+     */
+    private static void comparingByType(List<File> fileList, boolean reverseSort) {
+        fileList.sort((o1, o2) -> {
+            // 比较文件后缀名
+            String ext1 = getFileType(o1);
+            String ext2 = getFileType(o2);
+            if (reverseSort) {
+                return ext2.compareTo(ext1);
+            } else {
+                return ext1.compareTo(ext2);
+            }
+        });
+    }
+
+    /**
+     * 按文件大小排序
+     */
+    private static void comparingBySize(List<File> fileList, boolean reverseSort) {
+        if (reverseSort) {
+            fileList.sort((o1, o2) -> {
+                long size1 = o1.length();
+                long size2 = o2.length();
+                return (int) (size2 - size1);
+            });
+        } else {
+            fileList.sort(Comparator.comparing(File::length));
+        }
+    }
+
+    /**
+     * 按文件修改时间排序
+     */
+    private static void comparingByUpdateTime(List<File> fileList, boolean reverseSort) {
+        if (reverseSort) {
+            fileList.sort((f1, f2) -> {
+                long diff = f2.lastModified() - f1.lastModified();
+                if (diff > 0) {
+                    return 1;
+                } else if (diff == 0) {
+                    return 0;
+                } else {
+                    return -1;
+                }
+            });
+        } else {
+            fileList.sort(Comparator.comparing(File::lastModified));
+        }
+    }
+
+    /**
+     * 按文件创建时间排序
+     */
+    private static void comparingByCreatTime(List<File> fileList, boolean reverseSort) {
+        fileList.sort((o1, o2) -> {
+            try {
+                BasicFileAttributes attr1 = Files.readAttributes(o1.toPath(), BasicFileAttributes.class);
+                BasicFileAttributes attr2 = Files.readAttributes(o2.toPath(), BasicFileAttributes.class);
+                if (reverseSort) {
+                    return Long.compare(attr2.creationTime().toMillis(), attr1.creationTime().toMillis());
+                } else {
+                    return Long.compare(attr1.creationTime().toMillis(), attr2.creationTime().toMillis());
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    /**
+     * 按文件名称排序
+     */
+    private static void comparingByName(List<File> fileList, boolean reverseSort) {
+        if (reverseSort) {
+            fileList.sort((o1, o2) -> o2.getName().compareTo(o1.getName()));
+        } else {
+            fileList.sort(Comparator.comparing(File::getName));
+        }
     }
 
 }

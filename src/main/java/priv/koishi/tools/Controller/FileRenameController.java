@@ -317,13 +317,19 @@ public class FileRenameController extends ToolsProperties {
         if (inFileList.isEmpty()) {
             throw new Exception(text_selectNull);
         }
+        Scene scene = anchorPane_Re.getScene();
+        ChoiceBox<?> sort = (ChoiceBox<?>) scene.lookup("#sort_Set");
+        CheckBox reverseSort = (CheckBox) scene.lookup("#reverseSort_Set");
+        String sortValue = (String) sort.getValue();
         TaskBean<FileBean> taskBean = new TaskBean<>();
-        taskBean.setDisableControls(disableControls)
+        taskBean.setReverseSort(reverseSort.isSelected())
+                .setDisableControls(disableControls)
+                .setComparatorTableColumn(size_Re)
                 .setProgressBar(progressBar_Re)
                 .setMassageLabel(fileNumber_Re)
                 .setTableView(tableView_Re)
                 .setInFileList(inFileList)
-                .setComparatorTableColumn(size_Re)
+                .setSortType(sortValue)
                 .setShowFileType(false)
                 .setTabId(tabId);
         //匹配重命名规则

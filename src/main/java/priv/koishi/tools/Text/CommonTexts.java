@@ -67,6 +67,11 @@ public class CommonTexts {
 
     public static final String tip_logsNum = "logs 文件夹下只会保留该配置所填写数量的 log 日志";
 
+    public static final String tip_sort = "本设置将影响 按指定规则批量重命名文件 与 获取文件夹下的文件信息 功能的文件查询默认排序";
+
+    public static final String tip_reverseSort = "默认不勾选，排序为从小到大，勾选后排序为从大到小";
+
+
     public static final String tip_option = """
             插入：在匹配的字符位置插入所填写的字符串
             替换：将匹配的字符串替换为所填写的字符串
@@ -220,6 +225,10 @@ public class CommonTexts {
     public static final String activation = "1";
 
     public static final String unActivation = "0";
+
+    public static final String key_sort = "sort";
+
+    public static final String key_reverseSort = "reverseSort";
 
     public static final String key_logsNum = "logsNum";
 

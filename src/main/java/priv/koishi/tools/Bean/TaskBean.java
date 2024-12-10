@@ -87,4 +87,14 @@ public class TaskBean<T> {
      */
     List<Control> disableControls;
 
+    /**
+     * 默认排序类型
+     */
+    String sortType;
+
+    /**
+     * 是否倒序排序
+     */
+    boolean reverseSort;
+
 }

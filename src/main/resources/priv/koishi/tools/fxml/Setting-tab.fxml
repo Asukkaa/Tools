@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.collections.FXCollections?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
-<AnchorPane fx:id="anchorPane_Set" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" stylesheets="@../css/Styles.css"
+<?import java.lang.String?>
+<AnchorPane fx:id="anchorPane_Set" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            stylesheets="@../css/Styles.css"
             fx:controller="priv.koishi.tools.Controller.SettingController">
     <VBox fx:id="vBox_Set" spacing="10" AnchorPane.topAnchor="10">
 
@@ -33,6 +35,29 @@
 
             <CheckBox fx:id="fullWindow_Set" onAction="#loadFullWindowAction" prefHeight="25" style="-fx-cursor: hand"
                       selected="true" text="记住程序关闭时窗口是否最大化"/>
+        </HBox>
+
+        <HBox spacing="10">
+            <Label prefHeight="25" text="文件查询默认排序设置:"/>
+            <ChoiceBox fx:id="sort_Set" onAction="#sortAction" prefHeight="25" prefWidth="150">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="不排序"/>
+                        <String fx:value="按文件名称排序"/>
+                        <String fx:value="按文件创建时间排序"/>
+                        <String fx:value="按文件修改时间排序"/>
+                        <String fx:value="按文件大小排序"/>
+                        <String fx:value="按文件类型排序"/>
+                    </FXCollections>
+                </items>
+                <value>
+                    <String fx:value="按文件修改时间排序"/>
+                </value>
+            </ChoiceBox>
+
+            <Label prefWidth="45"/>
+            <CheckBox fx:id="reverseSort_Set" onAction="#reverseSorAction" prefHeight="25" style="-fx-cursor: hand"
+                      text="默认倒序排序"/>
         </HBox>
 
         <Separator/>

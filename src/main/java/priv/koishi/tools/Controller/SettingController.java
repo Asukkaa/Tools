@@ -4,10 +4,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -76,13 +73,16 @@ public class SettingController {
     private Button reLaunch_Set;
 
     @FXML
+    private ChoiceBox<String> sort_Set;
+
+    @FXML
     private TextField batMemory_Set, logsNum_Set;
 
     @FXML
     private Label mail_set, appMemory_Set, thisPath_Set, logsPath_Set, systemMemory_Set;
 
     @FXML
-    private CheckBox loadRename_Set, loadFileNum_Set, loadFileName_Set, loadImgToExcel_Set, lastTab_Set, fullWindow_Set;
+    private CheckBox loadRename_Set, loadFileNum_Set, loadFileName_Set, loadImgToExcel_Set, lastTab_Set, fullWindow_Set, reverseSort_Set;
 
     /**
      * 组件自适应宽高
@@ -162,7 +162,7 @@ public class SettingController {
     private void setLoadLastConfig(Properties prop, CheckBox checkBox, String configFile) throws IOException {
         InputStream input = checkRunningInputStream(configFile);
         prop.load(input);
-        checkBox.setSelected(activation.equals(prop.getProperty(key_loadLastConfig)));
+        setControlLastConfig(checkBox, prop, key_loadLastConfig, false, null);
         input.close();
     }
 
@@ -172,9 +172,11 @@ public class SettingController {
     private void getConfig(Properties prop) throws IOException {
         InputStream input = checkRunningInputStream(configFile);
         prop.load(input);
-        lastTab_Set.setSelected(activation.equals(prop.getProperty(key_loadLastConfig)));
-        fullWindow_Set.setSelected(activation.equals(prop.getProperty(key_loadLastFullWindow)));
+        setControlLastConfig(fullWindow_Set, prop, key_loadLastFullWindow, false, null);
+        setControlLastConfig(lastTab_Set, prop, key_loadLastConfig, false, null);
+        setControlLastConfig(reverseSort_Set, prop, key_reverseSort, false, null);
         setControlLastConfig(logsNum_Set, prop, key_logsNum, false, null);
+        setControlLastConfig(sort_Set, prop, key_sort, false, null);
         input.close();
     }
 
@@ -267,6 +269,14 @@ public class SettingController {
     }
 
     /**
+     * 设置鼠标悬停提示
+     */
+    private void setToolTip() {
+        addToolTip(sort_Set, tip_sort);
+        addToolTip(reverseSort_Set, tip_reverseSort);
+    }
+
+    /**
      * 界面初始化
      */
     @FXML
@@ -283,6 +293,8 @@ public class SettingController {
         getMaxMemory();
         //清理多余log文件
         deleteLogs();
+        //设置鼠标悬停提示
+        setToolTip();
         //macos暂时不支持重启程序
         if (systemName.contains(macos)) {
             reLaunch_Set.setVisible(false);
@@ -347,6 +359,29 @@ public class SettingController {
         Platform.exit();
         ProcessBuilder processBuilder = new ProcessBuilder(currentDir + File.separator + "Tools.exe");
         processBuilder.start();
+    }
+
+    /**
+     * 文件查询默认排序设置监听
+     */
+    @FXML
+    private void sortAction() throws IOException {
+        InputStream input = checkRunningInputStream(configFile);
+        Properties prop = new Properties();
+        prop.load(input);
+        prop.setProperty(key_sort, sort_Set.getValue());
+        OutputStream output = checkRunningOutputStream(configFile);
+        prop.store(output, null);
+        input.close();
+        output.close();
+    }
+
+    /**
+     * 倒序排序设置
+     */
+    @FXML
+    private void reverseSorAction() throws IOException {
+        setLoadLastConfigCheckBox(reverseSort_Set, configFile, key_reverseSort);
     }
 
 }
