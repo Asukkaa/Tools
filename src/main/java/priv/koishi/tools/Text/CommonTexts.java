@@ -328,6 +328,10 @@ public class CommonTexts {
 
     public static final String key_lastExportTitle = "lastExportTitle";
 
+    public static final String key_lastExportFileNum = "lastExportFileNum";
+
+    public static final String key_lastExportFileSize = "lastExportFileSize";
+
     public static final String key_lastExportFullList = "lastExportFullList";
 
     public static final String key_defaultOutFileName = "defaultOutFileName";

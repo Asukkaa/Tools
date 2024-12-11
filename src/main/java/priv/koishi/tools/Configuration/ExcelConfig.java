@@ -63,11 +63,6 @@ public class ExcelConfig {
     int maxRowNum;
 
     /**
-     * 导出excel文件内容
-     */
-    String exportType;
-
-    /**
      * 导出excel图片宽
      */
     int imgWidth;
@@ -91,5 +86,15 @@ public class ExcelConfig {
      * 导出完整表设置
      */
     boolean exportFullList;
+
+    /**
+     * 导出文件数量设置
+     */
+    boolean exportFileNum;
+
+    /**
+     * 导出每项数据的文件大小设置
+     */
+    boolean exportFileSize;
 
 }

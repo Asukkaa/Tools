@@ -10,7 +10,6 @@ module priv.koishi.tools {
     requires org.apache.logging.log4j;
     requires org.apache.logging.log4j.core;
     requires jdk.management;
-//    requires easyexcel.core;
 
     opens priv.koishi.tools to javafx.fxml;
     exports priv.koishi.tools;

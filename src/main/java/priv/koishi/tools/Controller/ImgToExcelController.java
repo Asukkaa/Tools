@@ -43,6 +43,7 @@ import static priv.koishi.tools.Utils.CommonUtils.checkRunningOutputStream;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
+import static priv.koishi.tools.Utils.UiUtils.setControlLastConfig;
 
 /**
  * @author KOISHI
@@ -121,7 +122,6 @@ public class ImgToExcelController extends ToolsProperties {
      */
     private final CommonThreadPoolExecutor commonThreadPoolExecutor = new CommonThreadPoolExecutor();
 
-
     /**
      * 线程池实例
      */
@@ -159,13 +159,13 @@ public class ImgToExcelController extends ToolsProperties {
     private Label inPath_Img, outPath_Img, excelPath_Img, fileNumber_Img, log_Img, maxImg_Img, tip_Img;
 
     @FXML
-    private CheckBox jpg_Img, png_Img, jpeg_Img, recursion_Img, showFileType_Img, openDirectory_Img, openFile_Img, noImg_Img;
-
-    @FXML
     private Button fileButton_Img, reselectButton_Img, clearButton_Img, exportButton_Img, cancel_Img, outButton_Img, excelPathButton_Img;
 
     @FXML
     private TextField imgWidth_Img, imgHeight_Img, excelName_Img, sheetName_Img, subCode_Img, startRow_Img, startCell_Img, readRow_Img, readCell_Img, maxRow_Img, maxImgNum_Img;
+
+    @FXML
+    private CheckBox jpg_Img, png_Img, jpeg_Img, recursion_Img, showFileType_Img, openDirectory_Img, openFile_Img, noImg_Img, exportTitle_Img, exportFileNum_Img, exportFileSize_Img;
 
     /**
      * 组件自适应宽高
@@ -196,13 +196,12 @@ public class ImgToExcelController extends ToolsProperties {
         Button removeAll = (Button) scene.lookup("#clearButton_Img");
         Button exportAll = (Button) scene.lookup("#exportButton_Img");
         Button reselect = (Button) scene.lookup("#reselectButton_Img");
-        CheckBox noImg = (CheckBox) scene.lookup("#noImg_Img");
         Label maxImg = (Label) scene.lookup("#maxImg_Img");
         TextField maxImgNum = (TextField) scene.lookup("#maxImgNum_Img");
         Label tip_Img = (Label) scene.lookup("#tip_Img");
         ProgressBar progressBar = (ProgressBar) scene.lookup("#progressBar_Img");
         Button cancel = (Button) scene.lookup("#cancel_Img");
-        fileNum.setPrefWidth(tableWidth - removeAll.getWidth() - exportAll.getWidth() - reselect.getWidth() - noImg.getWidth() - maxImg.getWidth() - maxImgNum.getWidth() - 70);
+        fileNum.setPrefWidth(tableWidth - removeAll.getWidth() - exportAll.getWidth() - reselect.getWidth() - maxImg.getWidth() - maxImgNum.getWidth() - 60);
         tip_Img.setPrefWidth(tableWidth - progressBar.getWidth() - cancel.getWidth() - 20);
     }
 
@@ -260,6 +259,15 @@ public class ImgToExcelController extends ToolsProperties {
         CheckBox noImg = (CheckBox) scene.lookup("#noImg_Img");
         String noImgValue = noImg.isSelected() ? activation : unActivation;
         prop.put(key_lastNoImg, noImgValue);
+        CheckBox exportFileNum = (CheckBox) scene.lookup("#exportFileNum_Img");
+        String exportFileNumValue = exportFileNum.isSelected() ? activation : unActivation;
+        prop.put(key_lastExportFileNum, exportFileNumValue);
+        CheckBox exportFileSize = (CheckBox) scene.lookup("#exportFileSize_Img");
+        String exportFileSizeValue = exportFileSize.isSelected() ? activation : unActivation;
+        prop.put(key_lastExportFileSize, exportFileSizeValue);
+        CheckBox exportTitle = (CheckBox) scene.lookup("#exportTitle_Img");
+        String exportTitleValue = exportTitle.isSelected() ? activation : unActivation;
+        prop.put(key_lastExportTitle, exportTitleValue);
         List<String> lastFilterFileTypes = new ArrayList<>();
         CheckBox jpgCheckBox = (CheckBox) scene.lookup("#jpg_Img");
         if (jpgCheckBox.isSelected()) {
@@ -411,6 +419,9 @@ public class ImgToExcelController extends ToolsProperties {
             setControlLastConfig(excelPath_Img, prop, key_lastExcelPath, false, anchorPane_Img);
             setControlLastConfig(maxImgNum_Img, prop, key_lastMaxImgNum, false, null);
             setControlLastConfig(noImg_Img, prop, key_lastNoImg, false, null);
+            setControlLastConfig(exportTitle_Img, prop, key_lastExportTitle, false, null);
+            setControlLastConfig(exportFileNum_Img, prop, key_lastExportFileNum, false, null);
+            setControlLastConfig(exportFileSize_Img, prop, key_lastExportFileSize, false, null);
             String lastFilterFileTypes = prop.getProperty(key_lastFilterFileType);
             if (StringUtils.isNotBlank(lastFilterFileTypes)) {
                 jpg_Img.setSelected(lastFilterFileTypes.contains(jpg));
@@ -620,7 +631,10 @@ public class ImgToExcelController extends ToolsProperties {
                 .setImgWidth(setDefaultIntValue(imgWidth_Img, defaultImgWidth, 0, null))
                 .setOutName(setDefaultFileName(excelName_Img, defaultOutFileName))
                 .setSheet(setDefaultStrValue(sheetName_Img, defaultSheetName))
+                .setExportFileSize(exportFileSize_Img.isSelected())
+                .setExportFileNum(exportFileNum_Img.isSelected())
                 .setOutExcelExtension(excelType_Img.getValue())
+                .setExportTitle(exportTitle_Img.isSelected())
                 .setInPath(excelPath_Img.getText())
                 .setNoImg(noImg_Img.isSelected())
                 .setOutPath(outFilePath);

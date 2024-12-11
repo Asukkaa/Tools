@@ -83,7 +83,11 @@
         <HBox spacing="10">
             <Button fx:id="excelPathButton_Img" onAction="#getExcelPath" style="-fx-cursor: hand"
                     text="选择excel模板位置"/>
-            <Label fx:id="excelPath_Img" prefHeight="20" style="-fx-font-size: 15px;"/>
+            <Label fx:id="excelPath_Img"  prefWidth="310" prefHeight="20" style="-fx-font-size: 15px;"/>
+            <CheckBox fx:id="noImg_Img" prefHeight="20" style="-fx-cursor: hand" text="标记没有图片的数据"/>
+            <CheckBox fx:id="exportTitle_Img" prefHeight="20" style="-fx-cursor: hand" text="导出表头"/>
+            <CheckBox fx:id="exportFileNum_Img" prefHeight="20" style="-fx-cursor: hand" text="导出文件数量"/>
+            <CheckBox fx:id="exportFileSize_Img" prefHeight="20" style="-fx-cursor: hand" text="导出每项数据的文件大小"/>
         </HBox>
 
         <HBox spacing="10">
@@ -92,7 +96,6 @@
             <Button fx:id="exportButton_Img" onAction="#exportAll" style="-fx-cursor: hand" text="开始导出"/>
             <Label fx:id="maxImg_Img" prefHeight="20" text="最大图片匹配数量:"/>
             <TextField fx:id="maxImgNum_Img" prefHeight="20" prefWidth="60"/>
-            <CheckBox fx:id="noImg_Img" prefHeight="20" style="-fx-cursor: hand" text="标记没有图片的数据"/>
             <Label fx:id="fileNumber_Img" prefHeight="20" text="列表为空" alignment="CENTER_RIGHT"/>
         </HBox>
 

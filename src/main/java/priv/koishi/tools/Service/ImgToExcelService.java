@@ -7,6 +7,7 @@ import org.apache.poi.ss.usermodel.ClientAnchor;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.*;
 import priv.koishi.tools.Bean.FileNumBean;
@@ -19,9 +20,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 import static priv.koishi.tools.Text.CommonTexts.*;
+import static priv.koishi.tools.Utils.ExcelUtils.*;
+import static priv.koishi.tools.Utils.ExcelUtils.buildExcelTitle;
 import static priv.koishi.tools.Utils.FileUtils.checkCopyDestination;
 import static priv.koishi.tools.Utils.FileUtils.getFileType;
 import static priv.koishi.tools.Utils.UiUtils.changeDisableControls;
@@ -75,27 +79,66 @@ public class ImgToExcelService {
                 taskBean.getCancelButton().setVisible(true);
                 String sheetName = excelConfig.getSheet();
                 int startRowNum = excelConfig.getStartRowNum();
+                int rowNum = startRowNum;
                 int startCellNum = excelConfig.getStartCellNum();
+                int maxCellNum = startCellNum;
                 List<FileNumBean> fileBeans = taskBean.getBeanList();
-                int fileNum = fileBeans.size();
-                updateMessage(text_identify + fileNum + text_data);
                 XSSFSheet sheet;
                 if (StringUtils.isBlank(sheetName)) {
                     sheet = sxssfWorkbook.getXSSFWorkbook().getSheetAt(0);
                 } else {
                     sheet = sxssfWorkbook.getXSSFWorkbook().getSheet(sheetName);
                 }
+                int fileNum = fileBeans.size();
+                updateMessage(text_identify + fileNum + text_data);
+                boolean exportFileNum = excelConfig.isExportFileNum();
+                boolean exportFileSize = excelConfig.isExportFileSize();
+                List<String> titles = new ArrayList<>();
+                //创建表头
+                if (excelConfig.isExportTitle()) {
+                    titles = buildTitles(exportFileNum, exportFileSize, true);
+                    rowNum = buildExcelTitle(sheet, startRowNum, titles, startCellNum);
+                }
                 for (int i = 0; i < fileNum; i++) {
                     if (isCancelled()) {
                         closeStream();
                         break;
                     }
-                    List<String> imgList = fileBeans.get(i).getFilePathList();
-                    buildImgExcel(imgList, excelConfig, startCellNum, startRowNum, sheet, sxssfWorkbook);
+                    FileNumBean fileBean = fileBeans.get(i);
+                    List<String> imgList = fileBean.getFilePathList();
+                    XSSFRow row = getOrCreateRow(sheet, rowNum);
+                    XSSFCell startCell = row.createCell(startCellNum);
+                    //附加项只导出文件数量
+                    if (exportFileNum && !exportFileSize) {
+                        startCell.setCellValue(fileBean.getGroupNumber());
+                        maxCellNum = buildImgExcel(imgList, excelConfig, startCellNum + 1, rowNum, sheet, sxssfWorkbook, row, maxCellNum);
+                    }
+                    //附加项只导出文件大小
+                    if (!exportFileNum && exportFileSize) {
+                        startCell.setCellValue(fileBean.getFileUnitSize());
+                        maxCellNum = buildImgExcel(imgList, excelConfig, startCellNum + 1, rowNum, sheet, sxssfWorkbook, row, maxCellNum);
+                    }
+                    //附加项导出文件数量和大小
+                    if (exportFileNum && exportFileSize) {
+                        startCell.setCellValue(fileBean.getGroupNumber());
+                        int sizeCellNum = startCellNum + 1;
+                        XSSFCell sizeCell = row.createCell(sizeCellNum);
+                        sizeCell.setCellValue(fileBean.getFileUnitSize());
+                        maxCellNum = buildImgExcel(imgList, excelConfig, sizeCellNum + 1, rowNum, sheet, sxssfWorkbook, row, maxCellNum);
+                    }
+                    //不导出附加项
+                    if (!exportFileNum && !exportFileSize) {
+                        maxCellNum = buildImgExcel(imgList, excelConfig, startCellNum, rowNum, sheet, sxssfWorkbook, row, maxCellNum);
+                    }
                     updateMessage(text_printing + (i + 1) + "/" + fileNum + text_data);
                     updateProgress(i + 1, fileNum);
-                    startRowNum++;
+                    rowNum++;
                 }
+                //合并图片表头单元格
+                if (excelConfig.isExportTitle()) {
+                    sheet.addMergedRegion(new CellRangeAddress(startRowNum, startRowNum, startCellNum + titles.size() - 1, maxCellNum - 1));
+                }
+                updateMessage(text_printDown);
                 return sxssfWorkbook;
             }
         };
@@ -104,21 +147,14 @@ public class ImgToExcelService {
     /**
      * 插入图片
      */
-    private static void buildImgExcel(List<String> imgList, ExcelConfig excelConfig, int startCellNum,
-                                      int startRowNum, XSSFSheet sheet, SXSSFWorkbook sxssfWorkbook) throws IOException {
-        int cellNum = startCellNum;
+    private static int buildImgExcel(List<String> imgList, ExcelConfig excelConfig, int cellNum, int rowNum,
+                                     XSSFSheet sheet, SXSSFWorkbook sxssfWorkbook, XSSFRow row, int maxCellNum) throws IOException {
         if (CollectionUtils.isEmpty(imgList)) {
-            XSSFRow row = sheet.getRow(startRowNum);
-            if (row == null) {
-                row = sheet.createRow(startRowNum);
-            }
-            XSSFCell cell = row.getCell(startCellNum);
-            if (cell == null) {
-                cell = row.createCell(startCellNum);
-            }
+            XSSFCell cell = getOrCreateCell(cellNum, row);
             if (excelConfig.isNoImg()) {
                 cell.setCellValue("无图片");
             }
+            maxCellNum = Math.max(maxCellNum, cellNum);
         } else {
             sxssfWorkbook.setCompressTempFiles(true);
             for (String i : imgList) {
@@ -128,9 +164,9 @@ public class ImgToExcelService {
                 ClientAnchor anchor = helper.createClientAnchor();
                 // 设置图片的起始位置以及大小
                 anchor.setCol1(cellNum);
-                anchor.setRow1(startRowNum);
+                anchor.setRow1(rowNum);
                 anchor.setCol2(cellNum + 1);
-                anchor.setRow2(startRowNum + 1);
+                anchor.setRow2(rowNum + 1);
                 anchor.setAnchorType(ClientAnchor.AnchorType.MOVE_DONT_RESIZE);
                 String extension = getFileType(new File(i));
                 // 读取图片文件
@@ -146,10 +182,12 @@ public class ImgToExcelService {
                     inputStream.close();
                 }
                 sheet.setColumnWidth(cellNum, 256 * excelConfig.getImgWidth());
-                sheet.getRow(startRowNum).setHeightInPoints(excelConfig.getImgHeight());
+                sheet.getRow(rowNum).setHeightInPoints(excelConfig.getImgHeight());
                 cellNum++;
+                maxCellNum = Math.max(maxCellNum, cellNum);
             }
         }
+        return maxCellNum;
     }
 
     /**

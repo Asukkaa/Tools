@@ -1,7 +1,9 @@
 package priv.koishi.tools.Service;
 
 import javafx.concurrent.Task;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -10,13 +12,14 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.ExcelConfig;
-import priv.koishi.tools.Utils.CommonUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import static priv.koishi.tools.Text.CommonTexts.*;
+import static priv.koishi.tools.Utils.ExcelUtils.*;
 import static priv.koishi.tools.Utils.FileUtils.checkCopyDestination;
 import static priv.koishi.tools.Utils.UiUtils.changeDisableControls;
 
@@ -47,6 +50,7 @@ public class FileNumToExcelService {
                 SXSSFWorkbook sxssfWorkbook = new SXSSFWorkbook(workbook);
                 String sheetName = excelConfig.getSheet();
                 int startRowNum = excelConfig.getStartRowNum();
+                int rowNum = startRowNum;
                 int startCellNum = excelConfig.getStartCellNum();
                 int maxCellNum = startCellNum;
                 List<FileNumBean> fileBeans = taskBean.getBeanList();
@@ -58,33 +62,51 @@ public class FileNumToExcelService {
                     sheet = sxssfWorkbook.getXSSFWorkbook().getSheet(sheetName);
                 }
                 int fileBeansSize = fileBeans.size();
+                updateMessage(text_identify + fileBeansSize + text_data);
+                boolean exportFileNum = excelConfig.isExportFileNum();
+                boolean exportFileSize = excelConfig.isExportFileSize();
+                List<String> titles = new ArrayList<>();
+                //创建表头
+                if (excelConfig.isExportTitle()) {
+                    titles = buildTitles(exportFileNum, exportFileSize, false);
+                    rowNum = buildExcelTitle(sheet, startRowNum, titles, startCellNum);
+                }
                 for (int i = 0; i < fileBeansSize; i++) {
                     FileNumBean fileBean = fileBeans.get(i);
-                    int groupNumber = fileBean.getGroupNumber();
                     List<String> fileNameList = fileBean.getFileNameList();
-                    XSSFRow row = CommonUtils.getOrCreateRow(sheet, startRowNum);
-                    XSSFCell numCell = row.createCell(startCellNum);
-                    switch (excelConfig.getExportType()) {
-                        case "文件数量": {
-                            numCell.setCellValue(groupNumber);
-                            break;
-                        }
-                        case "文件名称": {
-                            maxCellNum = buildFileNameExcel(fileNameList, row, startCellNum, maxCellNum);
-                            break;
-                        }
-                        case "文件数量和名称": {
-                            numCell.setCellValue(groupNumber);
-                            maxCellNum = buildFileNameExcel(fileNameList, row, startCellNum + 1, maxCellNum);
-                            break;
-                        }
+                    XSSFRow row = getOrCreateRow(sheet, rowNum);
+                    XSSFCell startCell = row.createCell(startCellNum);
+                    //附加项只导出文件数量
+                    if (exportFileNum && !exportFileSize) {
+                        startCell.setCellValue(fileBean.getGroupNumber());
+                        maxCellNum = buildFileName(fileNameList, row, startCellNum + 1, maxCellNum);
+                    }
+                    //附加项只导出文件大小
+                    if (!exportFileNum && exportFileSize) {
+                        startCell.setCellValue(fileBean.getFileUnitSize());
+                        maxCellNum = buildFileName(fileNameList, row, startCellNum + 1, maxCellNum);
+                    }
+                    //附加项导出文件数量和大小
+                    if (exportFileNum && exportFileSize) {
+                        startCell.setCellValue(fileBean.getGroupNumber());
+                        int sizeCellNum = startCellNum + 1;
+                        XSSFCell sizeCell = row.createCell(sizeCellNum);
+                        sizeCell.setCellValue(fileBean.getFileUnitSize());
+                        maxCellNum = buildFileName(fileNameList, row, sizeCellNum + 1, maxCellNum);
+                    }
+                    //不导出附加项
+                    if (!exportFileNum && !exportFileSize) {
+                        maxCellNum = buildFileName(fileNameList, row, startCellNum, maxCellNum);
                     }
                     updateMessage(text_printing + (i + 1) + "/" + fileBeansSize + text_data);
-                    //Task的Progress(进度)更新方法,进度条的进度与该属性挂钩
                     updateProgress(i + 1, fileBeansSize);
-                    startRowNum++;
+                    rowNum++;
                 }
-                CommonUtils.autoSizeExcelCells(sheet, maxCellNum, startCellNum);
+                //合并文件名表头单元格
+                if (excelConfig.isExportTitle()) {
+                    sheet.addMergedRegion(new CellRangeAddress(startRowNum, startRowNum, startCellNum + titles.size() - 1, maxCellNum - 1));
+                }
+                autoSizeExcelCells(sheet, maxCellNum, startCellNum);
                 updateMessage(text_printDown);
                 return sxssfWorkbook;
             }
@@ -92,36 +114,18 @@ public class FileNumToExcelService {
     }
 
     /**
-     * 处理文件名称
+     * 处理文件名称列
      */
-    private static int buildFileNameExcel(List<String> fileNameList, XSSFRow row, int cellNum, int maxCellNum) {
-        for (String s : fileNameList) {
-            XSSFCell nameCell = row.createCell(cellNum);
-            nameCell.setCellValue(s);
-            cellNum++;
-            if (cellNum > maxCellNum) {
-                maxCellNum = cellNum;
+    private static int buildFileName(List<String> fileNameList, XSSFRow row, int cellNum, int maxCellNum) {
+        if (CollectionUtils.isNotEmpty(fileNameList)) {
+            for (String s : fileNameList) {
+                XSSFCell nameCell = row.createCell(cellNum);
+                nameCell.setCellValue(s);
+                cellNum++;
+                maxCellNum = Math.max(maxCellNum, cellNum);
             }
         }
         return maxCellNum;
     }
-
-//    public void simpleRead(ExcelConfigBean excelConfigBean) {
-//        String fileName = excelConfigBean.getInPath();
-//        // 这里 需要指定读用哪个class去读，然后读取第一个sheet 文件流会自动关闭
-//        EasyExcel.read(fileName, FileNumBean.class, new FileNumBeanListener()).sheet(excelConfigBean.getSheet()).doRead();
-//    }
-//
-//    public static class FileNumBeanListener extends AnalysisEventListener<FileNumBean> {
-//        @Override
-//        public void invoke(FileNumBean data, AnalysisContext context) {
-//            System.out.println("读取到数据：" + data);
-//        }
-//
-//        @Override
-//        public void doAfterAllAnalysed(AnalysisContext context) {
-//            // 所有数据解析完成后做的事情
-//        }
-//    }
 
 }

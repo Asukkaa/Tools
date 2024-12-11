@@ -11,16 +11,19 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import priv.koishi.tools.Bean.FileBean;
 import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.ExcelConfig;
-import priv.koishi.tools.Utils.CommonUtils;
 
 import java.io.FileInputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static priv.koishi.tools.Text.CommonTexts.*;
-import static priv.koishi.tools.Utils.CommonUtils.autoSizeExcelCell;
-import static priv.koishi.tools.Utils.CommonUtils.getOrCreateRow;
+import static priv.koishi.tools.Utils.CommonUtils.getPropertyName;
+import static priv.koishi.tools.Utils.CommonUtils.isGetterMethod;
+import static priv.koishi.tools.Utils.ExcelUtils.*;
 import static priv.koishi.tools.Utils.FileUtils.checkCopyDestination;
 import static priv.koishi.tools.Utils.UiUtils.changeDisableControls;
 import static priv.koishi.tools.Utils.UiUtils.checkExcelParam;
@@ -115,12 +118,7 @@ public class FileNameToExcelService {
                     });
                     //创建表头
                     if (excelConfig.isExportTitle()) {
-                        XSSFRow row = getOrCreateRow(sheet, startRowNum);
-                        for (int i = 0; i < titles.size(); i++) {
-                            XSSFCell cell = row.createCell(startCellNum + i);
-                            cell.setCellValue(titles.get(i));
-                        }
-                        startRowNum++;
+                        startRowNum = buildExcelTitle(sheet, startRowNum, titles, startCellNum);
                     }
                     //组装excel数据
                     int maxCellNum = startCellNum;
@@ -142,37 +140,18 @@ public class FileNameToExcelService {
                             int cellNum = startCellNum + j;
                             XSSFCell cell = row.createCell(cellNum);
                             cell.setCellValue(properties.get(ids.get(j)).toString());
-                            if (cellNum > maxCellNum) {
-                                maxCellNum = cellNum;
-                            }
+                            maxCellNum = Math.max(maxCellNum, cellNum);
                         }
                         updateMessage(text_printing + (i + 1) + "/" + dataSize + text_file + fileBean.getName() + text_coordinate + startRowNum + "," + startCellNum);
                         updateProgress(i + 1, dataSize);
                         startRowNum++;
                     }
-                    CommonUtils.autoSizeExcelCells(sheet, maxCellNum + 1, startCellNum);
+                    autoSizeExcelCells(sheet, maxCellNum + 1, startCellNum);
                 }
                 updateMessage(text_printDown);
                 return workbook;
             }
         };
-    }
-
-    /**
-     * 调用获取属性的方法
-     */
-    private static boolean isGetterMethod(Method method) {
-        return method.getName().startsWith("get")
-                && method.getParameterCount() == 0
-                && !method.getReturnType().equals(void.class)
-                && !method.isAnnotationPresent(Override.class);
-    }
-
-    /**
-     * 获取javafxBean属性名称
-     */
-    private static String getPropertyName(String getterName) {
-        return Character.toLowerCase(getterName.charAt(3)) + getterName.substring(4);
     }
 
 }

@@ -1,10 +1,9 @@
 package priv.koishi.tools.Utils;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 import java.io.*;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -169,36 +168,6 @@ public class CommonUtils {
     }
 
     /**
-     * 多列单元格自适应
-     */
-    public static void autoSizeExcelCells(XSSFSheet sheet, int maxCellNum, int startCellNum) {
-        for (int i = startCellNum; i < maxCellNum; i++) {
-            autoSizeExcelCell(sheet, i);
-        }
-    }
-
-    /**
-     * 单列单元格自适应
-     */
-    public static void autoSizeExcelCell(XSSFSheet sheet, int cellNum) {
-        sheet.autoSizeColumn(cellNum);
-        //手动调整列宽，解决中文不能自适应问题,单元格单行最长支持255*256的宽度（每个单元格样式已经设置自动换行，超出即换行）,设置最低列宽度，列宽约六个中文字符
-        int width = Math.max(15 * 256, Math.min(255 * 256, sheet.getColumnWidth(cellNum) * 12 / 10));
-        sheet.setColumnWidth(cellNum, width);
-    }
-
-    /**
-     * 获取excel行
-     */
-    public static XSSFRow getOrCreateRow(XSSFSheet sheet, int rowNum) {
-        XSSFRow row = sheet.getRow(rowNum);
-        if (row == null) {
-            row = sheet.createRow(rowNum);
-        }
-        return row;
-    }
-
-    /**
      * 获取详细的错误信息
      */
     public static String errToString(Throwable e) {
@@ -284,6 +253,24 @@ public class CommonUtils {
         Matcher matcher = pattern.matcher(input);
         // 替换所有匹配项
         return matcher.replaceAll(repl);
+    }
+
+
+    /**
+     * 调用获取属性的方法
+     */
+    public static boolean isGetterMethod(Method method) {
+        return method.getName().startsWith("get")
+                && method.getParameterCount() == 0
+                && !method.getReturnType().equals(void.class)
+                && !method.isAnnotationPresent(Override.class);
+    }
+
+    /**
+     * 获取javafxBean属性名称
+     */
+    public static String getPropertyName(String getterName) {
+        return Character.toLowerCase(getterName.charAt(3)) + getterName.substring(4);
     }
 
 }

@@ -134,16 +134,16 @@ public class FileNumToExcelController extends ToolsProperties {
     private TableColumn<FileNumBean, String> fileName_Num, groupId_Num, fileUnitSize_Num;
 
     @FXML
-    private CheckBox recursion_Num, openDirectory_Num, openFile_Num, showFileType_Num;
+    private Label outPath_Num, excelPath_Num, fileNumber_Num, inPath_Num, log_Num;
 
     @FXML
-    private ChoiceBox<String> excelType_Num, hideFileType_Num, directoryNameType_Num, exportType_Num;
+    private ChoiceBox<String> excelType_Num, hideFileType_Num, directoryNameType_Num;
 
     @FXML
-    private Label outPath_Num, excelPath_Num, fileNumber_Num, inPath_Num, log_Num, exportTypeLabel_Num;
+    private Button fileButton_Num, clearButton_Num, exportButton_Num, reselectButton_Num, excelPathButton_Num;
 
     @FXML
-    private Button fileButton_Num, clearButton_Num, exportButton_Num, reselectButton_Num, excelPathButton_Img;
+    private CheckBox recursion_Num, openDirectory_Num, openFile_Num, showFileType_Num, exportTitle_Num, exportFileNum_Num, exportFileSize_Num;
 
     @FXML
     private TextField excelName_Num, sheetName_Num, startRow_Num, startCell_Num, filterFileType_Num, subCode_Num, readRow_Num, readCell_Num, maxRow_Num;
@@ -176,11 +176,8 @@ public class FileNumToExcelController extends ToolsProperties {
         Label fileNum = (Label) scene.lookup("#fileNumber_Num");
         Button removeAll = (Button) scene.lookup("#clearButton_Num");
         Button exportAll = (Button) scene.lookup("#exportButton_Num");
-        Label exportTypeLabel = (Label) scene.lookup("#exportTypeLabel_Num");
-        ChoiceBox<?> exportType = (ChoiceBox<?>) scene.lookup("#exportType_Num");
         Button reselect = (Button) scene.lookup("#reselectButton_Num");
-        fileNum.setPrefWidth(tableWidth - removeAll.getWidth() - exportAll.getWidth() - exportTypeLabel.getWidth()
-                - exportType.getWidth() - reselect.getWidth() - 60);
+        fileNum.setPrefWidth(tableWidth - removeAll.getWidth() - exportAll.getWidth() - reselect.getWidth() - 40);
     }
 
     /**
@@ -232,6 +229,15 @@ public class FileNumToExcelController extends ToolsProperties {
         prop.put(key_lastOutPath, outPath.getText());
         Label excelPath = (Label) scene.lookup("#excelPath_Num");
         prop.put(key_lastExcelPath, excelPath.getText());
+        CheckBox exportFileNum = (CheckBox) scene.lookup("#exportFileNum_Num");
+        String exportFileNumValue = exportFileNum.isSelected() ? activation : unActivation;
+        prop.put(key_lastExportFileNum, exportFileNumValue);
+        CheckBox exportFileSize = (CheckBox) scene.lookup("#exportFileSize_Num");
+        String exportFileSizeValue = exportFileSize.isSelected() ? activation : unActivation;
+        prop.put(key_lastExportFileSize, exportFileSizeValue);
+        CheckBox exportTitle = (CheckBox) scene.lookup("#exportTitle_Num");
+        String exportTitleValue = exportTitle.isSelected() ? activation : unActivation;
+        prop.put(key_lastExportTitle, exportTitleValue);
         OutputStream output = checkRunningOutputStream(configFile_Num);
         prop.store(output, null);
         input.close();
@@ -355,6 +361,9 @@ public class FileNumToExcelController extends ToolsProperties {
             setControlLastConfig(inPath_Num, prop, key_lastInPath, false, anchorPane_Num);
             setControlLastConfig(outPath_Num, prop, key_lastOutPath, false, anchorPane_Num);
             setControlLastConfig(excelPath_Num, prop, key_lastExcelPath, false, anchorPane_Num);
+            setControlLastConfig(exportTitle_Num, prop, key_lastExportTitle, false, null);
+            setControlLastConfig(exportFileNum_Num, prop, key_lastExportFileNum, false, null);
+            setControlLastConfig(exportFileSize_Num, prop, key_lastExportFileSize, false, null);
         }
         input.close();
     }
@@ -368,7 +377,7 @@ public class FileNumToExcelController extends ToolsProperties {
         disableControls.add(exportButton_Num);
         disableControls.add(showFileType_Num);
         disableControls.add(reselectButton_Num);
-        disableControls.add(excelPathButton_Img);
+        disableControls.add(excelPathButton_Num);
     }
 
     /**
@@ -500,8 +509,10 @@ public class FileNumToExcelController extends ToolsProperties {
                 .setStartRowNum(setDefaultIntValue(startRow_Num, readRowValue, 0, null))
                 .setOutName(setDefaultFileName(excelName_Num, defaultOutFileName))
                 .setSheet(setDefaultStrValue(sheetName_Num, defaultSheetName))
+                .setExportFileSize(exportFileSize_Num.isSelected())
+                .setExportFileNum(exportFileNum_Num.isSelected())
                 .setOutExcelExtension(excelType_Num.getValue())
-                .setExportType(exportType_Num.getValue())
+                .setExportTitle(exportTitle_Num.isSelected())
                 .setInPath(excelPath_Num.getText())
                 .setOutPath(outFilePath);
         Task<List<FileNumBean>> reselectTask = reselect();
