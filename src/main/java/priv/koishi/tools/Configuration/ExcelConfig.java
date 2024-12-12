@@ -30,12 +30,12 @@ public class ExcelConfig {
     /**
      * 导出文件sheet名称
      */
-    String sheet;
+    String sheetName;
 
     /**
      * 导出文件拓展名
      */
-    String outExcelExtension;
+    String outExcelType;
 
     /**
      * 导出文件起始行

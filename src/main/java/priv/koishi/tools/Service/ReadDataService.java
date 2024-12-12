@@ -3,9 +3,11 @@ package priv.koishi.tools.Service;
 import javafx.concurrent.Task;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.DataFormatter;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import priv.koishi.tools.Bean.FileBean;
 import priv.koishi.tools.Bean.FileNumBean;
@@ -46,27 +48,27 @@ public class ReadDataService {
                 updateMessage(text_readData);
                 List<FileNumBean> fileNumBeanList = new ArrayList<>();
                 String excelInPath = excelConfig.getInPath();
-                String sheetName = excelConfig.getSheet();
+                String sheetName = excelConfig.getSheetName();
                 int readRow = excelConfig.getReadRowNum();
                 int readCell = excelConfig.getReadCellNum();
                 int maxRow = excelConfig.getMaxRowNum();
-                checkExcelParam(excelInPath);
-                XSSFWorkbook workbook = new XSSFWorkbook(new FileInputStream(excelInPath));
+                checkFileExists(excelInPath, text_excelNotExists);
+                Workbook workbook = getWorkbook(excelInPath);
                 //读取指定sheet
-                XSSFSheet sheet;
+                Sheet sheet;
                 if (StringUtils.isEmpty(sheetName)) {
                     sheet = workbook.getSheetAt(0);
                 } else {
                     sheet = workbook.getSheet(sheetName);
                     if (sheet == null) {
-                        sheet = workbook.createSheet(sheetName);
+                        throw new Exception("未读取到名称为 " + sheetName + " 的表");
                     }
                 }
                 //获取有文字的最后一行行号
                 int lastRowNum = sheet.getLastRowNum();
                 DataFormatter dataFormatter = new DataFormatter();
                 for (int i = lastRowNum; i >= 0; i--) {
-                    XSSFRow row = sheet.getRow(i);
+                    Row row = sheet.getRow(i);
                     //过滤中间的空单元格
                     if (row != null) {
                         if (StringUtils.isNotBlank(dataFormatter.formatCellValue(row.getCell(readCell)))) {
@@ -87,7 +89,7 @@ public class ReadDataService {
                 //读取excel数据
                 int id = 0;
                 for (int i = readRow; i <= maxRow; ++i) {
-                    XSSFRow row = sheet.getRow(i);
+                    Row row = sheet.getRow(i);
                     FileNumBean fileNumBean = new FileNumBean();
                     if (row != null) {
                         String stringCellValue = dataFormatter.formatCellValue(row.getCell(readCell));
@@ -123,6 +125,24 @@ public class ReadDataService {
                 return showReadExcelData(fileNumBeanList, taskBean);
             }
         };
+    }
+
+    /**
+     * 根据不同格式excel创建不同工作簿
+     */
+    private static Workbook getWorkbook(String excelInPath) throws Exception {
+        String excelType = getFileType(new File(excelInPath));
+        Workbook workbook = null;
+        if (xlsx.equals(excelType)) {
+            workbook = new XSSFWorkbook(new FileInputStream(excelInPath));
+        }
+        if (xls.equals(excelType)) {
+            workbook = new HSSFWorkbook(new FileInputStream(excelInPath));
+        }
+        if (workbook == null) {
+            throw new Exception("当前读取模板文件格式为 " + excelType + " 目前只支持读取 .xlsx 与 .xls 格式的文件");
+        }
+        return workbook;
     }
 
     /**

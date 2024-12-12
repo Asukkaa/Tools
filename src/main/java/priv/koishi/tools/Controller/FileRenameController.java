@@ -363,7 +363,7 @@ public class FileRenameController extends ToolsProperties {
         excelConfig.setReadCellNum(setDefaultIntValue(readCell_Re, defaultReadCell, 0, null))
                 .setReadRowNum(setDefaultIntValue(readRow_Re, defaultReadRow, 0, null))
                 .setMaxRowNum(setDefaultIntValue(maxRow_Re, -1, 1, null))
-                .setSheet(sheetName_Re.getText())
+                .setSheetName(sheetName_Re.getText())
                 .setInPath(excelPath_Re.getText());
         TaskBean<FileNumBean> taskBean = new TaskBean<>();
         taskBean.setDisableControls(disableControls)

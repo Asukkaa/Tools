@@ -185,20 +185,6 @@ public class UiUtils {
     }
 
     /**
-     * 校验excel设置参数
-     */
-    public static void checkExcelParam(String excelInPath) throws Exception {
-        File file = new File(excelInPath);
-        if (!file.exists() || !file.isFile()) {
-            throw new Exception(text_excelNotExists);
-        }
-        String fileExtension = getFileType(file);
-        if (!xlsx.equals(fileExtension)) {
-            throw new Exception("当前读取的文件格式为：" + fileExtension + " 只能读取.xlsx格式的excel");
-        }
-    }
-
-    /**
      * 设置默认数值
      */
     public static int setDefaultIntValue(TextField textField, int defaultValue, Integer min, Integer max) {

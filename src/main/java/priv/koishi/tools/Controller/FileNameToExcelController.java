@@ -16,7 +16,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.ss.usermodel.Workbook;
 import priv.koishi.tools.Bean.FileBean;
 import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.ExcelConfig;
@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
@@ -39,6 +38,7 @@ import static priv.koishi.tools.Service.ReadDataService.readFile;
 import static priv.koishi.tools.Text.CommonTexts.*;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningOutputStream;
+import static priv.koishi.tools.Utils.FileUtils.getFileType;
 import static priv.koishi.tools.Utils.FileUtils.readAllFiles;
 import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
@@ -300,6 +300,12 @@ public class FileNameToExcelController extends ToolsProperties {
             setControlLastConfig(excelPath_Name, prop, key_lastExcelPath, false, anchorPane_Name);
             setControlLastConfig(exportTitle_Name, prop, key_lastExportTitle, false, null);
             setControlLastConfig(exportFullList_Name, prop, key_lastExportFullList, false, null);
+            String excelPath = prop.getProperty(key_lastExcelPath);
+            if (StringUtils.isNotBlank(excelPath)) {
+                removeExcelButton_Name.setVisible(true);
+                excelType_Name.setValue(getFileType(new File(excelPath)));
+                excelType_Name.setDisable(true);
+            }
         }
         input.close();
     }
@@ -470,9 +476,9 @@ public class FileNameToExcelController extends ToolsProperties {
         excelConfig.setStartCellNum(setDefaultIntValue(startCell_Name, defaultStartCell, 0, null))
                 .setStartRowNum(setDefaultIntValue(startRow_Name, 0, 0, null))
                 .setOutName(setDefaultFileName(excelName_Name, defaultOutFileName))
-                .setSheet(setDefaultStrValue(sheetName_Name, defaultSheetName))
+                .setSheetName(setDefaultStrValue(sheetName_Name, defaultSheetName))
                 .setExportFullList(exportFullList_Name.isSelected())
-                .setOutExcelExtension(excelType_Name.getValue())
+                .setOutExcelType(excelType_Name.getValue())
                 .setExportTitle(exportTitle_Name.isSelected())
                 .setInPath(excelPath_Name.getText())
                 .setOutPath(outFilePath);
@@ -485,7 +491,7 @@ public class FileNameToExcelController extends ToolsProperties {
                 .setBeanList(fileBeans)
                 .setTabId(tabId);
         //获取Task任务
-        Task<SXSSFWorkbook> buildExcelTask = buildFileNameExcel(excelConfig, taskBean);
+        Task<Workbook> buildExcelTask = buildFileNameExcel(excelConfig, taskBean);
         //绑定带进度条的线程
         bindingProgressBarTask(buildExcelTask, taskBean);
         executorService.execute(buildExcelTask);
@@ -512,12 +518,18 @@ public class FileNameToExcelController extends ToolsProperties {
     @FXML
     private void getExcelPath(ActionEvent actionEvent) throws IOException {
         getConfig();
-        List<FileChooser.ExtensionFilter> extensionFilters = new ArrayList<>(Collections.singleton(new FileChooser.ExtensionFilter("Excel", "*.xlsx")));
+        List<FileChooser.ExtensionFilter> extensionFilters = new ArrayList<>();
+        extensionFilters.add(new FileChooser.ExtensionFilter("Excel", "*.xlsx", "*.xls"));
+        extensionFilters.add(new FileChooser.ExtensionFilter("Excel(2007)", "*.xlsx"));
+        extensionFilters.add(new FileChooser.ExtensionFilter("Excel(2003)", "*.xls"));
         File selectedFile = creatFileChooser(actionEvent, excelInPath, extensionFilters, text_selectExcel);
         if (selectedFile != null) {
             //更新所选文件路径显示
             excelInPath = updatePathLabel(selectedFile.getPath(), excelInPath, key_excelInPath, excelPath_Name, configFile_Name, anchorPane_Name);
             removeExcelButton_Name.setVisible(true);
+            String excelType = getFileType(selectedFile);
+            excelType_Name.setValue(excelType);
+            excelType_Name.setDisable(true);
         }
     }
 
@@ -530,7 +542,7 @@ public class FileNameToExcelController extends ToolsProperties {
         if (StringUtils.isEmpty(inFilePath)) {
             throw new Exception(text_filePathNull);
         }
-        if (!new File(inFilePath).exists()){
+        if (!new File(inFilePath).exists()) {
             throw new Exception(text_directoryNotExists);
         }
         updateLabel(log_Name, "");
@@ -562,6 +574,7 @@ public class FileNameToExcelController extends ToolsProperties {
         excelPath_Name.setText("");
         excelPath_Name.setTooltip(null);
         removeExcelButton_Name.setVisible(false);
+        excelType_Name.setDisable(false);
     }
 
 }

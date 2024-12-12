@@ -2,7 +2,7 @@ package priv.koishi.tools.Utils;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.ss.usermodel.Workbook;
 import priv.koishi.tools.Configuration.ExcelConfig;
 import priv.koishi.tools.Configuration.FileConfig;
 
@@ -239,8 +239,8 @@ public class FileUtils {
     /**
      * 保存excel
      */
-    public static String saveExcel(SXSSFWorkbook workbook, ExcelConfig excelConfig) throws Exception {
-        String filePath = excelConfig.getOutPath() + "\\" + excelConfig.getOutName() + excelConfig.getOutExcelExtension();
+    public static String saveExcel(Workbook workbook, ExcelConfig excelConfig) throws Exception {
+        String filePath = excelConfig.getOutPath() + "\\" + excelConfig.getOutName() + excelConfig.getOutExcelType();
         checkDirectory(new File(filePath).getParent());
         BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(Files.newOutputStream(Paths.get(filePath)));
         // 将Excel写入文件
@@ -345,7 +345,7 @@ public class FileUtils {
         String excelInPath = excelConfig.getInPath();
         String outPath = excelConfig.getOutPath();
         String excelName = excelConfig.getOutName();
-        String outExcelExtension = excelConfig.getOutExcelExtension();
+        String outExcelExtension = excelConfig.getOutExcelType();
         Path sourcePath = Paths.get(excelInPath);
         checkDirectory(outPath);
         String path = outPath + "\\" + excelName + outExcelExtension;
@@ -370,6 +370,16 @@ public class FileUtils {
             return true;
         } catch (Exception e) {
             return false;
+        }
+    }
+
+    /**
+     * 校验文件是否存在
+     */
+    public static void checkFileExists(String filePath, String errTex) throws IOException {
+        File file = new File(filePath);
+        if (!file.exists() || !file.isFile()) {
+            throw new IOException(errTex);
         }
     }
 

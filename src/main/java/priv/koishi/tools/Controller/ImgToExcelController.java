@@ -153,10 +153,10 @@ public class ImgToExcelController extends ToolsProperties {
     private TableColumn<FileNumBean, String> groupId_Img, groupName_Img, groupNumber_Img, fileName_Img, fileUnitSize_Img;
 
     @FXML
-    private ChoiceBox<String> hideFileType_Img, excelType_Img;
+    private ChoiceBox<String> hideFileType_Img;
 
     @FXML
-    private Label inPath_Img, outPath_Img, excelPath_Img, fileNumber_Img, log_Img, maxImg_Img, tip_Img;
+    private Label inPath_Img, outPath_Img, excelPath_Img, fileNumber_Img, log_Img, maxImg_Img, tip_Img, excelType_Img;
 
     @FXML
     private Button fileButton_Img, reselectButton_Img, clearButton_Img, exportButton_Img, cancel_Img, outButton_Img, excelPathButton_Img;
@@ -232,8 +232,6 @@ public class ImgToExcelController extends ToolsProperties {
         prop.put(key_lastSheetName, sheetName.getText());
         TextField subCode = (TextField) scene.lookup("#subCode_Img");
         prop.put(key_lastSubCode, subCode.getText());
-        ChoiceBox<?> excelType = (ChoiceBox<?>) scene.lookup("#excelType_Img");
-        prop.put(key_lastExcelType, excelType.getValue());
         TextField startRow = (TextField) scene.lookup("#startRow_Img");
         prop.put(key_lastStartRow, startRow.getText());
         TextField startCell = (TextField) scene.lookup("#startCell_Img");
@@ -338,6 +336,8 @@ public class ImgToExcelController extends ToolsProperties {
         removeAll();
         //渲染表格前需要更新一下读取的文件
         updateInFileList();
+        String excelPath = excelPath_Img.getText();
+        excelType_Img.setText(getFileType(new File(excelPath)));
         //组装数据
         String maxImgValue = maxImgNum_Img.getText();
         int maxImgNum = 0;
@@ -348,7 +348,7 @@ public class ImgToExcelController extends ToolsProperties {
         excelConfig.setReadCellNum(setDefaultIntValue(readCell_Img, defaultReadCell, 0, null))
                 .setReadRowNum(setDefaultIntValue(readRow_Img, defaultReadRow, 0, null))
                 .setMaxRowNum(setDefaultIntValue(maxRow_Img, -1, 1, null))
-                .setSheet(sheetName_Img.getText())
+                .setSheetName(sheetName_Img.getText())
                 .setInPath(excelPath_Img.getText());
         TaskBean<FileNumBean> taskBean = new TaskBean<>();
         taskBean.setShowFileType(showFileType_Img.isSelected())
@@ -406,7 +406,6 @@ public class ImgToExcelController extends ToolsProperties {
             setControlLastConfig(excelName_Img, prop, key_lastExcelName, false, null);
             setControlLastConfig(sheetName_Img, prop, key_lastSheetName, false, null);
             setControlLastConfig(subCode_Img, prop, key_lastSubCode, true, null);
-            setControlLastConfig(excelType_Img, prop, key_lastExcelType, false, null);
             setControlLastConfig(startRow_Img, prop, key_lastStartRow, false, null);
             setControlLastConfig(startCell_Img, prop, key_lastStartCell, false, null);
             setControlLastConfig(readRow_Img, prop, key_lastReadRow, false, null);
@@ -427,6 +426,10 @@ public class ImgToExcelController extends ToolsProperties {
                 jpg_Img.setSelected(lastFilterFileTypes.contains(jpg));
                 png_Img.setSelected(lastFilterFileTypes.contains(png));
                 jpeg_Img.setSelected(lastFilterFileTypes.contains(jpeg));
+            }
+            String excelPath = prop.getProperty(key_lastExcelPath);
+            if (StringUtils.isNotBlank(excelPath)) {
+                excelType_Img.setText(getFileType(new File(excelPath)));
             }
         }
         input.close();
@@ -630,10 +633,10 @@ public class ImgToExcelController extends ToolsProperties {
                 .setStartRowNum(setDefaultIntValue(startRow_Img, readRowValue, 0, null))
                 .setImgWidth(setDefaultIntValue(imgWidth_Img, defaultImgWidth, 0, null))
                 .setOutName(setDefaultFileName(excelName_Img, defaultOutFileName))
-                .setSheet(setDefaultStrValue(sheetName_Img, defaultSheetName))
+                .setSheetName(setDefaultStrValue(sheetName_Img, defaultSheetName))
                 .setExportFileSize(exportFileSize_Img.isSelected())
                 .setExportFileNum(exportFileNum_Img.isSelected())
-                .setOutExcelExtension(excelType_Img.getValue())
+                .setOutExcelType(excelType_Img.getText())
                 .setExportTitle(exportTitle_Img.isSelected())
                 .setInPath(excelPath_Img.getText())
                 .setNoImg(noImg_Img.isSelected())

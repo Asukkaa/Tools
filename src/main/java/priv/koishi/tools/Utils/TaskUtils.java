@@ -6,7 +6,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.paint.Color;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.ss.usermodel.Workbook;
 import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.ExcelConfig;
 
@@ -49,11 +49,11 @@ public class TaskUtils {
     /**
      * 线程执行成功后保存excel文件
      */
-    public static void saveExcelOnSucceeded(ExcelConfig excelConfig, TaskBean<?> taskBean, Task<SXSSFWorkbook> buildExcelTask,
+    public static void saveExcelOnSucceeded(ExcelConfig excelConfig, TaskBean<?> taskBean, Task<Workbook> buildExcelTask,
                                             CheckBox openDirectory, CheckBox openFile, ExecutorService executorService) {
         bindingProgressBarTask(buildExcelTask, taskBean);
         buildExcelTask.setOnSucceeded(event -> {
-            SXSSFWorkbook workbook = buildExcelTask.getValue();
+            Workbook workbook = buildExcelTask.getValue();
             Task<String> saveExcelTask = saveExcelTask(excelConfig, workbook);
             bindingProgressBarTask(saveExcelTask, taskBean);
             saveExcelTask.setOnSucceeded(s -> {
@@ -118,7 +118,7 @@ public class TaskUtils {
     /**
      * 保存excel线程
      */
-    public static Task<String> saveExcelTask(ExcelConfig excelConfig, SXSSFWorkbook workbook) {
+    public static Task<String> saveExcelTask(ExcelConfig excelConfig, Workbook workbook) {
         return new Task<>() {
             @Override
             protected String call() throws Exception {

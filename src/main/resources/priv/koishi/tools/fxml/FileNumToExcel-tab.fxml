@@ -51,17 +51,7 @@
             <Label prefHeight="20" text="文件名称分割符:"/>
             <TextField fx:id="subCode_Num" prefHeight="20" prefWidth="100"/>
             <Label prefHeight="20" text="导出excel文件类型:"/>
-            <ChoiceBox fx:id="excelType_Num" prefHeight="20" prefWidth="80">
-                <items>
-                    <FXCollections fx:factory="observableArrayList">
-                        <String fx:value=".xlsx"/>
-                        <!--                    <String fx:value=".xls"/>-->
-                    </FXCollections>
-                </items>
-                <value>
-                    <String fx:value=".xlsx"/>
-                </value>
-            </ChoiceBox>
+            <Label prefHeight="20" fx:id="excelType_Num"/>
         </HBox>
 
         <HBox spacing="10">

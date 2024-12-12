@@ -54,7 +54,7 @@
                 <items>
                     <FXCollections fx:factory="observableArrayList">
                         <String fx:value=".xlsx"/>
-                        <!--                    <String fx:value=".xls"/>-->
+                        <String fx:value=".xls"/>
                     </FXCollections>
                 </items>
                 <value>

@@ -200,6 +200,8 @@ public class CommonTexts {
 
     public static final String xlsx = ".xlsx";
 
+    public static final String xls = ".xls";
+
     public static final String jpg = ".jpg";
 
     public static final String png = ".png";

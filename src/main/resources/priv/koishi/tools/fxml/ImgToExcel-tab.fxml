@@ -29,17 +29,7 @@
                       text="导出后打开文件夹"/>
             <CheckBox fx:id="openFile_Img" prefHeight="20" style="-fx-cursor: hand" text="导出后打开excel文件"/>
             <Label prefHeight="20" text="导出excel文件类型:"/>
-            <ChoiceBox fx:id="excelType_Img" prefHeight="20" prefWidth="80">
-                <items>
-                    <FXCollections fx:factory="observableArrayList">
-                        <String fx:value=".xlsx"/>
-                        <!--                    <String fx:value=".xls"/>-->
-                    </FXCollections>
-                </items>
-                <value>
-                    <String fx:value=".xlsx"/>
-                </value>
-            </ChoiceBox>
+            <Label prefHeight="20" fx:id="excelType_Img"/>
         </HBox>
 
         <HBox spacing="10">

@@ -3,10 +3,7 @@ package priv.koishi.tools.Service;
 import javafx.concurrent.Task;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.ss.usermodel.ClientAnchor;
-import org.apache.poi.ss.usermodel.CreationHelper;
-import org.apache.poi.ss.usermodel.Drawing;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.*;
@@ -25,9 +22,7 @@ import java.util.List;
 
 import static priv.koishi.tools.Text.CommonTexts.*;
 import static priv.koishi.tools.Utils.ExcelUtils.*;
-import static priv.koishi.tools.Utils.ExcelUtils.buildExcelTitle;
-import static priv.koishi.tools.Utils.FileUtils.checkCopyDestination;
-import static priv.koishi.tools.Utils.FileUtils.getFileType;
+import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.changeDisableControls;
 
 /**
@@ -68,16 +63,14 @@ public class ImgToExcelService {
                 changeDisableControls(taskBean, true);
                 //校验excel输出路径是否与模板一致，若不一致则复制一份模板文件到输出路径
                 checkCopyDestination(excelConfig);
-                File inputFile = new File(excelConfig.getInPath());
-                if (!inputFile.exists()) {
-                    throw new Exception(text_excelNotExists);
-                }
+                String excelInPath = excelConfig.getInPath();
+                checkFileExists(excelInPath, text_excelNotExists);
                 updateMessage(text_printData);
-                fileInputStream = new FileInputStream(inputFile);
+                fileInputStream = new FileInputStream(excelInPath);
                 workbook = new XSSFWorkbook(fileInputStream);
                 sxssfWorkbook = new SXSSFWorkbook(workbook, 50);
                 taskBean.getCancelButton().setVisible(true);
-                String sheetName = excelConfig.getSheet();
+                String sheetName = excelConfig.getSheetName();
                 int startRowNum = excelConfig.getStartRowNum();
                 int rowNum = startRowNum;
                 int startCellNum = excelConfig.getStartCellNum();
@@ -106,8 +99,8 @@ public class ImgToExcelService {
                     }
                     FileNumBean fileBean = fileBeans.get(i);
                     List<String> imgList = fileBean.getFilePathList();
-                    XSSFRow row = getOrCreateRow(sheet, rowNum);
-                    XSSFCell startCell = row.createCell(startCellNum);
+                    Row row = getOrCreateRow(sheet, rowNum);
+                    Cell startCell = row.createCell(startCellNum);
                     //附加项只导出文件数量
                     if (exportFileNum && !exportFileSize) {
                         startCell.setCellValue(fileBean.getGroupNumber());
@@ -122,7 +115,7 @@ public class ImgToExcelService {
                     if (exportFileNum && exportFileSize) {
                         startCell.setCellValue(fileBean.getGroupNumber());
                         int sizeCellNum = startCellNum + 1;
-                        XSSFCell sizeCell = row.createCell(sizeCellNum);
+                        Cell sizeCell = row.createCell(sizeCellNum);
                         sizeCell.setCellValue(fileBean.getFileUnitSize());
                         maxCellNum = buildImgExcel(imgList, excelConfig, sizeCellNum + 1, rowNum, sheet, sxssfWorkbook, row, maxCellNum);
                     }
@@ -148,9 +141,9 @@ public class ImgToExcelService {
      * 插入图片
      */
     private static int buildImgExcel(List<String> imgList, ExcelConfig excelConfig, int cellNum, int rowNum,
-                                     XSSFSheet sheet, SXSSFWorkbook sxssfWorkbook, XSSFRow row, int maxCellNum) throws IOException {
+                                     Sheet sheet, SXSSFWorkbook sxssfWorkbook, Row row, int maxCellNum) throws IOException {
         if (CollectionUtils.isEmpty(imgList)) {
-            XSSFCell cell = getOrCreateCell(cellNum, row);
+            Cell cell = getOrCreateCell(cellNum, row);
             if (excelConfig.isNoImg()) {
                 cell.setCellValue("无图片");
             }
@@ -160,7 +153,7 @@ public class ImgToExcelService {
             for (String i : imgList) {
                 // 将图片插入Excel单元格
                 CreationHelper helper = sxssfWorkbook.getCreationHelper();
-                Drawing<XSSFShape> drawing = sheet.createDrawingPatriarch();
+                Drawing<?> drawing = sheet.createDrawingPatriarch();
                 ClientAnchor anchor = helper.createClientAnchor();
                 // 设置图片的起始位置以及大小
                 anchor.setCol1(cellNum);

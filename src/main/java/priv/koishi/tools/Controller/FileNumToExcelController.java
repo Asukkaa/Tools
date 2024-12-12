@@ -15,7 +15,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.ss.usermodel.Workbook;
 import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.ExcelConfig;
@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
@@ -128,16 +127,16 @@ public class FileNumToExcelController extends ToolsProperties {
     private TableView<FileNumBean> tableView_Num;
 
     @FXML
+    private ChoiceBox<String> hideFileType_Num, directoryNameType_Num;
+
+    @FXML
     private TableColumn<FileNumBean, Integer> groupName_Num, groupNumber_Num;
 
     @FXML
     private TableColumn<FileNumBean, String> fileName_Num, groupId_Num, fileUnitSize_Num;
 
     @FXML
-    private Label outPath_Num, excelPath_Num, fileNumber_Num, inPath_Num, log_Num;
-
-    @FXML
-    private ChoiceBox<String> excelType_Num, hideFileType_Num, directoryNameType_Num;
+    private Label outPath_Num, excelPath_Num, fileNumber_Num, inPath_Num, log_Num, excelType_Num;
 
     @FXML
     private Button fileButton_Num, clearButton_Num, exportButton_Num, reselectButton_Num, excelPathButton_Num;
@@ -209,8 +208,6 @@ public class FileNumToExcelController extends ToolsProperties {
         prop.put(key_lastSheetName, sheetName.getText());
         TextField subCode = (TextField) scene.lookup("#subCode_Num");
         prop.put(key_lastSubCode, subCode.getText());
-        ChoiceBox<?> excelType = (ChoiceBox<?>) scene.lookup("#excelType_Num");
-        prop.put(key_lastExcelType, excelType.getValue());
         TextField startRow = (TextField) scene.lookup("#startRow_Num");
         prop.put(key_lastStartRow, startRow.getText());
         TextField startCell = (TextField) scene.lookup("#startCell_Num");
@@ -289,13 +286,15 @@ public class FileNumToExcelController extends ToolsProperties {
         removeAll();
         //渲染表格前需要更新一下读取的文件
         updateInFileList();
+        String excelPath = excelPath_Num.getText();
+        excelType_Num.setText(getFileType(new File(excelPath)));
         //组装数据
         ExcelConfig excelConfig = new ExcelConfig();
         excelConfig.setReadCellNum(setDefaultIntValue(readCell_Num, defaultReadCell, 0, null))
                 .setReadRowNum(setDefaultIntValue(readRow_Num, defaultReadRow, 0, null))
                 .setMaxRowNum(setDefaultIntValue(maxRow_Num, -1, 1, null))
                 .setInPath(excelPath_Num.getText())
-                .setSheet(sheetName_Num.getText());
+                .setSheetName(sheetName_Num.getText());
         TaskBean<FileNumBean> taskBean = new TaskBean<>();
         taskBean.setShowFileType(showFileType_Num.isSelected())
                 .setComparatorTableColumn(fileUnitSize_Num)
@@ -351,7 +350,6 @@ public class FileNumToExcelController extends ToolsProperties {
             setControlLastConfig(excelName_Num, prop, key_lastExcelName, false, null);
             setControlLastConfig(sheetName_Num, prop, key_lastSheetName, false, null);
             setControlLastConfig(subCode_Num, prop, key_lastSubCode, true, null);
-            setControlLastConfig(excelType_Num, prop, key_lastExcelType, false, null);
             setControlLastConfig(startRow_Num, prop, key_lastStartRow, false, null);
             setControlLastConfig(startCell_Num, prop, key_lastStartCell, false, null);
             setControlLastConfig(readRow_Num, prop, key_lastReadRow, false, null);
@@ -364,6 +362,10 @@ public class FileNumToExcelController extends ToolsProperties {
             setControlLastConfig(exportTitle_Num, prop, key_lastExportTitle, false, null);
             setControlLastConfig(exportFileNum_Num, prop, key_lastExportFileNum, false, null);
             setControlLastConfig(exportFileSize_Num, prop, key_lastExportFileSize, false, null);
+            String excelPath = prop.getProperty(key_lastExcelPath);
+            if (StringUtils.isNotBlank(excelPath)) {
+                excelType_Num.setText(getFileType(new File(excelPath)));
+            }
         }
         input.close();
     }
@@ -469,7 +471,7 @@ public class FileNumToExcelController extends ToolsProperties {
     private void acceptDrop(DragEvent dragEvent) {
         List<File> files = dragEvent.getDragboard().getFiles();
         files.forEach(file -> {
-            if (file.isFile() && xlsx.equals(getFileType(file))) {
+            if (file.isFile() && (xlsx.equals(getFileType(file)) || xls.equals(getFileType(file)))) {
                 // 接受拖放
                 dragEvent.acceptTransferModes(TransferMode.COPY);
                 dragEvent.consume();
@@ -508,10 +510,10 @@ public class FileNumToExcelController extends ToolsProperties {
         excelConfig.setStartCellNum(setDefaultIntValue(startCell_Num, defaultStartCell, 0, null))
                 .setStartRowNum(setDefaultIntValue(startRow_Num, readRowValue, 0, null))
                 .setOutName(setDefaultFileName(excelName_Num, defaultOutFileName))
-                .setSheet(setDefaultStrValue(sheetName_Num, defaultSheetName))
+                .setSheetName(setDefaultStrValue(sheetName_Num, defaultSheetName))
                 .setExportFileSize(exportFileSize_Num.isSelected())
                 .setExportFileNum(exportFileNum_Num.isSelected())
-                .setOutExcelExtension(excelType_Num.getValue())
+                .setOutExcelType(excelType_Num.getText())
                 .setExportTitle(exportTitle_Num.isSelected())
                 .setInPath(excelPath_Num.getText())
                 .setOutPath(outFilePath);
@@ -528,7 +530,7 @@ public class FileNumToExcelController extends ToolsProperties {
                     .setMassageLabel(log_Num)
                     .setTabId(tabId);
             //获取Task任务
-            Task<SXSSFWorkbook> buildExcelTask = buildNameGroupNumExcel(taskBean, excelConfig);
+            Task<Workbook> buildExcelTask = buildNameGroupNumExcel(taskBean, excelConfig);
             //线程成功后保存excel
             saveExcelOnSucceeded(excelConfig, taskBean, buildExcelTask, openDirectory_Num, openFile_Num, executorService);
         });
@@ -558,7 +560,10 @@ public class FileNumToExcelController extends ToolsProperties {
     @FXML
     private void getExcelPath(ActionEvent actionEvent) throws Exception {
         getConfig();
-        List<FileChooser.ExtensionFilter> extensionFilters = new ArrayList<>(Collections.singleton(new FileChooser.ExtensionFilter("Excel", "*.xlsx")));
+        List<FileChooser.ExtensionFilter> extensionFilters = new ArrayList<>();
+        extensionFilters.add(new FileChooser.ExtensionFilter("Excel", "*.xlsx", "*.xls"));
+        extensionFilters.add(new FileChooser.ExtensionFilter("Excel(2007)", "*.xlsx"));
+        extensionFilters.add(new FileChooser.ExtensionFilter("Excel(2003)", "*.xls"));
         File selectedFile = creatFileChooser(actionEvent, excelInPath, extensionFilters, text_selectExcel);
         if (selectedFile != null) {
             //更新所选文件路径显示

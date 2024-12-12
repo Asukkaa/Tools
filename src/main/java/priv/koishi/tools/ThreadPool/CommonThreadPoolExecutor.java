@@ -17,7 +17,7 @@ public class CommonThreadPoolExecutor {
     /**
      * 最大线程池大小
      */
-    int maximumPoolSize = 2;
+    int maximumPoolSize = 3;
 
     /**
      * 线程最大空闲时间

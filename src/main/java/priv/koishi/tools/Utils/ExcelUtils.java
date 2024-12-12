@@ -1,8 +1,8 @@
 package priv.koishi.tools.Utils;
 
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +17,7 @@ public class ExcelUtils {
     /**
      * 多列单元格自适应
      */
-    public static void autoSizeExcelCells(XSSFSheet sheet, int maxCellNum, int startCellNum) {
+    public static void autoSizeExcelCells(Sheet sheet, int maxCellNum, int startCellNum) {
         for (int i = startCellNum; i < maxCellNum; i++) {
             autoSizeExcelCell(sheet, i);
         }
@@ -26,7 +26,7 @@ public class ExcelUtils {
     /**
      * 单列单元格自适应
      */
-    public static void autoSizeExcelCell(XSSFSheet sheet, int cellNum) {
+    public static void autoSizeExcelCell(Sheet sheet, int cellNum) {
         sheet.autoSizeColumn(cellNum);
         //手动调整列宽，解决中文不能自适应问题,单元格单行最长支持255*256的宽度（每个单元格样式已经设置自动换行，超出即换行）,设置最低列宽度，列宽约六个中文字符
         int width = Math.max(15 * 256, Math.min(255 * 256, sheet.getColumnWidth(cellNum) * 12 / 10));
@@ -36,8 +36,8 @@ public class ExcelUtils {
     /**
      * 获取excel行
      */
-    public static XSSFRow getOrCreateRow(XSSFSheet sheet, int rowNum) {
-        XSSFRow row = sheet.getRow(rowNum);
+    public static Row getOrCreateRow(Sheet sheet, int rowNum) {
+        Row row = sheet.getRow(rowNum);
         if (row == null) {
             row = sheet.createRow(rowNum);
         }
@@ -47,8 +47,8 @@ public class ExcelUtils {
     /**
      * 获取excel单元格
      */
-    public static XSSFCell getOrCreateCell(int startCellNum, XSSFRow row) {
-        XSSFCell cell = row.getCell(startCellNum);
+    public static Cell getOrCreateCell(int startCellNum, Row row) {
+        Cell cell = row.getCell(startCellNum);
         if (cell == null) {
             cell = row.createCell(startCellNum);
         }
@@ -58,10 +58,10 @@ public class ExcelUtils {
     /**
      * 构建excel表头
      */
-    public static int buildExcelTitle(XSSFSheet sheet, int rowNum, List<String> titles, int startCellNum) {
-        XSSFRow row = getOrCreateRow(sheet, rowNum);
+    public static int buildExcelTitle(Sheet sheet, int rowNum, List<String> titles, int startCellNum) {
+        Row row = getOrCreateRow(sheet, rowNum);
         for (int i = 0; i < titles.size(); i++) {
-            XSSFCell cell = row.createCell(startCellNum + i);
+            Cell cell = row.createCell(startCellNum + i);
             cell.setCellValue(titles.get(i));
         }
         rowNum++;
