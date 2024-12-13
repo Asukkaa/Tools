@@ -87,8 +87,9 @@
 
         <Label prefHeight="25" text="关于："/>
 
-        <Label prefHeight="25"
-               text="Tools 是一个由 javafx 实现的文件处理小工具，可以用来获取文件信息和批量修改文件名称，excel 相关功能目前只支持 .xlsx 格式文件，后续可能会增加更多格式的支持。"/>
+        <Label prefHeight="25" text="Tools 是一个由 javafx 实现的文件处理小工具，可以用来获取文件信息和批量修改文件名称。"/>
+
+        <Label prefHeight="25" text="excel 相关功能只支持 .xlsx 与 .xls 格式文件，如果需要使用 excel模板 则导出的文件格式只能与模板文件格式相同。"/>
 
         <Label prefHeight="20"
                text="目前软件正在继续开发中，仍有很多功能还未实现，问题肯定也不少，有问题或建议可以给下面邮箱发邮件反馈。"/>
