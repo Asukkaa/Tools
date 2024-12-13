@@ -57,17 +57,19 @@ public class UiUtils {
     /**
      * 鼠标停留提示框
      *
-     * @param control 需要显示提示框的组件
+     * @param controls 需要显示提示框的组件
      * @param tip     提示卡信息
      */
-    public static void addToolTip(Control control, String tip) {
-        control.setTooltip(setTooltipConfig(tip));
+    public static void addToolTip(String tip, Control... controls) {
+        for (Control control : controls) {
+            control.setTooltip(creatTooltip(tip));
+        }
     }
 
     /**
      * 设置鼠标停留提示框参数
      */
-    public static Tooltip setTooltipConfig(String tip) {
+    public static Tooltip creatTooltip(String tip) {
         Tooltip tooltip = new Tooltip(tip);
         tooltip.setWrapText(true);
         tooltip.setShowDuration(showDuration);
@@ -83,13 +85,13 @@ public class UiUtils {
         String value = textField.getText();
         if (StringUtils.isNotEmpty(text)) {
             if (StringUtils.isNotEmpty(value)) {
-                addToolTip(textField, text + "\n" + value);
+                addToolTip(text + "\n" + value, textField);
             } else {
-                addToolTip(textField, text);
+                addToolTip(text, textField);
             }
         } else {
             if (StringUtils.isNotEmpty(value)) {
-                addToolTip(textField, value);
+                addToolTip(value, textField);
             } else {
                 textField.setTooltip(null);
             }
@@ -166,7 +168,7 @@ public class UiUtils {
                             setTooltip(null);
                         } else if (!item.toString().isEmpty()) {
                             setText(item.toString());
-                            setTooltip(setTooltipConfig(item.toString()));
+                            setTooltip(creatTooltip(item.toString()));
                         }
                     }
                 };
@@ -380,11 +382,11 @@ public class UiUtils {
      * 为统计文件名和插入图片页面添加鼠标悬停提示
      */
     public static void addNumImgToolTip(CheckBox recursion, TextField subCode, TextField excelName, TextField sheetName, TextField maxRow) {
-        addToolTip(recursion, tip_recursion);
-        addToolTip(sheetName, tip_sheetName);
-        addToolTip(excelName, tip_excelName);
-        addToolTip(maxRow, tip_maxRow);
-        addToolTip(subCode, tip_subCode);
+        addToolTip(tip_recursion, recursion);
+        addToolTip(tip_sheetName, sheetName);
+        addToolTip(tip_excelName, excelName);
+        addToolTip(tip_maxRow, maxRow);
+        addToolTip(tip_subCode, subCode);
     }
 
     /**
@@ -720,7 +722,7 @@ public class UiUtils {
                 }
             }
         });
-        addToolTip(pathLabel, path + "\n鼠标左键点击打开 " + openPath);
+        addToolTip(path + "\n鼠标左键点击打开 " + openPath, pathLabel);
         //设置右键菜单
         setPathLabelContextMenu(pathLabel, anchorPane);
     }

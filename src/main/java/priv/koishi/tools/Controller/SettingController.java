@@ -215,7 +215,7 @@ public class SettingController {
                 if (line.contains(Xmx)) {
                     batMemory = line.substring(line.lastIndexOf(Xmx) + Xmx.length(), line.lastIndexOf("g"));
                     batMemory_Set.setText(batMemory);
-                    addToolTip(batMemory_Set, text_nowSetting + batMemory + text_memorySetting);
+                    addToolTip(text_nowSetting + batMemory + text_memorySetting, batMemory_Set);
                     break;
                 }
             }
@@ -272,8 +272,8 @@ public class SettingController {
      * 设置鼠标悬停提示
      */
     private void setToolTip() {
-        addToolTip(sort_Set, tip_sort);
-        addToolTip(reverseSort_Set, tip_reverseSort);
+        addToolTip(tip_sort, sort_Set);
+        addToolTip(tip_reverseSort, reverseSort_Set);
     }
 
     /**

@@ -645,26 +645,26 @@ public class FileRenameController extends ToolsProperties {
      * 设置鼠标悬停提示
      */
     private void setToolTip() {
-        addToolTip(tag_Re, tip_tag);
-        addToolTip(left_Re, tip_left);
-        addToolTip(right_Re, tip_right);
-        addToolTip(maxRow_Re, tip_maxRow);
-        addToolTip(nameNum_Re, tip_nameNum);
-        addToolTip(tip_Re, tip_Re.getText());
-        addToolTip(addSpace_Re, tip_addSpace);
-        addToolTip(renameButton_Re, tip_rename);
-        addToolTip(leftValue_Re, tip_leftValue);
-        addToolTip(leftBehavior_Re, tip_option);
-        addToolTip(startSize_Re, tip_startSize);
-        addToolTip(renameStr_Re, tip_renameStr);
-        addToolTip(sheetName_Re, tip_sheetName);
-        addToolTip(rightBehavior_Re, tip_option);
-        addToolTip(rightValue_Re, tip_rightValue);
-        addToolTip(renameValue_Re, tip_renameValue);
-        addToolTip(filterFileType_Re, tip_filterFileType);
-        addToolTip(startName_Re, text_onlyNaturalNumber + defaultStartNameNum);
-        addToolTip(readRow_Re, text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row);
-        addToolTip(readCell_Re, text_onlyNaturalNumber + defaultReadCell + text_formThe + (defaultReadCell + 1) + text_cell);
+        addToolTip(tip_tag, tag_Re);
+        addToolTip(tip_left, left_Re);
+        addToolTip(tip_right, right_Re);
+        addToolTip(tip_maxRow, maxRow_Re);
+        addToolTip(tip_nameNum, nameNum_Re);
+        addToolTip(tip_Re.getText(), tip_Re);
+        addToolTip(tip_addSpace, addSpace_Re);
+        addToolTip(tip_rename, renameButton_Re);
+        addToolTip(tip_leftValue, leftValue_Re);
+        addToolTip(tip_option, leftBehavior_Re);
+        addToolTip(tip_startSize, startSize_Re);
+        addToolTip(tip_renameStr, renameStr_Re);
+        addToolTip(tip_sheetName, sheetName_Re);
+        addToolTip(tip_option, rightBehavior_Re);
+        addToolTip(tip_rightValue, rightValue_Re);
+        addToolTip(tip_renameValue, renameValue_Re);
+        addToolTip(tip_filterFileType, filterFileType_Re);
+        addToolTip(text_onlyNaturalNumber + defaultStartNameNum, startName_Re);
+        addToolTip(text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row, readRow_Re);
+        addToolTip(text_onlyNaturalNumber + defaultReadCell + text_formThe + (defaultReadCell + 1) + text_cell, readCell_Re);
     }
 
     /**
@@ -778,7 +778,7 @@ public class FileRenameController extends ToolsProperties {
         List<File> inFileList = readAllFiles(fileConfig);
         String filePath = file.getPath();
         inPath_Re.setText(filePath);
-        addToolTip(inPath_Re, filePath);
+        addToolTip(filePath, inPath_Re);
         addInData(inFileList);
     }
 

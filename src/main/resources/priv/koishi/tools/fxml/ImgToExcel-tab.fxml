@@ -28,8 +28,8 @@
             <CheckBox fx:id="openDirectory_Img" prefHeight="20" selected="true" style="-fx-cursor: hand"
                       text="导出后打开文件夹"/>
             <CheckBox fx:id="openFile_Img" prefHeight="20" style="-fx-cursor: hand" text="导出后打开excel文件"/>
-            <Label prefHeight="20" text="导出excel文件类型:"/>
-            <Label prefHeight="20" fx:id="excelType_Img"/>
+            <Label prefHeight="20" fx:id="excelTypeLabel_Img" text="导出excel文件类型:"/>
+            <Label prefHeight="20" fx:id="excelType_Img" text="选取excel模板后决定"/>
         </HBox>
 
         <HBox spacing="10">

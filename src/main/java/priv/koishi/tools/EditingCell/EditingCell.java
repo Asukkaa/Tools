@@ -34,7 +34,7 @@ public class EditingCell<T> extends TableCell<T, String> {
      */
     public EditingCell(ItemConsumer<T> itemConsumer) {
         this.itemConsumer = itemConsumer;
-        setTooltip(setTooltipConfig(tip));
+        setTooltip(creatTooltip(tip));
     }
 
     @Override

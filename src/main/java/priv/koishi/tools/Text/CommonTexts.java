@@ -71,6 +71,7 @@ public class CommonTexts {
 
     public static final String tip_reverseSort = "默认不勾选，排序为从小到大，勾选后排序为从大到小";
 
+    public static final String tip_excelType = "如果需要使用excel模板则导出文件类型只能与excel模板文件类型一致";
 
     public static final String tip_option = """
             插入：在匹配的字符位置插入所填写的字符串

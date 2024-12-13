@@ -136,10 +136,10 @@ public class FileNumToExcelController extends ToolsProperties {
     private TableColumn<FileNumBean, String> fileName_Num, groupId_Num, fileUnitSize_Num;
 
     @FXML
-    private Label outPath_Num, excelPath_Num, fileNumber_Num, inPath_Num, log_Num, excelType_Num;
+    private Button fileButton_Num, clearButton_Num, exportButton_Num, reselectButton_Num, excelPathButton_Num;
 
     @FXML
-    private Button fileButton_Num, clearButton_Num, exportButton_Num, reselectButton_Num, excelPathButton_Num;
+    private Label outPath_Num, excelPath_Num, fileNumber_Num, inPath_Num, log_Num, excelType_Num, excelTypeLabel_Num;
 
     @FXML
     private CheckBox recursion_Num, openDirectory_Num, openFile_Num, showFileType_Num, exportTitle_Num, exportFileNum_Num, exportFileSize_Num;
@@ -386,11 +386,12 @@ public class FileNumToExcelController extends ToolsProperties {
      * 设置鼠标悬停提示
      */
     private void setToolTip() {
-        addToolTip(startRow_Num, tip_startReadRow);
-        addToolTip(filterFileType_Num, tip_filterFileType);
-        addToolTip(startCell_Num, text_onlyNaturalNumber + defaultStartCell);
-        addToolTip(readRow_Num, text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row);
-        addToolTip(readCell_Num, text_onlyNaturalNumber + defaultReadCell + text_formThe + (defaultReadCell + 1) + text_cell);
+        addToolTip(tip_startReadRow, startRow_Num);
+        addToolTip(tip_filterFileType, filterFileType_Num);
+        addToolTip(tip_excelType, excelType_Num, excelTypeLabel_Num);
+        addToolTip(text_onlyNaturalNumber + defaultStartCell, startCell_Num);
+        addToolTip(text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row, readRow_Num);
+        addToolTip(text_onlyNaturalNumber + defaultReadCell + text_formThe + (defaultReadCell + 1) + text_cell, readCell_Num);
         addNumImgToolTip(recursion_Num, subCode_Num, excelName_Num, sheetName_Num, maxRow_Num);
     }
 

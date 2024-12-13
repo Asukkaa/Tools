@@ -50,8 +50,8 @@
             <TextField fx:id="sheetName_Num" prefHeight="20" prefWidth="100"/>
             <Label prefHeight="20" text="文件名称分割符:"/>
             <TextField fx:id="subCode_Num" prefHeight="20" prefWidth="100"/>
-            <Label prefHeight="20" text="导出excel文件类型:"/>
-            <Label prefHeight="20" fx:id="excelType_Num"/>
+            <Label prefHeight="20" fx:id="excelTypeLabel_Num" text="导出excel文件类型:"/>
+            <Label prefHeight="20" fx:id="excelType_Num" text="选取excel模板后决定"/>
         </HBox>
 
         <HBox spacing="10">

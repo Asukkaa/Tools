@@ -49,7 +49,7 @@
             <TextField fx:id="excelName_Name" prefHeight="20" prefWidth="100"/>
             <Label prefHeight="20" text="excel表名称:"/>
             <TextField fx:id="sheetName_Name" prefHeight="20" prefWidth="100"/>
-            <Label prefHeight="20" text="导出excel文件类型:"/>
+            <Label fx:id="excelTypeLabel_Name" prefHeight="20" text="导出excel文件类型:"/>
             <ChoiceBox fx:id="excelType_Name" prefHeight="20" prefWidth="80">
                 <items>
                     <FXCollections fx:factory="observableArrayList">

@@ -156,10 +156,10 @@ public class ImgToExcelController extends ToolsProperties {
     private ChoiceBox<String> hideFileType_Img;
 
     @FXML
-    private Label inPath_Img, outPath_Img, excelPath_Img, fileNumber_Img, log_Img, maxImg_Img, tip_Img, excelType_Img;
+    private Button fileButton_Img, reselectButton_Img, clearButton_Img, exportButton_Img, cancel_Img, outButton_Img, excelPathButton_Img;
 
     @FXML
-    private Button fileButton_Img, reselectButton_Img, clearButton_Img, exportButton_Img, cancel_Img, outButton_Img, excelPathButton_Img;
+    private Label inPath_Img, outPath_Img, excelPath_Img, fileNumber_Img, log_Img, maxImg_Img, tip_Img, excelType_Img, excelTypeLabel_Img;
 
     @FXML
     private TextField imgWidth_Img, imgHeight_Img, excelName_Img, sheetName_Img, subCode_Img, startRow_Img, startCell_Img, readRow_Img, readCell_Img, maxRow_Img, maxImgNum_Img;
@@ -439,19 +439,20 @@ public class ImgToExcelController extends ToolsProperties {
      * 设置鼠标悬停提示
      */
     private void setToolTip() {
-        addToolTip(noImg_Img, tip_noImg);
-        addToolTip(tip_Img, tip_Img.getText());
-        addToolTip(jpg_Img, tip_filterImgType);
-        addToolTip(png_Img, tip_filterImgType);
-        addToolTip(jpeg_Img, tip_filterImgType);
-        addToolTip(maxImgNum_Img, tip_maxImgNum);
-        addToolTip(startRow_Img, tip_startReadRow);
-        addToolTip(startCell_Img, text_onlyNaturalNumber + defaultStartCell);
-        addToolTip(imgWidth_Img, tip_imgHeightWidth + defaultImgWidth + tip_imgWidth);
-        addToolTip(imgHeight_Img, tip_imgHeightWidth + defaultImgHeight + tip_imgHeight);
+        addToolTip(tip_noImg, noImg_Img);
+        addToolTip(tip_Img.getText(), tip_Img);
+        addToolTip(tip_filterImgType, jpg_Img);
+        addToolTip(tip_filterImgType, png_Img);
+        addToolTip(tip_filterImgType, jpeg_Img);
+        addToolTip(tip_maxImgNum, maxImgNum_Img);
+        addToolTip(tip_startReadRow, startRow_Img);
+        addToolTip(tip_excelType, excelType_Img, excelTypeLabel_Img);
+        addToolTip(text_onlyNaturalNumber + defaultStartCell, startCell_Img);
+        addToolTip(tip_imgHeightWidth + defaultImgWidth + tip_imgWidth, imgWidth_Img);
+        addToolTip(tip_imgHeightWidth + defaultImgHeight + tip_imgHeight, imgHeight_Img);
+        addToolTip(text_onlyNaturalNumber + defaultReadCell + text_formThe + (defaultReadCell + 1) + text_cell);
+        addToolTip(text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row, readRow_Img);
         addNumImgToolTip(recursion_Img, subCode_Img, excelName_Img, sheetName_Img, maxRow_Img);
-        addToolTip(readRow_Img, text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row);
-        addToolTip(readCell_Img, text_onlyNaturalNumber + defaultReadCell + text_formThe + (defaultReadCell + 1) + text_cell);
     }
 
     /**

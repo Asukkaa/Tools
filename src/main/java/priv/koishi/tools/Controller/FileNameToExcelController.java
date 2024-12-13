@@ -117,10 +117,10 @@ public class FileNameToExcelController extends ToolsProperties {
     private ChoiceBox<String> excelType_Name, hideFileType_Name, directoryNameType_Name;
 
     @FXML
-    private Label outPath_Name, excelPath_Name, fileNumber_Name, inPath_Name, log_Name, tip_Name;
+    private TextField excelName_Name, sheetName_Name, startRow_Name, startCell_Name, filterFileType_Name;
 
     @FXML
-    private TextField excelName_Name, sheetName_Name, startRow_Name, startCell_Name, filterFileType_Name;
+    private Label outPath_Name, excelPath_Name, fileNumber_Name, inPath_Name, log_Name, tip_Name, excelTypeLabel_Name;
 
     @FXML
     private CheckBox recursion_Name, openDirectory_Name, openFile_Name, showFileType_Name, exportTitle_Name, exportFullList_Name;
@@ -328,15 +328,16 @@ public class FileNameToExcelController extends ToolsProperties {
      * 设置鼠标悬停提示
      */
     private void setToolTip() {
-        addToolTip(sheetName_Name, tip_sheet);
-        addToolTip(startRow_Name, tip_startRow);
-        addToolTip(tip_Name, tip_Name.getText());
-        addToolTip(recursion_Name, tip_recursion);
-        addToolTip(excelName_Name, tip_excelName);
-        addToolTip(exportFullList_Name, tip_exportFullList);
-        addToolTip(filterFileType_Name, tip_filterFileType);
-        addToolTip(removeExcelButton_Name, tip_removeExcelButton);
-        addToolTip(startCell_Name, text_onlyNaturalNumber + defaultStartCell);
+        addToolTip(tip_sheet,sheetName_Name );
+        addToolTip(tip_startRow,startRow_Name);
+        addToolTip(tip_Name.getText(),tip_Name );
+        addToolTip(tip_recursion,recursion_Name );
+        addToolTip(tip_excelName,excelName_Name);
+        addToolTip(tip_exportFullList,exportFullList_Name);
+        addToolTip(tip_filterFileType,filterFileType_Name);
+        addToolTip(tip_removeExcelButton,removeExcelButton_Name);
+        addToolTip(tip_excelType,excelType_Name, excelTypeLabel_Name);
+        addToolTip(text_onlyNaturalNumber + defaultStartCell, startCell_Name);
     }
 
     /**
@@ -426,7 +427,7 @@ public class FileNameToExcelController extends ToolsProperties {
                 .setInFile(file);
         String filePath = file.getPath();
         inPath_Name.setText(filePath);
-        addToolTip(inPath_Name, filePath);
+        addToolTip(filePath, inPath_Name);
         addInData(readAllFiles(fileConfig));
     }
 
