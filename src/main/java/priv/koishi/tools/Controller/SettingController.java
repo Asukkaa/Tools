@@ -46,7 +46,7 @@ public class SettingController {
     /**
      * 启动脚本名称
      */
-    static final String batName = "app.bat";
+    static final String scriptName = getScriptName();
 
     /**
      * 启动脚本bin路径
@@ -76,10 +76,10 @@ public class SettingController {
     private ChoiceBox<String> sort_Set;
 
     @FXML
-    private TextField batMemory_Set, logsNum_Set;
+    private TextField nextRunMemory_Set, logsNum_Set;
 
     @FXML
-    private Label mail_set, appMemory_Set, thisPath_Set, logsPath_Set, systemMemory_Set;
+    private Label mail_set, runningMemory_Set, thisPath_Set, logsPath_Set, systemMemory_Set;
 
     @FXML
     private CheckBox loadRename_Set, loadFileNum_Set, loadFileName_Set, loadImgToExcel_Set, lastTab_Set, fullWindow_Set, reverseSort_Set;
@@ -105,6 +105,16 @@ public class SettingController {
     }
 
     /**
+     * 获取运行脚本名称
+     */
+    private static String getScriptName() {
+        if (systemName.contains(macos)) {
+            return "app";
+        }
+        return "app.bat";
+    }
+
+    /**
      * 保存日志问文件数量设置
      */
     private static void saveLogsNumSetting(Scene scene) throws IOException {
@@ -124,24 +134,22 @@ public class SettingController {
      * 保存最大运行内存设置
      */
     private static void saveMemorySetting(Scene scene) throws IOException {
-        if (systemName.contains(win)) {
-            TextField batMemoryTextField = (TextField) scene.lookup("#batMemory_Set");
-            String batMemoryValue = batMemoryTextField.getText();
-            if (StringUtils.isNotBlank(batMemoryValue) && !batMemoryValue.equals(batMemory)) {
-                Label thisPath = (Label) scene.lookup("#thisPath_Set");
-                Path batFilePath = Paths.get(thisPath.getText() + File.separator + batName);
-                String originalLineContent = Xmx + batMemory;
-                String newLineContent = Xmx + batMemoryValue;
-                List<String> lines = Files.readAllLines(batFilePath);
-                for (int i = 0; i < lines.size(); i++) {
-                    String line = lines.get(i);
-                    if (line.contains(originalLineContent)) {
-                        lines.set(i, line.replace(originalLineContent, newLineContent));
-                        break;
-                    }
+        TextField batMemoryTextField = (TextField) scene.lookup("#nextRunMemory_Set");
+        String batMemoryValue = batMemoryTextField.getText();
+        if (StringUtils.isNotBlank(batMemoryValue) && !batMemoryValue.equals(batMemory)) {
+            Label thisPath = (Label) scene.lookup("#thisPath_Set");
+            Path batFilePath = Paths.get(thisPath.getText() + File.separator + scriptName);
+            String originalLineContent = Xmx + batMemory;
+            String newLineContent = Xmx + batMemoryValue;
+            List<String> lines = Files.readAllLines(batFilePath);
+            for (int i = 0; i < lines.size(); i++) {
+                String line = lines.get(i);
+                if (line.contains(originalLineContent)) {
+                    lines.set(i, line.replace(originalLineContent, newLineContent));
+                    break;
                 }
-                Files.write(batFilePath, lines);
             }
+            Files.write(batFilePath, lines);
         }
     }
 
@@ -197,7 +205,7 @@ public class SettingController {
      */
     private void getMaxMemory() throws IOException {
         long maxMemory = Runtime.getRuntime().maxMemory();
-        appMemory_Set.setText(getUnitSize(maxMemory));
+        runningMemory_Set.setText(getUnitSize(maxMemory));
         OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
         long totalMemory = ((com.sun.management.OperatingSystemMXBean) osBean).getTotalMemorySize();
         systemMemory_Set.setText(getUnitSize(totalMemory));
@@ -205,17 +213,17 @@ public class SettingController {
         if (systemName.contains(win)) {
             String batPath;
             if ("bin".equals(getFileName(new File(currentDir))) || isRunningFromJar()) {
-                batPath = currentDir + File.separator + batName;
+                batPath = currentDir + File.separator + scriptName;
             } else {
-                batPath = currentDir + runtime + bin + File.separator + batName;
+                batPath = currentDir + runtime + bin + File.separator + scriptName;
             }
             BufferedReader reader = new BufferedReader(new FileReader(batPath));
             String line;
             while ((line = reader.readLine()) != null) {
                 if (line.contains(Xmx)) {
                     batMemory = line.substring(line.lastIndexOf(Xmx) + Xmx.length(), line.lastIndexOf("g"));
-                    batMemory_Set.setText(batMemory);
-                    addToolTip(text_nowSetting + batMemory + text_memorySetting, batMemory_Set);
+                    nextRunMemory_Set.setText(batMemory);
+                    addToolTip(text_nowSetting + batMemory + text_memorySetting, nextRunMemory_Set);
                     break;
                 }
             }
@@ -236,7 +244,7 @@ public class SettingController {
      */
     private void textFieldChangeListener() {
         //app.bat 分配的最大内存输入监听
-        integerRangeTextField(batMemory_Set, 1, null, text_nowSetting + batMemory + text_memorySetting + text_nowValue + batMemory_Set.getText());
+        integerRangeTextField(nextRunMemory_Set, 1, null, text_nowSetting + batMemory + text_memorySetting + text_nowValue + nextRunMemory_Set.getText());
         //log 文件保留数量输入监听
         integerRangeTextField(logsNum_Set, 0, null, tip_logsNum);
     }

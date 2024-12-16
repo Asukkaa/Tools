@@ -26,15 +26,13 @@
 
         <HBox spacing="50">
             <CheckBox fx:id="loadFileNum_Set" onAction="#loadFileNumAction" prefHeight="25" prefWidth="300"
-                      style="-fx-cursor: hand"
-                      selected="true" text="分组统计文件夹下文件数量 功能加载上次设置信息"/>
+                      style="-fx-cursor: hand" selected="true" text="分组统计文件夹下文件数量 功能加载上次设置信息"/>
 
             <CheckBox fx:id="loadFileName_Set" onAction="#loadFileNameAction" prefHeight="25" prefWidth="300"
-                      style="-fx-cursor: hand"
-                      selected="true" text="获取文件夹下的文件名称 功能加载上次设置信息"/>
+                      style="-fx-cursor: hand" selected="true" text="获取文件夹下的文件名称 功能加载上次设置信息"/>
 
-            <CheckBox fx:id="fullWindow_Set" onAction="#loadFullWindowAction" prefHeight="25" style="-fx-cursor: hand"
-                      selected="true" text="记住程序关闭时窗口是否最大化"/>
+            <CheckBox fx:id="fullWindow_Set" onAction="#loadFullWindowAction" prefHeight="25"
+                      style="-fx-cursor: hand" selected="true" text="记住程序关闭时窗口是否最大化"/>
         </HBox>
 
         <HBox spacing="10">
@@ -66,14 +64,14 @@
 
         <HBox spacing="5">
             <Label prefHeight="25" text="当前程序分配的最大内存："/>
-            <Label prefHeight="25" prefWidth="130" fx:id="appMemory_Set"/>
+            <Label prefHeight="25" prefWidth="130" fx:id="runningMemory_Set"/>
             <Label prefHeight="25" text="操作系统内存："/>
             <Label prefHeight="25" fx:id="systemMemory_Set"/>
         </HBox>
 
         <HBox spacing="5">
             <Label prefHeight="25" text="下次启动时程序分配最大内存："/>
-            <TextField fx:id="batMemory_Set" prefHeight="20" prefWidth="50"/>
+            <TextField fx:id="nextRunMemory_Set" prefHeight="20" prefWidth="50"/>
             <Label prefHeight="25" prefWidth="50" text="GB"/>
             <Button fx:id="reLaunch_Set" onAction="#reLaunch" style="-fx-cursor: hand" text="立刻重启程序"/>
         </HBox>
@@ -91,8 +89,7 @@
 
         <Label prefHeight="25" text="excel 相关功能只支持 .xlsx 与 .xls 格式文件，如果需要使用 excel模板 则导出的文件格式只能与模板文件格式相同。"/>
 
-        <Label prefHeight="20"
-               text="目前软件正在继续开发中，仍有很多功能还未实现，问题肯定也不少，有问题或建议可以给下面邮箱发邮件反馈。"/>
+        <Label prefHeight="20" text="目前软件正在继续开发中，仍有很多功能还未实现，问题肯定也不少，有问题或建议可以给下面邮箱发邮件反馈。"/>
 
         <Label prefHeight="20" text="如果遇到报错可到将 logs 文件夹压缩后发送给反馈邮件。"/>
 
