@@ -205,10 +205,10 @@ public class SettingController {
      */
     private void getMaxMemory() throws IOException {
         long maxMemory = Runtime.getRuntime().maxMemory();
-        runningMemory_Set.setText(getUnitSize(maxMemory));
+        runningMemory_Set.setText(getUnitSize(maxMemory, false));
         OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
         long totalMemory = ((com.sun.management.OperatingSystemMXBean) osBean).getTotalMemorySize();
-        systemMemory_Set.setText(getUnitSize(totalMemory));
+        systemMemory_Set.setText(getUnitSize(totalMemory, false));
         setPathLabel(thisPath_Set, currentDir, false, anchorPane_Set);
         String scriptPath = "";
         if (systemName.contains(win)) {

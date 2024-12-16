@@ -54,7 +54,7 @@ public class FileUtils {
      * @return 带单位的文件大小
      */
     public static String getFileUnitSize(File file) {
-        return getUnitSize(file.length());
+        return getUnitSize(file.length(), true);
     }
 
     /**
@@ -62,12 +62,12 @@ public class FileUtils {
      *
      * @return ret 带单位的文件大小
      */
-    public static String getUnitSize(long size) {
+    public static String getUnitSize(long size, boolean distinguishOS) {
         long win = 1024;
         long mac = 1000;
         long kb;
         //macOS与Windows文件大小进制不同
-        if (systemName.contains(macos)) {
+        if (systemName.contains(macos) && distinguishOS) {
             kb = mac;
         } else {
             kb = win;

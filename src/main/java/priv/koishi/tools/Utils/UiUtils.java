@@ -58,7 +58,7 @@ public class UiUtils {
      * 鼠标停留提示框
      *
      * @param controls 需要显示提示框的组件
-     * @param tip     提示卡信息
+     * @param tip      提示卡信息
      */
     public static void addToolTip(String tip, Control... controls) {
         for (Control control : controls) {
@@ -330,7 +330,7 @@ public class UiUtils {
                 bean1.setGroupNumber(matched.getGroupNumber());
                 bean1.setFileNameList(matched.getFileNameList());
                 bean1.setFilePathList(matched.getFilePathList());
-                bean1.setFileUnitSize(getUnitSize(matched.getFileSize()));
+                bean1.setFileUnitSize(getUnitSize(matched.getFileSize(), true));
                 totalFileSize.addAndGet(matched.getFileSize());
                 imgNum.addAndGet(matched.getFilePathList().size());
             });
@@ -338,7 +338,7 @@ public class UiUtils {
         FileNumVo fileNumVo = new FileNumVo();
         fileNumVo.setImgNum(imgNum.get())
                 .setDataNum(fileNumBeans.size())
-                .setImgSize(getUnitSize(totalFileSize.get()));
+                .setImgSize(getUnitSize(totalFileSize.get(), true));
         return fileNumVo;
     }
 
