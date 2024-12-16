@@ -109,7 +109,7 @@ public class SettingController {
      */
     private static String getScriptName() {
         if (systemName.contains(macos)) {
-            return "app";
+            return "Tools";
         }
         return "app.bat";
     }
