@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+APP_NAME=${2:-$(basename "${1}" '.sh')};
+DIR="${APP_NAME}.app/Contents/MacOS";
+if [ -a "${APP_NAME}.app" ]; then
+  echo "${PWD}/${APP_NAME}.app already exists. Provide some unique name if you want to create it anyway. ";
+  exit 1;
+fi;
+mkdir -p "${DIR}";
+cp "${1}" "${DIR}/${APP_NAME}";
+chmod +x "${DIR}/${APP_NAME}";
+echo "${PWD}/$APP_NAME.app";

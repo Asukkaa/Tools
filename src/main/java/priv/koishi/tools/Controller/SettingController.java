@@ -134,13 +134,13 @@ public class SettingController {
      * 保存最大运行内存设置
      */
     private static void saveMemorySetting(Scene scene) throws IOException {
-        TextField batMemoryTextField = (TextField) scene.lookup("#nextRunMemory_Set");
-        String batMemoryValue = batMemoryTextField.getText();
-        if (StringUtils.isNotBlank(batMemoryValue) && !batMemoryValue.equals(batMemory)) {
+        TextField nextRunMemoryTextField = (TextField) scene.lookup("#nextRunMemory_Set");
+        String nextRunMemoryValue = nextRunMemoryTextField.getText();
+        if (StringUtils.isNotBlank(nextRunMemoryValue) && !nextRunMemoryValue.equals(batMemory)) {
             Label thisPath = (Label) scene.lookup("#thisPath_Set");
             Path batFilePath = Paths.get(thisPath.getText() + File.separator + scriptName);
             String originalLineContent = Xmx + batMemory;
-            String newLineContent = Xmx + batMemoryValue;
+            String newLineContent = Xmx + nextRunMemoryValue;
             List<String> lines = Files.readAllLines(batFilePath);
             for (int i = 0; i < lines.size(); i++) {
                 String line = lines.get(i);
@@ -210,14 +210,19 @@ public class SettingController {
         long totalMemory = ((com.sun.management.OperatingSystemMXBean) osBean).getTotalMemorySize();
         systemMemory_Set.setText(getUnitSize(totalMemory));
         setPathLabel(thisPath_Set, currentDir, false, anchorPane_Set);
+        String scriptPath = "";
         if (systemName.contains(win)) {
-            String batPath;
             if ("bin".equals(getFileName(new File(currentDir))) || isRunningFromJar()) {
-                batPath = currentDir + File.separator + scriptName;
+                scriptPath = currentDir + File.separator + scriptName;
             } else {
-                batPath = currentDir + runtime + bin + File.separator + scriptName;
+                scriptPath = currentDir + runtime + bin + File.separator + scriptName;
             }
-            BufferedReader reader = new BufferedReader(new FileReader(batPath));
+        }
+        if (systemName.contains(macos)) {
+            scriptPath = currentDir + File.separator + scriptName;
+        }
+        if (StringUtils.isNotBlank(scriptPath)) {
+            BufferedReader reader = new BufferedReader(new FileReader(scriptPath));
             String line;
             while ((line = reader.readLine()) != null) {
                 if (line.contains(Xmx)) {
