@@ -156,7 +156,7 @@ public class ImgToExcelController extends ToolsProperties {
     private ChoiceBox<String> hideFileType_Img;
 
     @FXML
-    private Button fileButton_Img, reselectButton_Img, clearButton_Img, exportButton_Img, cancel_Img, outButton_Img, excelPathButton_Img;
+    private Button fileButton_Img, reselectButton_Img, clearButton_Img, exportButton_Img, cancel_Img, outPathButton_Img, excelPathButton_Img;
 
     @FXML
     private Label inPath_Img, outPath_Img, excelPath_Img, fileNumber_Img, log_Img, maxImg_Img, tip_Img, excelType_Img, excelTypeLabel_Img;
@@ -398,27 +398,27 @@ public class ImgToExcelController extends ToolsProperties {
         InputStream input = checkRunningInputStream(configFile_Img);
         prop.load(input);
         if (activation.equals(prop.getProperty(key_loadLastConfig))) {
-            setControlLastConfig(hideFileType_Img, prop, key_lastHideFileType, false, null);
-            setControlLastConfig(recursion_Img, prop, key_lastRecursion, false, null);
-            setControlLastConfig(showFileType_Img, prop, key_lastShowFileType, false, null);
-            setControlLastConfig(openDirectory_Img, prop, key_lastOpenDirectory, false, null);
-            setControlLastConfig(openFile_Img, prop, key_lastOpenFile, false, null);
-            setControlLastConfig(excelName_Img, prop, key_lastExcelName, false, null);
-            setControlLastConfig(sheetName_Img, prop, key_lastSheetName, false, null);
+            setControlLastConfig(noImg_Img, prop, key_lastNoImg, false, null);
+            setControlLastConfig(inPath_Img, prop, key_lastInPath, false, anchorPane_Img);
+            setControlLastConfig(maxRow_Img, prop, key_lastMaxRow, false, null);
             setControlLastConfig(subCode_Img, prop, key_lastSubCode, true, null);
-            setControlLastConfig(startRow_Img, prop, key_lastStartRow, false, null);
-            setControlLastConfig(startCell_Img, prop, key_lastStartCell, false, null);
+            setControlLastConfig(outPath_Img, prop, key_lastOutPath, false, anchorPane_Img);
             setControlLastConfig(readRow_Img, prop, key_lastReadRow, false, null);
             setControlLastConfig(readCell_Img, prop, key_lastReadCell, false, null);
-            setControlLastConfig(maxRow_Img, prop, key_lastMaxRow, false, null);
+            setControlLastConfig(openFile_Img, prop, key_lastOpenFile, false, null);
             setControlLastConfig(imgWidth_Img, prop, key_lastImgWidth, false, null);
-            setControlLastConfig(imgHeight_Img, prop, key_lastImgHeight, false, null);
-            setControlLastConfig(inPath_Img, prop, key_lastInPath, false, anchorPane_Img);
-            setControlLastConfig(outPath_Img, prop, key_lastOutPath, false, anchorPane_Img);
+            setControlLastConfig(startRow_Img, prop, key_lastStartRow, false, null);
             setControlLastConfig(excelPath_Img, prop, key_lastExcelPath, false, anchorPane_Img);
+            setControlLastConfig(startCell_Img, prop, key_lastStartCell, false, null);
+            setControlLastConfig(imgHeight_Img, prop, key_lastImgHeight, false, null);
             setControlLastConfig(maxImgNum_Img, prop, key_lastMaxImgNum, false, null);
-            setControlLastConfig(noImg_Img, prop, key_lastNoImg, false, null);
+            setControlLastConfig(recursion_Img, prop, key_lastRecursion, false, null);
+            setControlLastConfig(excelName_Img, prop, key_lastExcelName, false, null);
+            setControlLastConfig(sheetName_Img, prop, key_lastSheetName, false, null);
             setControlLastConfig(exportTitle_Img, prop, key_lastExportTitle, false, null);
+            setControlLastConfig(hideFileType_Img, prop, key_lastHideFileType, false, null);
+            setControlLastConfig(showFileType_Img, prop, key_lastShowFileType, false, null);
+            setControlLastConfig(openDirectory_Img, prop, key_lastOpenDirectory, false, null);
             setControlLastConfig(exportFileNum_Img, prop, key_lastExportFileNum, false, null);
             setControlLastConfig(exportFileSize_Img, prop, key_lastExportFileSize, false, null);
             String lastFilterFileTypes = prop.getProperty(key_lastFilterFileType);
@@ -440,30 +440,45 @@ public class ImgToExcelController extends ToolsProperties {
      */
     private void setToolTip() {
         addToolTip(tip_noImg, noImg_Img);
+        addToolTip(tip_maxRow, maxRow_Img);
+        addToolTip(tip_subCode, subCode_Img);
         addToolTip(tip_Img.getText(), tip_Img);
-        addToolTip(tip_filterImgType, jpg_Img);
-        addToolTip(tip_filterImgType, png_Img);
-        addToolTip(tip_filterImgType, jpeg_Img);
+        addToolTip(tip_openFile, openFile_Img);
+        addToolTip(tip_recursion, recursion_Img);
+        addToolTip(tip_sheetName, sheetName_Img);
+        addToolTip(tip_excelName, excelName_Img);
         addToolTip(tip_maxImgNum, maxImgNum_Img);
         addToolTip(tip_startReadRow, startRow_Img);
+        addToolTip(tip_fileButton, fileButton_Img);
+        addToolTip(tip_learButton, clearButton_Img);
+        addToolTip(tip_exportTitle, exportTitle_Img);
+        addToolTip(tip_showFileType, showFileType_Img);
+        addToolTip(tip_hideFileType, hideFileType_Img);
+        addToolTip(tip_exportButton, exportButton_Img);
+        addToolTip(tip_outPathButton, outPathButton_Img);
+        addToolTip(tip_openDirectory, openDirectory_Img);
+        addToolTip(tip_exportFileNum, exportFileNum_Img);
+        addToolTip(tip_exportFileSize, exportFileSize_Img);
+        addToolTip(tip_reselectButton, reselectButton_Img);
+        addToolTip(tip_excelPathButton, excelPathButton_Img);
+        addToolTip(tip_filterImgType, jpg_Img, png_Img, jpeg_Img);
         addToolTip(tip_excelType, excelType_Img, excelTypeLabel_Img);
         addToolTip(text_onlyNaturalNumber + defaultStartCell, startCell_Img);
         addToolTip(tip_imgHeightWidth + defaultImgWidth + tip_imgWidth, imgWidth_Img);
         addToolTip(tip_imgHeightWidth + defaultImgHeight + tip_imgHeight, imgHeight_Img);
-        addToolTip(text_onlyNaturalNumber + defaultReadCell + text_formThe + (defaultReadCell + 1) + text_cell);
         addToolTip(text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row, readRow_Img);
-        addNumImgToolTip(recursion_Img, subCode_Img, excelName_Img, sheetName_Img, maxRow_Img);
+        addToolTip(text_onlyNaturalNumber + defaultReadCell + text_formThe + (defaultReadCell + 1) + text_cell, readCell_Img);
     }
 
     /**
      * 设置要防重复点击的组件
      */
     private void setDisableControls() {
-        disableControls.add(outButton_Img);
         disableControls.add(fileButton_Img);
         disableControls.add(clearButton_Img);
         disableControls.add(exportButton_Img);
         disableControls.add(showFileType_Img);
+        disableControls.add(outPathButton_Img);
         disableControls.add(reselectButton_Img);
         disableControls.add(excelPathButton_Img);
     }

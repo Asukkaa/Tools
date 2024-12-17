@@ -126,7 +126,7 @@ public class FileNameToExcelController extends ToolsProperties {
     private CheckBox recursion_Name, openDirectory_Name, openFile_Name, showFileType_Name, exportTitle_Name, exportFullList_Name;
 
     @FXML
-    private Button fileButton_Name, clearButton_Name, exportButton_Name, reselectButton_Name, removeExcelButton_Name, excelPathButton_Img;
+    private Button fileButton_Name, clearButton_Name, exportButton_Name, reselectButton_Name, removeExcelButton_Name, excelPathButton_Name, outPathButton_Name;
 
     /**
      * 组件自适应宽高
@@ -283,23 +283,23 @@ public class FileNameToExcelController extends ToolsProperties {
         InputStream input = checkRunningInputStream(configFile_Name);
         prop.load(input);
         if (activation.equals(prop.getProperty(key_loadLastConfig))) {
-            setControlLastConfig(directoryNameType_Name, prop, key_lastDirectoryNameType, false, null);
-            setControlLastConfig(hideFileType_Name, prop, key_lastHideFileType, false, null);
-            setControlLastConfig(recursion_Name, prop, key_lastRecursion, false, null);
-            setControlLastConfig(showFileType_Name, prop, key_lastShowFileType, false, null);
-            setControlLastConfig(openDirectory_Name, prop, key_lastOpenDirectory, false, null);
+            setControlLastConfig(inPath_Name, prop, key_lastInPath, false, anchorPane_Name);
+            setControlLastConfig(outPath_Name, prop, key_lastOutPath, false, anchorPane_Name);
             setControlLastConfig(openFile_Name, prop, key_lastOpenFile, false, null);
+            setControlLastConfig(startRow_Name, prop, key_lastStartRow, false, null);
+            setControlLastConfig(excelPath_Name, prop, key_lastExcelPath, false, anchorPane_Name);
             setControlLastConfig(excelName_Name, prop, key_lastExcelName, false, null);
             setControlLastConfig(sheetName_Name, prop, key_lastSheetName, false, null);
             setControlLastConfig(excelType_Name, prop, key_lastExcelType, false, null);
-            setControlLastConfig(startRow_Name, prop, key_lastStartRow, false, null);
             setControlLastConfig(startCell_Name, prop, key_lastStartCell, false, null);
-            setControlLastConfig(filterFileType_Name, prop, key_lastFilterFileType, false, null);
-            setControlLastConfig(inPath_Name, prop, key_lastInPath, false, anchorPane_Name);
-            setControlLastConfig(outPath_Name, prop, key_lastOutPath, false, anchorPane_Name);
-            setControlLastConfig(excelPath_Name, prop, key_lastExcelPath, false, anchorPane_Name);
+            setControlLastConfig(recursion_Name, prop, key_lastRecursion, false, null);
             setControlLastConfig(exportTitle_Name, prop, key_lastExportTitle, false, null);
+            setControlLastConfig(showFileType_Name, prop, key_lastShowFileType, false, null);
+            setControlLastConfig(hideFileType_Name, prop, key_lastHideFileType, false, null);
+            setControlLastConfig(openDirectory_Name, prop, key_lastOpenDirectory, false, null);
             setControlLastConfig(exportFullList_Name, prop, key_lastExportFullList, false, null);
+            setControlLastConfig(filterFileType_Name, prop, key_lastFilterFileType, false, null);
+            setControlLastConfig(directoryNameType_Name, prop, key_lastDirectoryNameType, false, null);
             String excelPath = prop.getProperty(key_lastExcelPath);
             if (StringUtils.isNotBlank(excelPath)) {
                 removeExcelButton_Name.setVisible(true);
@@ -328,15 +328,27 @@ public class FileNameToExcelController extends ToolsProperties {
      * 设置鼠标悬停提示
      */
     private void setToolTip() {
-        addToolTip(tip_sheet,sheetName_Name );
-        addToolTip(tip_startRow,startRow_Name);
-        addToolTip(tip_Name.getText(),tip_Name );
-        addToolTip(tip_recursion,recursion_Name );
-        addToolTip(tip_excelName,excelName_Name);
-        addToolTip(tip_exportFullList,exportFullList_Name);
-        addToolTip(tip_filterFileType,filterFileType_Name);
-        addToolTip(tip_removeExcelButton,removeExcelButton_Name);
-        addToolTip(tip_excelType,excelType_Name, excelTypeLabel_Name);
+        addToolTip(tip_sheet, sheetName_Name);
+        addToolTip(tip_openFile, openFile_Name);
+        addToolTip(tip_startRow, startRow_Name);
+        addToolTip(tip_Name.getText(), tip_Name);
+        addToolTip(tip_recursion, recursion_Name);
+        addToolTip(tip_excelName, excelName_Name);
+        addToolTip(tip_fileButton, fileButton_Name);
+        addToolTip(tip_learButton, clearButton_Name);
+        addToolTip(tip_exportTitle, exportTitle_Name);
+        addToolTip(tip_showFileType, showFileType_Name);
+        addToolTip(tip_exportButton, exportButton_Name);
+        addToolTip(tip_hideFileType, hideFileType_Name);
+        addToolTip(tip_outPathButton, outPathButton_Name);
+        addToolTip(tip_openDirectory, openDirectory_Name);
+        addToolTip(tip_reselectButton, reselectButton_Name);
+        addToolTip(tip_exportFullList, exportFullList_Name);
+        addToolTip(tip_filterFileType, filterFileType_Name);
+        addToolTip(tip_excelPathButton, excelPathButton_Name);
+        addToolTip(tip_directoryNameType, directoryNameType_Name);
+        addToolTip(tip_removeExcelButton, removeExcelButton_Name);
+        addToolTip(tip_excelType, excelType_Name, excelTypeLabel_Name);
         addToolTip(text_onlyNaturalNumber + defaultStartCell, startCell_Name);
     }
 
@@ -348,8 +360,9 @@ public class FileNameToExcelController extends ToolsProperties {
         disableControls.add(clearButton_Name);
         disableControls.add(exportButton_Name);
         disableControls.add(showFileType_Name);
+        disableControls.add(outPathButton_Name);
         disableControls.add(reselectButton_Name);
-        disableControls.add(excelPathButton_Img);
+        disableControls.add(excelPathButton_Name);
     }
 
     /**

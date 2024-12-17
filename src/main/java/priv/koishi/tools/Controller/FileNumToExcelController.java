@@ -136,10 +136,10 @@ public class FileNumToExcelController extends ToolsProperties {
     private TableColumn<FileNumBean, String> fileName_Num, groupId_Num, fileUnitSize_Num;
 
     @FXML
-    private Button fileButton_Num, clearButton_Num, exportButton_Num, reselectButton_Num, excelPathButton_Num;
+    private Label outPath_Num, excelPath_Num, fileNumber_Num, inPath_Num, log_Num, excelType_Num, excelTypeLabel_Num;
 
     @FXML
-    private Label outPath_Num, excelPath_Num, fileNumber_Num, inPath_Num, log_Num, excelType_Num, excelTypeLabel_Num;
+    private Button fileButton_Num, clearButton_Num, exportButton_Num, reselectButton_Num, excelPathButton_Num, outPathButton_Num;
 
     @FXML
     private CheckBox recursion_Num, openDirectory_Num, openFile_Num, showFileType_Num, exportTitle_Num, exportFileNum_Num, exportFileSize_Num;
@@ -323,13 +323,13 @@ public class FileNumToExcelController extends ToolsProperties {
         InputStream input = checkRunningInputStream(configFile_Num);
         prop.load(input);
         inFilePath = prop.getProperty(key_inFilePath);
-        outFilePath = prop.getProperty(key_outFilePath);
-        defaultOutFileName = prop.getProperty(key_defaultOutFileName);
-        defaultSheetName = prop.getProperty(key_defaultSheetName);
         excelInPath = prop.getProperty(key_excelInPath);
-        defaultStartCell = Integer.parseInt(prop.getProperty(key_defaultStartCell));
+        outFilePath = prop.getProperty(key_outFilePath);
+        defaultSheetName = prop.getProperty(key_defaultSheetName);
+        defaultOutFileName = prop.getProperty(key_defaultOutFileName);
         defaultReadRow = Integer.parseInt(prop.getProperty(key_defaultReadRow));
         defaultReadCell = Integer.parseInt(prop.getProperty(key_defaultReadCell));
+        defaultStartCell = Integer.parseInt(prop.getProperty(key_defaultStartCell));
         input.close();
     }
 
@@ -341,27 +341,27 @@ public class FileNumToExcelController extends ToolsProperties {
         InputStream input = checkRunningInputStream(configFile_Num);
         prop.load(input);
         if (activation.equals(prop.getProperty(key_loadLastConfig))) {
-            setControlLastConfig(directoryNameType_Num, prop, key_lastDirectoryNameType, false, null);
-            setControlLastConfig(hideFileType_Num, prop, key_lastHideFileType, false, null);
-            setControlLastConfig(recursion_Num, prop, key_lastRecursion, false, null);
-            setControlLastConfig(showFileType_Num, prop, key_lastShowFileType, false, null);
-            setControlLastConfig(openDirectory_Num, prop, key_lastOpenDirectory, false, null);
-            setControlLastConfig(openFile_Num, prop, key_lastOpenFile, false, null);
-            setControlLastConfig(excelName_Num, prop, key_lastExcelName, false, null);
-            setControlLastConfig(sheetName_Num, prop, key_lastSheetName, false, null);
+            setControlLastConfig(inPath_Num, prop, key_lastInPath, false, anchorPane_Num);
+            setControlLastConfig(maxRow_Num, prop, key_lastMaxRow, false, null);
             setControlLastConfig(subCode_Num, prop, key_lastSubCode, true, null);
-            setControlLastConfig(startRow_Num, prop, key_lastStartRow, false, null);
-            setControlLastConfig(startCell_Num, prop, key_lastStartCell, false, null);
+            setControlLastConfig(outPath_Num, prop, key_lastOutPath, false, anchorPane_Num);
             setControlLastConfig(readRow_Num, prop, key_lastReadRow, false, null);
             setControlLastConfig(readCell_Num, prop, key_lastReadCell, false, null);
-            setControlLastConfig(maxRow_Num, prop, key_lastMaxRow, false, null);
-            setControlLastConfig(filterFileType_Num, prop, key_lastFilterFileType, false, null);
-            setControlLastConfig(inPath_Num, prop, key_lastInPath, false, anchorPane_Num);
-            setControlLastConfig(outPath_Num, prop, key_lastOutPath, false, anchorPane_Num);
+            setControlLastConfig(startRow_Num, prop, key_lastStartRow, false, null);
+            setControlLastConfig(openFile_Num, prop, key_lastOpenFile, false, null);
             setControlLastConfig(excelPath_Num, prop, key_lastExcelPath, false, anchorPane_Num);
+            setControlLastConfig(excelName_Num, prop, key_lastExcelName, false, null);
+            setControlLastConfig(sheetName_Num, prop, key_lastSheetName, false, null);
+            setControlLastConfig(startCell_Num, prop, key_lastStartCell, false, null);
+            setControlLastConfig(recursion_Num, prop, key_lastRecursion, false, null);
             setControlLastConfig(exportTitle_Num, prop, key_lastExportTitle, false, null);
+            setControlLastConfig(showFileType_Num, prop, key_lastShowFileType, false, null);
+            setControlLastConfig(hideFileType_Num, prop, key_lastHideFileType, false, null);
+            setControlLastConfig(openDirectory_Num, prop, key_lastOpenDirectory, false, null);
             setControlLastConfig(exportFileNum_Num, prop, key_lastExportFileNum, false, null);
             setControlLastConfig(exportFileSize_Num, prop, key_lastExportFileSize, false, null);
+            setControlLastConfig(filterFileType_Num, prop, key_lastFilterFileType, false, null);
+            setControlLastConfig(directoryNameType_Num, prop, key_lastDirectoryNameType, false, null);
             String excelPath = prop.getProperty(key_lastExcelPath);
             if (StringUtils.isNotBlank(excelPath)) {
                 excelType_Num.setText(getFileType(new File(excelPath)));
@@ -378,6 +378,7 @@ public class FileNumToExcelController extends ToolsProperties {
         disableControls.add(clearButton_Num);
         disableControls.add(exportButton_Num);
         disableControls.add(showFileType_Num);
+        disableControls.add(outPathButton_Num);
         disableControls.add(reselectButton_Num);
         disableControls.add(excelPathButton_Num);
     }
@@ -386,13 +387,23 @@ public class FileNumToExcelController extends ToolsProperties {
      * 设置鼠标悬停提示
      */
     private void setToolTip() {
+        addToolTip(tip_maxRow, maxRow_Num);
+        addToolTip(tip_subCode, subCode_Num);
+        addToolTip(tip_recursion, recursion_Num);
+        addToolTip(tip_sheetName, sheetName_Num);
+        addToolTip(tip_excelName, excelName_Num);
         addToolTip(tip_startReadRow, startRow_Num);
+        addToolTip(tip_fileButton, fileButton_Num);
+        addToolTip(tip_learButton, clearButton_Num);
+        addToolTip(tip_exportButton, exportButton_Num);
+        addToolTip(tip_outPathButton, outPathButton_Num);
+        addToolTip(tip_reselectButton, reselectButton_Num);
         addToolTip(tip_filterFileType, filterFileType_Num);
+        addToolTip(tip_excelPathButton, excelPathButton_Num);
         addToolTip(tip_excelType, excelType_Num, excelTypeLabel_Num);
         addToolTip(text_onlyNaturalNumber + defaultStartCell, startCell_Num);
         addToolTip(text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row, readRow_Num);
         addToolTip(text_onlyNaturalNumber + defaultReadCell + text_formThe + (defaultReadCell + 1) + text_cell, readCell_Num);
-        addNumImgToolTip(recursion_Num, subCode_Num, excelName_Num, sheetName_Num, maxRow_Num);
     }
 
     /**

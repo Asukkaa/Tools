@@ -73,7 +73,7 @@
             <Button fx:id="fileButton_Num" onAction="#inDirectoryButton" style="-fx-cursor: hand"
                     text="选择要统计的文件夹"/>
             <Label fx:id="inPath_Num" prefHeight="20" prefWidth="300" style="-fx-font-size: 15px;"/>
-            <Button onAction="#exportPath" style="-fx-cursor: hand" text="选择导出文件夹位置"/>
+            <Button fx:id="outPathButton_Num" onAction="#exportPath" style="-fx-cursor: hand" text="选择导出文件夹位置"/>
             <Label fx:id="outPath_Num" prefHeight="20" style="-fx-font-size: 15px;"/>
         </HBox>
 

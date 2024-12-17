@@ -53,7 +53,7 @@ public class CommonTexts {
 
     public static final String tip_imgHeightWidth = "只能填正整数，不填默认为 ";
 
-    public static final String tip_rename = "文件名不能包含 <>:\"/\\|?*";
+    public static final String tip_rename = "点击后将会开始按照列表数据进行文件批量重命名，文件名不能包含 <>:\"/\\|?*";
 
     public static final String tip_imgWidth = " 个字符宽度";
 
@@ -61,7 +61,7 @@ public class CommonTexts {
 
     public static final String tip_reLaunch = "保存所有改动并重启程序";
 
-    public static final String tip_noImg = "勾选后没有图片的数据将会在单元格中标记为 无图片";
+    public static final String tip_noImg = "勾选后导出文件时没有图片的数据将会在单元格中标记为 无图片";
 
     public static final String tip_filterImgType = "只会识别勾选的图片格式，至少要勾选一种图片格式才能查询";
 
@@ -74,6 +74,36 @@ public class CommonTexts {
     public static final String tip_reverseSort = "默认不勾选，排序为从小到大，勾选后排序为从大到小";
 
     public static final String tip_excelType = "如果需要使用excel模板则导出文件类型只能与excel模板文件类型一致";
+
+    public static final String tip_reselectButton = "点击将会按配置项重新查信息到列表中";
+
+    public static final String tip_learButton = "点击将会清空列表中的数据";
+
+    public static final String tip_exportButton = "点击将会按照列表数据和配置项导出数据到指定位置excel中";
+
+    public static final String tip_excelPathButton = "点击后可选择excel模板位置";
+
+    public static final String tip_fileButton = "点击后可选择要读取的文件夹位置，选择后将按照配置项读取数据到列表中";
+
+    public static final String tip_outPathButton = "点击后可选择数据导出位置";
+
+    public static final String tip_updateRenameButton = "点击后将会按照配置项更新列表中 修改后的文件名称 ，可配合排序等操作使用";
+
+    public static final String tip_showFileType = "勾选后文件名称会显示文件拓展名";
+
+    public static final String tip_exportTitle = "勾选后导出文件时导出起始行会添加每项数据的名称作为表头";
+
+    public static final String tip_directoryNameType = "点击可选择文件与文件夹查询逻辑";
+
+    public static final String tip_hideFileType = "点击可选择隐藏文件查询逻辑";
+
+    public static final String tip_openFile = "勾选后任务结束将会打开对应文件";
+
+    public static final String tip_openDirectory = "勾选后任务结束将会打开对应文件夹";
+
+    public static final String tip_exportFileNum = "勾选后导出文件时会在各分组匹配到的文件信息左侧单元格填写匹配的文件数量";
+
+    public static final String tip_exportFileSize = "勾选后导出文件时会在各分组匹配到的文件信息左侧单元格填写匹配的文件大小";
 
     public static final String tip_option = """
             插入：在匹配的字符位置插入所填写的字符串
@@ -93,7 +123,7 @@ public class CommonTexts {
 
     public static final String text_dataListNull = "列表为空";
 
-    public static final String text_fileListNull = "要读取的文件列表为空，需要选择一个有文件的文件夹";
+    public static final String text_fileListNull = "要读取的文件列表为空，需要先读取数据再继续";
 
     public static final String text_filePathNull = "要查询的文件夹位置为空，需要先设置要查询的文件夹位置再继续";
 

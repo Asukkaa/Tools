@@ -128,7 +128,7 @@ public class FileRenameController extends ToolsProperties {
     private Label excelPath_Re, fileNumber_Re, inPath_Re, log_Re, typeLabel_Re, tip_Re;
 
     @FXML
-    private Button fileButton_Re, clearButton_Re, renameButton_Re, reselectButton_Re, updateRenameButton_Re, excelPathButton_Img;
+    private Button fileButton_Re, clearButton_Re, renameButton_Re, reselectButton_Re, updateRenameButton_Re, excelPathButton_Re;
 
     @FXML
     private ChoiceBox<String> hideFileType_Re, directoryNameType_Re, renameType_Re, subCode_Re, differenceCode_Re, targetStr_Re, leftBehavior_Re, rightBehavior_Re, renameBehavior_Re;
@@ -510,12 +510,12 @@ public class FileRenameController extends ToolsProperties {
         InputStream input = checkRunningInputStream(configFile_Rename);
         prop.load(input);
         if (activation.equals(prop.getProperty(key_loadLastConfig))) {
-            setControlLastConfig(directoryNameType_Re, prop, key_lastDirectoryNameType, false, null);
+            setControlLastConfig(inPath_Re, prop, key_lastInPath, false, anchorPane_Re);
+            setControlLastConfig(renameType_Re, prop, key_lastRenameType, false, null);
             setControlLastConfig(hideFileType_Re, prop, key_lastHideFileType, false, null);
             setControlLastConfig(openDirectory_Re, prop, key_lastOpenDirectory, false, null);
             setControlLastConfig(filterFileType_Re, prop, key_lastFilterFileType, false, null);
-            setControlLastConfig(inPath_Re, prop, key_lastInPath, false, anchorPane_Re);
-            setControlLastConfig(renameType_Re, prop, key_lastRenameType, false, null);
+            setControlLastConfig(directoryNameType_Re, prop, key_lastDirectoryNameType, false, null);
             //根据重命名类型设置上次配置值
             setLastConfigByRenameType(prop);
         }
@@ -549,13 +549,13 @@ public class FileRenameController extends ToolsProperties {
      * 按编号规则重命名设置上次配置值
      */
     private void setLastConfigByCodeRename(Properties prop) {
+        setControlLastConfig(tag_Re, prop, key_lastTag, false, null);
+        setControlLastConfig(subCode_Re, prop, key_lastSubCode, false, null);
+        setControlLastConfig(nameNum_Re, prop, key_lastNameNum, false, null);
+        setControlLastConfig(addSpace_Re, prop, key_lastAddSpace, false, null);
         setControlLastConfig(startName_Re, prop, key_lastStartName, false, null);
         setControlLastConfig(startSize_Re, prop, key_lastStartSize, false, null);
-        setControlLastConfig(nameNum_Re, prop, key_lastNameNum, false, null);
-        setControlLastConfig(tag_Re, prop, key_lastTag, false, null);
-        setControlLastConfig(addSpace_Re, prop, key_lastAddSpace, false, null);
         setControlLastConfig(differenceCode_Re, prop, key_lastDifferenceCode, false, null);
-        setControlLastConfig(subCode_Re, prop, key_lastSubCode, false, null);
     }
 
     /**
@@ -619,11 +619,11 @@ public class FileRenameController extends ToolsProperties {
      * 根据excel重命名设置上次配置值
      */
     private void setLastConfigByExcelRename(Properties prop) {
-        setControlLastConfig(sheetName_Re, prop, key_lastSheetName, false, null);
+        setControlLastConfig(maxRow_Re, prop, key_lastMaxRow, false, null);
         setControlLastConfig(readRow_Re, prop, key_lastReadRow, false, null);
         setControlLastConfig(readCell_Re, prop, key_lastReadCell, false, null);
-        setControlLastConfig(maxRow_Re, prop, key_lastMaxRow, false, null);
         setControlLastConfig(excelPath_Re, prop, key_lastExcelPath, false, anchorPane_Re);
+        setControlLastConfig(sheetName_Re, prop, key_lastSheetName, false, null);
     }
 
     /**
@@ -659,9 +659,14 @@ public class FileRenameController extends ToolsProperties {
         addToolTip(tip_renameStr, renameStr_Re);
         addToolTip(tip_sheetName, sheetName_Re);
         addToolTip(tip_option, rightBehavior_Re);
+        addToolTip(tip_fileButton, fileButton_Re);
         addToolTip(tip_rightValue, rightValue_Re);
+        addToolTip(tip_learButton, clearButton_Re);
         addToolTip(tip_renameValue, renameValue_Re);
         addToolTip(tip_filterFileType, filterFileType_Re);
+        addToolTip(tip_reselectButton, reselectButton_Re);
+        addToolTip(tip_excelPathButton, excelPathButton_Re);
+        addToolTip(tip_updateRenameButton, updateRenameButton_Re);
         addToolTip(text_onlyNaturalNumber + defaultStartNameNum, startName_Re);
         addToolTip(text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row, readRow_Re);
         addToolTip(text_onlyNaturalNumber + defaultReadCell + text_formThe + (defaultReadCell + 1) + text_cell, readCell_Re);
@@ -675,7 +680,7 @@ public class FileRenameController extends ToolsProperties {
         disableControls.add(clearButton_Re);
         disableControls.add(renameButton_Re);
         disableControls.add(reselectButton_Re);
-        disableControls.add(excelPathButton_Img);
+        disableControls.add(excelPathButton_Re);
         disableControls.add(updateRenameButton_Re);
     }
 

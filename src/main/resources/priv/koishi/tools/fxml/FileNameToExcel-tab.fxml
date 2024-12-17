@@ -79,12 +79,12 @@
             <Button fx:id="fileButton_Name" onAction="#inDirectoryButton" style="-fx-cursor: hand"
                     text="选择要读取的文件夹"/>
             <Label fx:id="inPath_Name" prefHeight="20" prefWidth="300" style="-fx-font-size: 15px;"/>
-            <Button onAction="#exportPath" style="-fx-cursor: hand" text="选择导出文件夹位置"/>
+            <Button fx:id="outPathButton_Name" onAction="#exportPath" style="-fx-cursor: hand" text="选择导出文件夹位置"/>
             <Label fx:id="outPath_Name" prefHeight="20" style="-fx-font-size: 15px;"/>
         </HBox>
 
         <HBox spacing="10">
-            <Button fx:id="excelPathButton_Img" onAction="#getExcelPath" style="-fx-cursor: hand"
+            <Button fx:id="excelPathButton_Name" onAction="#getExcelPath" style="-fx-cursor: hand"
                     text="选择excel模板位置"/>
             <Label fx:id="excelPath_Name" prefHeight="20" style="-fx-font-size: 15px;"/>
             <Button fx:id="removeExcelButton_Name" onAction="#removeExcelPath" prefHeight="20"

@@ -379,17 +379,6 @@ public class UiUtils {
     }
 
     /**
-     * 为统计文件名和插入图片页面添加鼠标悬停提示
-     */
-    public static void addNumImgToolTip(CheckBox recursion, TextField subCode, TextField excelName, TextField sheetName, TextField maxRow) {
-        addToolTip(tip_recursion, recursion);
-        addToolTip(tip_sheetName, sheetName);
-        addToolTip(tip_excelName, excelName);
-        addToolTip(tip_maxRow, maxRow);
-        addToolTip(tip_subCode, subCode);
-    }
-
-    /**
      * 为统计文件名和插入图片页面列表设置字段宽度
      */
     public static void tableViewNumImgAdaption(TableColumn<FileNumBean, String> groupId, TableView<FileNumBean> tableView,
