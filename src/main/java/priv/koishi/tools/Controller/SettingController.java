@@ -48,11 +48,6 @@ public class SettingController {
      */
     static final String scriptName = getScriptName();
 
-    /**
-     * logs路径
-     */
-    static final String logs = File.separator + "logs";
-
     @FXML
     private AnchorPane anchorPane_Set;
 
@@ -218,7 +213,7 @@ public class SettingController {
      * 获取logs文件夹路径并展示
      */
     private void setLogsPath() {
-        String logsPath = currentDir + logs;
+        String logsPath = currentDir + File.separator + "logs";
         setPathLabel(logsPath_Set, logsPath, false, anchorPane_Set);
     }
 
