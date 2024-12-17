@@ -1,0 +1,1 @@
+jpackage --name Tools --type app-image -m priv.koishi.tools/priv.koishi.tools.MainApplication --runtime-image app --icon /Users/applesaucepenguin/IdeaProjects/tools/src/main/resources/priv/koishi/tools/icon/Tools.icns
