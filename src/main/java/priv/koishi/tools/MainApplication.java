@@ -44,7 +44,7 @@ public class MainApplication extends Application {
         Scene scene = new Scene(fxmlLoader.load(), appWidth, appHeight);
         stage.setTitle(prop.getProperty("appTitle"));
         stage.setScene(scene);
-        stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResource("icon/wrench.png")).toExternalForm()));
+        stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResource("icon/Tools.png")).toExternalForm()));
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("css/Styles.css")).toExternalForm());
         TabPane tabPane = (TabPane) scene.lookup("#tabPane");
         if (activation.equals(prop.getProperty("loadLastConfig"))) {
