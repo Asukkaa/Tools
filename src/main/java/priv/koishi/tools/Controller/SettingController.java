@@ -49,16 +49,6 @@ public class SettingController {
     static final String scriptName = getScriptName();
 
     /**
-     * 启动脚本bin路径
-     */
-    static final String bin = File.separator + "bin";
-
-    /**
-     * 启动脚本runtime路径
-     */
-    static final String runtime = File.separator + "runtime";
-
-    /**
      * logs路径
      */
     static final String logs = File.separator + "logs";
@@ -210,30 +200,18 @@ public class SettingController {
         long totalMemory = ((com.sun.management.OperatingSystemMXBean) osBean).getTotalMemorySize();
         systemMemory_Set.setText(getUnitSize(totalMemory, false));
         setPathLabel(thisPath_Set, currentDir, false, anchorPane_Set);
-        String scriptPath = "";
-        if (systemName.contains(win)) {
-            if ("bin".equals(getFileName(new File(currentDir))) || isRunningFromJar()) {
-                scriptPath = currentDir + File.separator + scriptName;
-            } else {
-                scriptPath = currentDir + runtime + bin + File.separator + scriptName;
+        String scriptPath = currentDir + File.separator + scriptName;
+        BufferedReader reader = new BufferedReader(new FileReader(scriptPath));
+        String line;
+        while ((line = reader.readLine()) != null) {
+            if (line.contains(Xmx)) {
+                batMemory = line.substring(line.lastIndexOf(Xmx) + Xmx.length(), line.lastIndexOf("g"));
+                nextRunMemory_Set.setText(batMemory);
+                addToolTip(text_nowSetting + batMemory + text_memorySetting, nextRunMemory_Set);
+                break;
             }
         }
-        if (systemName.contains(macos)) {
-            scriptPath = currentDir + File.separator + scriptName;
-        }
-        if (StringUtils.isNotBlank(scriptPath)) {
-            BufferedReader reader = new BufferedReader(new FileReader(scriptPath));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                if (line.contains(Xmx)) {
-                    batMemory = line.substring(line.lastIndexOf(Xmx) + Xmx.length(), line.lastIndexOf("g"));
-                    nextRunMemory_Set.setText(batMemory);
-                    addToolTip(text_nowSetting + batMemory + text_memorySetting, nextRunMemory_Set);
-                    break;
-                }
-            }
-            reader.close();
-        }
+        reader.close();
     }
 
     /**
