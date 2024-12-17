@@ -254,7 +254,7 @@ public class FileNameToExcelController extends ToolsProperties {
             //设置列表通过拖拽排序行
             tableViewDragRow(tableView_Name);
             //构建右键菜单
-            tableViewContextMenu(tableView_Name, fileNumber_Name);
+            tableViewContextMenu(tableView_Name, fileNumber_Name, anchorPane_Name);
         });
         executorService.execute(readFileTask);
     }

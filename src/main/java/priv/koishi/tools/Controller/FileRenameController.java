@@ -350,7 +350,7 @@ public class FileRenameController extends ToolsProperties {
             //设置列表通过拖拽排序行
             tableViewDragRow(tableView_Re);
             //构建右键菜单
-            tableViewContextMenu(tableView_Re, fileNumber_Re);
+            tableViewContextMenu(tableView_Re, fileNumber_Re, anchorPane_Re);
         });
         executorService.execute(readFileTask);
     }

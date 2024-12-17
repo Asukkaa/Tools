@@ -524,7 +524,7 @@ public class UiUtils {
     /**
      * 构建右键菜单
      */
-    public static void tableViewContextMenu(TableView<FileBean> tableView, Label label) {
+    public static void tableViewContextMenu(TableView<FileBean> tableView, Label label, AnchorPane anchorPane) {
         //设置可以选中多行
         tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         //添加右键菜单
@@ -537,6 +537,8 @@ public class UiUtils {
         buildOpenFileMenuItem(tableView, contextMenu);
         //打开所选文件所在文件夹选项
         buildOpenDirectorMenuItem(tableView, contextMenu);
+        //复制文件路径选项
+        buildOpenCopyFilePathItem(tableView, contextMenu, anchorPane);
         //删除所选数据选项
         buildDeleteDataMenuItem(tableView, label, contextMenu);
         tableView.setContextMenu(contextMenu);
@@ -545,6 +547,18 @@ public class UiUtils {
                 contextMenu.show(tableView, event.getScreenX(), event.getScreenY());
             }
         });
+    }
+
+    /**
+     * 复制文件路径选项
+     */
+    private static void buildOpenCopyFilePathItem(TableView<FileBean> tableView, ContextMenu contextMenu, AnchorPane anchorPane) {
+        MenuItem menuItem = new MenuItem("复制文件路径");
+        menuItem.setOnAction(event -> {
+            FileBean fileBean = tableView.getSelectionModel().getSelectedItem();
+            copyText(fileBean.getPath(), anchorPane);
+        });
+        contextMenu.getItems().add(menuItem);
     }
 
     /**
@@ -756,7 +770,7 @@ public class UiUtils {
         MenuItem copyValueMenuItem = new MenuItem("复制路径");
         contextMenu.getItems().add(copyValueMenuItem);
         valueLabel.setContextMenu(contextMenu);
-        copyValueMenuItem.setOnAction(event -> copyText(valueLabel, anchorPane));
+        copyValueMenuItem.setOnAction(event -> copyText(valueLabel.getText(), anchorPane));
         valueLabel.setOnMousePressed(event -> {
             if (event.isSecondaryButtonDown()) {
                 contextMenu.show(valueLabel, event.getScreenX(), event.getScreenY());
@@ -778,19 +792,19 @@ public class UiUtils {
             }
         });
         //设置右键菜单行为
-        copyValueMenuItem.setOnAction(event -> copyText(valueLabel, anchorPane));
+        copyValueMenuItem.setOnAction(event -> copyText(valueLabel.getText(), anchorPane));
     }
 
     /**
      * 复制文本
      */
-    public static void copyText(Label valueLabel, AnchorPane anchorPane) {
+    public static void copyText(String value, AnchorPane anchorPane) {
         //获取当前系统剪贴板
         Clipboard clipboard = Clipboard.getSystemClipboard();
         //创建剪贴板内容对象
         ClipboardContent content = new ClipboardContent();
         //将文本区域选中的文本放入剪贴板内容中
-        content.putString(valueLabel.getText());
+        content.putString(value);
         //设置剪贴板内容
         clipboard.setContent(content);
         //复制成功消息气泡
@@ -803,8 +817,11 @@ public class UiUtils {
     public static void buildMessageBubble(AnchorPane anchorPane, String text, double time) {
         MessageBubble bubble = new MessageBubble(text);
         anchorPane.getChildren().add(bubble);
+        //列表中无法监控鼠标位置需要设置初位置
+        bubble.setLayoutX(500);
+        bubble.setLayoutY(300);
         anchorPane.addEventHandler(MouseEvent.MOUSE_MOVED, mouseEvent -> {
-            // 获取鼠标位置
+            //获取鼠标位置
             double mouseX = mouseEvent.getX();
             double mouseY = mouseEvent.getY();
             bubble.setLayoutX(mouseX + 30);
