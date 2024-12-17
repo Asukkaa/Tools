@@ -281,10 +281,6 @@ public class SettingController {
         deleteLogs();
         //设置鼠标悬停提示
         setToolTip();
-        //macos暂时不支持重启程序
-        if (systemName.contains(macos)) {
-            reLaunch_Set.setVisible(false);
-        }
     }
 
     /**
@@ -343,8 +339,16 @@ public class SettingController {
         Stage stage = (Stage) anchorPane_Set.getScene().getWindow();
         saveLastConfig(stage);
         Platform.exit();
-        ProcessBuilder processBuilder = new ProcessBuilder(currentDir + File.separator + "Tools.exe");
-        processBuilder.start();
+        if (!isRunningFromJar()) {
+            String appName;
+            if (systemName.contains(win)) {
+                appName = "Tools.exe";
+            } else {
+                appName = "Tools";
+            }
+            ProcessBuilder processBuilder = new ProcessBuilder(currentDir + File.separator + appName);
+            processBuilder.start();
+        }
     }
 
     /**
