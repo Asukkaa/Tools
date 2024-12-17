@@ -59,6 +59,8 @@ public class CommonTexts {
 
     public static final String tip_imgHeight = " 个像素";
 
+    public static final String tip_reLaunch = "保存所有改动并重启程序";
+
     public static final String tip_noImg = "勾选后没有图片的数据将会在单元格中标记为 无图片";
 
     public static final String tip_filterImgType = "只会识别勾选的图片格式，至少要勾选一种图片格式才能查询";

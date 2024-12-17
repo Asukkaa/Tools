@@ -259,7 +259,14 @@ public class SettingController {
      */
     private void setToolTip() {
         addToolTip(tip_sort, sort_Set);
+        addToolTip(tip_reLaunch, reLaunch_Set);
         addToolTip(tip_reverseSort, reverseSort_Set);
+        addToolTip(lastTab_Set.getText(), lastTab_Set);
+        addToolTip(fullWindow_Set.getText(), fullWindow_Set);
+        addToolTip(loadRename_Set.getText(), loadRename_Set);
+        addToolTip(loadFileNum_Set.getText(), loadFileNum_Set);
+        addToolTip(loadFileName_Set.getText(), loadFileName_Set);
+        addToolTip(loadImgToExcel_Set.getText(), loadImgToExcel_Set);
     }
 
     /**
