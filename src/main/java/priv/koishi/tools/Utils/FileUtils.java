@@ -285,7 +285,7 @@ public class FileUtils {
                 if (systemName.contains(win)) {
                     processBuilder = new ProcessBuilder("cmd.exe", "/C", "explorer /select, " + openPath);
                 } else {
-                    processBuilder = new ProcessBuilder("open -R " + openPath);
+                    processBuilder = new ProcessBuilder("bash", "-c", "open -R " + "'" + openPath + "'");
                 }
                 processBuilder.start();
             }
