@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -806,16 +807,21 @@ public class UiUtils {
     public static void buildMessageBubble(AnchorPane anchorPane, String text, double time) {
         MessageBubble bubble = new MessageBubble(text);
         anchorPane.getChildren().add(bubble);
-        //列表中无法监控鼠标位置需要设置初位置
-        bubble.setLayoutX(500);
-        bubble.setLayoutY(300);
+        //列表中无法监控鼠标位置需要判断是否监控到鼠标移动
+        AtomicBoolean getMouseMoved = new AtomicBoolean(false);
         anchorPane.addEventHandler(MouseEvent.MOUSE_MOVED, mouseEvent -> {
             //获取鼠标位置
+            getMouseMoved.set(true);
             double mouseX = mouseEvent.getX();
             double mouseY = mouseEvent.getY();
             bubble.setLayoutX(mouseX + 30);
             bubble.setLayoutY(mouseY);
         });
+        //鼠标在列表复制设置初位置
+        if (!getMouseMoved.get()) {
+            bubble.setLayoutX(anchorPane.getWidth() * 0.5);
+            bubble.setLayoutY(anchorPane.getHeight() * 0.5);
+        }
         KeyFrame keyFrame = new KeyFrame(Duration.seconds(time), ae -> anchorPane.getChildren().remove(bubble));
         Timeline timeline = new Timeline(keyFrame);
         timeline.play();
