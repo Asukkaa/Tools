@@ -4,6 +4,8 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
+ * 线程工厂类
+ *
  * @author KOISHI
  * Date:2024-10-30
  * Time:下午8:18

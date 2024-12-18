@@ -27,7 +27,6 @@ import static priv.koishi.tools.Text.CommonTexts.*;
 import static priv.koishi.tools.Utils.CommonUtils.getPropertyName;
 import static priv.koishi.tools.Utils.CommonUtils.isGetterMethod;
 import static priv.koishi.tools.Utils.ExcelUtils.*;
-import static priv.koishi.tools.Utils.FileUtils.checkCopyDestination;
 import static priv.koishi.tools.Utils.FileUtils.checkFileExists;
 import static priv.koishi.tools.Utils.UiUtils.changeDisableControls;
 

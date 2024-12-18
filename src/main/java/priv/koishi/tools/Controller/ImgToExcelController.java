@@ -46,6 +46,8 @@ import static priv.koishi.tools.Utils.UiUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.setControlLastConfig;
 
 /**
+ * 将图片与excel匹配并插入页面控制器
+ *
  * @author KOISHI
  * Date:2024-10-16
  * Time:下午1:24
@@ -519,7 +521,7 @@ public class ImgToExcelController extends ToolsProperties {
         String totalFileSize = fileNumberText.substring(fileNumberText.lastIndexOf(text_totalFileSize) + text_totalFileSize.length());
         double totalFileSizeValue = fileSizeCompareValue(totalFileSize) * 2;
         Scene scene = anchorPane_Img.getScene();
-        Label appMemory = (Label) scene.lookup("#appMemory_Set");
+        Label appMemory = (Label) scene.lookup("#runningMemory_Set");
         String appMemoryText = appMemory.getText();
         double appMemoryValue = fileSizeCompareValue(appMemoryText);
         if (totalFileSizeValue >= appMemoryValue) {
@@ -621,9 +623,8 @@ public class ImgToExcelController extends ToolsProperties {
      */
     @FXML
     private void removeAll() {
-        removeNumImgAll(tableView_Img, fileNumber_Img, log_Img);
         inFileList = null;
-        System.gc();
+        removeTableViewData(tableView_Img, fileNumber_Img, log_Img);
     }
 
     /**

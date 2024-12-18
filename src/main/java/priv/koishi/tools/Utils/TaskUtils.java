@@ -13,10 +13,13 @@ import priv.koishi.tools.Configuration.ExcelConfig;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 
+import static priv.koishi.tools.Utils.ExcelUtils.saveExcel;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.changeDisableControls;
 
 /**
+ * 多线程任务工具的方法
+ *
  * @author KOISHI
  * Date:2024-10-28
  * Time:下午3:14
@@ -25,6 +28,9 @@ public class TaskUtils {
 
     /**
      * 绑定带进度条的线程
+     *
+     * @param task     要绑定的线程任务
+     * @param taskBean 绑定线程任务所需参数
      */
     public static void bindingProgressBarTask(Task<?> task, TaskBean<?> taskBean) {
         ProgressBar progressBar = taskBean.getProgressBar();
@@ -48,6 +54,14 @@ public class TaskUtils {
 
     /**
      * 线程执行成功后保存excel文件
+     *
+     * @param excelConfig     excel设置
+     * @param taskBean        线程任务所需参数
+     * @param buildExcelTask  构建excel线程任务
+     * @param openDirectory   打开文件夹选项
+     * @param openFile        打开文件选项
+     * @param executorService 线程池
+     * @throws RuntimeException io异常
      */
     public static void saveExcelOnSucceeded(ExcelConfig excelConfig, TaskBean<?> taskBean, Task<Workbook> buildExcelTask,
                                             CheckBox openDirectory, CheckBox openFile, ExecutorService executorService) {
@@ -80,6 +94,10 @@ public class TaskUtils {
 
     /**
      * 抛出task异常
+     *
+     * @param task     有异常的线程任务
+     * @param taskBean 线程任务所需参数
+     * @throws RuntimeException 线程的异常
      */
     public static void throwTaskException(Task<?> task, TaskBean<?> taskBean) {
         task.setOnFailed(event -> {
@@ -92,6 +110,8 @@ public class TaskUtils {
 
     /**
      * 线程组件解绑
+     *
+     * @param taskBean 要解绑的线程组件信息
      */
     public static void taskUnbind(TaskBean<?> taskBean) {
         //隐藏取消按钮
@@ -117,6 +137,10 @@ public class TaskUtils {
 
     /**
      * 保存excel线程
+     *
+     * @param excelConfig excel设置
+     * @param workbook    excel工作簿
+     * @return 保存excel线程任务
      */
     public static Task<String> saveExcelTask(ExcelConfig excelConfig, Workbook workbook) {
         return new Task<>() {

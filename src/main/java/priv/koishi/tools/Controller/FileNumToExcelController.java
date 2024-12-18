@@ -43,6 +43,8 @@ import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
 /**
+ * 分组统计文件夹下文件数量页面控制器
+ *
  * @author KOISHI
  * Date:2024-10-08
  * Time:下午3:29
@@ -504,9 +506,8 @@ public class FileNumToExcelController extends ToolsProperties {
      */
     @FXML
     private void removeAll() {
-        removeNumImgAll(tableView_Num, fileNumber_Num, log_Num);
         inFileList = null;
-        System.gc();
+        removeTableViewData(tableView_Num, fileNumber_Num, log_Num);
     }
 
     /**

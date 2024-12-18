@@ -27,6 +27,8 @@ import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
 /**
+ * 设置页面控制器
+ *
  * @author KOISHI
  * Date:2024-11-12
  * Time:下午4:51

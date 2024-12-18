@@ -3,6 +3,8 @@ package priv.koishi.tools.Text;
 import javafx.util.Duration;
 
 /**
+ * 通用常量类
+ *
  * @author KOISHI
  * Date:2024-11-13
  * Time:下午2:41

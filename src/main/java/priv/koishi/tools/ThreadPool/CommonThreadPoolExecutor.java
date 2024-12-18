@@ -3,6 +3,8 @@ package priv.koishi.tools.ThreadPool;
 import java.util.concurrent.*;
 
 /**
+ * 公共线程池类
+ *
  * @author KOISHI
  * Date:2024-10-30
  * Time:下午8:17
@@ -47,7 +49,8 @@ public class CommonThreadPoolExecutor {
     /**
      * 构造函数
      */
-    public CommonThreadPoolExecutor() {}
+    public CommonThreadPoolExecutor() {
+    }
 
     /**
      * 默认线程池

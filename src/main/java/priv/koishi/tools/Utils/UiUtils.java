@@ -10,6 +10,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
 import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -17,6 +18,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.PopupWindow;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.Duration;
 import org.apache.commons.collections4.CollectionUtils;
@@ -28,6 +30,7 @@ import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.FileConfig;
 import priv.koishi.tools.Enum.SelectItemsEnums;
+import priv.koishi.tools.MainApplication;
 import priv.koishi.tools.MessageBubble.MessageBubble;
 import priv.koishi.tools.Vo.FileNumVo;
 
@@ -36,8 +39,6 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 import static priv.koishi.tools.Service.ReadDataService.showReadExcelData;
 import static priv.koishi.tools.Text.CommonTexts.*;
@@ -45,6 +46,8 @@ import static priv.koishi.tools.Utils.CommonUtils.*;
 import static priv.koishi.tools.Utils.FileUtils.*;
 
 /**
+ * ui相关工具类
+ *
  * @author KOISHI
  * Date:2024-10-03
  * Time:下午1:38
@@ -69,6 +72,9 @@ public class UiUtils {
 
     /**
      * 设置鼠标停留提示框参数
+     *
+     * @param tip 提示文案
+     * @return 设置参数后的Tooltip对象
      */
     public static Tooltip creatTooltip(String tip) {
         Tooltip tooltip = new Tooltip(tip);
@@ -81,6 +87,9 @@ public class UiUtils {
 
     /**
      * 输入框鼠标停留提示输入值
+     *
+     * @param textField 要添加提示的文本输入框
+     * @param text      要展示的提示文案
      */
     public static void addValueToolTip(TextField textField, String text) {
         String value = textField.getText();
@@ -101,6 +110,12 @@ public class UiUtils {
 
     /**
      * 创建一个文件选择器
+     *
+     * @param event            交互事件
+     * @param path             文件选择器初始路径
+     * @param extensionFilters 要过滤的文件格式
+     * @param title            文件选择器标题
+     * @return 文件选择器选择的文件
      */
     public static File creatFileChooser(ActionEvent event, String path, List<FileChooser.ExtensionFilter> extensionFilters, String title) {
         FileChooser fileChooser = new FileChooser();
@@ -128,6 +143,11 @@ public class UiUtils {
 
     /**
      * 创建一个文件夹选择器
+     *
+     * @param event 交互事件
+     * @param path  文件夹选择器初始路径
+     * @param title 文件夹选择器标题
+     * @return 文件夹选择器选择的文件夹
      */
     public static File creatDirectoryChooser(ActionEvent event, String path, String title) {
         DirectoryChooser directoryChooser = new DirectoryChooser();
@@ -143,6 +163,9 @@ public class UiUtils {
 
     /**
      * 处理要过滤的文件类型
+     *
+     * @param filterFileType 填有空格区分的要过滤的文件类型字符串的文本输入框
+     * @return 要过滤的文件类型list
      */
     public static List<String> getFilterExtensionList(TextField filterFileType) {
         String filterFileTypeValue = filterFileType.getText();
@@ -154,7 +177,143 @@ public class UiUtils {
     }
 
     /**
+     * 文件大小排序
+     *
+     * @param sizeColumn 要进行文件大小排序的列
+     */
+    public static void fileSizeColum(TableColumn<?, String> sizeColumn) {
+        //自定义比较器
+        Comparator<String> customComparator = Comparator.comparingDouble(FileUtils::fileSizeCompareValue);
+        //应用自定义比较器
+        sizeColumn.setComparator(customComparator);
+    }
+
+    /**
+     * 设置默认数值
+     *
+     * @param textField    要设置默认值的文本输入框
+     * @param defaultValue 默认值
+     * @param min          文本输入框可填写的最小值，为空则不限制最小值
+     * @param max          文本输入框可填写的最大值，为空则不限制最大值
+     * @return 文本输入框所填值如果在规定范围内则返回所填值，否则返回默认值
+     */
+    public static int setDefaultIntValue(TextField textField, int defaultValue, Integer min, Integer max) {
+        String valueStr = textField.getText();
+        int value = defaultValue;
+        if (isInIntegerRange(valueStr, min, max)) {
+            value = Integer.parseInt(valueStr);
+        }
+        return value;
+    }
+
+    /**
+     * 设置默认字符串值
+     *
+     * @param textField    要设置默认字符串的文本输入框
+     * @param defaultValue 默认字符串
+     * @return 文本输入框不为空则返回所填值，为空则为默认值
+     */
+    public static String setDefaultStrValue(TextField textField, String defaultValue) {
+        String valueStr = textField.getText();
+        String value = defaultValue;
+        if (StringUtils.isNotBlank(valueStr)) {
+            value = valueStr;
+        }
+        return value;
+    }
+
+    /**
+     * 设置默认文件名
+     *
+     * @param textField    要设置默认文件名的文本输入框
+     * @param defaultValue 默认文件名
+     * @return 如果文本输入框填的是合法文件名则返回所填值，不合法则返回默认值
+     */
+    public static String setDefaultFileName(TextField textField, String defaultValue) {
+        //去掉开头的空字符
+        String valueStr = textField.getText().replaceFirst("^\\s+", "");
+        String value = defaultValue;
+        if (isValidFileName(valueStr)) {
+            value = valueStr;
+        }
+        return value;
+    }
+
+    /**
+     * 处理异常的统一弹窗
+     *
+     * @param ex 要处理的异常
+     */
+    public static void showExceptionAlert(Throwable ex) {
+        logger.error(ex, ex);
+        Alert alert = creatErrorAlert(errToString(ex));
+        if (ex.getCause().getCause() instanceof Exception) {
+            alert.setHeaderText(ex.getCause().getCause().getMessage());
+        } else {
+            alert.setHeaderText(ex.getMessage());
+        }
+        // 展示弹窗
+        alert.showAndWait();
+    }
+
+    /**
+     * 创建一个错误弹窗
+     *
+     * @param errString 要展示的异常信息
+     * @return Alert弹窗对象
+     */
+    public static Alert creatErrorAlert(String errString) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("异常信息");
+        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(new Image(Objects.requireNonNull(MainApplication.class.getResource("icon/Tools.png")).toString()));
+        // 创建展示异常信息的TextArea
+        TextArea textArea = new TextArea();
+        textArea.setEditable(false);
+        textArea.setWrapText(true);
+        textArea.setText(errString);
+        // 创建VBox并添加TextArea
+        VBox details = new VBox();
+        details.heightProperty().addListener((v1, v2, v3) -> Platform.runLater(() -> textArea.setPrefHeight(details.getHeight())));
+        details.getChildren().add(textArea);
+        alert.getDialogPane().setExpandableContent(details);
+        return alert;
+    }
+
+    /**
+     * 创建一个确认弹窗
+     *
+     * @param confirm 确认框文案
+     * @param ok      确认按钮文案
+     * @param cancel  取消按钮文案
+     * @return 被点击的按钮
+     */
+    public static ButtonType creatConfirmDialog(String confirm, String ok, String cancel) {
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setHeaderText(confirm);
+        Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(new Image(Objects.requireNonNull(MainApplication.class.getResource("icon/Tools.png")).toString()));
+        ButtonType cancelButton = new ButtonType(cancel, ButtonBar.ButtonData.CANCEL_CLOSE);
+        ButtonType okButton = new ButtonType(ok, ButtonBar.ButtonData.APPLY);
+        dialog.getDialogPane().getButtonTypes().addAll(okButton, cancelButton);
+        return dialog.showAndWait().orElse(cancelButton);
+    }
+
+    /**
+     * 为javafx单元格赋值并添加鼠标悬停提示
+     *
+     * @param tableColumn 要处理的javafx列表列
+     * @param param       javafx列表列对应的数据属性名
+     */
+    public static void buildCellValue(TableColumn<?, ?> tableColumn, String param) {
+        tableColumn.setCellValueFactory(new PropertyValueFactory<>(param));
+        addTableColumnToolTip(tableColumn);
+    }
+
+    /**
      * 自定义单元格工厂，为单元格添加Tooltip
+     *
+     * @param column 要处理的javafx表格单元格
      */
     public static <S, T> void addTableColumnToolTip(TableColumn<S, T> column) {
         column.setCellFactory(new Callback<>() {
@@ -178,108 +337,11 @@ public class UiUtils {
     }
 
     /**
-     * 文件大小排序
-     */
-    public static void fileSizeColum(TableColumn<?, String> sizeColumn) {
-        //自定义比较器
-        Comparator<String> customComparator = Comparator.comparingDouble(FileUtils::fileSizeCompareValue);
-        //应用自定义比较器
-        sizeColumn.setComparator(customComparator);
-    }
-
-    /**
-     * 设置默认数值
-     */
-    public static int setDefaultIntValue(TextField textField, int defaultValue, Integer min, Integer max) {
-        String valueStr = textField.getText();
-        int value = defaultValue;
-        if (isInIntegerRange(valueStr, min, max)) {
-            value = Integer.parseInt(valueStr);
-        }
-        return value;
-    }
-
-    /**
-     * 设置默认字符串值
-     */
-    public static String setDefaultStrValue(TextField textField, String defaultValue) {
-        String valueStr = textField.getText();
-        String value = defaultValue;
-        if (StringUtils.isNotBlank(valueStr)) {
-            value = valueStr;
-        }
-        return value;
-    }
-
-    /**
-     * 设置默认文件名
-     */
-    public static String setDefaultFileName(TextField textField, String defaultValue) {
-        //去掉开头的空字符
-        String valueStr = textField.getText().replaceFirst("^\\s+", "");
-        String value = defaultValue;
-        if (isValidFileName(valueStr)) {
-            value = valueStr;
-        }
-        return value;
-    }
-
-    /**
-     * 为javafx单元格赋值并添加鼠标悬停提示
-     */
-    public static void buildCellValue(TableColumn<?, ?> tableColumn, String param) {
-        tableColumn.setCellValueFactory(new PropertyValueFactory<>(param));
-        addTableColumnToolTip(tableColumn);
-    }
-
-    /**
-     * 处理异常的统一弹窗
-     */
-    public static void showExceptionAlert(Throwable ex) {
-        logger.error(ex, ex);
-        Alert alert = creatErrorAlert(errToString(ex));
-        if (ex.getCause().getCause() instanceof Exception) {
-            alert.setHeaderText(ex.getCause().getCause().getMessage());
-        } else {
-            alert.setHeaderText(ex.getMessage());
-        }
-        // 展示弹窗
-        alert.showAndWait();
-    }
-
-    /**
-     * 创建一个错误弹窗
-     */
-    public static Alert creatErrorAlert(String errString) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("异常信息");
-        // 创建展示异常信息的TextArea
-        TextArea textArea = new TextArea();
-        textArea.setEditable(false);
-        textArea.setWrapText(true);
-        textArea.setText(errString);
-        // 创建VBox并添加TextArea
-        VBox details = new VBox();
-        details.heightProperty().addListener((v1, v2, v3) -> Platform.runLater(() -> textArea.setPrefHeight(details.getHeight())));
-        details.getChildren().add(textArea);
-        alert.getDialogPane().setExpandableContent(details);
-        return alert;
-    }
-
-    /**
-     * 创建一个确认弹窗
-     */
-    public static ButtonType creatConfirmDialog(String confirm, String ok, String cancel) {
-        Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.setHeaderText(confirm);
-        ButtonType cancelButton = new ButtonType(cancel, ButtonBar.ButtonData.CANCEL_CLOSE);
-        ButtonType okButton = new ButtonType(ok, ButtonBar.ButtonData.APPLY);
-        dialog.getDialogPane().getButtonTypes().addAll(okButton, cancelButton);
-        return dialog.showAndWait().orElse(cancelButton);
-    }
-
-    /**
-     * 根据bean属性自动填充javafx表格
+     * 根据bean属性名自动填充javafx表格
+     *
+     * @param tableView 要处理的javafx表格
+     * @param dataList  javafx表格要展示的数据
+     * @param tabId     用于区分不同列表的id，要展示的数据bean属性名加上tabId即为javafx列表的列对应的id
      */
     public static <T> void autoBuildTableViewData(TableView<T> tableView, List<T> dataList, String tabId) {
         Class<?> beanClass = dataList.getFirst().getClass();
@@ -302,85 +364,29 @@ public class UiUtils {
     }
 
     /**
-     * 清空excel统计文件名或插入图片页面的列表
+     * 清空javafx列表数据
+     *
+     * @param tableView  要清空的javafx列表
+     * @param fileNumber 用于展示列表数据数量的文本框
+     * @param log        用于展示任务消息的文本框
      */
-    public static void removeNumImgAll(TableView<FileNumBean> tableView, Label fileNumber, Label log) {
-        ObservableList<FileNumBean> nullData = FXCollections.observableArrayList(new ArrayList<>());
+    public static <T> void removeTableViewData(TableView<T> tableView, Label fileNumber, Label log) {
+        ObservableList<T> nullData = FXCollections.observableArrayList(new ArrayList<>());
         tableView.setItems(nullData);
         updateLabel(fileNumber, text_dataListNull);
         updateLabel(log, "");
-    }
-
-    /**
-     * 匹配excel分组与文件夹下文件
-     */
-    public static FileNumVo matchGroupData(List<FileNumBean> fileNumBeans, List<File> inFileList, FileConfig fileConfig) {
-        List<String> paths = new ArrayList<>();
-        inFileList.forEach(file -> paths.add(file.getPath()));
-        List<FileNumBean> fileNumList = buildNameGroupData(paths, fileConfig);
-        AtomicInteger imgNum = new AtomicInteger();
-        AtomicLong totalFileSize = new AtomicLong();
-        fileNumBeans.forEach(bean1 -> {
-            bean1.setGroupNumber(0);
-            bean1.setFileName("");
-            Optional<FileNumBean> matchedBeans = fileNumList.stream()
-                    .filter(bean2 -> bean2.getGroupName().equals(bean1.getGroupName()))
-                    .findFirst();
-            matchedBeans.ifPresent(matched -> {
-                bean1.setFileName(matched.getFileName());
-                bean1.setGroupNumber(matched.getGroupNumber());
-                bean1.setFileNameList(matched.getFileNameList());
-                bean1.setFilePathList(matched.getFilePathList());
-                bean1.setFileUnitSize(getUnitSize(matched.getFileSize(), true));
-                totalFileSize.addAndGet(matched.getFileSize());
-                imgNum.addAndGet(matched.getFilePathList().size());
-            });
-        });
-        FileNumVo fileNumVo = new FileNumVo();
-        fileNumVo.setImgNum(imgNum.get())
-                .setDataNum(fileNumBeans.size())
-                .setImgSize(getUnitSize(totalFileSize.get(), true));
-        return fileNumVo;
-    }
-
-    /**
-     * 分组组装javafx列表数据
-     */
-    private static List<FileNumBean> buildNameGroupData(List<String> paths, FileConfig fileConfig) {
-        List<FileNumBean> fileNumBeans = new ArrayList<>();
-        Map<String, List<String>> sortedByKey = getSortedByMap(paths, fileConfig.getSubCode(), fileConfig.getMaxImgNum());
-        sortedByKey.forEach((k, v) -> {
-            FileNumBean fileNumBean = new FileNumBean();
-            fileNumBean.setGroupName(k);
-            List<String> names = new ArrayList<>();
-            long fileSize = 0;
-            for (String path : v) {
-                try {
-                    String fileName;
-                    File file = new File(path);
-                    if (fileConfig.isShowFileType()) {
-                        fileName = file.getName();
-                    } else {
-                        fileName = getFileName(file);
-                    }
-                    fileSize += file.length();
-                    names.add(fileName);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            fileNumBean.setFileNameList(names);
-            fileNumBean.setFileName(String.join("、", names));
-            fileNumBean.setGroupNumber(v.size());
-            fileNumBean.setFilePathList(v);
-            fileNumBean.setFileSize(fileSize);
-            fileNumBeans.add(fileNumBean);
-        });
-        return fileNumBeans;
+        System.gc();
     }
 
     /**
      * 为统计文件名和插入图片页面列表设置字段宽度
+     *
+     * @param groupId     列表序号列
+     * @param tableView   要处理的列表
+     * @param groupName   列表分组名称列
+     * @param groupNumber 文件数量列
+     * @param fileName    列表文件名称列
+     * @param fileSize    列表文件总大小列
      */
     public static void tableViewNumImgAdaption(TableColumn<FileNumBean, String> groupId, TableView<FileNumBean> tableView,
                                                DoubleProperty groupName, DoubleProperty groupNumber,
@@ -394,6 +400,10 @@ public class UiUtils {
 
     /**
      * 动态更新重命名分隔符设置下拉框
+     *
+     * @param checkBox         是否添加空格选项
+     * @param choiceBox        分隔符下拉框
+     * @param selectItemsEnums 分隔符下拉框选项
      */
     public static void updateSelectItems(CheckBox checkBox, ChoiceBox<String> choiceBox, SelectItemsEnums selectItemsEnums) {
         if (checkBox.isSelected()) {
@@ -407,21 +417,33 @@ public class UiUtils {
 
     /**
      * 分组匹配数
+     *
+     * @param fileConfig            文件查询设置
+     * @param fileNumList           分组信息
+     * @param inFileList            要分组的文件
+     * @param tableView             展示数据的javafx列表
+     * @param tabId                 页面id
+     * @param fileNumber            展示列表信息分组数量及文件大小和匹配图片数量的文本栏
+     * @param comparatorTableColumn 需要设置排序规则的列
      */
-    public static void machGroup(FileConfig fileConfig, ObservableList<FileNumBean> fileNumList, List<File> inFileList,
-                                 TableView<FileNumBean> tableViewImg, String tabId, Label fileNumberImg,
-                                 TableColumn<FileNumBean, String> comparatorTableColumn) throws Exception {
+    public static void machGroup(FileConfig fileConfig, ObservableList<FileNumBean> fileNumList, List<File> inFileList, TableView<FileNumBean> tableView,
+                                 String tabId, Label fileNumber, TableColumn<FileNumBean, String> comparatorTableColumn) throws Exception {
         FileNumVo fileNumVo = matchGroupData(fileNumList, inFileList, fileConfig);
         TaskBean<FileNumBean> taskBean = new TaskBean<>();
         taskBean.setComparatorTableColumn(comparatorTableColumn)
-                .setTableView(tableViewImg)
+                .setTableView(tableView)
                 .setTabId(tabId);
         showReadExcelData(fileNumList, taskBean);
-        fileNumberImg.setText(text_allHave + fileNumVo.getDataNum() + text_group + fileNumVo.getImgNum() + text_picture + text_totalFileSize + fileNumVo.getImgSize());
+        fileNumber.setText(text_allHave + fileNumVo.getDataNum() + text_group + fileNumVo.getImgNum() + text_picture + text_totalFileSize + fileNumVo.getImgSize());
     }
 
     /**
      * 限制输入框只能输入指定范围内的整数
+     *
+     * @param textField 要处理的文本输入框
+     * @param min       可输入的最小值，为空则不限制
+     * @param max       可输入的最大值，为空则不限制
+     * @param tip       鼠标悬停提示文案
      */
     public static void integerRangeTextField(TextField textField, Integer min, Integer max, String tip) {
         textField.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -435,6 +457,9 @@ public class UiUtils {
 
     /**
      * 监听输入框内容变化
+     *
+     * @param textField 要监听的文本输入框
+     * @param tip       鼠标悬停提示文案
      */
     public static void textFieldValueListener(TextField textField, String tip) {
         textField.textProperty().addListener((observable, oldValue, newValue) -> addValueToolTip(textField, tip));
@@ -442,6 +467,9 @@ public class UiUtils {
 
     /**
      * 修改label信息
+     *
+     * @param label 要修改的文本栏
+     * @param text  要修改的文本
      */
     public static void updateLabel(Label label, String text) {
         label.textProperty().unbind();
@@ -451,6 +479,14 @@ public class UiUtils {
 
     /**
      * 更新所选文件路径显示
+     *
+     * @param selectedFilePath 本次所选的文件路径
+     * @param filePath         上次选的文件路径
+     * @param pathKey          配置文件中路径的key
+     * @param pathLabel        要展示路径的文本框
+     * @param configFile       要更新的配置文件
+     * @param anchorPane       组件所在布局
+     * @return 所选文件路径
      */
     public static String updatePathLabel(String selectedFilePath, String filePath, String pathKey, Label pathLabel, String configFile, AnchorPane anchorPane) throws IOException {
         //只有跟上次选的路径不一样才更新
@@ -464,6 +500,8 @@ public class UiUtils {
 
     /**
      * 设置列表通过拖拽排序行
+     *
+     * @param tableView 要处理的列表
      */
     public static <T> void tableViewDragRow(TableView<T> tableView) {
         tableView.setRowFactory(tv -> {
@@ -513,6 +551,10 @@ public class UiUtils {
 
     /**
      * 构建右键菜单
+     *
+     * @param tableView  要添加右键菜单的列表
+     * @param label      列表对应的统计信息展示栏
+     * @param anchorPane 列表所在布局
      */
     public static void tableViewContextMenu(TableView<FileBean> tableView, Label label, AnchorPane anchorPane) {
         //设置可以选中多行
@@ -541,6 +583,10 @@ public class UiUtils {
 
     /**
      * 复制文件路径选项
+     *
+     * @param tableView   要添加右键菜单的列表
+     * @param contextMenu 右键菜单集合
+     * @param anchorPane  列表所在布局
      */
     private static void buildOpenCopyFilePathItem(TableView<FileBean> tableView, ContextMenu contextMenu, AnchorPane anchorPane) {
         MenuItem menuItem = new MenuItem("复制文件路径");
@@ -553,6 +599,9 @@ public class UiUtils {
 
     /**
      * 所选行上移一行选项
+     *
+     * @param tableView   要添加右键菜单的列表
+     * @param contextMenu 右键菜单集合
      */
     private static void buildUpMoveDataMenuItem(TableView<FileBean> tableView, ContextMenu contextMenu) {
         MenuItem menuItem = new MenuItem("所选行上移一行");
@@ -586,6 +635,9 @@ public class UiUtils {
 
     /**
      * 所选行下移一行选项
+     *
+     * @param tableView   要添加右键菜单的列表
+     * @param contextMenu 右键菜单集合
      */
     private static void buildDownMoveDataMenuItem(TableView<FileBean> tableView, ContextMenu contextMenu) {
         MenuItem menuItem = new MenuItem("所选行下移一行");
@@ -606,6 +658,10 @@ public class UiUtils {
 
     /**
      * 打开所选文件所在文件夹选项
+     *
+     * @param tableView   要添加右键菜单的列表
+     * @param contextMenu 右键菜单集合
+     * @throws RuntimeException io异常
      */
     private static void buildOpenDirectorMenuItem(TableView<FileBean> tableView, ContextMenu contextMenu) {
         MenuItem menuItem = new MenuItem("打开所选文件所在文件夹");
@@ -625,6 +681,10 @@ public class UiUtils {
 
     /**
      * 打开所选文件选项
+     *
+     * @param tableView   要添加右键菜单的列表
+     * @param contextMenu 右键菜单集合
+     * @throws RuntimeException io异常
      */
     private static void buildOpenFileMenuItem(TableView<FileBean> tableView, ContextMenu contextMenu) {
         MenuItem menuItem = new MenuItem("打开所选文件");
@@ -643,6 +703,10 @@ public class UiUtils {
 
     /**
      * 删除所选数据选项
+     *
+     * @param tableView   要添加右键菜单的列表
+     * @param label       列表对应的统计信息展示栏
+     * @param contextMenu 右键菜单集合
      */
     private static void buildDeleteDataMenuItem(TableView<FileBean> tableView, Label label, ContextMenu contextMenu) {
         MenuItem deleteDataMenuItem = new MenuItem("删除所选数据");
@@ -657,6 +721,9 @@ public class UiUtils {
 
     /**
      * 改变要防重复点击的组件状态
+     *
+     * @param taskBean 包含防重复点击组件列表的taskBean
+     * @param disable  可点击状态，true设置为不可点击，false设置为可点击
      */
     public static void changeDisableControls(TaskBean<?> taskBean, boolean disable) {
         List<Control> disableControls = taskBean.getDisableControls();
@@ -667,10 +734,16 @@ public class UiUtils {
 
     /**
      * 为配置组件设置上次配置值
+     *
+     * @param control    需要处理的组件
+     * @param prop       配置文件
+     * @param key        要读取的key
+     * @param canBlank   组件所填文本是否可为空格，ture可填写空格，false不可填写空格
+     * @param anchorPane 组件所在布局
      */
     @SuppressWarnings("unchecked")
-    public static void setControlLastConfig(Control control, Properties prop, String Key, boolean canBlank, AnchorPane anchorPane) {
-        String lastValue = prop.getProperty(Key);
+    public static void setControlLastConfig(Control control, Properties prop, String key, boolean canBlank, AnchorPane anchorPane) {
+        String lastValue = prop.getProperty(key);
         if (StringUtils.isNotBlank(lastValue)) {
             if (control instanceof ChoiceBox) {
                 ChoiceBox<String> choiceBox = (ChoiceBox<String>) control;
@@ -699,6 +772,12 @@ public class UiUtils {
 
     /**
      * 显示可打开的文件类路径
+     *
+     * @param pathLabel  文件路径文本栏
+     * @param path       文件路径
+     * @param openFile   点击是否打开文件，true打开文件，false打开文件所在文件夹
+     * @param anchorPane 组件所在布局
+     * @throws RuntimeException io异常
      */
     public static void setPathLabel(Label pathLabel, String path, boolean openFile, AnchorPane anchorPane) {
         pathLabel.setText(path);
@@ -733,6 +812,10 @@ public class UiUtils {
 
     /**
      * 给路径Label设置右键菜单
+     *
+     * @param valueLabel 要处理的文本栏
+     * @param anchorPane 组件所在布局
+     * @throws RuntimeException io异常
      */
     public static void setPathLabelContextMenu(Label valueLabel, AnchorPane anchorPane) {
         String path = valueLabel.getText();
@@ -770,6 +853,10 @@ public class UiUtils {
 
     /**
      * 添加复制label值右键菜单
+     *
+     * @param valueLabel 要处理的文本栏
+     * @param text       右键菜单文本
+     * @param anchorPane 组件所在布局
      */
     public static void setCopyValueContextMenu(Label valueLabel, String text, AnchorPane anchorPane) {
         ContextMenu contextMenu = new ContextMenu();
@@ -787,6 +874,9 @@ public class UiUtils {
 
     /**
      * 复制文本
+     *
+     * @param value      要复制的文本
+     * @param anchorPane 组件所在布局
      */
     public static void copyText(String value, AnchorPane anchorPane) {
         //获取当前系统剪贴板
@@ -803,6 +893,10 @@ public class UiUtils {
 
     /**
      * 创建消息弹窗
+     *
+     * @param anchorPane 组件所在布局
+     * @param text       消息弹窗提示文案
+     * @param time       显示弹窗时间
      */
     public static void buildMessageBubble(AnchorPane anchorPane, String text, double time) {
         MessageBubble bubble = new MessageBubble(text);
@@ -829,13 +923,19 @@ public class UiUtils {
 
     /**
      * 设置要暂时移除的组件
+     *
+     * @param parentVBox     父级vBox
+     * @param childrenVBoxes 要移除的子级vBox
      */
-    public static void removeChildren(VBox vBox, VBox... vBoxes) {
-        vBox.getChildren().removeAll(vBoxes);
+    public static void removeChildren(VBox parentVBox, VBox... childrenVBoxes) {
+        parentVBox.getChildren().removeAll(childrenVBoxes);
     }
 
     /**
      * 渲染带文件大小排序的数据
+     *
+     * @param fileBeans 文件列表
+     * @param taskBean  要渲染到列表的数据
      */
     public static <T> void showFileSizeColumData(List<T> fileBeans, TaskBean<T> taskBean) {
         autoBuildTableViewData(taskBean.getTableView(), fileBeans, taskBean.getTabId());

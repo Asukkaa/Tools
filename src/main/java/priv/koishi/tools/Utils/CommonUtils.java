@@ -1,14 +1,22 @@
 package priv.koishi.tools.Utils;
 
 import org.apache.commons.lang3.StringUtils;
+import priv.koishi.tools.Bean.FileNumBean;
+import priv.koishi.tools.Configuration.FileConfig;
+import priv.koishi.tools.Vo.FileNumVo;
 
 import java.io.*;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import static priv.koishi.tools.Utils.FileUtils.getFileName;
+import static priv.koishi.tools.Utils.FileUtils.getUnitSize;
 
 /**
  * @author KOISHI
@@ -108,17 +116,99 @@ public class CommonUtils {
         return alphaNum.reverse().toString();
     }
 
+
+    /**
+     * 匹配excel分组与文件夹下文件
+     *
+     * @param fileNumBeans 分组信息
+     * @param inFileList   需要分组的文件
+     * @param fileConfig   文件查询设置，用来获取文件名分隔符、分组最大匹配数量、是否展示文件拓展名
+     */
+    public static FileNumVo matchGroupData(List<FileNumBean> fileNumBeans, List<File> inFileList, FileConfig fileConfig) {
+        List<String> paths = new ArrayList<>();
+        inFileList.forEach(file -> paths.add(file.getPath()));
+        List<FileNumBean> fileNumList = buildNameGroupData(paths, fileConfig);
+        AtomicInteger imgNum = new AtomicInteger();
+        AtomicLong totalFileSize = new AtomicLong();
+        fileNumBeans.forEach(bean1 -> {
+            bean1.setGroupNumber(0);
+            bean1.setFileName("");
+            Optional<FileNumBean> matchedBeans = fileNumList.stream()
+                    .filter(bean2 -> bean2.getGroupName().equals(bean1.getGroupName()))
+                    .findFirst();
+            matchedBeans.ifPresent(matched -> {
+                bean1.setFileName(matched.getFileName());
+                bean1.setGroupNumber(matched.getGroupNumber());
+                bean1.setFileNameList(matched.getFileNameList());
+                bean1.setFilePathList(matched.getFilePathList());
+                bean1.setFileUnitSize(getUnitSize(matched.getFileSize(), true));
+                totalFileSize.addAndGet(matched.getFileSize());
+                imgNum.addAndGet(matched.getFilePathList().size());
+            });
+        });
+        FileNumVo fileNumVo = new FileNumVo();
+        fileNumVo.setImgNum(imgNum.get())
+                .setDataNum(fileNumBeans.size())
+                .setImgSize(getUnitSize(totalFileSize.get(), true));
+        return fileNumVo;
+    }
+
+    /**
+     * 分组组装javafx列表数据
+     *
+     * @param paths      要分组的文件的路径
+     * @param fileConfig 文件查询设置，用来获取文件名分隔符、分组最大匹配数量、是否展示文件拓展名
+     */
+    private static List<FileNumBean> buildNameGroupData(List<String> paths, FileConfig fileConfig) {
+        List<FileNumBean> fileNumBeans = new ArrayList<>();
+        Map<String, List<String>> sortedByKey = getSortedByMap(paths, fileConfig.getSubCode(), fileConfig.getMaxImgNum());
+        sortedByKey.forEach((k, v) -> {
+            FileNumBean fileNumBean = new FileNumBean();
+            fileNumBean.setGroupName(k);
+            List<String> names = new ArrayList<>();
+            long fileSize = 0;
+            for (String path : v) {
+                try {
+                    String fileName;
+                    File file = new File(path);
+                    if (fileConfig.isShowFileType()) {
+                        fileName = file.getName();
+                    } else {
+                        fileName = getFileName(file);
+                    }
+                    fileSize += file.length();
+                    names.add(fileName);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            fileNumBean.setFileNameList(names);
+            fileNumBean.setFileName(String.join("、", names));
+            fileNumBean.setGroupNumber(v.size());
+            fileNumBean.setFilePathList(v);
+            fileNumBean.setFileSize(fileSize);
+            fileNumBeans.add(fileNumBean);
+        });
+        return fileNumBeans;
+    }
+
     /**
      * map分组并按key排序
+     *
+     * @param keys          分组用的唯一标识，完整的字符串
+     * @param nameSubstring 分隔符
+     * @param maxValue      每组最大匹配数
+     * @return 分组后的map
      */
     public static Map<String, List<String>> getSortedByMap(List<String> keys, String nameSubstring, int maxValue) {
+        //key为完整且唯一的字符串，value为分隔后的部分，可重复，作为分组依据
         Map<String, String> nameMap = new HashMap<>();
         Map<String, List<String>> groupedMap;
         keys.forEach(k -> {
             String leftName = getLeftName(k, nameSubstring);
             nameMap.put(k, leftName);
         });
-        //根据名称分组
+        //根据value分组
         if (maxValue > 0) {
             groupedMap = groupByValueWithLimit(nameMap, maxValue);
         } else {
@@ -133,6 +223,10 @@ public class CommonUtils {
 
     /**
      * 根据value分组并指定每组数量
+     *
+     * @param originalMap   分组前的map
+     * @param listSizeLimit 每组最大匹配数
+     * @return 分组后的map
      */
     public static Map<String, List<String>> groupByValueWithLimit(Map<String, String> originalMap, int listSizeLimit) {
         Map<String, List<String>> groupedMap = new HashMap<>();
@@ -142,15 +236,18 @@ public class CommonUtils {
             if (list.size() < listSizeLimit) {
                 list.add(entry.getKey());
             }
-            // 无论是否添加了元素，都需要将更新后的列表放回 groupedMap 中 因为 getOrDefault 会返回一个新的列表，如果我们不添加元素，则不需要更新 但如果添加了元素，或者列表已经存在，我们需要确保 groupedMap 中的是最新状态
+            //无论是否添加了元素都需要将更新后的列表放回groupedMap中，因为getOrDefault会返回一个新的列表，如果不添加元素则不需要更新，但如果添加了元素或者列表已经存在，需要确保groupedMap中的是最新状态
             groupedMap.put(value, list);
         }
         return groupedMap;
     }
 
-
     /**
-     * 获取分隔符左侧文件名
+     * 获取分隔符左侧字符串
+     *
+     * @param data          要处理的完整字符串
+     * @param nameSubstring 分隔符
+     * @return 分隔符左侧字符串
      */
     public static String getLeftName(String data, String nameSubstring) {
         String leftName;
@@ -168,7 +265,10 @@ public class CommonUtils {
     }
 
     /**
-     * 获取详细的错误信息
+     * 获取详细的异常信息
+     *
+     * @param e 要获取的异常
+     * @return 详细异常详细
      */
     public static String errToString(Throwable e) {
         StringWriter sw = new StringWriter();

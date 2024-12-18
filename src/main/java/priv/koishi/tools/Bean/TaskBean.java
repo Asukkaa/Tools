@@ -9,6 +9,8 @@ import java.io.File;
 import java.util.List;
 
 /**
+ * 多线程任务所需属性集合bean
+ *
  * @author KOISHI
  * Date:2024-10-24
  * Time:下午3:15

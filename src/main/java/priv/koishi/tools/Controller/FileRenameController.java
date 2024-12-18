@@ -1,6 +1,5 @@
 package priv.koishi.tools.Controller;
 
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -46,9 +45,10 @@ import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.TaskUtils.bindingProgressBarTask;
 import static priv.koishi.tools.Utils.TaskUtils.taskUnbind;
 import static priv.koishi.tools.Utils.UiUtils.*;
-import static priv.koishi.tools.Utils.UiUtils.textFieldValueListener;
 
 /**
+ * 按指定规则批量重命名文件页面控制器
+ *
  * @author KOISHI
  * Date:2024-10-18
  * Time:下午4:36
@@ -184,7 +184,7 @@ public class FileRenameController extends ToolsProperties {
         ChoiceBox<?> hideFileType = (ChoiceBox<?>) scene.lookup("#hideFileType_Re");
         CheckBox openDirectory = (CheckBox) scene.lookup("#openDirectory_Re");
         Label warn = (Label) scene.lookup("#warn_Re");
-        warn.setPrefWidth(tableWidth - directoryNameLabel.getWidth() - directoryNameType.getWidth() - hideFileLabel.getWidth() -hideFileType.getWidth() - openDirectory.getWidth() - 60);
+        warn.setPrefWidth(tableWidth - directoryNameLabel.getWidth() - directoryNameType.getWidth() - hideFileLabel.getWidth() - hideFileType.getWidth() - openDirectory.getWidth() - 60);
     }
 
     /**
@@ -822,11 +822,7 @@ public class FileRenameController extends ToolsProperties {
      */
     @FXML
     private void removeAll() {
-        ObservableList<FileBean> nullData = FXCollections.observableArrayList(new ArrayList<>());
-        tableView_Re.setItems(nullData);
-        updateLabel(fileNumber_Re, text_dataListNull);
-        updateLabel(log_Re, "");
-        System.gc();
+        removeTableViewData(tableView_Re, fileNumber_Re, log_Re);
     }
 
     /**

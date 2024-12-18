@@ -1,6 +1,5 @@
 package priv.koishi.tools.Controller;
 
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -43,6 +42,13 @@ import static priv.koishi.tools.Utils.FileUtils.readAllFiles;
 import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
+/**
+ * 获取文件夹下的文件信息页面控制器
+ *
+ * @author KOISHI
+ * Date:2024-10-03
+ * Time:下午1:48
+ */
 public class FileNameToExcelController extends ToolsProperties {
 
     /**
@@ -464,11 +470,7 @@ public class FileNameToExcelController extends ToolsProperties {
      */
     @FXML
     private void removeAll() {
-        ObservableList<FileBean> nullData = FXCollections.observableArrayList(new ArrayList<>());
-        tableView_Name.setItems(nullData);
-        updateLabel(fileNumber_Name, text_dataListNull);
-        updateLabel(log_Name, "");
-        System.gc();
+        removeTableViewData(tableView_Name, fileNumber_Name, log_Name);
     }
 
     /**

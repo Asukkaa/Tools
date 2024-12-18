@@ -2,16 +2,16 @@ package priv.koishi.tools.Utils;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.ss.usermodel.Workbook;
-import priv.koishi.tools.Configuration.ExcelConfig;
 import priv.koishi.tools.Configuration.FileConfig;
 
 import java.awt.*;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -25,6 +25,8 @@ import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningOutputStream;
 
 /**
+ * 文件操作工具类
+ *
  * @author KOISHI
  * Date 2024-09-30
  * Time 下午3:16
@@ -51,6 +53,7 @@ public class FileUtils {
     /**
      * 根据操作系统计算文件大小
      *
+     * @param file 要计算的文件
      * @return 带单位的文件大小
      */
     public static String getFileUnitSize(File file) {
@@ -60,7 +63,9 @@ public class FileUtils {
     /**
      * 根据操作系统将数值转换为文件大小
      *
-     * @return ret 带单位的文件大小
+     * @param size          没带单位的文件大小
+     * @param distinguishOS 区分操作系统文件大小单位进制，true区分，false不区分，macos文件大小为1000进制，内存大小为1024进制
+     * @return 带单位的文件大小
      */
     public static String getUnitSize(long size, boolean distinguishOS) {
         long win = 1024;
@@ -72,12 +77,14 @@ public class FileUtils {
         } else {
             kb = win;
         }
-        long mb = kb * kb;
-        return getRet(mb, kb, size);
+        return getRet(kb, size);
     }
 
     /**
      * 将带单位的文件大小字符串转换为课比较类型
+     *
+     * @param value 带单位的文件大小
+     * @return 不带单位的文件大小
      */
     public static double fileSizeCompareValue(String value) {
         if (StringUtils.isBlank(value)) {
@@ -128,8 +135,13 @@ public class FileUtils {
 
     /**
      * 格式化文件大小数据
+     *
+     * @param kb   文件大小单位进制
+     * @param size 不带单位的文件大小
+     * @return 带单位的文件大小
      */
-    private static String getRet(long mb, long kb, long size) {
+    private static String getRet(long kb, long size) {
+        long mb = kb * kb;
         long gb = mb * kb;
         long tb = gb * kb;
         String ret = "";
@@ -150,6 +162,9 @@ public class FileUtils {
 
     /**
      * 读取文件夹下的文件名称
+     *
+     * @param fileConfig 文件查询设置
+     * @return 查询到的文件列表
      */
     public static List<File> readAllFiles(FileConfig fileConfig) {
         List<File> fileList = new ArrayList<>();
@@ -159,9 +174,13 @@ public class FileUtils {
 
     /**
      * 递归读取文件夹下的文件名称
+     *
+     * @param fileConfig 文件查询设置
+     * @param fileList   上层文件夹查询的文件列表
+     * @param directory  最外层文件夹
      */
-    public static void readFiles(FileConfig fileConfig, List<File> fileList, File f) {
-        File[] files = f.listFiles();
+    public static void readFiles(FileConfig fileConfig, List<File> fileList, File directory) {
+        File[] files = directory.listFiles();
         String showHideFile = fileConfig.getShowHideFile();
         String showDirectoryName = fileConfig.getShowDirectoryName();
         boolean recursion = fileConfig.isRecursion();
@@ -199,6 +218,10 @@ public class FileUtils {
 
     /**
      * 获取文件不带拓展名的名称或文件夹的名称
+     *
+     * @param file 要获取文件名的文件
+     * @return 文件夹或不带拓展名的文件名称
+     * @throws IOException 文件不存在
      */
     public static String getFileName(File file) throws IOException {
         if (!file.exists()) {
@@ -213,6 +236,10 @@ public class FileUtils {
 
     /**
      * 更新配置文件
+     *
+     * @param properties 要更新的配置文件
+     * @param key        要更新的配置名
+     * @param value      要更新的值
      */
     public static void updateProperties(String properties, String key, String value) throws IOException {
         InputStream input = checkRunningInputStream(properties);
@@ -227,6 +254,9 @@ public class FileUtils {
 
     /**
      * 校验输出文件夹是否存在，不存在就创建一个
+     *
+     * @param path 要校验的路径
+     * @throws Exception 创建文件夹失败
      */
     public static void checkDirectory(String path) throws Exception {
         if (!new File(path).exists()) {
@@ -237,26 +267,10 @@ public class FileUtils {
     }
 
     /**
-     * 保存excel
-     */
-    public static String saveExcel(Workbook workbook, ExcelConfig excelConfig) throws Exception {
-        String filePath = excelConfig.getOutPath() + "\\" + excelConfig.getOutName() + excelConfig.getOutExcelType();
-        checkDirectory(new File(filePath).getParent());
-        BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(Files.newOutputStream(Paths.get(filePath)));
-        // 将Excel写入文件
-        try (workbook) {
-            workbook.write(bufferedOutputStream);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } finally {
-            bufferedOutputStream.flush();
-            bufferedOutputStream.close();
-        }
-        return filePath;
-    }
-
-    /**
      * 打开文件
+     *
+     * @param openPath 要打开的路径
+     * @throws IOException 文件不存在
      */
     public static void openFile(String openPath) throws IOException {
         if (StringUtils.isNotEmpty(openPath)) {
@@ -269,7 +283,10 @@ public class FileUtils {
     }
 
     /**
-     * 打开文件夹
+     * 打开文件夹并选中文件
+     *
+     * @param openPath 要打开的路径
+     * @throws IOException 文件不存在
      */
     public static void openDirectory(String openPath) throws IOException {
         if (StringUtils.isNotEmpty(openPath)) {
@@ -294,6 +311,9 @@ public class FileUtils {
 
     /**
      * 获取文件创建时间
+     *
+     * @param file 要读取的文件
+     * @return 格式化后的时间字符串
      */
     public static String getFileCreatTime(File file) throws IOException {
         Path path = Paths.get(file.getPath());
@@ -305,6 +325,9 @@ public class FileUtils {
 
     /**
      * 获取文件修改时间
+     *
+     * @param file 要读取的文件
+     * @return 格式化后的时间字符串
      */
     public static String getFileUpdateTime(File file) {
         long lastModified = file.lastModified();
@@ -339,30 +362,10 @@ public class FileUtils {
     }
 
     /**
-     * 校验excel输出路径是否与模板一致，若不一致则复制一份模板文件到输出路径
-     */
-    public static void checkCopyDestination(ExcelConfig excelConfig) throws Exception {
-        String excelInPath = excelConfig.getInPath();
-        String outPath = excelConfig.getOutPath();
-        String excelName = excelConfig.getOutName();
-        String outExcelExtension = excelConfig.getOutExcelType();
-        Path sourcePath = Paths.get(excelInPath);
-        checkDirectory(outPath);
-        String path = outPath + "\\" + excelName + outExcelExtension;
-        Path destinationPath = Paths.get(path);
-        if (!excelInPath.equals(path)) {
-            Files.copy(sourcePath, destinationPath, StandardCopyOption.REPLACE_EXISTING);
-            File destinationPathFile = new File(String.valueOf(destinationPath));
-            if (!destinationPathFile.canWrite()) {
-                if (!destinationPathFile.setWritable(true)) {
-                    throw new Exception("文件 " + destinationPath + " 设置为可写失败");
-                }
-            }
-        }
-    }
-
-    /**
      * 判断字符串是否为文件路径
+     *
+     * @param path 要校验的文件路径
+     * @return 如果是文件路径返回true，否则返回false
      */
     public static boolean isValidPath(String path) {
         try {
@@ -375,6 +378,10 @@ public class FileUtils {
 
     /**
      * 校验文件是否存在
+     *
+     * @param filePath 要校验的非文件夹文件路径
+     * @param errTex   校验不通过时提示文案
+     * @throws IOException 文件校验不通过
      */
     public static void checkFileExists(String filePath, String errTex) throws IOException {
         File file = new File(filePath);

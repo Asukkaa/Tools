@@ -26,6 +26,8 @@ import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningOutputStream;
 
 /**
+ * 全局页面控制器
+ *
  * @author KOISHI Date:2024-10-02
  * Time:下午1:08
  */

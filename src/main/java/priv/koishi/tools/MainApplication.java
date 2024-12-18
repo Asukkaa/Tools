@@ -24,11 +24,20 @@ import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
 import static priv.koishi.tools.Utils.CommonUtils.isRunningFromJar;
 import static priv.koishi.tools.Utils.UiUtils.showExceptionAlert;
 
+/**
+ * 程序启动类
+ *
+ * @author KOISHI
+ * Date:2024-10-03
+ * Time:下午1:48
+ */
 public class MainApplication extends Application {
-
 
     /**
      * 加载fxml页面
+     *
+     * @param stage 程序主舞台
+     * @throws RuntimeException io异常
      */
     @Override
     public void start(Stage stage) throws Exception {
@@ -79,6 +88,8 @@ public class MainApplication extends Application {
 
     /**
      * 启动程序
+     *
+     * @param args 启动参数
      */
     public static void main(String[] args) throws IOException {
         //打包后需要手动指定日志配置文件位置
