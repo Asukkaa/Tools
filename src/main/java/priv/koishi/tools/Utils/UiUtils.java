@@ -817,7 +817,7 @@ public class UiUtils {
             bubble.setLayoutX(mouseX + 30);
             bubble.setLayoutY(mouseY);
         });
-        //鼠标在列表复制设置初位置
+        //鼠标在列表时设置初位置
         if (!getMouseMoved.get()) {
             bubble.setLayoutX(anchorPane.getWidth() * 0.5);
             bubble.setLayoutY(anchorPane.getHeight() * 0.5);
