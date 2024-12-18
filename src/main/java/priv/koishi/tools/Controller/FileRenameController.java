@@ -125,10 +125,10 @@ public class FileRenameController extends ToolsProperties {
     private VBox vbox_Re, codeRenameVBox_Re, strRenameVBox_Re, excelRenameVBox_Re;
 
     @FXML
-    private Label excelPath_Re, fileNumber_Re, inPath_Re, log_Re, typeLabel_Re, tip_Re;
+    private Button fileButton_Re, clearButton_Re, renameButton_Re, reselectButton_Re, updateRenameButton_Re, excelPathButton_Re;
 
     @FXML
-    private Button fileButton_Re, clearButton_Re, renameButton_Re, reselectButton_Re, updateRenameButton_Re, excelPathButton_Re;
+    private Label excelPath_Re, fileNumber_Re, inPath_Re, log_Re, typeLabel_Re, tip_Re, warn_Re, directoryNameLabel_Re, hideFileLabel_Re;
 
     @FXML
     private ChoiceBox<String> hideFileType_Re, directoryNameType_Re, renameType_Re, subCode_Re, differenceCode_Re, targetStr_Re, leftBehavior_Re, rightBehavior_Re, renameBehavior_Re;
@@ -178,6 +178,13 @@ public class FileRenameController extends ToolsProperties {
         Label tip = (Label) scene.lookup("#tip_Re");
         fileNum.setPrefWidth(tableWidth - removeAll.getWidth() - renameAll.getWidth() - reselect.getWidth() - updateRenameButton.getWidth() - 50);
         tip.setPrefWidth(tableWidth - progressBar.getWidth() - 10);
+        Label directoryNameLabel = (Label) scene.lookup("#directoryNameLabel_Re");
+        ChoiceBox<?> directoryNameType = (ChoiceBox<?>) scene.lookup("#directoryNameType_Re");
+        Label hideFileLabel = (Label) scene.lookup("#hideFileLabel_Re");
+        ChoiceBox<?> hideFileType = (ChoiceBox<?>) scene.lookup("#hideFileType_Re");
+        CheckBox openDirectory = (CheckBox) scene.lookup("#openDirectory_Re");
+        Label warn = (Label) scene.lookup("#warn_Re");
+        warn.setPrefWidth(tableWidth - directoryNameLabel.getWidth() - directoryNameType.getWidth() - hideFileLabel.getWidth() -hideFileType.getWidth() - openDirectory.getWidth() - 60);
     }
 
     /**
@@ -652,21 +659,28 @@ public class FileRenameController extends ToolsProperties {
         addToolTip(tip_nameNum, nameNum_Re);
         addToolTip(tip_Re.getText(), tip_Re);
         addToolTip(tip_addSpace, addSpace_Re);
+        addToolTip(tip_targetStr, targetStr_Re);
         addToolTip(tip_rename, renameButton_Re);
         addToolTip(tip_leftValue, leftValue_Re);
-        addToolTip(tip_option, leftBehavior_Re);
         addToolTip(tip_startSize, startSize_Re);
         addToolTip(tip_renameStr, renameStr_Re);
         addToolTip(tip_sheetName, sheetName_Re);
-        addToolTip(tip_option, rightBehavior_Re);
         addToolTip(tip_fileButton, fileButton_Re);
         addToolTip(tip_rightValue, rightValue_Re);
+        addToolTip(tip_renameType, renameType_Re);
+        addToolTip(tip_subCodeSelect, subCode_Re);
         addToolTip(tip_learButton, clearButton_Re);
         addToolTip(tip_renameValue, renameValue_Re);
+        addToolTip(tip_hideFileType, hideFileType_Re);
+        addToolTip(tip_openDirectory, openDirectory_Re);
+        addToolTip(tip_differenceCode, differenceCode_Re);
         addToolTip(tip_filterFileType, filterFileType_Re);
         addToolTip(tip_reselectButton, reselectButton_Re);
+        addToolTip(tip_renameBehavior, renameBehavior_Re);
         addToolTip(tip_excelPathButton, excelPathButton_Re);
+        addToolTip(tip_directoryNameType, directoryNameType_Re);
         addToolTip(tip_updateRenameButton, updateRenameButton_Re);
+        addToolTip(tip_option, leftBehavior_Re, rightBehavior_Re);
         addToolTip(text_onlyNaturalNumber + defaultStartNameNum, startName_Re);
         addToolTip(text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row, readRow_Re);
         addToolTip(text_onlyNaturalNumber + defaultReadCell + text_formThe + (defaultReadCell + 1) + text_cell, readCell_Re);
@@ -741,6 +755,7 @@ public class FileRenameController extends ToolsProperties {
         textFieldChangeListener();
         //设置初始配置值为上次配置值
         setLastConfig();
+        warn_Re.setText("注意：文件名不能包含 <>:\"/\\|?*");
     }
 
     /**

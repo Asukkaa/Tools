@@ -389,17 +389,25 @@ public class FileNumToExcelController extends ToolsProperties {
     private void setToolTip() {
         addToolTip(tip_maxRow, maxRow_Num);
         addToolTip(tip_subCode, subCode_Num);
+        addToolTip(tip_openFile, openFile_Num);
         addToolTip(tip_recursion, recursion_Num);
         addToolTip(tip_sheetName, sheetName_Num);
         addToolTip(tip_excelName, excelName_Num);
         addToolTip(tip_startReadRow, startRow_Num);
         addToolTip(tip_fileButton, fileButton_Num);
         addToolTip(tip_learButton, clearButton_Num);
+        addToolTip(tip_exportTitle, exportTitle_Num);
+        addToolTip(tip_showFileType, showFileType_Num);
+        addToolTip(tip_hideFileType, hideFileType_Num);
         addToolTip(tip_exportButton, exportButton_Num);
+        addToolTip(tip_openDirectory, openDirectory_Num);
         addToolTip(tip_outPathButton, outPathButton_Num);
+        addToolTip(tip_exportFileNum, exportFileNum_Num);
+        addToolTip(tip_exportFileSize, exportFileSize_Num);
         addToolTip(tip_reselectButton, reselectButton_Num);
         addToolTip(tip_filterFileType, filterFileType_Num);
         addToolTip(tip_excelPathButton, excelPathButton_Num);
+        addToolTip(tip_directoryNameType, directoryNameType_Num);
         addToolTip(tip_excelType, excelType_Num, excelTypeLabel_Num);
         addToolTip(text_onlyNaturalNumber + defaultStartCell, startCell_Num);
         addToolTip(text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row, readRow_Num);

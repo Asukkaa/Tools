@@ -9,7 +9,7 @@
             fx:controller="priv.koishi.tools.Controller.FileRenameController">
     <VBox fx:id="vbox_Re" spacing="10" AnchorPane.topAnchor="10">
         <HBox spacing="10">
-            <Label prefHeight="20" text="文件夹查询设置:"/>
+            <Label fx:id="directoryNameLabel_Re" prefHeight="20" text="文件夹查询设置:"/>
             <ChoiceBox fx:id="directoryNameType_Re" prefHeight="20" prefWidth="140">
                 <items>
                     <FXCollections fx:factory="observableArrayList">
@@ -22,7 +22,7 @@
                     <String fx:value="只查询文件"/>
                 </value>
             </ChoiceBox>
-            <Label prefHeight="20" text="隐藏文件查询设置:"/>
+            <Label fx:id="hideFileLabel_Re" prefHeight="20" text="隐藏文件查询设置:"/>
             <ChoiceBox fx:id="hideFileType_Re" prefHeight="20" prefWidth="120">
                 <items>
                     <FXCollections fx:factory="observableArrayList">
@@ -37,6 +37,7 @@
             </ChoiceBox>
             <CheckBox fx:id="openDirectory_Re" prefHeight="20" selected="true" style="-fx-cursor: hand"
                       text="重命名后打开文件夹"/>
+            <Label fx:id="warn_Re" prefHeight="20" textFill="red" alignment="CENTER_RIGHT"/>
         </HBox>
 
         <HBox fx:id="renameTypeHBox_Re" spacing="10">

@@ -19,9 +19,9 @@ public class CommonTexts {
 
     public static final String tip_nameNum = "只能填自然数，0为不使用分隔符进行分组重命名，不填默认为0";
 
-    public static final String tip_rightValue = "将所填字符根据选项插入或替换目标字符左侧所匹配的字符";
+    public static final String tip_rightValue = "将所填字符根据选项插入或替换目标字符右侧所匹配的字符";
 
-    public static final String tip_leftValue = "将所填字符根据选项插入或替换目标字符右侧所匹配的字符";
+    public static final String tip_leftValue = "将所填字符根据选项插入或替换目标字符左侧所匹配的字符";
 
     public static final String tip_tag = "只能填自然数，不填默认为1，会根据所填值设置相同文件名起始尾缀";
 
@@ -104,6 +104,16 @@ public class CommonTexts {
     public static final String tip_exportFileNum = "勾选后导出文件时会在各分组匹配到的文件信息左侧单元格填写匹配的文件数量";
 
     public static final String tip_exportFileSize = "勾选后导出文件时会在各分组匹配到的文件信息左侧单元格填写匹配的文件大小";
+
+    public static final String tip_renameType = "点击可选择文件重命名依据";
+
+    public static final String tip_differenceCode = "点击可选择区分编码类型";
+
+    public static final String tip_subCodeSelect = "点击可选择尾缀分隔符";
+
+    public static final String tip_targetStr = "点击可选择匹配字符规则";
+
+    public static final String tip_renameBehavior = "点击可选择重命名方法";
 
     public static final String tip_option = """
             插入：在匹配的字符位置插入所填写的字符串
