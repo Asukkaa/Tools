@@ -13,6 +13,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
@@ -940,6 +941,25 @@ public class UiUtils {
     public static <T> void showFileSizeColumData(List<T> fileBeans, TaskBean<T> taskBean) {
         autoBuildTableViewData(taskBean.getTableView(), fileBeans, taskBean.getTabId());
         fileSizeColum(taskBean.getComparatorTableColumn());
+    }
+
+    /**
+     * 指定组件设置右对齐
+     *
+     * @param hBox           组件所在hBox
+     * @param alignmentWidth 右对齐参考组件宽度
+     * @param control        要设置右对齐的组件
+     */
+    public static void nodeRightAlignment(HBox hBox, double alignmentWidth, Control control) {
+        ObservableList<Node> nodes = hBox.getChildren();
+        double spacing = hBox.getSpacing();
+        double prefWidth = alignmentWidth - spacing;
+        for (Node node : nodes) {
+            if (!control.getId().equals(node.getId())) {
+                prefWidth = prefWidth - node.getLayoutBounds().getWidth() - spacing;
+            }
+        }
+        control.setPrefWidth(prefWidth);
     }
 
 }

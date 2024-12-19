@@ -10,6 +10,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
@@ -21,7 +22,7 @@ import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.ExcelConfig;
 import priv.koishi.tools.Configuration.FileConfig;
-import priv.koishi.tools.Properties.ToolsProperties;
+import priv.koishi.tools.Properties.CommonProperties;
 import priv.koishi.tools.Service.ImgToExcelService;
 import priv.koishi.tools.ThreadPool.CommonThreadPoolExecutor;
 
@@ -43,7 +44,7 @@ import static priv.koishi.tools.Utils.CommonUtils.checkRunningOutputStream;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
-import static priv.koishi.tools.Utils.UiUtils.setControlLastConfig;
+import static priv.koishi.tools.Utils.UiUtils.nodeRightAlignment;
 
 /**
  * 将图片与excel匹配并插入页面控制器
@@ -52,7 +53,7 @@ import static priv.koishi.tools.Utils.UiUtils.setControlLastConfig;
  * Date:2024-10-16
  * Time:下午1:24
  */
-public class ImgToExcelController extends ToolsProperties {
+public class ImgToExcelController extends CommonProperties {
 
     /**
      * 要处理的文件夹路径
@@ -92,27 +93,27 @@ public class ImgToExcelController extends ToolsProperties {
     /**
      * 默认图片宽度
      */
-    static int defaultImgWidth = 12;
+    static int defaultImgWidth;
 
     /**
      * 默认图片高度
      */
-    static int defaultImgHeight = 50;
+    static int defaultImgHeight;
 
     /**
      * 默认起始输出列
      */
-    static int defaultStartCell = 1;
+    static int defaultStartCell;
 
     /**
      * 默认起始读取行
      */
-    static int defaultReadRow = 1;
+    static int defaultReadRow;
 
     /**
      * 默认起始读取列
      */
-    static int defaultReadCell = 0;
+    static int defaultReadCell;
 
     /**
      * 要防重复点击的组件
@@ -149,19 +150,22 @@ public class ImgToExcelController extends ToolsProperties {
     private ProgressBar progressBar_Img;
 
     @FXML
+    private ChoiceBox<String> hideFileType_Img;
+
+    @FXML
+    private HBox fileNumberHBox_Img, tipHBox_Img;
+
+    @FXML
     private TableView<FileNumBean> tableView_Img;
 
     @FXML
     private TableColumn<FileNumBean, String> groupId_Img, groupName_Img, groupNumber_Img, fileName_Img, fileUnitSize_Img;
 
     @FXML
-    private ChoiceBox<String> hideFileType_Img;
+    private Label inPath_Img, outPath_Img, excelPath_Img, fileNumber_Img, log_Img, tip_Img, excelType_Img, excelTypeLabel_Img;
 
     @FXML
     private Button fileButton_Img, reselectButton_Img, clearButton_Img, exportButton_Img, cancel_Img, outPathButton_Img, excelPathButton_Img;
-
-    @FXML
-    private Label inPath_Img, outPath_Img, excelPath_Img, fileNumber_Img, log_Img, maxImg_Img, tip_Img, excelType_Img, excelTypeLabel_Img;
 
     @FXML
     private TextField imgWidth_Img, imgHeight_Img, excelName_Img, sheetName_Img, subCode_Img, startRow_Img, startCell_Img, readRow_Img, readCell_Img, maxRow_Img, maxImgNum_Img;
@@ -171,8 +175,11 @@ public class ImgToExcelController extends ToolsProperties {
 
     /**
      * 组件自适应宽高
+     *
+     * @param stage 程序主舞台
      */
-    public static void imgToExcelAdaption(Stage stage, Scene scene) {
+    public static void imgToExcelAdaption(Stage stage) {
+        Scene scene = stage.getScene();
         //设置组件高度
         double stageHeight = stage.getHeight();
         TableView<?> table = (TableView<?>) scene.lookup("#tableView_Img");
@@ -195,20 +202,18 @@ public class ImgToExcelController extends ToolsProperties {
         Node fileUnitSize = scene.lookup("#fileUnitSize_Img");
         fileUnitSize.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
         Label fileNum = (Label) scene.lookup("#fileNumber_Img");
-        Button removeAll = (Button) scene.lookup("#clearButton_Img");
-        Button exportAll = (Button) scene.lookup("#exportButton_Img");
-        Button reselect = (Button) scene.lookup("#reselectButton_Img");
-        Label maxImg = (Label) scene.lookup("#maxImg_Img");
-        TextField maxImgNum = (TextField) scene.lookup("#maxImgNum_Img");
         Label tip_Img = (Label) scene.lookup("#tip_Img");
-        ProgressBar progressBar = (ProgressBar) scene.lookup("#progressBar_Img");
-        Button cancel = (Button) scene.lookup("#cancel_Img");
-        fileNum.setPrefWidth(tableWidth - removeAll.getWidth() - exportAll.getWidth() - reselect.getWidth() - maxImg.getWidth() - maxImgNum.getWidth() - 60);
-        tip_Img.setPrefWidth(tableWidth - progressBar.getWidth() - cancel.getWidth() - 20);
+        HBox fileNumberHBox = (HBox) scene.lookup("#fileNumberHBox_Img");
+        nodeRightAlignment(fileNumberHBox, tableWidth, fileNum);
+        HBox tipHBox = (HBox) scene.lookup("#tipHBox_Img");
+        nodeRightAlignment(tipHBox, tableWidth, tip_Img);
     }
 
     /**
      * 保存最后一次配置的值
+     *
+     * @param scene 程序主场景
+     * @throws IOException io异常
      */
     public static void imgToExcelSaveLastConfig(Scene scene) throws IOException {
         InputStream input = checkRunningInputStream(configFile_Img);

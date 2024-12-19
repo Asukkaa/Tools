@@ -31,6 +31,8 @@ import static priv.koishi.tools.Utils.FileUtils.checkFileExists;
 import static priv.koishi.tools.Utils.UiUtils.changeDisableControls;
 
 /**
+ * 获取文件夹下的文件信息功能导出任务类
+ *
  * @author KOISHI
  * Date:2024-10-03
  * Time:下午1:48
@@ -39,6 +41,11 @@ public class FileNameToExcelService {
 
     /**
      * 构建输出文件名称的excel
+     *
+     * @param excelConfig excel设置
+     * @param taskBean    任务线程所需参数
+     * @return 不分组构建excel线程
+     * @throws Exception io异常
      */
     public static Task<Workbook> buildFileNameExcel(ExcelConfig excelConfig, TaskBean<FileBean> taskBean) throws Exception {
         //改变要防重复点击的组件状态
@@ -96,6 +103,12 @@ public class FileNameToExcelService {
 
     /**
      * 不分组构建excel
+     *
+     * @param taskBean    线程所需参数
+     * @param excelConfig excel设置
+     * @param sheet       excel要导出的表
+     * @param workbook    excel工作簿
+     * @return 不分组构建excel线程
      */
     private static Task<Workbook> buildNoGroupExcel(TaskBean<FileBean> taskBean, ExcelConfig excelConfig, Sheet sheet, Workbook workbook) {
         return new Task<>() {

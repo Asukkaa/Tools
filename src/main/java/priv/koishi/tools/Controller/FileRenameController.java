@@ -22,7 +22,7 @@ import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.*;
 import priv.koishi.tools.EditingCell.EditingCell;
-import priv.koishi.tools.Properties.ToolsProperties;
+import priv.koishi.tools.Properties.CommonProperties;
 import priv.koishi.tools.ThreadPool.CommonThreadPoolExecutor;
 
 import java.io.File;
@@ -53,7 +53,7 @@ import static priv.koishi.tools.Utils.UiUtils.*;
  * Date:2024-10-18
  * Time:下午4:36
  */
-public class FileRenameController extends ToolsProperties {
+public class FileRenameController extends CommonProperties {
 
     /**
      * 要处理的文件夹路径
@@ -73,17 +73,17 @@ public class FileRenameController extends ToolsProperties {
     /**
      * 文件名起始编号
      */
-    static int defaultStartNameNum = 1;
+    static int defaultStartNameNum;
 
     /**
      * 默认起始读取行
      */
-    static int defaultReadRow = 0;
+    static int defaultReadRow;
 
     /**
      * 默认起始读取列
      */
-    static int defaultReadCell = 0;
+    static int defaultReadCell;
 
     /**
      * 要防重复点击的组件
@@ -119,16 +119,16 @@ public class FileRenameController extends ToolsProperties {
     private CheckBox openDirectory_Re, addSpace_Re;
 
     @FXML
-    private HBox renameTypeHBox_Re, behaviorHBox_Re, targetStrHBox_Re;
-
-    @FXML
     private VBox vbox_Re, codeRenameVBox_Re, strRenameVBox_Re, excelRenameVBox_Re;
 
     @FXML
-    private Button fileButton_Re, clearButton_Re, renameButton_Re, reselectButton_Re, updateRenameButton_Re, excelPathButton_Re;
+    private Label excelPath_Re, fileNumber_Re, inPath_Re, log_Re, typeLabel_Re, tip_Re, warn_Re;
 
     @FXML
-    private Label excelPath_Re, fileNumber_Re, inPath_Re, log_Re, typeLabel_Re, tip_Re, warn_Re, directoryNameLabel_Re, hideFileLabel_Re;
+    private HBox renameTypeHBox_Re, behaviorHBox_Re, targetStrHBox_Re, warnHBox_Re, tipHBox_Re, fileNumberHBox_Re;
+
+    @FXML
+    private Button fileButton_Re, clearButton_Re, renameButton_Re, reselectButton_Re, updateRenameButton_Re, excelPathButton_Re;
 
     @FXML
     private ChoiceBox<String> hideFileType_Re, directoryNameType_Re, renameType_Re, subCode_Re, differenceCode_Re, targetStr_Re, leftBehavior_Re, rightBehavior_Re, renameBehavior_Re;
@@ -138,8 +138,11 @@ public class FileRenameController extends ToolsProperties {
 
     /**
      * 组件自适应宽高
+     *
+     * @param stage 程序主舞台
      */
-    public static void fileRenameAdaption(Stage stage, Scene scene) {
+    public static void fileRenameAdaption(Stage stage) {
+        Scene scene = stage.getScene();
         //设置组件高度
         double stageHeight = stage.getHeight();
         TableView<?> table = (TableView<?>) scene.lookup("#tableView_Re");
@@ -170,25 +173,21 @@ public class FileRenameController extends ToolsProperties {
         Node updateDate = scene.lookup("#updateDate_Re");
         updateDate.setStyle("-fx-pref-width: " + tableWidth * 0.16 + "px;");
         Label fileNum = (Label) scene.lookup("#fileNumber_Re");
-        Button removeAll = (Button) scene.lookup("#clearButton_Re");
-        Button renameAll = (Button) scene.lookup("#renameButton_Re");
-        Button reselect = (Button) scene.lookup("#reselectButton_Re");
-        Button updateRenameButton = (Button) scene.lookup("#updateRenameButton_Re");
-        ProgressBar progressBar = (ProgressBar) scene.lookup("#progressBar_Re");
+        HBox fileNumberHBox = (HBox) scene.lookup("#fileNumberHBox_Re");
+        nodeRightAlignment(fileNumberHBox, tableWidth, fileNum);
         Label tip = (Label) scene.lookup("#tip_Re");
-        fileNum.setPrefWidth(tableWidth - removeAll.getWidth() - renameAll.getWidth() - reselect.getWidth() - updateRenameButton.getWidth() - 50);
-        tip.setPrefWidth(tableWidth - progressBar.getWidth() - 10);
-        Label directoryNameLabel = (Label) scene.lookup("#directoryNameLabel_Re");
-        ChoiceBox<?> directoryNameType = (ChoiceBox<?>) scene.lookup("#directoryNameType_Re");
-        Label hideFileLabel = (Label) scene.lookup("#hideFileLabel_Re");
-        ChoiceBox<?> hideFileType = (ChoiceBox<?>) scene.lookup("#hideFileType_Re");
-        CheckBox openDirectory = (CheckBox) scene.lookup("#openDirectory_Re");
+        HBox tipHBox = (HBox) scene.lookup("#tipHBox_Re");
+        nodeRightAlignment(tipHBox, tableWidth, tip);
         Label warn = (Label) scene.lookup("#warn_Re");
-        warn.setPrefWidth(tableWidth - directoryNameLabel.getWidth() - directoryNameType.getWidth() - hideFileLabel.getWidth() - hideFileType.getWidth() - openDirectory.getWidth() - 60);
+        HBox warnHBox = (HBox) scene.lookup("#warnHBox_Re");
+        nodeRightAlignment(warnHBox, tableWidth, warn);
     }
 
     /**
      * 保存最后一次配置的值
+     *
+     * @param scene 程序主场景
+     * @throws IOException io异常
      */
     public static void fileRenameSaveLastConfig(Scene scene) throws IOException {
         InputStream input = checkRunningInputStream(configFile_Rename);
@@ -755,7 +754,6 @@ public class FileRenameController extends ToolsProperties {
         textFieldChangeListener();
         //设置初始配置值为上次配置值
         setLastConfig();
-        warn_Re.setText("注意：文件名不能包含 <>:\"/\\|?*");
     }
 
     /**

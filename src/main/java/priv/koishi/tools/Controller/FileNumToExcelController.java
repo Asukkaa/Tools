@@ -10,6 +10,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -20,7 +21,7 @@ import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.ExcelConfig;
 import priv.koishi.tools.Configuration.FileConfig;
-import priv.koishi.tools.Properties.ToolsProperties;
+import priv.koishi.tools.Properties.CommonProperties;
 import priv.koishi.tools.ThreadPool.CommonThreadPoolExecutor;
 
 import java.io.File;
@@ -49,7 +50,7 @@ import static priv.koishi.tools.Utils.UiUtils.*;
  * Date:2024-10-08
  * Time:下午3:29
  */
-public class FileNumToExcelController extends ToolsProperties {
+public class FileNumToExcelController extends CommonProperties {
 
     /**
      * 要处理的文件夹路径
@@ -89,17 +90,17 @@ public class FileNumToExcelController extends ToolsProperties {
     /**
      * 默认起始输出列
      */
-    static int defaultStartCell = 1;
+    static int defaultStartCell;
 
     /**
      * 默认起始读取行
      */
-    static int defaultReadRow = 1;
+    static int defaultReadRow;
 
     /**
      * 默认起始读取列
      */
-    static int defaultReadCell = 0;
+    static int defaultReadCell;
 
     /**
      * 要防重复点击的组件
@@ -121,6 +122,9 @@ public class FileNumToExcelController extends ToolsProperties {
 
     @FXML
     private VBox vbox_Num;
+
+    @FXML
+    private HBox fileNumberHBox_Num;
 
     @FXML
     private ProgressBar progressBar_Num;
@@ -151,8 +155,11 @@ public class FileNumToExcelController extends ToolsProperties {
 
     /**
      * 组件自适应宽高
+     *
+     * @param stage 程序主舞台
      */
-    public static void fileNumToExcelAdaption(Stage stage, Scene scene) {
+    public static void fileNumToExcelAdaption(Stage stage) {
+        Scene scene = stage.getScene();
         //设置组件高度
         double stageHeight = stage.getHeight();
         TableView<?> table = (TableView<?>) scene.lookup("#tableView_Num");
@@ -175,14 +182,15 @@ public class FileNumToExcelController extends ToolsProperties {
         Node fileUnitSize = scene.lookup("#fileUnitSize_Num");
         fileUnitSize.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
         Label fileNum = (Label) scene.lookup("#fileNumber_Num");
-        Button removeAll = (Button) scene.lookup("#clearButton_Num");
-        Button exportAll = (Button) scene.lookup("#exportButton_Num");
-        Button reselect = (Button) scene.lookup("#reselectButton_Num");
-        fileNum.setPrefWidth(tableWidth - removeAll.getWidth() - exportAll.getWidth() - reselect.getWidth() - 40);
+        HBox fileNumberHBox = (HBox) scene.lookup("#fileNumberHBox_Num");
+        nodeRightAlignment(fileNumberHBox, tableWidth, fileNum);
     }
 
     /**
      * 保存最后一次配置的值
+     *
+     * @param scene 程序主场景
+     * @throws IOException io异常
      */
     public static void fileNumToExcelSaveLastConfig(Scene scene) throws IOException {
         InputStream input = checkRunningInputStream(configFile_Num);

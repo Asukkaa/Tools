@@ -10,6 +10,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -20,7 +21,7 @@ import priv.koishi.tools.Bean.FileBean;
 import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.ExcelConfig;
 import priv.koishi.tools.Configuration.FileConfig;
-import priv.koishi.tools.Properties.ToolsProperties;
+import priv.koishi.tools.Properties.CommonProperties;
 import priv.koishi.tools.ThreadPool.CommonThreadPoolExecutor;
 
 import java.io.File;
@@ -41,6 +42,7 @@ import static priv.koishi.tools.Utils.FileUtils.getFileType;
 import static priv.koishi.tools.Utils.FileUtils.readAllFiles;
 import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
+import static priv.koishi.tools.Utils.UiUtils.nodeRightAlignment;
 
 /**
  * 获取文件夹下的文件信息页面控制器
@@ -49,7 +51,7 @@ import static priv.koishi.tools.Utils.UiUtils.*;
  * Date:2024-10-03
  * Time:下午1:48
  */
-public class FileNameToExcelController extends ToolsProperties {
+public class FileNameToExcelController extends CommonProperties {
 
     /**
      * 要处理的文件夹路径
@@ -84,7 +86,7 @@ public class FileNameToExcelController extends ToolsProperties {
     /**
      * 默认起始输出列
      */
-    static int defaultStartCell = 1;
+    static int defaultStartCell;
 
     /**
      * 要防重复点击的组件
@@ -95,6 +97,7 @@ public class FileNameToExcelController extends ToolsProperties {
      * 线程池
      */
     private final CommonThreadPoolExecutor commonThreadPoolExecutor = new CommonThreadPoolExecutor();
+
 
     /**
      * 线程池实例
@@ -109,6 +112,9 @@ public class FileNameToExcelController extends ToolsProperties {
 
     @FXML
     private ProgressBar progressBar_Name;
+
+    @FXML
+    private HBox fileNumberHBox_Name, tipHBox_Name;
 
     @FXML
     private TableView<FileBean> tableView_Name;
@@ -136,8 +142,11 @@ public class FileNameToExcelController extends ToolsProperties {
 
     /**
      * 组件自适应宽高
+     *
+     * @param stage 程序主舞台
      */
-    public static void fileNameToExcelAdaption(Stage stage, Scene scene) {
+    public static void fileNameToExcelAdaption(Stage stage) {
+        Scene scene = stage.getScene();
         //设置组件高度
         double stageHeight = stage.getHeight();
         TableView<?> table = (TableView<?>) scene.lookup("#tableView_Name");
@@ -166,17 +175,18 @@ public class FileNameToExcelController extends ToolsProperties {
         Node updateDate = scene.lookup("#updateDate_Name");
         updateDate.setStyle("-fx-pref-width: " + tableWidth * 0.16 + "px;");
         Label fileNum = (Label) scene.lookup("#fileNumber_Name");
-        Button removeAll = (Button) scene.lookup("#clearButton_Name");
-        Button exportAll = (Button) scene.lookup("#exportButton_Name");
-        Button reselect = (Button) scene.lookup("#reselectButton_Name");
-        ProgressBar progressBar = (ProgressBar) scene.lookup("#progressBar_Name");
+        HBox fileNumberHBox = (HBox) scene.lookup("#fileNumberHBox_Name");
+        nodeRightAlignment(fileNumberHBox, tableWidth, fileNum);
         Label tip = (Label) scene.lookup("#tip_Name");
-        fileNum.setPrefWidth(tableWidth - removeAll.getWidth() - exportAll.getWidth() - reselect.getWidth() - 40);
-        tip.setPrefWidth(tableWidth - progressBar.getWidth() - 10);
+        HBox tipHBox = (HBox) scene.lookup("#tipHBox_Name");
+        nodeRightAlignment(tipHBox, tableWidth, tip);
     }
 
     /**
      * 保存最后一次配置的值
+     *
+     * @param scene 程序主场景
+     * @throws IOException io异常
      */
     public static void fileNameToExcelSaveLastConfig(Scene scene) throws IOException {
         InputStream input = checkRunningInputStream(configFile_Name);
@@ -230,6 +240,9 @@ public class FileNameToExcelController extends ToolsProperties {
 
     /**
      * 添加数据渲染列表
+     *
+     * @param inFileList 查询到的文件list
+     * @throws Exception 未查询到符合条件的数据
      */
     private void addInData(List<File> inFileList) throws Exception {
         removeAll();
@@ -267,6 +280,8 @@ public class FileNameToExcelController extends ToolsProperties {
 
     /**
      * 读取配置文件
+     *
+     * @throws IOException io异常
      */
     private void getConfig() throws IOException {
         Properties prop = new Properties();
@@ -283,6 +298,8 @@ public class FileNameToExcelController extends ToolsProperties {
 
     /**
      * 设置初始配置值为上次配置值
+     *
+     * @throws IOException io异常
      */
     private void setLastConfig() throws IOException {
         Properties prop = new Properties();
@@ -389,6 +406,8 @@ public class FileNameToExcelController extends ToolsProperties {
 
     /**
      * 界面初始化
+     *
+     * @throws IOException io异常
      */
     @FXML
     private void initialize() throws IOException {
@@ -408,6 +427,8 @@ public class FileNameToExcelController extends ToolsProperties {
 
     /**
      * 选择文件夹按钮功能
+     *
+     * @throws Exception io异常
      */
     @FXML
     private void inDirectoryButton(ActionEvent actionEvent) throws Exception {
@@ -431,6 +452,8 @@ public class FileNameToExcelController extends ToolsProperties {
 
     /**
      * 拖拽释放行为
+     *
+     * @throws Exception io异常
      */
     @FXML
     private void handleDrop(DragEvent dragEvent) throws Exception {
@@ -452,6 +475,8 @@ public class FileNameToExcelController extends ToolsProperties {
 
     /**
      * 拖拽中行为
+     *
+     * @param dragEvent 拖拽事件
      */
     @FXML
     private void acceptDrop(DragEvent dragEvent) {
@@ -475,6 +500,8 @@ public class FileNameToExcelController extends ToolsProperties {
 
     /**
      * 导出excel按钮
+     *
+     * @throws Exception 导出文件夹位置为空、要读取的文件列表为空
      */
     @FXML
     private void exportAll() throws Exception {
@@ -517,6 +544,8 @@ public class FileNameToExcelController extends ToolsProperties {
 
     /**
      * 设置导出文件按钮
+     *
+     * @throws IOException io异常
      */
     @FXML
     private void exportPath(ActionEvent actionEvent) throws IOException {
@@ -530,6 +559,8 @@ public class FileNameToExcelController extends ToolsProperties {
 
     /**
      * 选择excel模板按钮
+     *
+     * @throws IOException io异常
      */
     @FXML
     private void getExcelPath(ActionEvent actionEvent) throws IOException {
@@ -551,6 +582,8 @@ public class FileNameToExcelController extends ToolsProperties {
 
     /**
      * 重新查询按钮
+     *
+     * @throws Exception 要查询的文件夹位置为空、要读取的文件夹不存在
      */
     @FXML
     private void reselect() throws Exception {
@@ -573,6 +606,8 @@ public class FileNameToExcelController extends ToolsProperties {
 
     /**
      * 是否展示文件拓展名选项监听
+     *
+     * @throws Exception io异常
      */
     @FXML
     private void handleCheckBoxAction() throws Exception {

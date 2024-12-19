@@ -9,14 +9,18 @@ import java.util.Objects;
 import java.util.Properties;
 
 /**
+ * 可以读取Properties中带有‘\’路径的公共类
+ *
  * @author KOISHI
  * Date:2024-10-28
  * Time:下午5:01
  */
-public class ToolsProperties extends Properties {
+public class CommonProperties extends Properties {
 
     /**
      * 重写Properties的load方法，更换配置文件中的‘\’为‘/’
+     *
+     * @param reader Properties输入流
      */
     @Override
     public synchronized void load(Reader reader) throws IOException {

@@ -8,8 +8,8 @@
 <AnchorPane fx:id="anchorPane_Re" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" stylesheets="@../css/Styles.css"
             fx:controller="priv.koishi.tools.Controller.FileRenameController">
     <VBox fx:id="vbox_Re" spacing="10" AnchorPane.topAnchor="10">
-        <HBox spacing="10">
-            <Label fx:id="directoryNameLabel_Re" prefHeight="20" text="文件夹查询设置:"/>
+        <HBox fx:id="warnHBox_Re" spacing="10">
+            <Label prefHeight="20" text="文件夹查询设置:"/>
             <ChoiceBox fx:id="directoryNameType_Re" prefHeight="20" prefWidth="140">
                 <items>
                     <FXCollections fx:factory="observableArrayList">
@@ -22,7 +22,7 @@
                     <String fx:value="只查询文件"/>
                 </value>
             </ChoiceBox>
-            <Label fx:id="hideFileLabel_Re" prefHeight="20" text="隐藏文件查询设置:"/>
+            <Label prefHeight="20" text="隐藏文件查询设置:"/>
             <ChoiceBox fx:id="hideFileType_Re" prefHeight="20" prefWidth="120">
                 <items>
                     <FXCollections fx:factory="observableArrayList">
@@ -37,7 +37,7 @@
             </ChoiceBox>
             <CheckBox fx:id="openDirectory_Re" prefHeight="20" selected="true" style="-fx-cursor: hand"
                       text="重命名后打开文件夹"/>
-            <Label fx:id="warn_Re" prefHeight="20" textFill="red" alignment="CENTER_RIGHT"/>
+            <Label fx:id="warn_Re" text='注意：文件名不能包含 &lt;>:"/\|?*' prefHeight="20" textFill="red" alignment="CENTER_RIGHT"/>
         </HBox>
 
         <HBox fx:id="renameTypeHBox_Re" spacing="10">
@@ -209,7 +209,7 @@
             <Label fx:id="inPath_Re" prefHeight="20" prefWidth="300" style="-fx-font-size: 15px;"/>
         </HBox>
 
-        <HBox spacing="10">
+        <HBox fx:id="fileNumberHBox_Re" spacing="10">
             <Button fx:id="reselectButton_Re" onAction="#reselect" style="-fx-cursor: hand" text="重新查询"/>
             <Button fx:id="updateRenameButton_Re" onAction="#updateRename" style="-fx-cursor: hand" text="更新重命名"/>
             <Button fx:id="clearButton_Re" onAction="#removeAll" style="-fx-cursor: hand" text="清空列表"/>
@@ -235,7 +235,7 @@
             </columns>
         </TableView>
 
-        <HBox spacing="10">
+        <HBox fx:id="tipHBox_Re" spacing="10">
             <ProgressBar fx:id="progressBar_Re" visible="false" prefWidth="200.0" progress="0.0"/>
             <Label fx:id="tip_Re" prefHeight="20" textFill="red" alignment="CENTER_RIGHT"
                    text="读取数据后上下拖拽数据行可调整数据顺序，右键点击数据行可进行调整操作，双击 修改后文件名称 下的单元格可进行编辑"/>

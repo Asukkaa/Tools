@@ -240,6 +240,7 @@ public class FileUtils {
      * @param properties 要更新的配置文件
      * @param key        要更新的配置名
      * @param value      要更新的值
+     * @throws IOException io异常
      */
     public static void updateProperties(String properties, String key, String value) throws IOException {
         InputStream input = checkRunningInputStream(properties);
@@ -314,6 +315,7 @@ public class FileUtils {
      *
      * @param file 要读取的文件
      * @return 格式化后的时间字符串
+     * @throws IOException io异常
      */
     public static String getFileCreatTime(File file) throws IOException {
         Path path = Paths.get(file.getPath());

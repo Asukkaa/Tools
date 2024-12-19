@@ -4,6 +4,8 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 /**
+ * 列表数据统计信息展示类
+ *
  * @author KOISHI
  * Date:2024-12-09
  * Time:15:49

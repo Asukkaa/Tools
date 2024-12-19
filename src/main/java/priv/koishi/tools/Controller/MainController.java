@@ -41,21 +41,26 @@ public class MainController {
 
     /**
      * 组件自适应宽高
+     *
+     * @param stage 程序主舞台
      */
-    public static void mainAdaption(Stage stage, Scene scene) {
+    public static void mainAdaption(Stage stage) {
+        Scene scene = stage.getScene();
         //设置组件高度
         double stageHeight = stage.getHeight();
         TabPane tabPane = (TabPane) scene.lookup("#tabPane");
         tabPane.setStyle("-fx-pref-height: " + stageHeight + "px;");
-        fileNameToExcelAdaption(stage, scene);
-        fileNumToExcelAdaption(stage, scene);
-        imgToExcelAdaption(stage, scene);
-        fileRenameAdaption(stage, scene);
-        settingAdaption(stage, scene);
+        fileNameToExcelAdaption(stage);
+        fileNumToExcelAdaption(stage);
+        imgToExcelAdaption(stage);
+        fileRenameAdaption(stage);
+        settingAdaption(stage);
     }
 
     /**
      * 保存各个功能最后一次设置值
+     *
+     * @throws IOException io异常
      */
     public static void saveLastConfig(Stage stage) throws IOException {
         Scene scene = stage.getScene();
@@ -69,6 +74,8 @@ public class MainController {
 
     /**
      * 保存关程序闭前页面状态
+     *
+     * @throws IOException io异常
      */
     private static void mainSavaLastConfig(Stage stage) throws IOException {
         InputStream input = checkRunningInputStream(configFile);

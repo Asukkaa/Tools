@@ -167,6 +167,7 @@ public class ExcelUtils {
      * @param excelConfig excel设置
      * @return excel保存路径
      * @throws RuntimeException io异常
+     * @throws Exception io异常
      */
     public static String saveExcel(Workbook workbook, ExcelConfig excelConfig) throws Exception {
         String filePath = excelConfig.getOutPath() + "\\" + excelConfig.getOutName() + excelConfig.getOutExcelType();

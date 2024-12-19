@@ -38,6 +38,7 @@ public class MainApplication extends Application {
      *
      * @param stage 程序主舞台
      * @throws RuntimeException io异常
+     * @throws Exception        io异常
      */
     @Override
     public void start(Stage stage) throws Exception {
@@ -62,9 +63,9 @@ public class MainApplication extends Application {
         }
         input.close();
         //监听窗口面板宽度变化
-        stage.widthProperty().addListener((v1, v2, v3) -> Platform.runLater(() -> mainAdaption(stage, scene)));
+        stage.widthProperty().addListener((v1, v2, v3) -> Platform.runLater(() -> mainAdaption(stage)));
         //监听窗口面板高度变化
-        stage.heightProperty().addListener((v1, v2, v3) -> Platform.runLater(() -> mainAdaption(stage, scene)));
+        stage.heightProperty().addListener((v1, v2, v3) -> Platform.runLater(() -> mainAdaption(stage)));
         stage.setOnCloseRequest(event -> {
             try {
                 saveLastConfig(stage);
@@ -78,6 +79,8 @@ public class MainApplication extends Application {
 
     /**
      * 全局异常处理器
+     *
+     * @throws Exception 全局异常
      */
     @Override
     public void init() throws Exception {
@@ -90,6 +93,7 @@ public class MainApplication extends Application {
      * 启动程序
      *
      * @param args 启动参数
+     * @throws IOException io异常
      */
     public static void main(String[] args) throws IOException {
         //打包后需要手动指定日志配置文件位置

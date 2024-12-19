@@ -32,6 +32,11 @@ public class CommonUtils {
 
     /**
      * 正则表达式用于匹配指定范围的整数
+     *
+     * @param str 要校验的字符串
+     * @param min 最小值，为空则不限制
+     * @param max 最大值，为空则不限制
+     * @return 在设置范围内为true，不在范围内为false
      */
     public static boolean isInIntegerRange(String str, Integer min, Integer max) {
         if (StringUtils.isEmpty(str)) {
@@ -67,6 +72,7 @@ public class CommonUtils {
      * int转汉字
      *
      * @param intNum 要转换为汉字的数字
+     * @return 转为汉字的数字
      */
     public static String intToChineseNum(int intNum) {
         String[] cnNum = {"零", "一", "二", "三", "四", "五", "六", "七", "八", "九"};
@@ -89,6 +95,7 @@ public class CommonUtils {
         String chineseNum = sb.toString().replaceAll("零[千百十]", "零").replaceAll("零+万", "万")
                 .replaceAll("零+亿", "亿").replaceAll("亿万", "亿零")
                 .replaceAll("零+", "零").replaceAll("零$", "");
+        //去掉10~19的一
         if (chineseNum.indexOf("一") == 0 && chineseNum.indexOf("十") == 1 && chineseNum.length() < 4) {
             chineseNum = chineseNum.substring(1);
         }
@@ -97,6 +104,10 @@ public class CommonUtils {
 
     /**
      * int转英文字母
+     *
+     * @param number      要转为英文字母的数字
+     * @param toLowerCase 英文字母大小写标识，true小写，false大写
+     * @return 转换后的对应字母
      */
     public static String convertToAlpha(int number, boolean toLowerCase) {
         char[] ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
@@ -112,7 +123,7 @@ public class CommonUtils {
             alphaNum.append(ALPHABET[remainder]);
             number = (number - 1) / ALPHABET.length;
         }
-        // 因为我们从'A'开始，所以需要翻转字符串
+        //因为从'A'开始，所以需要翻转字符串
         return alphaNum.reverse().toString();
     }
 
@@ -123,6 +134,7 @@ public class CommonUtils {
      * @param fileNumBeans 分组信息
      * @param inFileList   需要分组的文件
      * @param fileConfig   文件查询设置，用来获取文件名分隔符、分组最大匹配数量、是否展示文件拓展名
+     * @return 用于列表统计展示的对象
      */
     public static FileNumVo matchGroupData(List<FileNumBean> fileNumBeans, List<File> inFileList, FileConfig fileConfig) {
         List<String> paths = new ArrayList<>();
@@ -158,6 +170,7 @@ public class CommonUtils {
      *
      * @param paths      要分组的文件的路径
      * @param fileConfig 文件查询设置，用来获取文件名分隔符、分组最大匹配数量、是否展示文件拓展名
+     * @return javafx列表数据对象list
      */
     private static List<FileNumBean> buildNameGroupData(List<String> paths, FileConfig fileConfig) {
         List<FileNumBean> fileNumBeans = new ArrayList<>();
@@ -281,6 +294,8 @@ public class CommonUtils {
 
     /**
      * 判断程序是否打包运行
+     *
+     * @return 在jar环境运为true，其他环境为false
      */
     public static boolean isRunningFromJar() {
         // 获取当前运行的JVM的类加载器
@@ -296,7 +311,11 @@ public class CommonUtils {
     }
 
     /**
-     * 根据不同运行环境来建立输入流
+     * 根据不同运行环境来创建输入流
+     *
+     * @param path 输入流路径
+     * @return 根据不同运行环境创建的输入流
+     * @throws IOException io异常
      */
     public static InputStream checkRunningInputStream(String path) throws IOException {
         InputStream input;
@@ -309,7 +328,11 @@ public class CommonUtils {
     }
 
     /**
-     * 根据不同运行环境来建立输出流
+     * 根据不同运行环境来创建输出流
+     *
+     * @param path 输出流路径
+     * @return 根据不同运行环境创建的输出流
+     * @throws IOException io异常
      */
     public static OutputStream checkRunningOutputStream(String path) throws IOException {
         OutputStream output;
@@ -323,6 +346,9 @@ public class CommonUtils {
 
     /**
      * 字符串大小写互换
+     *
+     * @param s 要转换的字符串
+     * @return 转换后的字符串
      */
     public static String swapCase(String s) {
         char[] charArray = s.toCharArray();
@@ -357,7 +383,10 @@ public class CommonUtils {
 
 
     /**
-     * 调用获取属性的方法
+     * 调用获取属性的get方法
+     *
+     * @param method 要获取属性的对象的方法
+     * @return get方法为true，其他为false
      */
     public static boolean isGetterMethod(Method method) {
         return method.getName().startsWith("get")
@@ -368,6 +397,9 @@ public class CommonUtils {
 
     /**
      * 获取javafxBean属性名称
+     *
+     * @param getterName get方法名
+     * @return 去掉get的属性名
      */
     public static String getPropertyName(String getterName) {
         return Character.toLowerCase(getterName.charAt(3)) + getterName.substring(4);

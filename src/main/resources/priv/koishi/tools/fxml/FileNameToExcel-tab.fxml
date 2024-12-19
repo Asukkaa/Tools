@@ -97,7 +97,7 @@
             </Button>
         </HBox>
 
-        <HBox spacing="10">
+        <HBox fx:id="fileNumberHBox_Name" spacing="10">
             <Button fx:id="reselectButton_Name" onAction="#reselect" style="-fx-cursor: hand" text="重新查询"/>
             <Button fx:id="clearButton_Name" onAction="#removeAll" style="-fx-cursor: hand" text="清空列表"/>
             <Button fx:id="exportButton_Name" onAction="#exportAll" style="-fx-cursor: hand" text="开始导出"/>
@@ -121,7 +121,7 @@
             </columns>
         </TableView>
 
-        <HBox spacing="10">
+        <HBox fx:id="tipHBox_Name" spacing="10">
             <ProgressBar fx:id="progressBar_Name" visible="false" prefWidth="200.0" progress="0.0"/>
             <Label fx:id="tip_Name" prefHeight="20" textFill="red" alignment="CENTER_RIGHT"
                    text="读取数据后上下拖拽数据行可调整数据顺序，右键点击数据行可进行调整操作"/>

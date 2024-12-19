@@ -73,8 +73,11 @@ public class SettingController {
 
     /**
      * 组件自适应宽高
+     *
+     * @param stage 程序主舞台
      */
-    public static void settingAdaption(Stage stage, Scene scene) {
+    public static void settingAdaption(Stage stage) {
+        Scene scene = stage.getScene();
         //设置组件宽度
         double stageWidth = stage.getWidth();
         Node settingVBox = scene.lookup("#vBox_Set");
@@ -83,6 +86,9 @@ public class SettingController {
 
     /**
      * 保存设置
+     *
+     * @param scene 程序主场景
+     * @throws IOException io异常
      */
     public static void saveSetting(Scene scene) throws IOException {
         //保存最大运行内存设置
@@ -93,6 +99,8 @@ public class SettingController {
 
     /**
      * 获取运行脚本名称
+     *
+     * @return 根据不同操作系统返回不同脚本名称
      */
     private static String getScriptName() {
         if (systemName.contains(macos)) {
@@ -103,6 +111,9 @@ public class SettingController {
 
     /**
      * 保存日志问文件数量设置
+     *
+     * @param scene 程序主场景
+     * @throws IOException io异常
      */
     private static void saveLogsNumSetting(Scene scene) throws IOException {
         InputStream input = checkRunningInputStream(configFile);
@@ -119,6 +130,9 @@ public class SettingController {
 
     /**
      * 保存最大运行内存设置
+     *
+     * @param scene 程序主场景
+     * @throws IOException io异常
      */
     private static void saveMemorySetting(Scene scene) throws IOException {
         TextField nextRunMemoryTextField = (TextField) scene.lookup("#nextRunMemory_Set");
@@ -142,6 +156,11 @@ public class SettingController {
 
     /**
      * 根据是否加载最后一次功能选项框选择值更新相关配置文件
+     *
+     * @param checkBox   更改配置的选项框
+     * @param configFile 要更新的配置文件相对路径
+     * @param key        要更新的配置
+     * @throws IOException io异常
      */
     private void setLoadLastConfigCheckBox(CheckBox checkBox, String configFile, String key) throws IOException {
         if (checkBox.isSelected()) {
@@ -153,6 +172,11 @@ public class SettingController {
 
     /**
      * 设置是否加载最后一次功能配置信息初始值
+     *
+     * @param prop       要读取的配置文件对象
+     * @param checkBox   更改配置的选项框
+     * @param configFile 要更新的配置文件相对路径
+     * @throws IOException io异常
      */
     private void setLoadLastConfig(Properties prop, CheckBox checkBox, String configFile) throws IOException {
         InputStream input = checkRunningInputStream(configFile);
@@ -163,6 +187,9 @@ public class SettingController {
 
     /**
      * 读取配置文件
+     *
+     * @param prop 要读取的配置文件对象
+     * @throws IOException io异常
      */
     private void getConfig(Properties prop) throws IOException {
         InputStream input = checkRunningInputStream(configFile);
@@ -177,6 +204,8 @@ public class SettingController {
 
     /**
      * 设置是否加载最后一次功能配置信息初始值
+     *
+     * @throws IOException io异常
      */
     private void setLoadLastConfigs() throws IOException {
         Properties prop = new Properties();
@@ -189,6 +218,8 @@ public class SettingController {
 
     /**
      * 获取最大运行内存并展示
+     *
+     * @throws IOException io异常
      */
     private void getMaxMemory() throws IOException {
         long maxMemory = Runtime.getRuntime().maxMemory();
@@ -231,6 +262,8 @@ public class SettingController {
 
     /**
      * 清理多余log文件
+     *
+     * @throws RuntimeException 删除日志文件失败
      */
     private void deleteLogs() {
         File[] files = new File(logsPath_Set.getText()).listFiles();
@@ -273,6 +306,8 @@ public class SettingController {
 
     /**
      * 界面初始化
+     *
+     * @throws IOException io异常
      */
     @FXML
     private void initialize() throws IOException {
@@ -294,6 +329,8 @@ public class SettingController {
 
     /**
      * 按指定规则批量重命名文件功能加载上次设置信息
+     *
+     * @throws IOException io异常
      */
     @FXML
     private void loadRenameAction() throws IOException {
@@ -302,6 +339,8 @@ public class SettingController {
 
     /**
      * 分组统计文件夹下文件数量功能加载上次设置信息
+     *
+     * @throws IOException io异常
      */
     @FXML
     private void loadFileNumAction() throws IOException {
@@ -310,6 +349,8 @@ public class SettingController {
 
     /**
      * 获取文件夹下的文件名称功能加载上次设置信息
+     *
+     * @throws IOException io异常
      */
     @FXML
     private void loadFileNameAction() throws IOException {
@@ -318,6 +359,8 @@ public class SettingController {
 
     /**
      * 将图片与excel匹配并插入功能加载上次设置信息
+     *
+     * @throws IOException io异常
      */
     @FXML
     private void loadImgToExcelAction() throws IOException {
@@ -326,6 +369,8 @@ public class SettingController {
 
     /**
      * 记住关闭前打开的页面设置
+     *
+     * @throws IOException io异常
      */
     @FXML
     private void loadLastTabAction() throws IOException {
@@ -334,6 +379,8 @@ public class SettingController {
 
     /**
      * 记住窗口是否最大化设置
+     *
+     * @throws IOException io异常
      */
     @FXML
     private void loadFullWindowAction() throws IOException {
@@ -342,6 +389,8 @@ public class SettingController {
 
     /**
      * 重启程序按钮
+     *
+     * @throws IOException io异常
      */
     @FXML
     private void reLaunch() throws IOException {
@@ -362,6 +411,8 @@ public class SettingController {
 
     /**
      * 文件查询默认排序设置监听
+     *
+     * @throws IOException io异常
      */
     @FXML
     private void sortAction() throws IOException {
@@ -377,6 +428,8 @@ public class SettingController {
 
     /**
      * 倒序排序设置
+     *
+     * @throws IOException io异常
      */
     @FXML
     private void reverseSorAction() throws IOException {
