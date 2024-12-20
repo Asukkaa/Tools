@@ -4,6 +4,8 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 /**
+ * excel读取与导出相关设置参数类
+ *
  * @author KOISHI
  * Date:2024-10-03
  * Time:下午2:08

@@ -8,6 +8,8 @@ import lombok.Setter;
 import java.util.List;
 
 /**
+ * javafx列表展示文件分组数量信息类
+ *
  * @author KOISHI
  * Date:2024-10-09
  * Time:下午4:05

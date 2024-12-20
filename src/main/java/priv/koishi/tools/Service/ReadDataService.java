@@ -31,6 +31,8 @@ import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
 /**
+ * 读取数据线程任务类
+ *
  * @author KOISHI
  * Date:2024-10-25
  * Time:上午11:52
@@ -39,6 +41,10 @@ public class ReadDataService {
 
     /**
      * 读取excel分组信息
+     *
+     * @param excelConfig excel读取设置
+     * @param taskBean    任务线程设置参数
+     * @return 用于展示到javafx列表的数据
      */
     public static Task<List<FileNumBean>> readExcel(ExcelConfig excelConfig, TaskBean<FileNumBean> taskBean) {
         return new Task<>() {
@@ -130,6 +136,10 @@ public class ReadDataService {
 
     /**
      * 根据不同格式excel创建不同工作簿
+     *
+     * @param excelInPath excel模板路径
+     * @return 根据不同格式excel创建的作簿
+     * @throws Exception 文件格式不支持
      */
     private static Workbook getWorkbook(String excelInPath) throws Exception {
         String excelType = getFileType(new File(excelInPath));
@@ -148,6 +158,9 @@ public class ReadDataService {
 
     /**
      * 渲染excel数据到列表中
+     *
+     * @return 用于展示到javafx列表的数据
+     * @throws Exception 未查询到符合条件的数据
      */
     public static List<FileNumBean> showReadExcelData(List<FileNumBean> fileBeans, TaskBean<FileNumBean> taskBean) throws Exception {
         if (CollectionUtils.isEmpty(fileBeans)) {
@@ -159,6 +172,9 @@ public class ReadDataService {
 
     /**
      * 读取文件夹下的文件
+     *
+     * @param taskBean 读取文件线程任务参数
+     * @return 无参数线程任务
      */
     public static Task<Void> readFile(TaskBean<FileBean> taskBean) {
         return new Task<>() {
@@ -233,6 +249,9 @@ public class ReadDataService {
 
     /**
      * 数据排序
+     *
+     * @param taskBean 带有排序类型与是否倒序的线程设置参数
+     * @param fileList 要排序的文件
      */
     private static void comparingData(TaskBean<?> taskBean, List<File> fileList) {
         String sortType = taskBean.getSortType();
@@ -264,6 +283,9 @@ public class ReadDataService {
 
     /**
      * 按文件类型排序
+     *
+     * @param fileList    要排序的文件
+     * @param reverseSort 是否倒序标识，true倒序，false为正序
      */
     private static void comparingByType(List<File> fileList, boolean reverseSort) {
         fileList.sort((o1, o2) -> {
@@ -280,6 +302,9 @@ public class ReadDataService {
 
     /**
      * 按文件大小排序
+     *
+     * @param fileList    要排序的文件
+     * @param reverseSort 是否倒序标识，true倒序，false为正序
      */
     private static void comparingBySize(List<File> fileList, boolean reverseSort) {
         if (reverseSort) {
@@ -295,6 +320,9 @@ public class ReadDataService {
 
     /**
      * 按文件修改时间排序
+     *
+     * @param fileList    要排序的文件
+     * @param reverseSort 是否倒序标识，true倒序，false为正序
      */
     private static void comparingByUpdateTime(List<File> fileList, boolean reverseSort) {
         if (reverseSort) {
@@ -315,6 +343,9 @@ public class ReadDataService {
 
     /**
      * 按文件创建时间排序
+     *
+     * @param fileList    要排序的文件
+     * @param reverseSort 是否倒序标识，true倒序，false为正序
      */
     private static void comparingByCreatTime(List<File> fileList, boolean reverseSort) {
         fileList.sort((o1, o2) -> {
@@ -334,6 +365,9 @@ public class ReadDataService {
 
     /**
      * 按文件名称排序
+     *
+     * @param fileList    要排序的文件
+     * @param reverseSort 是否倒序标识，true倒序，false为正序
      */
     private static void comparingByName(List<File> fileList, boolean reverseSort) {
         if (reverseSort) {

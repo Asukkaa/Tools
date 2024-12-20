@@ -5,6 +5,8 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
+ * 按指定字符重命名设置参数类
+ *
  * @author KOISHI
  * Date:2024-11-05
  * Time:下午2:10

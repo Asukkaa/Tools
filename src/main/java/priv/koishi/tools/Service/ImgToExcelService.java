@@ -26,6 +26,8 @@ import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.changeDisableControls;
 
 /**
+ * 向excel插入匹配图片线程任务
+ *
  * @author KOISHI
  * Date:2024-10-17
  * Time:下午4:53
@@ -54,6 +56,10 @@ public class ImgToExcelService {
 
     /**
      * 构建分组的图片excel
+     *
+     * @param taskBean    线程设置参数
+     * @param excelConfig excel导出设置
+     * @return excel工作簿
      */
     public static Task<SXSSFWorkbook> buildImgGroupExcel(TaskBean<FileNumBean> taskBean, ExcelConfig excelConfig) {
         return new Task<>() {
@@ -139,6 +145,16 @@ public class ImgToExcelService {
 
     /**
      * 插入图片
+     *
+     * @param imgList       图片路径
+     * @param excelConfig   excel导出设置
+     * @param cellNum       图片起始列号
+     * @param rowNum        图片的起始行号
+     * @param sheet         当前表
+     * @param sxssfWorkbook 当前工作簿
+     * @param row           当前行
+     * @param maxCellNum    最大列号
+     * @return 最大列号
      */
     private static int buildImgExcel(List<String> imgList, ExcelConfig excelConfig, int cellNum, int rowNum,
                                      Sheet sheet, SXSSFWorkbook sxssfWorkbook, Row row, int maxCellNum) throws IOException {
@@ -151,18 +167,18 @@ public class ImgToExcelService {
         } else {
             sxssfWorkbook.setCompressTempFiles(true);
             for (String i : imgList) {
-                // 将图片插入Excel单元格
+                //将图片插入Excel单元格
                 CreationHelper helper = sxssfWorkbook.getCreationHelper();
                 Drawing<?> drawing = sheet.createDrawingPatriarch();
                 ClientAnchor anchor = helper.createClientAnchor();
-                // 设置图片的起始位置以及大小
+                //设置图片的起始位置以及大小
                 anchor.setCol1(cellNum);
                 anchor.setRow1(rowNum);
                 anchor.setCol2(cellNum + 1);
                 anchor.setRow2(rowNum + 1);
                 anchor.setAnchorType(ClientAnchor.AnchorType.MOVE_DONT_RESIZE);
                 String extension = getFileType(new File(i));
-                // 读取图片文件
+                //读取图片文件
                 inputStream = Files.newInputStream(Paths.get(i));
                 try {
                     if (jpg.equals(extension) || jpeg.equals(extension)) {
@@ -185,6 +201,8 @@ public class ImgToExcelService {
 
     /**
      * 线程取消时关闭所有流
+     *
+     * @throws IOException io异常
      */
     public static void closeStream() throws IOException {
         if (workbook != null) {

@@ -25,6 +25,8 @@ import static priv.koishi.tools.Utils.FileUtils.checkFileExists;
 import static priv.koishi.tools.Utils.UiUtils.changeDisableControls;
 
 /**
+ * 文件分组匹配数据导出excel功能线程任务类
+ *
  * @author KOISHI
  * Date:2024-10-09
  * Time:下午4:17
@@ -33,6 +35,10 @@ public class FileNumToExcelService {
 
     /**
      * 构建分组统计excel
+     *
+     * @param taskBean    线程任务所需参数
+     * @param excelConfig excel导出设置参数
+     * @return excel工作簿
      */
     public static Task<Workbook> buildNameGroupNumExcel(TaskBean<FileNumBean> taskBean, ExcelConfig excelConfig) {
         return new Task<>() {
@@ -129,6 +135,12 @@ public class FileNumToExcelService {
 
     /**
      * 处理文件名称列
+     *
+     * @param fileNameList 要处理文件名
+     * @param row          当前所在excel行
+     * @param cellNum      当前行起始列号
+     * @param maxCellNum   最大列号
+     * @return 最大列号
      */
     private static int buildFileName(List<String> fileNameList, Row row, int cellNum, int maxCellNum) {
         if (CollectionUtils.isNotEmpty(fileNameList)) {

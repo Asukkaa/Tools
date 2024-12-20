@@ -217,6 +217,10 @@ public class FileRenameController extends CommonProperties {
 
     /**
      * 根据文件重命名依据设置保存配置信息
+     *
+     * @param prop            配置文件
+     * @param renameTypeValue 重命名类型
+     * @param scene           程序主场景
      */
     private static void saveLastConfigByRenameType(Properties prop, String renameTypeValue, Scene scene) {
         switch (renameTypeValue) {
@@ -240,6 +244,9 @@ public class FileRenameController extends CommonProperties {
 
     /**
      * 按编号规则重命名保存配置信息
+     *
+     * @param prop  配置文件
+     * @param scene 程序主场景
      */
     private static void saveLastConfigByCodeRename(Properties prop, Scene scene) {
         TextField startName = (TextField) scene.lookup("#startName_Re");
@@ -261,6 +268,9 @@ public class FileRenameController extends CommonProperties {
 
     /**
      * 按指定字符重命名保存配置信息
+     *
+     * @param prop  配置文件
+     * @param scene 程序主场景
      */
     private static void saveLastConfigByStrRename(Properties prop, Scene scene) {
         ChoiceBox<?> targetStr = (ChoiceBox<?>) scene.lookup("#targetStr_Re");
@@ -301,6 +311,9 @@ public class FileRenameController extends CommonProperties {
 
     /**
      * 按excel模板重命名保存配置信息
+     *
+     * @param prop  配置文件
+     * @param scene 程序主场景
      */
     private static void saveLastConfigByExcelRename(Properties prop, Scene scene) {
         TextField sheetName = (TextField) scene.lookup("#sheetName_Re");
@@ -317,6 +330,9 @@ public class FileRenameController extends CommonProperties {
 
     /**
      * 添加数据渲染列表
+     *
+     * @param inFileList 要读取的文件
+     * @throws Exception 未查询到符合条件的数据
      */
     private void addInData(List<File> inFileList) throws Exception {
         removeAll();
@@ -393,6 +409,10 @@ public class FileRenameController extends CommonProperties {
 
     /**
      * 展示读取excel重命名数据
+     *
+     * @param taskBean        带有需要解绑的线程ui组件的线程参数类
+     * @param fileBeanList    读取的文件信息
+     * @param excelRenameList 读取的excel数据
      */
     private void showMatchExcelData(TaskBean<?> taskBean, ObservableList<FileBean> fileBeanList, List<String> excelRenameList) {
         if (CollectionUtils.isNotEmpty(fileBeanList) && CollectionUtils.isNotEmpty(excelRenameList)) {
@@ -409,6 +429,9 @@ public class FileRenameController extends CommonProperties {
 
     /**
      * 匹配excel重命名数据
+     *
+     * @param fileBeanList    要匹配的文件信息
+     * @param excelRenameList 要匹配的excel数据
      */
     private void matchExcelRename(ObservableList<FileBean> fileBeanList, List<String> excelRenameList) {
         int fileBeanListSize = fileBeanList.size();
@@ -431,6 +454,8 @@ public class FileRenameController extends CommonProperties {
 
     /**
      * 匹配重命名规则
+     *
+     * @param taskBean 用于存储重命名设置的线程参数类
      */
     private void matchRenameConfig(TaskBean<FileBean> taskBean) {
         String renameType = renameType_Re.getValue();
@@ -448,6 +473,8 @@ public class FileRenameController extends CommonProperties {
 
     /**
      * 按编号规则重命名
+     *
+     * @param taskBean 用于存储重命名设置的线程参数类
      */
     private void matchCodeRename(TaskBean<FileBean> taskBean) {
         CodeRenameConfig codeRenameConfig = new CodeRenameConfig();
@@ -463,6 +490,8 @@ public class FileRenameController extends CommonProperties {
 
     /**
      * 按指定字符重命名
+     *
+     * @param taskBean 用于存储重命名设置的线程参数类
      */
     private void matchStringRename(TaskBean<FileBean> taskBean) {
         String targetStr = targetStr_Re.getValue();
@@ -495,6 +524,8 @@ public class FileRenameController extends CommonProperties {
 
     /**
      * 读取配置文件
+     *
+     * @throws IOException io异常
      */
     private void getConfig() throws IOException {
         Properties prop = new Properties();
@@ -510,6 +541,8 @@ public class FileRenameController extends CommonProperties {
 
     /**
      * 设置初始配置值为上次配置值
+     *
+     * @throws IOException io异常
      */
     private void setLastConfig() throws IOException {
         Properties prop = new Properties();
@@ -530,6 +563,8 @@ public class FileRenameController extends CommonProperties {
 
     /**
      * 根据重命名类型设置上次配置值
+     *
+     * @param prop 配置文件
      */
     private void setLastConfigByRenameType(Properties prop) {
         switch (prop.getProperty(key_lastRenameType)) {
@@ -553,6 +588,8 @@ public class FileRenameController extends CommonProperties {
 
     /**
      * 按编号规则重命名设置上次配置值
+     *
+     * @param prop 配置文件
      */
     private void setLastConfigByCodeRename(Properties prop) {
         setControlLastConfig(tag_Re, prop, key_lastTag, false, null);
@@ -566,6 +603,8 @@ public class FileRenameController extends CommonProperties {
 
     /**
      * 按指定字符重命名设置上次配置值
+     *
+     * @param prop 配置文件
      */
     private void setLastConfigByStrRename(Properties prop) {
         setControlLastConfig(targetStr_Re, prop, key_lastTargetStr, false, null);
@@ -582,6 +621,8 @@ public class FileRenameController extends CommonProperties {
 
     /**
      * 指定字符串设置上次配置值
+     *
+     * @param prop 配置文件
      */
     private void setLastConfigBySpecifyString(Properties prop) {
         setControlLastConfig(renameValue_Re, prop, key_lastRenameValue, false, null);
@@ -600,6 +641,14 @@ public class FileRenameController extends CommonProperties {
 
     /**
      * 处理单侧字符设置上次配置值
+     *
+     * @param prop            配置文件
+     * @param side            填写匹配方向设置参数的文本输入框
+     * @param sideKey         填写匹配方向设置参数的文本输入框上次填写值对应的key
+     * @param sideBehavior    当前侧重命名行为下拉框
+     * @param sideBehaviorKey 下拉框上次选项对应的key
+     * @param sideValue       当前侧替换或插入字符文本输入框
+     * @param valueKey        当前侧替换或插入字符文本输入框上次填写值对应的key
      */
     private void setLastConfigByOneSide(Properties prop, TextField side, String sideKey, ChoiceBox<String> sideBehavior, String sideBehaviorKey, TextField sideValue, String valueKey) {
         setControlLastConfig(side, prop, sideKey, false, null);
@@ -612,6 +661,8 @@ public class FileRenameController extends CommonProperties {
 
     /**
      * 指定字符位置设置上次配置值
+     *
+     * @param prop 配置文件
      */
     private void setLastConfigBySpecifyIndex(Properties prop) {
         setControlLastConfig(renameValue_Re, prop, key_lastRenameValue, false, null);
@@ -623,6 +674,8 @@ public class FileRenameController extends CommonProperties {
 
     /**
      * 根据excel重命名设置上次配置值
+     *
+     * @param prop 配置文件
      */
     private void setLastConfigByExcelRename(Properties prop) {
         setControlLastConfig(maxRow_Re, prop, key_lastMaxRow, false, null);
@@ -737,6 +790,8 @@ public class FileRenameController extends CommonProperties {
 
     /**
      * 界面初始化
+     *
+     * @throws IOException io异常
      */
     @FXML
     private void initialize() throws IOException {
@@ -758,6 +813,9 @@ public class FileRenameController extends CommonProperties {
 
     /**
      * 选择文件夹按钮功能
+     *
+     * @param actionEvent 交互事件
+     * @throws Exception 未查询到符合条件的数据、io异常
      */
     @FXML
     private void inDirectoryButton(ActionEvent actionEvent) throws Exception {
@@ -781,6 +839,9 @@ public class FileRenameController extends CommonProperties {
 
     /**
      * 拖拽释放行为
+     *
+     * @param dragEvent 拖拽释放事件
+     * @throws Exception 未选择需要识别的图片格式
      */
     @FXML
     private void handleDrop(DragEvent dragEvent) throws Exception {
@@ -802,6 +863,8 @@ public class FileRenameController extends CommonProperties {
 
     /**
      * 拖拽中行为
+     *
+     * @param dragEvent 拖拽中事件
      */
     @FXML
     private void acceptDrop(DragEvent dragEvent) {
@@ -825,6 +888,8 @@ public class FileRenameController extends CommonProperties {
 
     /**
      * 开始重命名按钮
+     *
+     * @throws Exception 要读取的文件列表为空
      */
     @FXML
     private void renameAll() throws Exception {
@@ -895,6 +960,9 @@ public class FileRenameController extends CommonProperties {
 
     /**
      * 选择excel模板按钮
+     *
+     * @param actionEvent 交互事件
+     * @throws IOException io异常
      */
     @FXML
     private void getExcelPath(ActionEvent actionEvent) throws IOException {
@@ -909,6 +977,8 @@ public class FileRenameController extends CommonProperties {
 
     /**
      * 重新查询按钮
+     *
+     * @throws Exception 要查询的文件夹位置为空、要读取的文件夹不存在
      */
     @FXML
     private void reselect() throws Exception {
@@ -1066,6 +1136,8 @@ public class FileRenameController extends CommonProperties {
 
     /**
      * 更新重命名按钮
+     *
+     * @throws Exception 要读取的文件列表为空
      */
     @FXML
     private void updateRename() throws Exception {

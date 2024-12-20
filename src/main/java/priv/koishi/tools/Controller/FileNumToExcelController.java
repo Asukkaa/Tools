@@ -253,6 +253,10 @@ public class FileNumToExcelController extends CommonProperties {
 
     /**
      * 读取文件数据
+     *
+     * @param selectedFile        要读取的文件
+     * @param filterExtensionList 要过滤的文件格式
+     * @throws Exception 未查询到符合条件的数据
      */
     private void addInFile(File selectedFile, List<String> filterExtensionList) throws Exception {
         FileConfig fileConfig = getInFileList(selectedFile, filterExtensionList);
@@ -265,6 +269,10 @@ public class FileNumToExcelController extends CommonProperties {
 
     /**
      * 查询要处理的文件
+     *
+     * @param selectedFile        要读取的文件
+     * @param filterExtensionList 要过滤的文件格式
+     * @return 文件读取设置
      */
     private FileConfig getInFileList(File selectedFile, List<String> filterExtensionList) {
         FileConfig fileConfig = new FileConfig();
@@ -291,6 +299,8 @@ public class FileNumToExcelController extends CommonProperties {
 
     /**
      * 添加数据渲染列表
+     *
+     * @return 读取excel任务线程
      */
     private Task<List<FileNumBean>> addInData() {
         removeAll();
@@ -327,6 +337,8 @@ public class FileNumToExcelController extends CommonProperties {
 
     /**
      * 读取配置文件
+     *
+     * @throws IOException io异常
      */
     private void getConfig() throws IOException {
         Properties prop = new Properties();
@@ -345,6 +357,8 @@ public class FileNumToExcelController extends CommonProperties {
 
     /**
      * 设置初始配置值为上次配置值
+     *
+     * @throws IOException io异常
      */
     private void setLastConfig() throws IOException {
         Properties prop = new Properties();
@@ -450,6 +464,8 @@ public class FileNumToExcelController extends CommonProperties {
 
     /**
      * 界面初始化
+     *
+     * @throws IOException io异常
      */
     @FXML
     private void initialize() throws IOException {
@@ -469,6 +485,9 @@ public class FileNumToExcelController extends CommonProperties {
 
     /**
      * 选择文件夹按钮功能
+     *
+     * @param actionEvent 交互事件
+     * @throws Exception 未查询到符合条件的数据、io异常
      */
     @FXML
     private void inDirectoryButton(ActionEvent actionEvent) throws Exception {
@@ -485,6 +504,8 @@ public class FileNumToExcelController extends CommonProperties {
 
     /**
      * 拖拽释放行为
+     *
+     * @param dragEvent 拖拽释放事件
      */
     @FXML
     private void handleDrop(DragEvent dragEvent) {
@@ -496,6 +517,8 @@ public class FileNumToExcelController extends CommonProperties {
 
     /**
      * 拖拽中行为
+     *
+     * @param dragEvent 拖拽中事件
      */
     @FXML
     private void acceptDrop(DragEvent dragEvent) {
@@ -520,6 +543,8 @@ public class FileNumToExcelController extends CommonProperties {
 
     /**
      * 导出excel按钮
+     *
+     * @throws Exception 导出文件夹位置为空、要查询的文件夹位置为空、excel模板文件位置为空
      */
     @FXML
     private void exportAll() throws Exception {
@@ -569,6 +594,9 @@ public class FileNumToExcelController extends CommonProperties {
 
     /**
      * 设置导出文件按钮
+     *
+     * @param actionEvent 交互事件
+     * @throws Exception io异常
      */
     @FXML
     private void exportPath(ActionEvent actionEvent) throws Exception {
@@ -585,6 +613,9 @@ public class FileNumToExcelController extends CommonProperties {
 
     /**
      * 选择excel模板按钮
+     *
+     * @param actionEvent 交互事件
+     * @throws Exception io异常
      */
     @FXML
     private void getExcelPath(ActionEvent actionEvent) throws Exception {
@@ -603,6 +634,9 @@ public class FileNumToExcelController extends CommonProperties {
 
     /**
      * 重新查询按钮
+     *
+     * @return 读取excel任务线程
+     * @throws Exception excel模板文件位置为空、要读取的文件夹不存在
      */
     @FXML
     private Task<List<FileNumBean>> reselect() throws Exception {
@@ -619,6 +653,8 @@ public class FileNumToExcelController extends CommonProperties {
 
     /**
      * 是否展示文件拓展名选项监听
+     *
+     * @throws Exception excel模板文件位置为空、要读取的文件夹不存在
      */
     @FXML
     private void handleCheckBoxAction() throws Exception {

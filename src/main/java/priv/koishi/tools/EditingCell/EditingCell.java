@@ -9,6 +9,8 @@ import java.util.Objects;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
 /**
+ * 可编辑的javafx列表单元格
+ *
  * @author KOISHI
  * Date:2024-11-04
  * Time:下午6:11
@@ -20,6 +22,9 @@ public class EditingCell<T> extends TableCell<T, String> {
      */
     private TextField textField;
 
+    /**
+     * 用于引入lambda表达式的对象
+     */
     private final ItemConsumer<T> itemConsumer;
 
     /**

@@ -8,6 +8,8 @@ import lombok.Setter;
 import java.io.File;
 
 /**
+ * javafx列表展示文件信息类
+ *
  * @author KOISHI
  * Date 2024-10-01
  * Time 下午1:50

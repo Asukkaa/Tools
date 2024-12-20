@@ -16,6 +16,8 @@ import static priv.koishi.tools.Utils.CommonUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.changeDisableControls;
 
 /**
+ * 文件批量重命名线程任务类
+ *
  * @author KOISHI
  * Date:2024-11-06
  * Time:下午5:47
@@ -24,6 +26,9 @@ public class FileRenameService {
 
     /**
      * 批量重命名
+     *
+     * @param taskBean 线程任务参数
+     * @return 处理的文件所在文件夹
      */
     public static Task<String> fileRename(TaskBean<FileBean> taskBean) {
         return new Task<>() {
@@ -86,9 +91,14 @@ public class FileRenameService {
 
     /**
      * 构建文件重命名
+     *
+     * @param codeRenameConfig   按变编号重命名设置参数
+     * @param fileBean           要处理的文件信息
+     * @param stringRenameConfig 按指定字符重命名设置参数
+     * @param startName          按变编号重命名起始编号
+     * @param tag                按变编号重命名后缀
      */
-    public static void buildRename(CodeRenameConfig codeRenameConfig, FileBean fileBean,
-                                   StringRenameConfig stringRenameConfig, int startName, int tag) {
+    public static void buildRename(CodeRenameConfig codeRenameConfig, FileBean fileBean, StringRenameConfig stringRenameConfig, int startName, int tag) {
         String fileRename = fileBean.getName();
         if (codeRenameConfig != null) {
             fileRename = getCodeRename(codeRenameConfig, startName, tag);
@@ -101,6 +111,11 @@ public class FileRenameService {
 
     /**
      * 根据按编号规则重命名
+     *
+     * @param codeRenameConfig 按变编号重命名设置参数
+     * @param startName        按变编号重命名起始编号
+     * @param tag              按变编号重命名后缀
+     * @return 重命名后不带后缀的文件名
      */
     private static String getCodeRename(CodeRenameConfig codeRenameConfig, int startName, int tag) {
         String differenceCode = codeRenameConfig.getDifferenceCode();
@@ -134,6 +149,11 @@ public class FileRenameService {
 
     /**
      * 获取带有分隔符的文件名
+     *
+     * @param codeRenameConfig 按变编号重命名设置参数
+     * @param tag              按变编号重命名后缀
+     * @param fileRename       重命名后不带后缀的文件名
+     * @return 带后缀的重命名文件名
      */
     private static String getSubCodeRename(CodeRenameConfig codeRenameConfig, String tag, String fileRename) {
         //只有同名文件超过0个才需要分隔符
@@ -167,6 +187,10 @@ public class FileRenameService {
 
     /**
      * 按指定字符重命名
+     *
+     * @param stringRenameConfig 按指定字符重命名设置参数
+     * @param fileBean           文要处理的件信息
+     * @return 重命名后的文件名
      */
     private static String getStringRename(StringRenameConfig stringRenameConfig, FileBean fileBean) {
         String targetStr = stringRenameConfig.getTargetStr();
@@ -199,6 +223,10 @@ public class FileRenameService {
 
     /**
      * 根据指定字符位置重命名
+     *
+     * @param fileName           要处理的文件名
+     * @param stringRenameConfig 按指定字符重命名设置参数
+     * @return 重命名后的文件名
      */
     private static String getTargetIndexRename(String fileName, StringRenameConfig stringRenameConfig) {
         String renameValue = stringRenameConfig.getRenameValue();
@@ -229,6 +257,10 @@ public class FileRenameService {
 
     /**
      * 根据指定字符串重命名
+     *
+     * @param fileName           要处理的文件名
+     * @param stringRenameConfig 按指定字符重命名设置参数
+     * @return 重命名后的文件名
      */
     private static String getTargetStringRename(String fileName, StringRenameConfig stringRenameConfig) {
         String renameValue = stringRenameConfig.getRenameValue();
@@ -255,6 +287,10 @@ public class FileRenameService {
 
     /**
      * 处理两侧字符
+     *
+     * @param fileName           要处理的文件名
+     * @param stringRenameConfig 按指定字符重命名设置参数
+     * @return 重命名后的文件名
      */
     private static String bothSidesRename(String fileName, StringRenameConfig stringRenameConfig) {
         String renameValue = stringRenameConfig.getRenameValue();
@@ -284,6 +320,12 @@ public class FileRenameService {
 
     /**
      * 处理单侧字符
+     *
+     * @param fileName      要处理的单侧文件名
+     * @param behavior      重命名行为
+     * @param isLeft        左侧标识，true为左侧文件名，false为右侧文件名
+     * @param replaceString 用于替换文件名的字符串
+     * @return 重命名后的文件名
      */
     private static String getOneSideRename(String fileName, String behavior, boolean isLeft, String replaceString) {
         switch (behavior) {

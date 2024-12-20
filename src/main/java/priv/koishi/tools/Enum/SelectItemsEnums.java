@@ -6,6 +6,8 @@ import javafx.collections.ObservableList;
 import static priv.koishi.tools.Enum.SelectItemsEnum.*;
 
 /**
+ * 文件批量重命名功能分隔符选项集枚举
+ *
  * @author KOISHI
  * Date:2024-10-21
  * Time:下午1:10

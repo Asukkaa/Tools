@@ -426,6 +426,7 @@ public class UiUtils {
      * @param tabId                 页面id
      * @param fileNumber            展示列表信息分组数量及文件大小和匹配图片数量的文本栏
      * @param comparatorTableColumn 需要设置排序规则的列
+     * @throws Exception 未查询到符合条件的数据
      */
     public static void machGroup(FileConfig fileConfig, ObservableList<FileNumBean> fileNumList, List<File> inFileList, TableView<FileNumBean> tableView,
                                  String tabId, Label fileNumber, TableColumn<FileNumBean, String> comparatorTableColumn) throws Exception {
@@ -488,6 +489,7 @@ public class UiUtils {
      * @param configFile       要更新的配置文件
      * @param anchorPane       组件所在布局
      * @return 所选文件路径
+     * @throws IOException io异常
      */
     public static String updatePathLabel(String selectedFilePath, String filePath, String pathKey, Label pathLabel, String configFile, AnchorPane anchorPane) throws IOException {
         //只有跟上次选的路径不一样才更新

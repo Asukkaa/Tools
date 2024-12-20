@@ -7,6 +7,8 @@ import java.io.File;
 import java.util.List;
 
 /**
+ * 文件读取设置参数类
+ *
  * @author KOISHI
  * Date:2024-10-05
  * Time:下午1:39
