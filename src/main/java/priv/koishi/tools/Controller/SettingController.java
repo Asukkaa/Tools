@@ -398,13 +398,15 @@ public class SettingController {
         saveLastConfig(stage);
         Platform.exit();
         if (!isRunningFromJar()) {
-            String appName;
+            ProcessBuilder processBuilder;
             if (systemName.contains(win)) {
-                appName = "Tools.exe";
+                String appName = File.separator + "Tools.exe";
+                processBuilder = new ProcessBuilder(currentDir + appName);
             } else {
-                appName = "Tools";
+                String appName = File.separator + "Tools.app";
+                String appPath = currentDir.substring(0, currentDir.lastIndexOf(appName));
+                processBuilder = new ProcessBuilder("open", "-n", appPath + appName);
             }
-            ProcessBuilder processBuilder = new ProcessBuilder(currentDir + File.separator + appName);
             processBuilder.start();
         }
     }
