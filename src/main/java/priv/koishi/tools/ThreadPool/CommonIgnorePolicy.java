@@ -4,6 +4,8 @@ import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
+ * 线程池日志记录类
+ *
  * @author KOISHI
  * Date:2024-10-30
  * Time:下午8:19
