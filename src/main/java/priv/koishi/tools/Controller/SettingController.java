@@ -36,9 +36,9 @@ import static priv.koishi.tools.Utils.UiUtils.*;
 public class SettingController {
 
     /**
-     * app.bat设置的最大内存值
+     * 启动脚本设置的最大内存值
      */
-    static String batMemory;
+    static String scriptMemory;
 
     /**
      * app.bat最大内存设置参数
@@ -137,10 +137,10 @@ public class SettingController {
     private static void saveMemorySetting(Scene scene) throws IOException {
         TextField nextRunMemoryTextField = (TextField) scene.lookup("#nextRunMemory_Set");
         String nextRunMemoryValue = nextRunMemoryTextField.getText();
-        if (StringUtils.isNotBlank(nextRunMemoryValue) && !nextRunMemoryValue.equals(batMemory)) {
+        if (StringUtils.isNotBlank(nextRunMemoryValue) && !nextRunMemoryValue.equals(scriptMemory)) {
             Label thisPath = (Label) scene.lookup("#thisPath_Set");
             Path batFilePath = Paths.get(thisPath.getText() + File.separator + scriptName);
-            String originalLineContent = Xmx + batMemory;
+            String originalLineContent = Xmx + scriptMemory;
             String newLineContent = Xmx + nextRunMemoryValue;
             List<String> lines = Files.readAllLines(batFilePath);
             for (int i = 0; i < lines.size(); i++) {
@@ -226,20 +226,31 @@ public class SettingController {
         runningMemory_Set.setText(getUnitSize(maxMemory, false));
         OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
         long totalMemory = ((com.sun.management.OperatingSystemMXBean) osBean).getTotalMemorySize();
-        systemMemory_Set.setText(getUnitSize(totalMemory, false));
+        String systemUnitSizeMemory = getUnitSize(totalMemory, false);
+        String memoryUnit = systemUnitSizeMemory.substring(systemUnitSizeMemory.lastIndexOf(" ") + 1);
+        //获取操作系统内存整数部分作为下次启动时程序分配最大内存的限制
+        int systemMemoryValue = (int) Double.parseDouble(systemUnitSizeMemory.substring(0, systemUnitSizeMemory.lastIndexOf(" ")));
+        if (TB.equals(memoryUnit)) {
+            systemMemoryValue = systemMemoryValue * 1024;
+        } else if (!GB.equals(memoryUnit)) {
+            systemMemoryValue = 1;
+        }
+        systemMemory_Set.setText(systemUnitSizeMemory);
         setPathLabel(thisPath_Set, currentDir, false, anchorPane_Set);
         String scriptPath = currentDir + File.separator + scriptName;
         BufferedReader reader = new BufferedReader(new FileReader(scriptPath));
         String line;
         while ((line = reader.readLine()) != null) {
             if (line.contains(Xmx)) {
-                batMemory = line.substring(line.lastIndexOf(Xmx) + Xmx.length(), line.lastIndexOf("g"));
-                nextRunMemory_Set.setText(batMemory);
-                addToolTip(text_nowSetting + batMemory + text_memorySetting, nextRunMemory_Set);
+                scriptMemory = line.substring(line.lastIndexOf(Xmx) + Xmx.length(), line.lastIndexOf("g"));
+                nextRunMemory_Set.setText(scriptMemory);
+                addValueToolTip(nextRunMemory_Set, text_nowSetting + scriptMemory + text_memorySetting, text_nowValue);
                 break;
             }
         }
         reader.close();
+        //下次运行的最大内存输入监听
+        integerRangeTextField(nextRunMemory_Set, 1, systemMemoryValue, text_nowSetting + scriptMemory + text_memorySetting + nextRunMemory_Set.getText());
     }
 
     /**
@@ -254,8 +265,6 @@ public class SettingController {
      * 给输入框添加内容变化监听
      */
     private void textFieldChangeListener() {
-        //app.bat 分配的最大内存输入监听
-        integerRangeTextField(nextRunMemory_Set, 1, null, text_nowSetting + batMemory + text_memorySetting + text_nowValue + nextRunMemory_Set.getText());
         //log 文件保留数量输入监听
         integerRangeTextField(logsNum_Set, 0, null, tip_logsNum);
     }
@@ -398,16 +407,19 @@ public class SettingController {
         saveLastConfig(stage);
         Platform.exit();
         if (!isRunningFromJar()) {
-            ProcessBuilder processBuilder;
+            ProcessBuilder processBuilder = null;
             if (systemName.contains(win)) {
                 String appName = File.separator + "Tools.exe";
                 processBuilder = new ProcessBuilder(currentDir + appName);
-            } else {
+            }
+            if (systemName.contains(macos)) {
                 String appName = File.separator + "Tools.app";
                 String appPath = currentDir.substring(0, currentDir.lastIndexOf(appName));
                 processBuilder = new ProcessBuilder("open", "-n", appPath + appName);
             }
-            processBuilder.start();
+            if (processBuilder != null) {
+                processBuilder.start();
+            }
         }
     }
 
