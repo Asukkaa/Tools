@@ -39,7 +39,7 @@ public class CommonTexts {
 
     public static final String tip_recursion = "勾选后将会查询文件夹中的文件夹里的文件";
 
-    public static final String tip_excelName = "如果导出地址和名称与模板一样则会覆盖模板excel文件";
+    public static final String tip_excelName = "如果导出地址和名称与模板一样则会覆盖模板excel文件，文件名不能包含 <>:\"/\\|?*";
 
     public static final String tip_sheet = "须填与excel模板相同的表名才能正常读取模板，若填表名不存在或不需要读取模板则会创建一个所填表";
 
@@ -239,9 +239,9 @@ public class CommonTexts {
 
     public static final String text_nowSetting = "当前配置值为 ";
 
-    public static final String text_memorySetting = " GB ，关闭程序即可保存修改";
+    public static final String text_memorySetting = " GB ，关闭程序即可保存修改，重启动程序即可生效";
 
-    public static final String text_nowValue = " 启动程序即可生效\n当前所填值为 ";
+    public static final String text_nowValue = "当前所填值为 ";
 
     public static final String xlsx = ".xlsx";
 

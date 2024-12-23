@@ -1066,7 +1066,7 @@ public class FileRenameController extends CommonProperties {
             case text_specifyString: {
                 typeLabel_Re.setText(text_matchString);
                 renameValue_Re.setText("");
-                addValueToolTip(renameValue_Re, tip_renameValue);
+                addValueToolTip(renameValue_Re, tip_renameValue, text_nowValue);
                 renameBehavior_Re.getItems().remove(text_bothSides);
                 renameBehavior_Re.getItems().add(text_bothSides);
                 //根据重命名方法选项展示组件
@@ -1076,7 +1076,7 @@ public class FileRenameController extends CommonProperties {
             case text_specifyIndex: {
                 typeLabel_Re.setText(text_matchIndex);
                 renameValue_Re.setText("");
-                addValueToolTip(renameValue_Re, tip_renameValue);
+                addValueToolTip(renameValue_Re, tip_renameValue, text_nowValue);
                 renameBehavior_Re.getItems().remove(text_bothSides);
                 renameBehavior_Re.setValue(renameBehavior_Re.getItems().getFirst());
                 //根据重命名方法选项展示组件

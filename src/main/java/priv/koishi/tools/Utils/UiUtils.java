@@ -91,12 +91,13 @@ public class UiUtils {
      *
      * @param textField 要添加提示的文本输入框
      * @param text      要展示的提示文案
+     * @param valueText 当前所填值提示文案
      */
-    public static void addValueToolTip(TextField textField, String text) {
+    public static void addValueToolTip(TextField textField, String text, String valueText) {
         String value = textField.getText();
         if (StringUtils.isNotEmpty(text)) {
             if (StringUtils.isNotEmpty(value)) {
-                addToolTip(text + "\n" + value, textField);
+                addToolTip(text + "\n" + valueText + value, textField);
             } else {
                 addToolTip(text, textField);
             }
@@ -453,7 +454,7 @@ public class UiUtils {
             if (!isInIntegerRange(newValue, min, max) && StringUtils.isNotBlank(newValue)) {
                 textField.setText(oldValue);
             }
-            addValueToolTip(textField, tip);
+            addValueToolTip(textField, tip, text_nowValue);
         });
     }
 
@@ -464,7 +465,7 @@ public class UiUtils {
      * @param tip       鼠标悬停提示文案
      */
     public static void textFieldValueListener(TextField textField, String tip) {
-        textField.textProperty().addListener((observable, oldValue, newValue) -> addValueToolTip(textField, tip));
+        textField.textProperty().addListener((observable, oldValue, newValue) -> addValueToolTip(textField, tip, text_nowValue));
     }
 
     /**

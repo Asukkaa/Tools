@@ -6,6 +6,7 @@ import javafx.scene.control.TextField;
 
 import java.util.Objects;
 
+import static priv.koishi.tools.Text.CommonTexts.text_nowValue;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
 /**
@@ -113,7 +114,7 @@ public class EditingCell<T> extends TableCell<T, String> {
                 commitEdit(textField.getText());
             }
         });
-        addValueToolTip(textField, "双击单元格可编辑修改后的文件名称");
+        addValueToolTip(textField, "双击单元格可编辑修改后的文件名称", text_nowValue);
     }
 
     /**
