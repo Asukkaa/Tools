@@ -24,3 +24,8 @@ win 系统下程序最终打包为 exe 文件，直接将 app.bat 转换为 exe 
 bat 转 exe 工具使用的是 Bat To Exe Converter ，转换过程中 win 的安全中心报毒为正常现象信任即可。
 
 macOS 的 app 文件本质为文件夹，可直接对启动脚本进行编辑，所以无需使用启动脚本的启动脚本这么绕的启动方式即可打包，只需替换项目中的 Tools.app 文件夹下的 lib 文件夹即可更新程序，其中 Info.plist 为 app 的基础信息，可进行版本号和文件名等基础信息的配置。
+
+# 项目地址
+GitHub：https://github.com/Asukkaa/Tools
+
+Gitee：https://gitee.com/wowxqt/tools
