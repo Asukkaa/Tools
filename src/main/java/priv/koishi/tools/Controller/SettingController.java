@@ -137,21 +137,40 @@ public class SettingController {
     private static void saveMemorySetting(Scene scene) throws IOException {
         TextField nextRunMemoryTextField = (TextField) scene.lookup("#nextRunMemory_Set");
         String nextRunMemoryValue = nextRunMemoryTextField.getText();
-        if (StringUtils.isNotBlank(nextRunMemoryValue) && !nextRunMemoryValue.equals(scriptMemory)) {
-            Label thisPath = (Label) scene.lookup("#thisPath_Set");
-            Path batFilePath = Paths.get(thisPath.getText() + File.separator + scriptName);
-            String originalLineContent = Xmx + scriptMemory;
-            String newLineContent = Xmx + nextRunMemoryValue;
-            List<String> lines = Files.readAllLines(batFilePath);
-            for (int i = 0; i < lines.size(); i++) {
-                String line = lines.get(i);
-                if (line.contains(originalLineContent)) {
-                    lines.set(i, line.replace(originalLineContent, newLineContent));
-                    break;
-                }
+        Label thisPath = (Label) scene.lookup("#thisPath_Set");
+        Path scriptFilePath = Paths.get(thisPath.getText() + File.separator + scriptName);
+        List<String> lines = Files.readAllLines(scriptFilePath);
+        String newLineContent = Xmx + nextRunMemoryValue;
+        if (StringUtils.isNotBlank(nextRunMemoryValue)) {
+            if (!nextRunMemoryValue.equals(scriptMemory)) {
+                String originalLineContent = Xmx + scriptMemory;
+                writeMemorySetting(scriptFilePath, lines, newLineContent, originalLineContent);
             }
-            Files.write(batFilePath, lines);
+            if (scriptMemory == null) {
+                newLineContent = text_VMOptions + newLineContent + g;
+                writeMemorySetting(scriptFilePath, lines, newLineContent, text_VMOptions);
+            }
         }
+    }
+
+    /**
+     * 写入最大运行内存设置
+     *
+     * @param scriptFilePath      启动脚本路径
+     * @param lines               启动脚本内容
+     * @param newLineContent      修改后的值
+     * @param originalLineContent 修改前的值
+     * @throws IOException io异常
+     */
+    private static void writeMemorySetting(Path scriptFilePath, List<String> lines, String newLineContent, String originalLineContent) throws IOException {
+        for (int i = 0; i < lines.size(); i++) {
+            String line = lines.get(i);
+            if (line.contains(originalLineContent)) {
+                lines.set(i, line.replace(originalLineContent, newLineContent));
+                break;
+            }
+        }
+        Files.write(scriptFilePath, lines);
     }
 
     /**
@@ -238,19 +257,22 @@ public class SettingController {
         systemMemory_Set.setText(systemUnitSizeMemory);
         setPathLabel(thisPath_Set, currentDir, false, anchorPane_Set);
         String scriptPath = currentDir + File.separator + scriptName;
+        addValueToolTip(nextRunMemory_Set, tip_defaultNextRunMemory, text_nowValue);
+        //下次运行的最大内存输入监听
+        integerRangeTextField(nextRunMemory_Set, 1, systemMemoryValue, tip_defaultNextRunMemory);
         BufferedReader reader = new BufferedReader(new FileReader(scriptPath));
         String line;
         while ((line = reader.readLine()) != null) {
             if (line.contains(Xmx)) {
-                scriptMemory = line.substring(line.lastIndexOf(Xmx) + Xmx.length(), line.lastIndexOf("g"));
+                scriptMemory = line.substring(line.lastIndexOf(Xmx) + Xmx.length(), line.lastIndexOf(g));
                 nextRunMemory_Set.setText(scriptMemory);
                 addValueToolTip(nextRunMemory_Set, text_nowSetting + scriptMemory + text_memorySetting, text_nowValue);
+                //下次运行的最大内存输入监听
+                integerRangeTextField(nextRunMemory_Set, 1, systemMemoryValue, text_nowSetting + scriptMemory + text_memorySetting);
                 break;
             }
         }
         reader.close();
-        //下次运行的最大内存输入监听
-        integerRangeTextField(nextRunMemory_Set, 1, systemMemoryValue, text_nowSetting + scriptMemory + text_memorySetting + nextRunMemory_Set.getText());
     }
 
     /**
