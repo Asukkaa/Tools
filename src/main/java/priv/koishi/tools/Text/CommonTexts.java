@@ -39,7 +39,7 @@ public class CommonTexts {
 
     public static final String tip_recursion = "勾选后将会查询文件夹中的文件夹里的文件";
 
-    public static final String tip_excelName = "如果导出地址和名称与模板一样则会覆盖模板excel文件，文件名不能包含 <>:\"/\\|?*";
+    public static final String tip_excelName = "如果导出地址和名称与模板一样则会覆盖模板excel文件，文件名不能包含 <>:\"/\\|?*\n设置为空或者不合法将会以默认名称命名，默认名称为：";
 
     public static final String tip_sheet = "须填与excel模板相同的表名才能正常读取模板，若填表名不存在或不需要读取模板则会创建一个所填表";
 
@@ -116,6 +116,8 @@ public class CommonTexts {
     public static final String tip_targetStr = "点击可选择匹配字符规则";
 
     public static final String tip_renameBehavior = "点击可选择重命名方法";
+
+    public static final String tip_defaultNextRunMemory = "当前配置值为空，程序最大内存设置为操作系统最大内存1/4，填写其他值关闭程序即可保存修改，重启动程序即可生效";
 
     public static final String tip_option = """
             插入：在匹配的字符位置插入所填写的字符串
@@ -243,6 +245,8 @@ public class CommonTexts {
 
     public static final String text_nowValue = "当前所填值为 ";
 
+    public static final String text_VMOptions = "JLINK_VM_OPTIONS=";
+
     public static final String xlsx = ".xlsx";
 
     public static final String xls = ".xls";
@@ -268,6 +272,8 @@ public class CommonTexts {
     public static final String GB = "GB";
 
     public static final String TB = "TB";
+
+    public static final String g = "g";
 
     public static final String activation = "1";
 

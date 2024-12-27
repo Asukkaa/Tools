@@ -470,7 +470,7 @@ public class ImgToExcelController extends CommonProperties {
         addToolTip(tip_openFile, openFile_Img);
         addToolTip(tip_recursion, recursion_Img);
         addToolTip(tip_sheetName, sheetName_Img);
-        addToolTip(tip_excelName, excelName_Img);
+        addToolTip(tip_excelName + defaultOutFileName, excelName_Img);
         addToolTip(tip_maxImgNum, maxImgNum_Img);
         addToolTip(tip_startReadRow, startRow_Img);
         addToolTip(tip_fileButton, fileButton_Img);
@@ -532,7 +532,7 @@ public class ImgToExcelController extends CommonProperties {
         //鼠标悬留提示输入的导出excel表名称
         textFieldValueListener(sheetName_Img, tip_sheetName);
         //鼠标悬留提示输入的导出excel文件名称
-        textFieldValueListener(excelName_Img, tip_excelName);
+        textFieldValueListener(excelName_Img, tip_excelName + defaultOutFileName);
     }
 
     /**

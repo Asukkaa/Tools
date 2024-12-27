@@ -356,7 +356,7 @@ public class FileNameToExcelController extends CommonProperties {
         addToolTip(tip_startRow, startRow_Name);
         addToolTip(tip_Name.getText(), tip_Name);
         addToolTip(tip_recursion, recursion_Name);
-        addToolTip(tip_excelName, excelName_Name);
+        addToolTip(tip_excelName + defaultOutFileName, excelName_Name);
         addToolTip(tip_fileButton, fileButton_Name);
         addToolTip(tip_learButton, clearButton_Name);
         addToolTip(tip_exportTitle, exportTitle_Name);
@@ -399,7 +399,7 @@ public class FileNameToExcelController extends CommonProperties {
         //鼠标悬留提示输入的需要识别的文件后缀名
         textFieldValueListener(sheetName_Name, tip_sheet);
         //鼠标悬留提示输入的需要识别的文件后缀名
-        textFieldValueListener(excelName_Name, tip_excelName);
+        textFieldValueListener(excelName_Name, tip_excelName + defaultOutFileName);
         //鼠标悬留提示输入的需要识别的文件后缀名
         textFieldValueListener(filterFileType_Name, tip_filterFileType);
     }

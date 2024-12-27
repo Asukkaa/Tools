@@ -13,6 +13,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import javafx.stage.Popup;
 import javafx.stage.Stage;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -416,7 +417,7 @@ public class FileNumToExcelController extends CommonProperties {
         addToolTip(tip_openFile, openFile_Num);
         addToolTip(tip_recursion, recursion_Num);
         addToolTip(tip_sheetName, sheetName_Num);
-        addToolTip(tip_excelName, excelName_Num);
+        addToolTip(tip_excelName + defaultOutFileName, excelName_Num);
         addToolTip(tip_startReadRow, startRow_Num);
         addToolTip(tip_fileButton, fileButton_Num);
         addToolTip(tip_learButton, clearButton_Num);
@@ -457,7 +458,7 @@ public class FileNumToExcelController extends CommonProperties {
         //鼠标悬留提示输入的导出excel表名称
         textFieldValueListener(sheetName_Num, tip_sheetName);
         //鼠标悬留提示输入的导出excel文件名称
-        textFieldValueListener(excelName_Num, tip_excelName);
+        textFieldValueListener(excelName_Num, tip_excelName + defaultOutFileName);
         //鼠标悬留提示输入的需要识别的文件后缀名
         textFieldValueListener(filterFileType_Num, tip_filterFileType);
     }
