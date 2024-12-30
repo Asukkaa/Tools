@@ -119,6 +119,8 @@ public class CommonTexts {
 
     public static final String tip_defaultNextRunMemory = "当前配置值为空，程序最大内存设置为操作系统最大内存1/4，填写其他值关闭程序即可保存修改，重启动程序即可生效";
 
+    public static final String tip_updateSameCode = "选中列表中的数据后点击这个按钮会将所有选中数据的文件编号位改为第一行数据的文件编号，\n文件名尾缀将延续所选的第一行数据继续递增";
+
     public static final String tip_option = """
             插入：在匹配的字符位置插入所填写的字符串
             替换：将匹配的字符串替换为所填写的字符串
@@ -246,6 +248,8 @@ public class CommonTexts {
     public static final String text_nowValue = "当前所填值为 ";
 
     public static final String text_VMOptions = "JLINK_VM_OPTIONS=";
+
+    public static final String text_nullSelect = "未选中任何数据";
 
     public static final String xlsx = ".xlsx";
 

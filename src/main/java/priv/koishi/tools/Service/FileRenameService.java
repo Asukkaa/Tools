@@ -101,7 +101,8 @@ public class FileRenameService {
     public static void buildRename(CodeRenameConfig codeRenameConfig, FileBean fileBean, StringRenameConfig stringRenameConfig, int startName, int tag) {
         String fileRename = fileBean.getName();
         if (codeRenameConfig != null) {
-            fileRename = getCodeRename(codeRenameConfig, startName, tag);
+            fileRename = getCodeRename(codeRenameConfig, fileBean, startName, tag);
+            fileBean.setCodeRenameConfig(codeRenameConfig);
         }
         if (stringRenameConfig != null) {
             fileRename = getStringRename(stringRenameConfig, fileBean);
@@ -113,34 +114,31 @@ public class FileRenameService {
      * 根据按编号规则重命名
      *
      * @param codeRenameConfig 按变编号重命名设置参数
+     * @param fileBean         要重命名的文件信息
      * @param startName        按变编号重命名起始编号
      * @param tag              按变编号重命名后缀
      * @return 重命名后不带后缀的文件名
      */
-    private static String getCodeRename(CodeRenameConfig codeRenameConfig, int startName, int tag) {
+    public static String getCodeRename(CodeRenameConfig codeRenameConfig, FileBean fileBean, int startName, int tag) {
         String differenceCode = codeRenameConfig.getDifferenceCode();
-        int startSize = codeRenameConfig.getStartSize();
-        String paddedNum = String.valueOf(startName);
-        //使用String.format()函数进行补齐操作
-        if (startSize > 0) {
-            paddedNum = String.format("%0" + startSize + "d", startName);
-        }
-        String fileRename = paddedNum;
+        String fileRename = String.valueOf(startName);
+        fileBean.setTagRenameCode(tag);
+        fileBean.setCodeRename(fileRename);
         switch (differenceCode) {
             case text_arabicNumerals: {
-                fileRename = getSubCodeRename(codeRenameConfig, String.valueOf(tag), fileRename);
+                fileRename = getSubCodeRename(codeRenameConfig, fileBean, String.valueOf(tag));
                 break;
             }
             case text_chineseNumerals: {
-                fileRename = getSubCodeRename(codeRenameConfig, intToChineseNum(tag), fileRename);
+                fileRename = getSubCodeRename(codeRenameConfig, fileBean, intToChineseNum(tag));
                 break;
             }
             case text_abc: {
-                fileRename = getSubCodeRename(codeRenameConfig, convertToAlpha(tag, true), fileRename);
+                fileRename = getSubCodeRename(codeRenameConfig, fileBean, convertToAlpha(tag, true));
                 break;
             }
             case text_ABC: {
-                fileRename = getSubCodeRename(codeRenameConfig, convertToAlpha(tag, false), fileRename);
+                fileRename = getSubCodeRename(codeRenameConfig, fileBean, convertToAlpha(tag, false));
                 break;
             }
         }
@@ -151,11 +149,18 @@ public class FileRenameService {
      * 获取带有分隔符的文件名
      *
      * @param codeRenameConfig 按变编号重命名设置参数
+     * @param fileBean         要重命名的文件信息
      * @param tag              按变编号重命名后缀
-     * @param fileRename       重命名后不带后缀的文件名
      * @return 带后缀的重命名文件名
      */
-    private static String getSubCodeRename(CodeRenameConfig codeRenameConfig, String tag, String fileRename) {
+    private static String getSubCodeRename(CodeRenameConfig codeRenameConfig, FileBean fileBean, String tag) {
+        int startSize = codeRenameConfig.getStartSize();
+        String fileRename = fileBean.getCodeRename();
+        //使用String.format()函数进行补齐操作
+        if (startSize > 0) {
+            fileRename = String.format("%0" + startSize + "d", Integer.parseInt(fileRename));
+        }
+        fileBean.setTagRename("");
         //只有同名文件超过0个才需要分隔符
         if (codeRenameConfig.getNameNum() > 0) {
             String subCode = codeRenameConfig.getSubCode();
@@ -163,20 +168,29 @@ public class FileRenameService {
             if (codeRenameConfig.isAddSpace()) {
                 space = " ";
             }
+            String tagRename;
             switch (subCode.substring(0, 4)) {
                 case text_enBracket: {
-                    fileRename += space + "(" + tag + ")";
+                    tagRename = space + "(" + tag + ")";
+                    fileBean.setTagRename(tagRename);
+                    fileRename += tagRename;
                     break;
                 }
                 case text_cnBracket: {
+                    tagRename = space + "（" + tag + "）";
+                    fileBean.setTagRename(tagRename);
                     fileRename += space + "（" + tag + "）";
                     break;
                 }
                 case text_enHorizontal: {
+                    tagRename = space + "-" + tag;
+                    fileBean.setTagRename(tagRename);
                     fileRename += space + "-" + tag;
                     break;
                 }
                 case text_cnHorizontal: {
+                    tagRename = space + "—" + tag;
+                    fileBean.setTagRename(tagRename);
                     fileRename += space + "—" + tag;
                     break;
                 }

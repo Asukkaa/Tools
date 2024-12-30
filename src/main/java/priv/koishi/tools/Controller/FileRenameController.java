@@ -34,8 +34,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
 import static priv.koishi.tools.Enum.SelectItemsEnums.*;
-import static priv.koishi.tools.Service.FileRenameService.buildRename;
-import static priv.koishi.tools.Service.FileRenameService.fileRename;
+import static priv.koishi.tools.Service.FileRenameService.*;
 import static priv.koishi.tools.Service.ReadDataService.readExcel;
 import static priv.koishi.tools.Service.ReadDataService.readFile;
 import static priv.koishi.tools.Text.CommonTexts.*;
@@ -128,7 +127,7 @@ public class FileRenameController extends CommonProperties {
     private HBox renameTypeHBox_Re, behaviorHBox_Re, targetStrHBox_Re, warnHBox_Re, tipHBox_Re, fileNumberHBox_Re;
 
     @FXML
-    private Button fileButton_Re, clearButton_Re, renameButton_Re, reselectButton_Re, updateRenameButton_Re, excelPathButton_Re;
+    private Button fileButton_Re, clearButton_Re, renameButton_Re, reselectButton_Re, updateRenameButton_Re, excelPathButton_Re, updateSameCode_Re;
 
     @FXML
     private ChoiceBox<String> hideFileType_Re, directoryNameType_Re, renameType_Re, subCode_Re, differenceCode_Re, targetStr_Re, leftBehavior_Re, rightBehavior_Re, renameBehavior_Re;
@@ -729,6 +728,7 @@ public class FileRenameController extends CommonProperties {
         addToolTip(tip_filterFileType, filterFileType_Re);
         addToolTip(tip_reselectButton, reselectButton_Re);
         addToolTip(tip_renameBehavior, renameBehavior_Re);
+        addToolTip(tip_updateSameCode, updateSameCode_Re);
         addToolTip(tip_excelPathButton, excelPathButton_Re);
         addToolTip(tip_directoryNameType, directoryNameType_Re);
         addToolTip(tip_updateRenameButton, updateRenameButton_Re);
@@ -1042,16 +1042,19 @@ public class FileRenameController extends CommonProperties {
         switch (renameType_Re.getValue()) {
             case text_codeRename: {
                 vbox_Re.getChildren().add(index, codeRenameVBox_Re);
+                updateSameCode_Re.setVisible(true);
                 break;
             }
             case text_strRename: {
                 vbox_Re.getChildren().add(index, strRenameVBox_Re);
+                updateSameCode_Re.setVisible(false);
                 //根据匹配字符规则选项展示组件
                 targetStrAction();
                 break;
             }
             case text_excelRename: {
                 vbox_Re.getChildren().add(index, excelRenameVBox_Re);
+                updateSameCode_Re.setVisible(false);
                 break;
             }
         }
@@ -1186,6 +1189,66 @@ public class FileRenameController extends CommonProperties {
             tableView_Re.setEditable(true);
             rename_Re.setCellFactory((tableColumn) -> new EditingCell<>(FileBean::setRename));
         }
+        updateLabel(log_Re, "");
+    }
+
+    /**
+     * 设置所选数据为同一编号
+     *
+     * @throws Exception 未选中任何数据
+     */
+    @FXML
+    private void updateSameCode() throws Exception {
+        List<FileBean> selectedFileBeans = tableView_Re.getSelectionModel().getSelectedItems();
+        if (CollectionUtils.isEmpty(selectedFileBeans)) {
+            throw new Exception(text_nullSelect);
+        }
+        CodeRenameConfig codeRenameConfig = new CodeRenameConfig();
+        codeRenameConfig.setStartSize(setDefaultIntValue(startSize_Re, 0, 0, null))
+                .setTag(setDefaultIntValue(tag_Re, 1, 0, null))
+                .setDifferenceCode(differenceCode_Re.getValue())
+                .setAddSpace(addSpace_Re.isSelected())
+                .setNameNum(selectedFileBeans.size())
+                .setSubCode(subCode_Re.getValue());
+        ObservableList<FileBean> tableViewItems = tableView_Re.getItems();
+        FileBean firstSelectFileBean = selectedFileBeans.getFirst();
+        int startSelectIndex = tableViewItems.indexOf(firstSelectFileBean);
+        FileBean lastSelectFileBean = selectedFileBeans.getLast();
+        int endSelectIndex = tableViewItems.indexOf(lastSelectFileBean);
+        String code = firstSelectFileBean.getCodeRename();
+        int startCode = Integer.parseInt(code);
+        int startTag = codeRenameConfig.getTag();
+        if (StringUtils.isNotBlank(firstSelectFileBean.getTagRename())) {
+            startTag = firstSelectFileBean.getTagRenameCode();
+        }
+        for (int i = startSelectIndex; i <= endSelectIndex; i++) {
+            FileBean fileBean = tableViewItems.get(i);
+            fileBean.setRename(getCodeRename(codeRenameConfig, fileBean, startCode, startTag));
+            startTag++;
+        }
+        int unSelectStartIndex = endSelectIndex + 1;
+        FileBean firstUnSelectFileBean = tableViewItems.get(unSelectStartIndex);
+        CodeRenameConfig unSelectCodeRenameConfig = firstUnSelectFileBean.getCodeRenameConfig();
+        int nameNum = 1;
+        int startName = startCode + 1;
+        int unSelectStartTag = unSelectCodeRenameConfig.getTag();
+        int maxNameNum = unSelectCodeRenameConfig.getNameNum();
+        for (int i = unSelectStartIndex; i < tableViewItems.size(); i++) {
+            FileBean fileBean = tableViewItems.get(i);
+            fileBean.setRename(getCodeRename(unSelectCodeRenameConfig, fileBean, startName, unSelectStartTag));
+            if (nameNum < maxNameNum) {
+                unSelectStartTag++;
+                nameNum++;
+            } else {
+                startName++;
+                unSelectStartTag = unSelectCodeRenameConfig.getTag();
+                nameNum = 1;
+            }
+        }
+        autoBuildTableViewData(tableView_Re, tableViewItems, tabId);
+        //表格设置为可编辑
+        tableView_Re.setEditable(true);
+        rename_Re.setCellFactory((tableColumn) -> new EditingCell<>(FileBean::setRename));
         updateLabel(log_Re, "");
     }
 

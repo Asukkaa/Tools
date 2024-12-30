@@ -4,6 +4,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import lombok.Getter;
 import lombok.Setter;
+import priv.koishi.tools.Configuration.CodeRenameConfig;
 
 import java.io.File;
 
@@ -67,6 +68,31 @@ public class FileBean {
     @Getter
     @Setter
     File tempFile;
+
+    /**
+     * 根据按编号规则重命名文件重命名前缀编号
+     */
+    @Getter
+    @Setter
+    String codeRename;
+
+    /**
+     * 根据按编号规则重命名文件重命名后缀编号
+     */
+    @Getter
+    @Setter
+    String tagRename;
+
+    /**
+     * 根据按编号规则重命名文件重命名后缀编号数字
+     */
+    @Getter
+    @Setter
+    int tagRenameCode;
+
+    @Getter
+    @Setter
+    CodeRenameConfig codeRenameConfig;
 
     public FileBean() {
         this.id = new SimpleIntegerProperty();
