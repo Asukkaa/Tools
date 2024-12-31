@@ -431,13 +431,14 @@ public class SettingController {
         if (!isRunningFromJar()) {
             ProcessBuilder processBuilder = null;
             if (systemName.contains(win)) {
-                String appName = File.separator + "Tools.exe";
-                processBuilder = new ProcessBuilder(currentDir + appName);
+                String path = currentDir.substring(0, currentDir.lastIndexOf(Tools) + Tools.length());
+                String appPath = path + File.separator + "Tools.exe";
+                processBuilder = new ProcessBuilder(appPath);
             }
             if (systemName.contains(macos)) {
                 String appName = File.separator + "Tools.app";
-                String appPath = currentDir.substring(0, currentDir.lastIndexOf(appName));
-                processBuilder = new ProcessBuilder("open", "-n", appPath + appName);
+                String appPath = currentDir.substring(0, currentDir.lastIndexOf(appName)) + appName;
+                processBuilder = new ProcessBuilder("open", "-n", appPath);
             }
             if (processBuilder != null) {
                 processBuilder.start();

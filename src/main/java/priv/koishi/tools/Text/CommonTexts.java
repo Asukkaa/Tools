@@ -2,6 +2,8 @@ package priv.koishi.tools.Text;
 
 import javafx.util.Duration;
 
+import java.io.File;
+
 /**
  * 通用常量类
  *
@@ -449,6 +451,8 @@ public class CommonTexts {
      * 用户目录
      */
     public static final String userHome = System.getProperty("user.home");
+
+    public static final String Tools = "Tools" + File.separator;
 
     /**
      * ToolTip统一显示时长
