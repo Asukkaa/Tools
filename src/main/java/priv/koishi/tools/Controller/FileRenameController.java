@@ -1203,6 +1203,7 @@ public class FileRenameController extends CommonProperties {
         if (CollectionUtils.isEmpty(selectedFileBeans)) {
             throw new Exception(text_nullSelect);
         }
+        //选中的数据按照最新设置进行重命名
         CodeRenameConfig codeRenameConfig = new CodeRenameConfig();
         codeRenameConfig.setStartSize(setDefaultIntValue(startSize_Re, 0, 0, null))
                 .setTag(setDefaultIntValue(tag_Re, 1, 0, null))
@@ -1226,6 +1227,7 @@ public class FileRenameController extends CommonProperties {
             fileBean.setRename(getCodeRename(codeRenameConfig, fileBean, startCode, startTag));
             startTag++;
         }
+        //未选中的数据按照之前设置更新编号
         int unSelectStartIndex = endSelectIndex + 1;
         FileBean firstUnSelectFileBean = tableViewItems.get(unSelectStartIndex);
         CodeRenameConfig unSelectCodeRenameConfig = firstUnSelectFileBean.getCodeRenameConfig();

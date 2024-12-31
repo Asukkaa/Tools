@@ -83,6 +83,7 @@ public class UiUtils {
         tooltip.setShowDuration(showDuration);
         tooltip.setShowDelay(Duration.ZERO);
         tooltip.setAnchorLocation(PopupWindow.AnchorLocation.WINDOW_BOTTOM_LEFT);
+        tooltip.getStyleClass().add("tooltip-font-size");
         return tooltip;
     }
 
