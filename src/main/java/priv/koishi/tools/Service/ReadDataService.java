@@ -195,8 +195,7 @@ public class ReadDataService {
                         codeRenameConfig = (CodeRenameConfig) configuration;
                         startName = codeRenameConfig.getStartName();
                         tag = codeRenameConfig.getTag();
-                    }
-                    if (configuration instanceof StringRenameConfig) {
+                    } else if (configuration instanceof StringRenameConfig) {
                         stringRenameConfig = (StringRenameConfig) configuration;
                     }
                 }

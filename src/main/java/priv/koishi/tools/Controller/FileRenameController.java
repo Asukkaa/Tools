@@ -284,8 +284,7 @@ public class FileRenameController extends CommonProperties {
             if (text_replace.equals(renameBehaviorValue)) {
                 TextField renameStr = (TextField) scene.lookup("#renameStr_Re");
                 prop.put(key_lastRenameStr, renameStr.getText());
-            }
-            if (text_bothSides.equals(renameBehaviorValue)) {
+            } else if (text_bothSides.equals(renameBehaviorValue)) {
                 TextField left = (TextField) scene.lookup("#left_Re");
                 prop.put(key_lastLeft, left.getText());
                 ChoiceBox<?> leftBehavior = (ChoiceBox<?>) scene.lookup("#leftBehavior_Re");
@@ -502,8 +501,7 @@ public class FileRenameController extends CommonProperties {
                     .setRenameBehavior(renameBehavior);
             if (text_replace.equals(renameBehavior)) {
                 stringRenameConfig.setRenameStr(renameStr_Re.getText());
-            }
-            if (text_bothSides.equals(renameBehavior)) {
+            } else if (text_bothSides.equals(renameBehavior)) {
                 String leftBehavior = leftBehavior_Re.getValue();
                 String rightBehavior = rightBehavior_Re.getValue();
                 stringRenameConfig.setRight(setDefaultIntValue(right_Re, 0, 0, null))
@@ -611,8 +609,7 @@ public class FileRenameController extends CommonProperties {
         if (text_specifyString.equals(lastTargetStr)) {
             //指定字符串设置上次配置值
             setLastConfigBySpecifyString(prop);
-        }
-        if (text_specifyIndex.equals(lastTargetStr)) {
+        } else if (text_specifyIndex.equals(lastTargetStr)) {
             //指定字符位置设置上次配置值
             setLastConfigBySpecifyIndex(prop);
         }
@@ -629,8 +626,7 @@ public class FileRenameController extends CommonProperties {
         String lastRenameBehavior = prop.getProperty(key_lastRenameBehavior);
         if (text_replace.equals(lastRenameBehavior)) {
             setControlLastConfig(renameStr_Re, prop, key_lastRenameStr, false, null);
-        }
-        if (text_bothSides.equals(lastRenameBehavior)) {
+        } else if (text_bothSides.equals(lastRenameBehavior)) {
             //处理左侧字符设置上次配置值
             setLastConfigByOneSide(prop, left_Re, key_lastLeft, leftBehavior_Re, key_lastLeftBehavior, leftValue_Re, key_lastLeftValue);
             //处理右侧字符设置上次配置值
@@ -1165,8 +1161,7 @@ public class FileRenameController extends CommonProperties {
                     codeRenameConfig = (CodeRenameConfig) configuration;
                     startName = codeRenameConfig.getStartName();
                     tag = codeRenameConfig.getTag();
-                }
-                if (configuration instanceof StringRenameConfig) {
+                } else if (configuration instanceof StringRenameConfig) {
                     stringRenameConfig = (StringRenameConfig) configuration;
                 }
             }

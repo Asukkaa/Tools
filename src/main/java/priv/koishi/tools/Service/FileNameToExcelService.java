@@ -55,8 +55,7 @@ public class FileNameToExcelService {
         if (xlsx.equals(excelType)) {
             workbook = new XSSFWorkbook();
             workbook = new SXSSFWorkbook((XSSFWorkbook) workbook);
-        }
-        if (xls.equals(excelType)) {
+        } else if (xls.equals(excelType)) {
             workbook = new HSSFWorkbook();
         }
         Sheet sheet = null;
@@ -92,8 +91,7 @@ public class FileNameToExcelService {
         } else {
             if (xlsx.equals(excelType)) {
                 sheet = ((SXSSFWorkbook) workbook).getXSSFWorkbook().createSheet(sheetName);
-            }
-            if (xls.equals(excelType)) {
+            } else if (xls.equals(excelType)) {
                 sheet = workbook.createSheet(sheetName);
             }
         }

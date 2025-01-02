@@ -90,6 +90,9 @@ public class FileBean {
     @Setter
     int tagRenameCode;
 
+    /**
+     * 根据按编号规则重命名文件重命名设置
+     */
     @Getter
     @Setter
     CodeRenameConfig codeRenameConfig;

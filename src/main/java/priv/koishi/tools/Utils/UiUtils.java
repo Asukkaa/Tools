@@ -131,8 +131,7 @@ public class UiUtils {
             // 设置初始目录
             if (file.isDirectory()) {
                 fileChooser.setInitialDirectory(file);
-            }
-            if (file.isFile()) {
+            } else if (file.isFile()) {
                 file = new File(file.getParent());
                 fileChooser.setInitialDirectory(file);
             }
@@ -250,9 +249,12 @@ public class UiUtils {
     public static void showExceptionAlert(Throwable ex) {
         logger.error(ex, ex);
         Alert alert = creatErrorAlert(errToString(ex));
-        if (ex.getCause().getCause() != null) {
-            if (ex.getCause().getCause() instanceof Exception) {
-                alert.setHeaderText(ex.getCause().getCause().getMessage());
+        Throwable cause = ex.getCause().getCause();
+        if (cause != null) {
+            if (cause instanceof Exception) {
+                alert.setHeaderText(cause.getMessage());
+            } else {
+                alert.setHeaderText(ex.getMessage());
             }
         } else {
             alert.setHeaderText(ex.getMessage());
@@ -755,22 +757,18 @@ public class UiUtils {
             if (control instanceof ChoiceBox) {
                 ChoiceBox<String> choiceBox = (ChoiceBox<String>) control;
                 choiceBox.setValue(lastValue);
-            }
-            if (control instanceof CheckBox checkBox) {
+            } else if (control instanceof CheckBox checkBox) {
                 checkBox.setSelected(activation.equals(lastValue));
-            }
-            if (control instanceof Label label) {
+            } else if (control instanceof Label label) {
                 if (isValidPath(lastValue)) {
                     setPathLabel(label, lastValue, false, anchorPane);
                 } else {
                     label.setText(lastValue);
                 }
-            }
-            if (control instanceof TextField textField) {
+            } else if (control instanceof TextField textField) {
                 textField.setText(lastValue);
             }
-        }
-        if (StringUtils.isNotEmpty(lastValue) && canBlank) {
+        } else if (StringUtils.isNotEmpty(lastValue) && canBlank) {
             if (control instanceof TextField textField) {
                 textField.setText(lastValue);
             }

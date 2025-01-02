@@ -142,13 +142,12 @@ public class SettingController {
         List<String> lines = Files.readAllLines(scriptFilePath);
         String newLineContent = Xmx + nextRunMemoryValue;
         if (StringUtils.isNotBlank(nextRunMemoryValue)) {
-            if (!nextRunMemoryValue.equals(scriptMemory)) {
-                String originalLineContent = Xmx + scriptMemory;
-                writeMemorySetting(scriptFilePath, lines, newLineContent, originalLineContent);
-            }
             if (scriptMemory == null) {
                 newLineContent = text_VMOptions + newLineContent + g;
                 writeMemorySetting(scriptFilePath, lines, newLineContent, text_VMOptions);
+            } else if (!nextRunMemoryValue.equals(scriptMemory)) {
+                String originalLineContent = Xmx + scriptMemory;
+                writeMemorySetting(scriptFilePath, lines, newLineContent, originalLineContent);
             }
         }
     }
@@ -434,8 +433,7 @@ public class SettingController {
                 String path = currentDir.substring(0, currentDir.lastIndexOf(Tools) + Tools.length());
                 String appPath = path + File.separator + "Tools.exe";
                 processBuilder = new ProcessBuilder(appPath);
-            }
-            if (systemName.contains(macos)) {
+            } else if (systemName.contains(macos)) {
                 String appName = File.separator + "Tools.app";
                 String appPath = currentDir.substring(0, currentDir.lastIndexOf(appName)) + appName;
                 processBuilder = new ProcessBuilder("open", "-n", appPath);

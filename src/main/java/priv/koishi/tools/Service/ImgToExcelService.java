@@ -107,26 +107,24 @@ public class ImgToExcelService {
                     List<String> imgList = fileBean.getFilePathList();
                     Row row = getOrCreateRow(sheet, rowNum);
                     Cell startCell = row.createCell(startCellNum);
-                    //附加项只导出文件数量
+                    //判断附加项导出设置
                     if (exportFileNum && !exportFileSize) {
+                        //附加项只导出文件数量
                         startCell.setCellValue(fileBean.getGroupNumber());
                         maxCellNum = buildImgExcel(imgList, excelConfig, startCellNum + 1, rowNum, sheet, sxssfWorkbook, row, maxCellNum);
-                    }
-                    //附加项只导出文件大小
-                    if (!exportFileNum && exportFileSize) {
+                    } else if (!exportFileNum && exportFileSize) {
+                        //附加项只导出文件大小
                         startCell.setCellValue(fileBean.getFileUnitSize());
                         maxCellNum = buildImgExcel(imgList, excelConfig, startCellNum + 1, rowNum, sheet, sxssfWorkbook, row, maxCellNum);
-                    }
-                    //附加项导出文件数量和大小
-                    if (exportFileNum && exportFileSize) {
+                    } else if (exportFileNum) {
+                        //附加项导出文件数量和大小
                         startCell.setCellValue(fileBean.getGroupNumber());
                         int sizeCellNum = startCellNum + 1;
                         Cell sizeCell = row.createCell(sizeCellNum);
                         sizeCell.setCellValue(fileBean.getFileUnitSize());
                         maxCellNum = buildImgExcel(imgList, excelConfig, sizeCellNum + 1, rowNum, sheet, sxssfWorkbook, row, maxCellNum);
-                    }
-                    //不导出附加项
-                    if (!exportFileNum && !exportFileSize) {
+                    } else {
+                        //不导出附加项
                         maxCellNum = buildImgExcel(imgList, excelConfig, startCellNum, rowNum, sheet, sxssfWorkbook, row, maxCellNum);
                     }
                     updateMessage(text_printing + (i + 1) + "/" + fileNum + text_data);
@@ -183,8 +181,7 @@ public class ImgToExcelService {
                 try {
                     if (jpg.equals(extension) || jpeg.equals(extension)) {
                         drawing.createPicture(anchor, sxssfWorkbook.addPicture(inputStream.readAllBytes(), Workbook.PICTURE_TYPE_JPEG));
-                    }
-                    if (png.equals(extension)) {
+                    } else if (png.equals(extension)) {
                         drawing.createPicture(anchor, sxssfWorkbook.addPicture(inputStream.readAllBytes(), Workbook.PICTURE_TYPE_PNG));
                     }
                 } finally {

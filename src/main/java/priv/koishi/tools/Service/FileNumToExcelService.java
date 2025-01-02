@@ -96,26 +96,23 @@ public class FileNumToExcelService {
                     List<String> fileNameList = fileBean.getFileNameList();
                     Row row = getOrCreateRow(sheet, rowNum);
                     Cell startCell = row.createCell(startCellNum);
-                    //附加项只导出文件数量
+                    //判断附加项导出设置
                     if (exportFileNum && !exportFileSize) {
                         startCell.setCellValue(fileBean.getGroupNumber());
                         maxCellNum = buildFileName(fileNameList, row, startCellNum + 1, maxCellNum);
-                    }
-                    //附加项只导出文件大小
-                    if (!exportFileNum && exportFileSize) {
+                    } else if (!exportFileNum && exportFileSize) {
+                        //附加项只导出文件大小
                         startCell.setCellValue(fileBean.getFileUnitSize());
                         maxCellNum = buildFileName(fileNameList, row, startCellNum + 1, maxCellNum);
-                    }
-                    //附加项导出文件数量和大小
-                    if (exportFileNum && exportFileSize) {
+                    } else if (exportFileNum) {
+                        //附加项导出文件数量和大小
                         startCell.setCellValue(fileBean.getGroupNumber());
                         int sizeCellNum = startCellNum + 1;
                         Cell sizeCell = row.createCell(sizeCellNum);
                         sizeCell.setCellValue(fileBean.getFileUnitSize());
                         maxCellNum = buildFileName(fileNameList, row, sizeCellNum + 1, maxCellNum);
-                    }
-                    //不导出附加项
-                    if (!exportFileNum && !exportFileSize) {
+                    } else {
+                        //不导出附加项
                         maxCellNum = buildFileName(fileNameList, row, startCellNum, maxCellNum);
                     }
                     updateMessage(text_printing + (i + 1) + "/" + fileBeansSize + text_data);

@@ -103,8 +103,7 @@ public class FileRenameService {
         if (codeRenameConfig != null) {
             fileRename = getCodeRename(codeRenameConfig, fileBean, startName, tag);
             fileBean.setCodeRenameConfig(codeRenameConfig);
-        }
-        if (stringRenameConfig != null) {
+        } else if (stringRenameConfig != null) {
             fileRename = getStringRename(stringRenameConfig, fileBean);
         }
         fileBean.setRename(fileRename);
