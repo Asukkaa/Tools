@@ -216,81 +216,84 @@ public class ImgToExcelController extends CommonProperties {
      * @throws IOException io异常
      */
     public static void imgToExcelSaveLastConfig(Scene scene) throws IOException {
-        InputStream input = checkRunningInputStream(configFile_Img);
-        Properties prop = new Properties();
-        prop.load(input);
-        ChoiceBox<?> hideFileType = (ChoiceBox<?>) scene.lookup("#hideFileType_Img");
-        prop.put(key_lastHideFileType, hideFileType.getValue());
-        CheckBox recursion = (CheckBox) scene.lookup("#recursion_Img");
-        String recursionValue = recursion.isSelected() ? activation : unActivation;
-        prop.put(key_lastRecursion, recursionValue);
-        CheckBox showFileType = (CheckBox) scene.lookup("#showFileType_Img");
-        String showFileTypeValue = showFileType.isSelected() ? activation : unActivation;
-        prop.put(key_lastShowFileType, showFileTypeValue);
-        CheckBox openDirectory = (CheckBox) scene.lookup("#openDirectory_Img");
-        String openDirectoryValue = openDirectory.isSelected() ? activation : unActivation;
-        prop.put(key_lastOpenDirectory, openDirectoryValue);
-        CheckBox openFile = (CheckBox) scene.lookup("#openFile_Img");
-        String openFileValue = openFile.isSelected() ? activation : unActivation;
-        prop.put(key_lastOpenFile, openFileValue);
-        TextField excelName = (TextField) scene.lookup("#excelName_Img");
-        prop.put(key_lastExcelName, excelName.getText());
-        TextField sheetName = (TextField) scene.lookup("#sheetName_Img");
-        prop.put(key_lastSheetName, sheetName.getText());
-        TextField subCode = (TextField) scene.lookup("#subCode_Img");
-        prop.put(key_lastSubCode, subCode.getText());
-        TextField startRow = (TextField) scene.lookup("#startRow_Img");
-        prop.put(key_lastStartRow, startRow.getText());
-        TextField startCell = (TextField) scene.lookup("#startCell_Img");
-        prop.put(key_lastStartCell, startCell.getText());
-        TextField readRow = (TextField) scene.lookup("#readRow_Img");
-        prop.put(key_lastReadRow, readRow.getText());
-        TextField readCell = (TextField) scene.lookup("#readCell_Img");
-        prop.put(key_lastReadCell, readCell.getText());
-        TextField maxRow = (TextField) scene.lookup("#maxRow_Img");
-        prop.put(key_lastMaxRow, maxRow.getText());
-        TextField imgWidth = (TextField) scene.lookup("#imgWidth_Img");
-        prop.put(key_lastImgWidth, imgWidth.getText());
-        TextField imgHeight = (TextField) scene.lookup("#imgHeight_Img");
-        prop.put(key_lastImgHeight, imgHeight.getText());
-        Label inPath = (Label) scene.lookup("#inPath_Img");
-        prop.put(key_lastInPath, inPath.getText());
-        Label outPath = (Label) scene.lookup("#outPath_Img");
-        prop.put(key_lastOutPath, outPath.getText());
-        Label excelPath = (Label) scene.lookup("#excelPath_Img");
-        prop.put(key_lastExcelPath, excelPath.getText());
-        TextField maxImgNum = (TextField) scene.lookup("#maxImgNum_Img");
-        prop.put(key_lastMaxImgNum, maxImgNum.getText());
-        CheckBox noImg = (CheckBox) scene.lookup("#noImg_Img");
-        String noImgValue = noImg.isSelected() ? activation : unActivation;
-        prop.put(key_lastNoImg, noImgValue);
-        CheckBox exportFileNum = (CheckBox) scene.lookup("#exportFileNum_Img");
-        String exportFileNumValue = exportFileNum.isSelected() ? activation : unActivation;
-        prop.put(key_lastExportFileNum, exportFileNumValue);
-        CheckBox exportFileSize = (CheckBox) scene.lookup("#exportFileSize_Img");
-        String exportFileSizeValue = exportFileSize.isSelected() ? activation : unActivation;
-        prop.put(key_lastExportFileSize, exportFileSizeValue);
-        CheckBox exportTitle = (CheckBox) scene.lookup("#exportTitle_Img");
-        String exportTitleValue = exportTitle.isSelected() ? activation : unActivation;
-        prop.put(key_lastExportTitle, exportTitleValue);
-        List<String> lastFilterFileTypes = new ArrayList<>();
-        CheckBox jpgCheckBox = (CheckBox) scene.lookup("#jpg_Img");
-        if (jpgCheckBox.isSelected()) {
-            lastFilterFileTypes.add(jpg);
+        AnchorPane anchorPane = (AnchorPane) scene.lookup("#anchorPane_Img");
+        if (anchorPane != null) {
+            InputStream input = checkRunningInputStream(configFile_Img);
+            Properties prop = new Properties();
+            prop.load(input);
+            ChoiceBox<?> hideFileType = (ChoiceBox<?>) scene.lookup("#hideFileType_Img");
+            prop.put(key_lastHideFileType, hideFileType.getValue());
+            CheckBox recursion = (CheckBox) scene.lookup("#recursion_Img");
+            String recursionValue = recursion.isSelected() ? activation : unActivation;
+            prop.put(key_lastRecursion, recursionValue);
+            CheckBox showFileType = (CheckBox) scene.lookup("#showFileType_Img");
+            String showFileTypeValue = showFileType.isSelected() ? activation : unActivation;
+            prop.put(key_lastShowFileType, showFileTypeValue);
+            CheckBox openDirectory = (CheckBox) scene.lookup("#openDirectory_Img");
+            String openDirectoryValue = openDirectory.isSelected() ? activation : unActivation;
+            prop.put(key_lastOpenDirectory, openDirectoryValue);
+            CheckBox openFile = (CheckBox) scene.lookup("#openFile_Img");
+            String openFileValue = openFile.isSelected() ? activation : unActivation;
+            prop.put(key_lastOpenFile, openFileValue);
+            TextField excelName = (TextField) scene.lookup("#excelName_Img");
+            prop.put(key_lastExcelName, excelName.getText());
+            TextField sheetName = (TextField) scene.lookup("#sheetName_Img");
+            prop.put(key_lastSheetName, sheetName.getText());
+            TextField subCode = (TextField) scene.lookup("#subCode_Img");
+            prop.put(key_lastSubCode, subCode.getText());
+            TextField startRow = (TextField) scene.lookup("#startRow_Img");
+            prop.put(key_lastStartRow, startRow.getText());
+            TextField startCell = (TextField) scene.lookup("#startCell_Img");
+            prop.put(key_lastStartCell, startCell.getText());
+            TextField readRow = (TextField) scene.lookup("#readRow_Img");
+            prop.put(key_lastReadRow, readRow.getText());
+            TextField readCell = (TextField) scene.lookup("#readCell_Img");
+            prop.put(key_lastReadCell, readCell.getText());
+            TextField maxRow = (TextField) scene.lookup("#maxRow_Img");
+            prop.put(key_lastMaxRow, maxRow.getText());
+            TextField imgWidth = (TextField) scene.lookup("#imgWidth_Img");
+            prop.put(key_lastImgWidth, imgWidth.getText());
+            TextField imgHeight = (TextField) scene.lookup("#imgHeight_Img");
+            prop.put(key_lastImgHeight, imgHeight.getText());
+            Label inPath = (Label) scene.lookup("#inPath_Img");
+            prop.put(key_lastInPath, inPath.getText());
+            Label outPath = (Label) scene.lookup("#outPath_Img");
+            prop.put(key_lastOutPath, outPath.getText());
+            Label excelPath = (Label) scene.lookup("#excelPath_Img");
+            prop.put(key_lastExcelPath, excelPath.getText());
+            TextField maxImgNum = (TextField) scene.lookup("#maxImgNum_Img");
+            prop.put(key_lastMaxImgNum, maxImgNum.getText());
+            CheckBox noImg = (CheckBox) scene.lookup("#noImg_Img");
+            String noImgValue = noImg.isSelected() ? activation : unActivation;
+            prop.put(key_lastNoImg, noImgValue);
+            CheckBox exportFileNum = (CheckBox) scene.lookup("#exportFileNum_Img");
+            String exportFileNumValue = exportFileNum.isSelected() ? activation : unActivation;
+            prop.put(key_lastExportFileNum, exportFileNumValue);
+            CheckBox exportFileSize = (CheckBox) scene.lookup("#exportFileSize_Img");
+            String exportFileSizeValue = exportFileSize.isSelected() ? activation : unActivation;
+            prop.put(key_lastExportFileSize, exportFileSizeValue);
+            CheckBox exportTitle = (CheckBox) scene.lookup("#exportTitle_Img");
+            String exportTitleValue = exportTitle.isSelected() ? activation : unActivation;
+            prop.put(key_lastExportTitle, exportTitleValue);
+            List<String> lastFilterFileTypes = new ArrayList<>();
+            CheckBox jpgCheckBox = (CheckBox) scene.lookup("#jpg_Img");
+            if (jpgCheckBox.isSelected()) {
+                lastFilterFileTypes.add(jpg);
+            }
+            CheckBox pngCheckBox = (CheckBox) scene.lookup("#png_Img");
+            if (pngCheckBox.isSelected()) {
+                lastFilterFileTypes.add(png);
+            }
+            CheckBox jpegCheckBox = (CheckBox) scene.lookup("#jpeg_Img");
+            if (jpegCheckBox.isSelected()) {
+                lastFilterFileTypes.add(jpeg);
+            }
+            prop.put(key_lastFilterFileType, String.join(" ", lastFilterFileTypes));
+            OutputStream output = checkRunningOutputStream(configFile_Img);
+            prop.store(output, null);
+            input.close();
+            output.close();
         }
-        CheckBox pngCheckBox = (CheckBox) scene.lookup("#png_Img");
-        if (pngCheckBox.isSelected()) {
-            lastFilterFileTypes.add(png);
-        }
-        CheckBox jpegCheckBox = (CheckBox) scene.lookup("#jpeg_Img");
-        if (jpegCheckBox.isSelected()) {
-            lastFilterFileTypes.add(jpeg);
-        }
-        prop.put(key_lastFilterFileType, String.join(" ", lastFilterFileTypes));
-        OutputStream output = checkRunningOutputStream(configFile_Img);
-        prop.store(output, null);
-        input.close();
-        output.close();
     }
 
     /**

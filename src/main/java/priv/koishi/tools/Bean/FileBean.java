@@ -1,9 +1,7 @@
 package priv.koishi.tools.Bean;
 
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.experimental.Accessors;
 import priv.koishi.tools.Configuration.CodeRenameConfig;
 
 import java.io.File;
@@ -15,163 +13,79 @@ import java.io.File;
  * Date 2024-10-01
  * Time 下午1:50
  */
+@Data
+@Accessors(chain = true)
 public class FileBean {
 
     /**
      * 文件列表展示id
      */
-    private final SimpleIntegerProperty id;
+    int id;
 
     /**
      * 文件列表展示名称
      */
-    private final SimpleStringProperty name;
+    String name;
 
     /**
      * 文件列表展示修改后的名称
      */
-    private final SimpleStringProperty rename;
+    String rename;
 
     /**
      * 文件列表展示路径
      */
-    private final SimpleStringProperty path;
+    String path;
 
     /**
      * 文件列表展示文件类型
      */
-    private final SimpleStringProperty fileType;
+    String fileType;
 
     /**
      * 文件列表展示文件大小
      */
-    private final SimpleStringProperty size;
+    String size;
 
     /**
      * 文件创建时间
      */
-    private final SimpleStringProperty creatDate;
+    String creatDate;
 
     /**
      * 文件修改时间
      */
-    private final SimpleStringProperty updateDate;
+    String updateDate;
 
     /**
      * 文件是否隐藏
      */
-    private final SimpleStringProperty showStatus;
+    String showStatus;
 
     /**
      * 文件重命名功能临时名称文件
      */
-    @Getter
-    @Setter
     File tempFile;
 
     /**
      * 根据按编号规则重命名文件重命名前缀编号
      */
-    @Getter
-    @Setter
     String codeRename;
 
     /**
      * 根据按编号规则重命名文件重命名后缀编号
      */
-    @Getter
-    @Setter
     String tagRename;
 
     /**
      * 根据按编号规则重命名文件重命名后缀编号数字
      */
-    @Getter
-    @Setter
     int tagRenameCode;
 
     /**
      * 根据按编号规则重命名文件重命名设置
      */
-    @Getter
-    @Setter
     CodeRenameConfig codeRenameConfig;
-
-    public FileBean() {
-        this.id = new SimpleIntegerProperty();
-        this.name = new SimpleStringProperty();
-        this.rename = new SimpleStringProperty();
-        this.path = new SimpleStringProperty();
-        this.fileType = new SimpleStringProperty();
-        this.size = new SimpleStringProperty();
-        this.creatDate = new SimpleStringProperty();
-        this.updateDate = new SimpleStringProperty();
-        this.showStatus = new SimpleStringProperty();
-    }
-
-    public int getId() {
-        return this.id.get();
-    }
-
-    public void setId(int id) {
-        this.id.set(id);
-    }
-
-    public String getName() {
-        return this.name.get();
-    }
-
-    public void setName(String name) {
-        this.name.set(name);
-    }
-
-    public String getRename() {
-        return this.rename.get();
-    }
-
-    public void setRename(String rename) {
-        this.rename.set(rename);
-    }
-
-    public String getPath() {
-        return this.path.get();
-    }
-
-    public void setPath(String filePath) {
-        this.path.set(filePath);
-    }
-
-    public String getFileType() {
-        return this.fileType.get();
-    }
-
-    public void setFileType(String fileType) {
-        this.fileType.set(fileType);
-    }
-
-    public String getSize() {
-        return this.size.get();
-    }
-
-    public void setSize(String fileSize) {
-        this.size.set(fileSize);
-    }
-
-    public String getCreatDate() {
-        return this.creatDate.get();
-    }
-
-    public void setCreatDate(String creatDate) {
-        this.creatDate.set(creatDate);
-    }
-
-    public String getUpdateDate() {
-        return this.updateDate.get();
-    }
-
-    public void setUpdateDate(String updateDate) {
-        this.updateDate.set(updateDate);
-    }
 
     /**
      * 获取完整重命名
@@ -185,14 +99,6 @@ public class FileBean {
      */
     public String getFullName() {
         return getName() + getFileType();
-    }
-
-    public String getShowStatus() {
-        return this.showStatus.get();
-    }
-
-    public void setShowStatus(String showStatus) {
-        this.showStatus.set(showStatus);
     }
 
 }

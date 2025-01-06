@@ -80,6 +80,13 @@
             <Label prefHeight="25" fx:id="thisPath_Set" styleClass="label-button-style"/>
         </HBox>
 
+        <TableView fx:id="tableView_Set">
+            <columns>
+                <TableColumn fx:id="tabName_Set" text="功能名称"/>
+                <TableColumn fx:id="activationCheckBox_Set" text="启用状态"/>
+            </columns>
+        </TableView>
+        
         <Separator/>
 
         <Label prefHeight="25" text="关于："/>

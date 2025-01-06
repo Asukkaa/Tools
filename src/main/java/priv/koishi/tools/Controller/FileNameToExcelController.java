@@ -334,7 +334,7 @@ public class FileNameToExcelController extends CommonProperties {
     }
 
     /**
-     * 设置要防重复点击的组件
+     * 设置列表各列宽度
      */
     private void bindPrefWidthProperty() {
         id_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.04));

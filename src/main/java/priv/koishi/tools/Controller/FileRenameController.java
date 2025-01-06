@@ -189,29 +189,32 @@ public class FileRenameController extends CommonProperties {
      * @throws IOException io异常
      */
     public static void fileRenameSaveLastConfig(Scene scene) throws IOException {
-        InputStream input = checkRunningInputStream(configFile_Rename);
-        Properties prop = new Properties();
-        prop.load(input);
-        ChoiceBox<?> directoryNameType = (ChoiceBox<?>) scene.lookup("#directoryNameType_Re");
-        prop.put(key_lastDirectoryNameType, directoryNameType.getValue());
-        ChoiceBox<?> hideFileType = (ChoiceBox<?>) scene.lookup("#hideFileType_Re");
-        prop.put(key_lastHideFileType, hideFileType.getValue());
-        CheckBox openDirectory = (CheckBox) scene.lookup("#openDirectory_Re");
-        String openDirectoryValue = openDirectory.isSelected() ? activation : unActivation;
-        prop.put(key_lastOpenDirectory, openDirectoryValue);
-        TextField filterFileType = (TextField) scene.lookup("#filterFileType_Re");
-        prop.put(key_lastFilterFileType, filterFileType.getText());
-        Label inPath = (Label) scene.lookup("#inPath_Re");
-        prop.put(key_lastInPath, inPath.getText());
-        ChoiceBox<?> renameType = (ChoiceBox<?>) scene.lookup("#renameType_Re");
-        String renameTypeValue = (String) renameType.getValue();
-        prop.put(key_lastRenameType, renameTypeValue);
-        //根据文件重命名依据设置保存配置信息
-        saveLastConfigByRenameType(prop, renameTypeValue, scene);
-        OutputStream output = checkRunningOutputStream(configFile_Rename);
-        prop.store(output, null);
-        input.close();
-        output.close();
+        AnchorPane anchorPane = (AnchorPane) scene.lookup("#anchorPane_Re");
+        if (anchorPane != null) {
+            InputStream input = checkRunningInputStream(configFile_Rename);
+            Properties prop = new Properties();
+            prop.load(input);
+            ChoiceBox<?> directoryNameType = (ChoiceBox<?>) scene.lookup("#directoryNameType_Re");
+            prop.put(key_lastDirectoryNameType, directoryNameType.getValue());
+            ChoiceBox<?> hideFileType = (ChoiceBox<?>) scene.lookup("#hideFileType_Re");
+            prop.put(key_lastHideFileType, hideFileType.getValue());
+            CheckBox openDirectory = (CheckBox) scene.lookup("#openDirectory_Re");
+            String openDirectoryValue = openDirectory.isSelected() ? activation : unActivation;
+            prop.put(key_lastOpenDirectory, openDirectoryValue);
+            TextField filterFileType = (TextField) scene.lookup("#filterFileType_Re");
+            prop.put(key_lastFilterFileType, filterFileType.getText());
+            Label inPath = (Label) scene.lookup("#inPath_Re");
+            prop.put(key_lastInPath, inPath.getText());
+            ChoiceBox<?> renameType = (ChoiceBox<?>) scene.lookup("#renameType_Re");
+            String renameTypeValue = (String) renameType.getValue();
+            prop.put(key_lastRenameType, renameTypeValue);
+            //根据文件重命名依据设置保存配置信息
+            saveLastConfigByRenameType(prop, renameTypeValue, scene);
+            OutputStream output = checkRunningOutputStream(configFile_Rename);
+            prop.store(output, null);
+            input.close();
+            output.close();
+        }
     }
 
     /**

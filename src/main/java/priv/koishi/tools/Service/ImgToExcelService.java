@@ -81,14 +81,14 @@ public class ImgToExcelService {
                 int rowNum = startRowNum;
                 int startCellNum = excelConfig.getStartCellNum();
                 int maxCellNum = startCellNum;
-                List<FileNumBean> fileBeans = taskBean.getBeanList();
+                List<FileNumBean> fileNumBeans = taskBean.getBeanList();
                 XSSFSheet sheet;
                 if (StringUtils.isBlank(sheetName)) {
                     sheet = sxssfWorkbook.getXSSFWorkbook().getSheetAt(0);
                 } else {
                     sheet = sxssfWorkbook.getXSSFWorkbook().getSheet(sheetName);
                 }
-                int fileNum = fileBeans.size();
+                int fileNum = fileNumBeans.size();
                 updateMessage(text_identify + fileNum + text_data);
                 boolean exportFileNum = excelConfig.isExportFileNum();
                 boolean exportFileSize = excelConfig.isExportFileSize();
@@ -103,25 +103,25 @@ public class ImgToExcelService {
                         closeStream();
                         break;
                     }
-                    FileNumBean fileBean = fileBeans.get(i);
-                    List<String> imgList = fileBean.getFilePathList();
+                    FileNumBean fileNumBean = fileNumBeans.get(i);
+                    List<String> imgList = fileNumBean.getFilePathList();
                     Row row = getOrCreateRow(sheet, rowNum);
                     Cell startCell = row.createCell(startCellNum);
                     //判断附加项导出设置
                     if (exportFileNum && !exportFileSize) {
                         //附加项只导出文件数量
-                        startCell.setCellValue(fileBean.getGroupNumber());
+                        startCell.setCellValue(fileNumBean.getGroupNumber());
                         maxCellNum = buildImgExcel(imgList, excelConfig, startCellNum + 1, rowNum, sheet, sxssfWorkbook, row, maxCellNum);
                     } else if (!exportFileNum && exportFileSize) {
                         //附加项只导出文件大小
-                        startCell.setCellValue(fileBean.getFileUnitSize());
+                        startCell.setCellValue(fileNumBean.getFileUnitSize());
                         maxCellNum = buildImgExcel(imgList, excelConfig, startCellNum + 1, rowNum, sheet, sxssfWorkbook, row, maxCellNum);
                     } else if (exportFileNum) {
                         //附加项导出文件数量和大小
-                        startCell.setCellValue(fileBean.getGroupNumber());
+                        startCell.setCellValue(fileNumBean.getGroupNumber());
                         int sizeCellNum = startCellNum + 1;
                         Cell sizeCell = row.createCell(sizeCellNum);
-                        sizeCell.setCellValue(fileBean.getFileUnitSize());
+                        sizeCell.setCellValue(fileNumBean.getFileUnitSize());
                         maxCellNum = buildImgExcel(imgList, excelConfig, sizeCellNum + 1, rowNum, sheet, sxssfWorkbook, row, maxCellNum);
                     } else {
                         //不导出附加项

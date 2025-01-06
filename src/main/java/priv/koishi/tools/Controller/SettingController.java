@@ -9,6 +9,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
+import priv.koishi.tools.Bean.TabBean;
 
 import java.io.*;
 import java.lang.management.ManagementFactory;
@@ -51,6 +52,15 @@ public class SettingController {
     static final String scriptName = getScriptName();
 
     @FXML
+    private TableView<TabBean> tableView_Set;
+
+    @FXML
+    private TableColumn<TabBean, String> tabName_Set;
+
+    @FXML
+    private TableColumn<TabBean, CheckBox> activationCheckBox_Set;
+
+    @FXML
     private AnchorPane anchorPane_Set;
 
     @FXML
@@ -78,10 +88,20 @@ public class SettingController {
      */
     public static void settingAdaption(Stage stage) {
         Scene scene = stage.getScene();
+        //设置组件高度
+        double stageHeight = stage.getHeight();
+        TableView<?> table = (TableView<?>) scene.lookup("#tableView_Set");
+        table.setPrefHeight(stageHeight * 0.2);
         //设置组件宽度
         double stageWidth = stage.getWidth();
+        double tableWidth = stageWidth * 0.4;
+        table.setMaxWidth(tableWidth);
         Node settingVBox = scene.lookup("#vBox_Set");
         settingVBox.setLayoutX(stageWidth * 0.03);
+        Node tabName = scene.lookup("#tabName_Set");
+        tabName.setStyle("-fx-pref-width: " + tableWidth * 0.7 + "px;");
+        Node tabState = scene.lookup("#activationCheckBox_Set");
+        tabState.setStyle("-fx-pref-width: " + tableWidth * 0.3 + "px;");
     }
 
     /**
@@ -95,6 +115,27 @@ public class SettingController {
         saveMemorySetting(scene);
         //保存日志问文件数量设置
         saveLogsNumSetting(scene);
+        //
+        saveTabIds(scene);
+    }
+
+    private static void saveTabIds(Scene scene) throws IOException {
+        InputStream input = checkRunningInputStream(configFile);
+        Properties prop = new Properties();
+        prop.load(input);
+        TableView<TabBean> tableView = (TableView<TabBean>) scene.lookup("#tableView_Set");
+        List<String> tabIds = new ArrayList<>();
+        for (TabBean tabBean : tableView.getItems()) {
+            String tabId = tabBean.getTabId();
+            String activationState = tabBean.getActivationCheckBox().isSelected() ? activation : unActivation;
+            String tabStateId = tabId + "." + activationState;
+            tabIds.add(tabStateId);
+        }
+        prop.setProperty("tabIds", String.join(" ", tabIds));
+        OutputStream output = checkRunningOutputStream(configFile);
+        prop.store(output, null);
+        input.close();
+        output.close();
     }
 
     /**
@@ -335,6 +376,14 @@ public class SettingController {
     }
 
     /**
+     * 设置列表各列宽度
+     */
+    private void bindPrefWidthProperty() {
+        tabName_Set.prefWidthProperty().bind(tableView_Set.widthProperty().multiply(0.7));
+        activationCheckBox_Set.prefWidthProperty().bind(tableView_Set.widthProperty().multiply(0.3));
+    }
+
+    /**
      * 界面初始化
      *
      * @throws IOException io异常
@@ -343,6 +392,8 @@ public class SettingController {
     private void initialize() throws IOException {
         //添加右键菜单
         setCopyValueContextMenu(mail_set, "复制反馈邮件", anchorPane_Set);
+        //设置列表各列宽度
+        bindPrefWidthProperty();
         //给输入框添加内容变化监听
         textFieldChangeListener();
         //设置是否加载最后一次功能配置信息初始值

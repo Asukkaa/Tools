@@ -5,10 +5,12 @@ import javafx.scene.Scene;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.stage.Stage;
+import priv.koishi.tools.Bean.TabBean;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 import java.util.Properties;
 
 import static priv.koishi.tools.Controller.FileNameToExcelController.fileNameToExcelAdaption;
@@ -44,16 +46,37 @@ public class MainController {
      *
      * @param stage 程序主舞台
      */
-    public static void mainAdaption(Stage stage) {
+    public static void mainAdaption(Stage stage, List<TabBean> tabBeanList) {
         Scene scene = stage.getScene();
         //设置组件高度
         double stageHeight = stage.getHeight();
         TabPane tabPane = (TabPane) scene.lookup("#tabPane");
         tabPane.setStyle("-fx-pref-height: " + stageHeight + "px;");
-        fileNameToExcelAdaption(stage);
-        fileNumToExcelAdaption(stage);
-        imgToExcelAdaption(stage);
-        fileRenameAdaption(stage);
+        tabBeanList.forEach(tabBean -> {
+            boolean isActivation = tabBean.getActivationCheckBox().isSelected();
+            switch (tabBean.getTabId()) {
+                case "fileNameToExcelTab":
+                    if (isActivation) {
+                        fileNameToExcelAdaption(stage);
+                    }
+                    break;
+                case "fileNumToExcelTab":
+                    if (isActivation) {
+                        fileNumToExcelAdaption(stage);
+                    }
+                    break;
+                case "imgToExcelTab":
+                    if (isActivation) {
+                        imgToExcelAdaption(stage);
+                    }
+                    break;
+                case "fileRenameTab":
+                    if (isActivation) {
+                        fileRenameAdaption(stage);
+                    }
+                    break;
+            }
+        });
         settingAdaption(stage);
     }
 
@@ -84,8 +107,7 @@ public class MainController {
         Scene scene = stage.getScene();
         TabPane tabPane = (TabPane) scene.lookup("#tabPane");
         Tab selectedTab = tabPane.getSelectionModel().getSelectedItem();
-        String position = String.valueOf(tabPane.getTabs().indexOf(selectedTab));
-        prop.put(key_lastTab, position);
+        prop.put(key_lastTab, selectedTab.getId());
         String fullWindow = stage.isMaximized() ? activation : unActivation;
         prop.put(key_lastFullWindow, fullWindow);
         OutputStream output = checkRunningOutputStream(configFile);
