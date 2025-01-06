@@ -119,6 +119,13 @@ public class SettingController {
         saveTabIds(scene);
     }
 
+    /**
+     * 保存页面开启状态与展示顺序设置
+     *
+     * @param scene 程序主场景
+     * @throws IOException io异常
+     */
+    @SuppressWarnings("unchecked")
     private static void saveTabIds(Scene scene) throws IOException {
         InputStream input = checkRunningInputStream(configFile);
         Properties prop = new Properties();
