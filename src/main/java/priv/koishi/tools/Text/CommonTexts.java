@@ -119,6 +119,8 @@ public class CommonTexts {
 
     public static final String tip_renameBehavior = "点击可选择重命名方法";
 
+    public static final String tip_tabSwitch = "点击即可启用或禁用该功能页";
+
     public static final String tip_defaultNextRunMemory = "当前配置值为空，程序最大内存设置为操作系统最大内存1/4，填写其他值关闭程序即可保存修改，重启动程序即可生效";
 
     public static final String tip_updateSameCode = """
@@ -256,6 +258,8 @@ public class CommonTexts {
 
     public static final String text_nullSelect = "未选中任何数据";
 
+    public static final String text_activation = "启用";
+
     public static final String xlsx = ".xlsx";
 
     public static final String xls = ".xls";
@@ -288,6 +292,18 @@ public class CommonTexts {
 
     public static final String unActivation = "0";
 
+    public static final String id_settingTab = "settingTab";
+
+    public static final String id_aboutTab = "aboutTab";
+
+    public static final String id_fileNameToExcelTab = "fileNameToExcelTab";
+
+    public static final String id_fileNumToExcelTab = "fileNumToExcelTab";
+
+    public static final String id_imgToExcelTab = "imgToExcelTab";
+
+    public static final String id_fileRenameTab = "fileRenameTab";
+
     public static final String key_sort = "sort";
 
     public static final String key_reverseSort = "reverseSort";
@@ -299,6 +315,14 @@ public class CommonTexts {
     public static final String key_excelInPath = "excelInPath";
 
     public static final String key_outFilePath = "outFilePath";
+
+    public static final String key_appWidth = "appWidth";
+
+    public static final String key_appHeight = "appHeight";
+
+    public static final String key_appTitle = "appTitle";
+
+    public static final String key_tabIds = "tabIds";
 
     public static final String key_loadLastConfig = "loadLastConfig";
 

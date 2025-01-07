@@ -13,6 +13,8 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.Properties;
 
+import static priv.koishi.tools.Controller.AboutController.aboutAdaption;
+import static priv.koishi.tools.Controller.AboutController.saveLogsNumSetting;
 import static priv.koishi.tools.Controller.FileNameToExcelController.fileNameToExcelAdaption;
 import static priv.koishi.tools.Controller.FileNameToExcelController.fileNameToExcelSaveLastConfig;
 import static priv.koishi.tools.Controller.FileNumToExcelController.fileNumToExcelAdaption;
@@ -39,7 +41,7 @@ public class MainController {
     private TabPane tabPane;
 
     @FXML
-    private Tab fileNumToExcelTab, fileNameToExcelTab, imgToExcelTab, fileRenameTab, settingTab;
+    private Tab fileNumToExcelTab, fileNameToExcelTab, imgToExcelTab, fileRenameTab, settingTab, aboutTab;
 
     /**
      * 组件自适应宽高
@@ -55,29 +57,38 @@ public class MainController {
         tabBeanList.forEach(tabBean -> {
             boolean isActivation = tabBean.getActivationCheckBox().isSelected();
             switch (tabBean.getTabId()) {
-                case "fileNameToExcelTab":
+                case id_fileNameToExcelTab:
                     if (isActivation) {
                         fileNameToExcelAdaption(stage);
                     }
                     break;
-                case "fileNumToExcelTab":
+                case id_fileNumToExcelTab:
                     if (isActivation) {
                         fileNumToExcelAdaption(stage);
                     }
                     break;
-                case "imgToExcelTab":
+                case id_imgToExcelTab:
                     if (isActivation) {
                         imgToExcelAdaption(stage);
                     }
                     break;
-                case "fileRenameTab":
+                case id_fileRenameTab:
                     if (isActivation) {
                         fileRenameAdaption(stage);
                     }
                     break;
+                case id_settingTab:
+                    if (isActivation) {
+                        settingAdaption(stage);
+                    }
+                    break;
+                case id_aboutTab:
+                    if (isActivation) {
+                        aboutAdaption(stage);
+                    }
+                    break;
             }
         });
-        settingAdaption(stage);
     }
 
     /**
@@ -87,12 +98,20 @@ public class MainController {
      */
     public static void saveLastConfig(Stage stage) throws IOException {
         Scene scene = stage.getScene();
+        //保存批量向excel功能插入图片最后设置
         imgToExcelSaveLastConfig(scene);
+        //保存分组统计文件信息导出到excel最后设置
         fileNumToExcelSaveLastConfig(scene);
+        //保存导出文件详细信息到excel最后设置
         fileNameToExcelSaveLastConfig(scene);
+        //保存文件批量重命名功能最后设置
         fileRenameSaveLastConfig(scene);
+        //保存关程序闭前页面状态设置
         mainSavaLastConfig(stage);
+        //保存设置页面最后设置
         saveSetting(scene);
+        //保存日志文件数量设置
+        saveLogsNumSetting(scene);
     }
 
     /**

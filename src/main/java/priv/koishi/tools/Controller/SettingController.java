@@ -73,10 +73,10 @@ public class SettingController {
     private ChoiceBox<String> sort_Set;
 
     @FXML
-    private TextField nextRunMemory_Set, logsNum_Set;
+    private TextField nextRunMemory_Set;
 
     @FXML
-    private Label mail_set, runningMemory_Set, thisPath_Set, logsPath_Set, systemMemory_Set;
+    private Label runningMemory_Set, thisPath_Set, systemMemory_Set;
 
     @FXML
     private CheckBox loadRename_Set, loadFileNum_Set, loadFileName_Set, loadImgToExcel_Set, lastTab_Set, fullWindow_Set, reverseSort_Set;
@@ -91,10 +91,10 @@ public class SettingController {
         //设置组件高度
         double stageHeight = stage.getHeight();
         TableView<?> table = (TableView<?>) scene.lookup("#tableView_Set");
-        table.setPrefHeight(stageHeight * 0.2);
+        table.setPrefHeight(stageHeight * 0.3);
         //设置组件宽度
         double stageWidth = stage.getWidth();
-        double tableWidth = stageWidth * 0.4;
+        double tableWidth = stageWidth * 0.5;
         table.setMaxWidth(tableWidth);
         Node settingVBox = scene.lookup("#vBox_Set");
         settingVBox.setLayoutX(stageWidth * 0.03);
@@ -113,9 +113,7 @@ public class SettingController {
     public static void saveSetting(Scene scene) throws IOException {
         //保存最大运行内存设置
         saveMemorySetting(scene);
-        //保存日志问文件数量设置
-        saveLogsNumSetting(scene);
-        //
+        //保存页面开启状态与展示顺序设置
         saveTabIds(scene);
     }
 
@@ -155,25 +153,6 @@ public class SettingController {
             return "Tools";
         }
         return "app.bat";
-    }
-
-    /**
-     * 保存日志问文件数量设置
-     *
-     * @param scene 程序主场景
-     * @throws IOException io异常
-     */
-    private static void saveLogsNumSetting(Scene scene) throws IOException {
-        InputStream input = checkRunningInputStream(configFile);
-        Properties prop = new Properties();
-        prop.load(input);
-        TextField logsNumTextField = (TextField) scene.lookup("#logsNum_Set");
-        String logsNumValue = logsNumTextField.getText();
-        prop.setProperty(key_logsNum, logsNumValue);
-        OutputStream output = checkRunningOutputStream(configFile);
-        prop.store(output, null);
-        input.close();
-        output.close();
     }
 
     /**
@@ -263,7 +242,6 @@ public class SettingController {
         setControlLastConfig(fullWindow_Set, prop, key_loadLastFullWindow, false, null);
         setControlLastConfig(lastTab_Set, prop, key_loadLastConfig, false, null);
         setControlLastConfig(reverseSort_Set, prop, key_reverseSort, false, null);
-        setControlLastConfig(logsNum_Set, prop, key_logsNum, false, null);
         setControlLastConfig(sort_Set, prop, key_sort, false, null);
         input.close();
     }
@@ -323,51 +301,6 @@ public class SettingController {
     }
 
     /**
-     * 获取logs文件夹路径并展示
-     */
-    private void setLogsPath() {
-        String logsPath = currentDir + File.separator + "logs";
-        setPathLabel(logsPath_Set, logsPath, false, anchorPane_Set);
-    }
-
-    /**
-     * 给输入框添加内容变化监听
-     */
-    private void textFieldChangeListener() {
-        //log 文件保留数量输入监听
-        integerRangeTextField(logsNum_Set, 0, null, tip_logsNum);
-    }
-
-    /**
-     * 清理多余log文件
-     *
-     * @throws RuntimeException 删除日志文件失败
-     */
-    private void deleteLogs() {
-        File[] files = new File(logsPath_Set.getText()).listFiles();
-        if (files != null) {
-            List<File> logList = new ArrayList<>();
-            for (File file : files) {
-                if (log.equals(getFileType(file))) {
-                    logList.add(file);
-                }
-            }
-            int logsNum = Integer.parseInt(logsNum_Set.getText());
-            if (logList.size() > logsNum) {
-                logList.sort((f1, f2) -> Long.compare(f2.lastModified(), f1.lastModified()));
-                List<File> removeList = logList.stream().skip(logsNum).toList();
-                removeList.forEach(r -> {
-                    String path = r.getAbsolutePath();
-                    File file = new File(path);
-                    if (!file.delete()) {
-                        throw new RuntimeException("日志文件 " + path + " 删除失败");
-                    }
-                });
-            }
-        }
-    }
-
-    /**
      * 设置鼠标悬停提示
      */
     private void setToolTip() {
@@ -397,20 +330,12 @@ public class SettingController {
      */
     @FXML
     private void initialize() throws IOException {
-        //添加右键菜单
-        setCopyValueContextMenu(mail_set, "复制反馈邮件", anchorPane_Set);
         //设置列表各列宽度
         bindPrefWidthProperty();
-        //给输入框添加内容变化监听
-        textFieldChangeListener();
         //设置是否加载最后一次功能配置信息初始值
         setLoadLastConfigs();
-        //获取logs文件夹路径并展示
-        setLogsPath();
         //获取最大运行内存并展示
         getMaxMemory();
-        //清理多余log文件
-        deleteLogs();
         //设置鼠标悬停提示
         setToolTip();
     }

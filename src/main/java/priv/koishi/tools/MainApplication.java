@@ -48,28 +48,19 @@ public class MainApplication extends Application {
         Properties prop = new Properties();
         InputStream input = checkRunningInputStream(configFile);
         prop.load(input);
-        double appWidth = Double.parseDouble(prop.getProperty("appWidth"));
-        double appHeight = Double.parseDouble(prop.getProperty("appHeight"));
-        if (activation.equals(prop.getProperty("lastFullWindow")) && activation.equals(prop.getProperty("loadLastFullWindow"))) {
+        double appWidth = Double.parseDouble(prop.getProperty(key_appWidth));
+        double appHeight = Double.parseDouble(prop.getProperty(key_appHeight));
+        if (activation.equals(prop.getProperty(key_lastFullWindow)) && activation.equals(prop.getProperty(key_loadLastFullWindow))) {
             stage.setMaximized(true);
         }
         Scene scene = new Scene(fxmlLoader.load(), appWidth, appHeight);
-        stage.setTitle(prop.getProperty("appTitle"));
+        stage.setTitle(prop.getProperty(key_appTitle));
         stage.setScene(scene);
         stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResource("icon/Tools.png")).toExternalForm()));
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("css/Styles.css")).toExternalForm());
         TabPane tabPane = (TabPane) scene.lookup("#tabPane");
-        List<String> tabIds = Arrays.asList(prop.getProperty("tabIds").split(" "));
-        List<TabBean> tabBeanList = buildTabsData(scene, tabPane, tabIds);
-        ObservableList<Tab> tabs = tabPane.getTabs();
-        //设置默认选中的Tab
-        tabs.forEach(tab -> {
-            if (activation.equals(prop.getProperty(key_loadLastConfig))) {
-                if (tab.getId().equals(prop.getProperty(key_lastTab))) {
-                    tabPane.getSelectionModel().select(tab);
-                }
-            }
-        });
+        //初始化各功能页面入口
+        List<TabBean> tabBeanList = buildTabsData(scene, tabPane, prop);
         input.close();
         //监听窗口面板宽度变化
         stage.widthProperty().addListener((v1, v2, v3) -> Platform.runLater(() -> mainAdaption(stage, tabBeanList)));
@@ -91,36 +82,64 @@ public class MainApplication extends Application {
      *
      * @param scene   程序主场景
      * @param tabPane 各功能页面入口所在tab布局
-     * @param tabIds  各功能页面入口对应的id
+     * @param prop    配置文件
      * @return 含有各功能页面属性的列表
      */
     @SuppressWarnings("unchecked")
-    private static List<TabBean> buildTabsData(Scene scene, TabPane tabPane, List<String> tabIds) {
+    private static List<TabBean> buildTabsData(Scene scene, TabPane tabPane, Properties prop) {
+        List<String> tabStateIds = Arrays.asList(prop.getProperty(key_tabIds).split(" "));
         TableView<TabBean> tableView = (TableView<TabBean>) scene.lookup("#tableView_Set");
         List<TabBean> tabBeanList = new ArrayList<>();
         ObservableList<Tab> tabs = tabPane.getTabs();
-        tabIds.forEach(tabId -> {
-            String tab = tabId.substring(0, tabId.indexOf("."));
-            String state = tabId.substring(tabId.indexOf(".") + 1);
+        List<String> tabIds = new ArrayList<>();
+        tabStateIds.forEach(tabStateId -> {
+            String tabId = tabStateId.substring(0, tabStateId.indexOf("."));
+            tabIds.add(tabId);
+            String state = tabStateId.substring(tabStateId.indexOf(".") + 1);
             TabBean tabBean = new TabBean();
             Optional<Tab> tabOptional = tabs.stream()
-                    .filter(t -> t.getId().equals(tab))
+                    .filter(t -> t.getId().equals(tabId))
                     .findFirst();
             if (tabOptional.isPresent()) {
-                Tab tabNode = tabOptional.get();
-                CheckBox checkBox = new CheckBox("启用");
+                Tab tab = tabOptional.get();
+                CheckBox checkBox = new CheckBox(text_activation);
+                addToolTip(tip_tabSwitch, checkBox);
                 boolean isActivation = activation.equals(state);
+                if (id_settingTab.equals(tabId) || id_aboutTab.equals(tabId)) {
+                    checkBox.setDisable(true);
+                    checkBox.setSelected(true);
+                    isActivation = true;
+                }
                 checkBox.setSelected(isActivation);
                 tabBean.setActivationCheckBox(checkBox)
-                        .setTabName(tabNode.getText())
-                        .setTabId(tab);
+                        .setTabName(tab.getText())
+                        .setTabId(tabId);
                 tabBeanList.add(tabBean);
                 if (!isActivation) {
-                    tabs.remove(tabNode);
+                    tabs.remove(tab);
+                }
+                //设置默认选中的Tab
+                if (activation.equals(prop.getProperty(key_loadLastConfig))) {
+                    if (tabId.equals(prop.getProperty(key_lastTab))) {
+                        tabPane.getSelectionModel().select(tab);
+                    }
                 }
             }
         });
+        //功能页按照设置排序
+        sortTabsByIds(tabs, tabIds);
         //构建tab信息列表
+        buildTableView(tableView, tabBeanList);
+        return tabBeanList;
+    }
+
+    /**
+     * 构建tab信息列表
+     *
+     * @param tableView   tab信息列表
+     * @param tabBeanList 要渲染的tab信息
+     */
+    private static void buildTableView(TableView<TabBean> tableView, List<TabBean> tabBeanList) {
         for (TableColumn<TabBean, ?> column : tableView.getColumns()) {
             if ("tabName_Set".equals(column.getId())) {
                 column.setCellValueFactory(new PropertyValueFactory<>("tabName"));
@@ -131,7 +150,6 @@ public class MainApplication extends Application {
         tableView.setItems(FXCollections.observableArrayList(tabBeanList));
         //设置列表通过拖拽排序行
         tableViewDragRow(tableView);
-        return tabBeanList;
     }
 
     /**

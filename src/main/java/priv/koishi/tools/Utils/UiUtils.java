@@ -531,7 +531,7 @@ public class UiUtils {
             row.setOnDragOver(e -> {
                 Dragboard db = e.getDragboard();
                 if (db.hasContent(dataFormat)) {
-                    if (row.getIndex() != (Integer) db.getContent(dataFormat)) {
+                    if (row.getIndex() != (Integer) db.getContent(dataFormat) && row.getIndex() < tableView.getItems().size()) {
                         e.acceptTransferModes(TransferMode.COPY_OR_MOVE);
                         e.consume();
                     }
@@ -857,7 +857,7 @@ public class UiUtils {
     }
 
     /**
-     * 添加复制label值右键菜单
+     * 添加复制Label值右键菜单
      *
      * @param valueLabel 要处理的文本栏
      * @param text       右键菜单文本
@@ -964,6 +964,20 @@ public class UiUtils {
             }
         }
         control.setPrefWidth(prefWidth);
+    }
+
+    /**
+     * 将Tab按照id排序
+     *
+     * @param tabs 要排序的tab
+     * @param ids  tab对应的id列表
+     */
+    public static void sortTabsByIds(ObservableList<Tab> tabs, List<String> ids) {
+        Map<String, Integer> orderMap = new HashMap<>();
+        for (int i = 0; i < ids.size(); i++) {
+            orderMap.put(ids.get(i), i);
+        }
+        tabs.sort(Comparator.comparingInt(tab -> orderMap.getOrDefault(tab.getId(), Integer.MAX_VALUE)));
     }
 
 }

@@ -80,41 +80,17 @@
             <Label prefHeight="25" fx:id="thisPath_Set" styleClass="label-button-style"/>
         </HBox>
 
+        <Separator/>
+
+        <Label prefHeight="25" text="功能页面设置："/>
+
+        <Label prefHeight="25" text="拖拽选中数据行即可更改功能页面顺序，列表数据从上到下对应功能页顺序为从左到右，更改启用勾选设置即可启用或禁用相关页面功能，更改设置后下次启动程序生效。"/>
+
         <TableView fx:id="tableView_Set">
             <columns>
                 <TableColumn fx:id="tabName_Set" text="功能名称"/>
                 <TableColumn fx:id="activationCheckBox_Set" text="启用状态"/>
             </columns>
         </TableView>
-        
-        <Separator/>
-
-        <Label prefHeight="25" text="关于："/>
-
-        <Label prefHeight="25" text="Tools 是一个由 javafx 实现的文件处理小工具，可以用来获取文件信息和批量修改文件名称。"/>
-
-        <Label prefHeight="25" text="excel 相关功能只支持 .xlsx 与 .xls 格式文件，如果需要使用 excel模板 则导出的文件格式只能与模板文件格式相同。"/>
-
-        <Label prefHeight="20" text="目前软件正在继续开发中，仍有很多功能还未实现，问题肯定也不少，有问题或建议可以给下面邮箱发邮件反馈。"/>
-
-        <Label prefHeight="20" text="如果遇到报错可到将 logs 文件夹压缩后发送给反馈邮件。"/>
-
-        <HBox spacing="5">
-            <Label prefHeight="25" text="logs 文件夹目录："/>
-            <Label prefHeight="25" prefWidth="400" fx:id="logsPath_Set"/>
-            <Label prefHeight="25" text="log 文件保留数量："/>
-            <TextField fx:id="logsNum_Set" prefHeight="20" prefWidth="50"/>
-            <Label prefHeight="25" text="个"/>
-        </HBox>
-
-        <HBox spacing="5">
-            <Label prefHeight="25" text="反馈邮箱："/>
-            <Label fx:id="mail_set" prefHeight="25" textFill="blue" text="csolxqt@foxmail.com"/>
-        </HBox>
-
-        <HBox spacing="5">
-            <Label prefHeight="25" text="当前版本："/>
-            <Label prefHeight="25" textFill="cornflowerblue" text="0.5.2.1"/>
-        </HBox>
     </VBox>
 </AnchorPane>
