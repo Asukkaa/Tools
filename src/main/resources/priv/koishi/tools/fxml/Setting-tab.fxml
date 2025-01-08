@@ -11,11 +11,11 @@
         <Label prefHeight="25" text="功能设置："/>
 
         <HBox spacing="50">
-            <CheckBox fx:id="loadRename_Set" onAction="#loadRenameAction" prefHeight="25" prefWidth="300"
+            <CheckBox fx:id="loadRename_Set" onAction="#loadRenameAction" prefHeight="25" prefWidth="320"
                       style="-fx-cursor: hand"
                       selected="true" text="按指定规则批量重命名文件 功能加载上次设置信息"/>
 
-            <CheckBox fx:id="loadImgToExcel_Set" onAction="#loadImgToExcelAction" prefHeight="25" prefWidth="300"
+            <CheckBox fx:id="loadImgToExcel_Set" onAction="#loadImgToExcelAction" prefHeight="25" prefWidth="320"
                       style="-fx-cursor: hand"
                       selected="true" text="将图片与excel匹配并插入 功能加载上次设置信息"/>
 
@@ -24,10 +24,10 @@
         </HBox>
 
         <HBox spacing="50">
-            <CheckBox fx:id="loadFileNum_Set" onAction="#loadFileNumAction" prefHeight="25" prefWidth="300"
+            <CheckBox fx:id="loadFileNum_Set" onAction="#loadFileNumAction" prefHeight="25" prefWidth="320"
                       style="-fx-cursor: hand" selected="true" text="分组统计文件夹下文件数量 功能加载上次设置信息"/>
 
-            <CheckBox fx:id="loadFileName_Set" onAction="#loadFileNameAction" prefHeight="25" prefWidth="300"
+            <CheckBox fx:id="loadFileName_Set" onAction="#loadFileNameAction" prefHeight="25" prefWidth="320"
                       style="-fx-cursor: hand" selected="true" text="获取文件夹下的文件名称 功能加载上次设置信息"/>
 
             <CheckBox fx:id="fullWindow_Set" onAction="#loadFullWindowAction" prefHeight="25"
@@ -52,7 +52,7 @@
                 </value>
             </ChoiceBox>
 
-            <Label prefWidth="45"/>
+            <Label prefWidth="55"/>
             <CheckBox fx:id="reverseSort_Set" onAction="#reverseSorAction" prefHeight="25" style="-fx-cursor: hand"
                       text="默认倒序排序"/>
         </HBox>
