@@ -54,7 +54,7 @@
 
             <Label prefWidth="55"/>
             <CheckBox fx:id="reverseSort_Set" onAction="#reverseSorAction" prefHeight="25" style="-fx-cursor: hand"
-                      text="默认倒序排序"/>
+                      text="文件查询默认倒序排序"/>
         </HBox>
 
         <Separator/>
@@ -82,9 +82,11 @@
 
         <Separator/>
 
-        <Label prefHeight="25" text="功能页面设置："/>
+        <Label text="功能页面设置："/>
 
-        <Label prefHeight="25" text="拖拽选中数据行即可更改功能页面顺序，列表数据从上到下对应功能页顺序为从左到右，更改启用勾选设置即可启用或禁用相关页面功能，更改设置后下次启动程序生效。"/>
+        <Label text="拖拽 或 右键点击 列表中选中的数据行即可更改功能页面顺序，列表数据从上到下对应功能页顺序为从左到右"/>
+
+        <Label text="更改启用勾选设置即可启用或禁用相关页面功能，更改设置后下次启动程序生效"/>
 
         <TableView fx:id="tableView_Set">
             <columns>

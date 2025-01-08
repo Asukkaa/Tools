@@ -472,7 +472,6 @@ public class ImgToExcelController extends CommonProperties {
         addToolTip(tip_openFile, openFile_Img);
         addToolTip(tip_recursion, recursion_Img);
         addToolTip(tip_sheetName, sheetName_Img);
-        addToolTip(tip_excelName + defaultOutFileName, excelName_Img);
         addToolTip(tip_maxImgNum, maxImgNum_Img);
         addToolTip(tip_startReadRow, startRow_Img);
         addToolTip(tip_fileButton, fileButton_Img);
@@ -489,6 +488,7 @@ public class ImgToExcelController extends CommonProperties {
         addToolTip(tip_excelPathButton, excelPathButton_Img);
         addToolTip(tip_filterImgType, jpg_Img, png_Img, jpeg_Img);
         addToolTip(tip_excelType, excelType_Img, excelTypeLabel_Img);
+        addToolTip(tip_excelName + defaultOutFileName, excelName_Img);
         addToolTip(text_onlyNaturalNumber + defaultStartCell, startCell_Img);
         addToolTip(tip_imgHeightWidth + defaultImgWidth + tip_imgWidth, imgWidth_Img);
         addToolTip(tip_imgHeightWidth + defaultImgHeight + tip_imgHeight, imgHeight_Img);

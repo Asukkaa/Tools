@@ -136,7 +136,29 @@ public class MainApplication extends Application {
         tabs.addAll(sortTabs);
         //构建tab信息列表
         buildTableView(tableView, tabBeanList);
+        //为tab信息列表添加右键菜单
+        tableViewContextMenu(tableView);
         return tabBeanList;
+    }
+
+    /**
+     * 构建右键菜单
+     *
+     * @param tableView 要添加右键菜单的列表
+     */
+    private static void tableViewContextMenu(TableView<TabBean> tableView) {
+        //添加右键菜单
+        ContextMenu contextMenu = new ContextMenu();
+        //所选行上移一行选项
+        buildUpMoveDataMenuItem(tableView, contextMenu);
+        //所选行下移一行选项
+        buildDownMoveDataMenuItem(tableView, contextMenu);
+        tableView.setContextMenu(contextMenu);
+        tableView.setOnMousePressed(event -> {
+            if (event.isSecondaryButtonDown()) {
+                contextMenu.show(tableView, event.getScreenX(), event.getScreenY());
+            }
+        });
     }
 
     /**

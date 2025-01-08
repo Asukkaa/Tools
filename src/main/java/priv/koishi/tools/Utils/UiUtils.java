@@ -612,28 +612,28 @@ public class UiUtils {
      * @param tableView   要添加右键菜单的列表
      * @param contextMenu 右键菜单集合
      */
-    private static void buildUpMoveDataMenuItem(TableView<FileBean> tableView, ContextMenu contextMenu) {
+    public static<T> void buildUpMoveDataMenuItem(TableView<T> tableView, ContextMenu contextMenu) {
         MenuItem menuItem = new MenuItem("所选行上移一行");
         menuItem.setOnAction(event -> {
             //getSelectedCells处理上移操作有bug，通过getSelectedItems拿到的数据是实时变化的，需要一个新的list来存
-            List<FileBean> selectionList = tableView.getSelectionModel().getSelectedItems();
-            List<FileBean> selections = new ArrayList<>(selectionList);
-            List<FileBean> fileList = tableView.getItems();
-            List<FileBean> tempList = new ArrayList<>(fileList);
+            List<T> selectionList = tableView.getSelectionModel().getSelectedItems();
+            List<T> selections = new ArrayList<>(selectionList);
+            List<T> fileList = tableView.getItems();
+            List<T> tempList = new ArrayList<>(fileList);
             //上移所选数据位置
             for (int i = 0; i < selectionList.size(); i++) {
-                FileBean fileBean = selectionList.get(i);
-                int index = fileList.indexOf(fileBean);
+                T t = selectionList.get(i);
+                int index = fileList.indexOf(t);
                 if (index - i > 0) {
                     tempList.set(index, tempList.get(index - 1));
-                    tempList.set(index - 1, fileBean);
+                    tempList.set(index - 1, t);
                 }
             }
             fileList.clear();
             fileList.addAll(tempList);
             //重新选中移动后的数据
-            for (FileBean fileBean : selections) {
-                int index = fileList.indexOf(fileBean);
+            for (T t : selections) {
+                int index = fileList.indexOf(t);
                 if (index != -1) {
                     tableView.getSelectionModel().select(index);
                 }
@@ -648,14 +648,14 @@ public class UiUtils {
      * @param tableView   要添加右键菜单的列表
      * @param contextMenu 右键菜单集合
      */
-    private static void buildDownMoveDataMenuItem(TableView<FileBean> tableView, ContextMenu contextMenu) {
+    public static<T> void buildDownMoveDataMenuItem(TableView<T> tableView, ContextMenu contextMenu) {
         MenuItem menuItem = new MenuItem("所选行下移一行");
         menuItem.setOnAction(event -> {
             var selectedCells = tableView.getSelectionModel().getSelectedCells();
             int loopTime = 0;
             for (int i = selectedCells.size(); i > 0; i--) {
                 int row = selectedCells.get(i - 1).getRow();
-                List<FileBean> fileList = tableView.getItems();
+                List<T> fileList = tableView.getItems();
                 loopTime++;
                 if (row + loopTime < fileList.size()) {
                     fileList.add(row, fileList.remove(row + 1));
@@ -717,12 +717,12 @@ public class UiUtils {
      * @param label       列表对应的统计信息展示栏
      * @param contextMenu 右键菜单集合
      */
-    private static void buildDeleteDataMenuItem(TableView<FileBean> tableView, Label label, ContextMenu contextMenu) {
+    private static<T> void buildDeleteDataMenuItem(TableView<T> tableView, Label label, ContextMenu contextMenu) {
         MenuItem deleteDataMenuItem = new MenuItem("删除所选数据");
         deleteDataMenuItem.setOnAction(event -> {
-            List<FileBean> fileBeans = tableView.getSelectionModel().getSelectedItems();
-            ObservableList<FileBean> items = tableView.getItems();
-            items.removeAll(fileBeans);
+            List<T> ts = tableView.getSelectionModel().getSelectedItems();
+            ObservableList<T> items = tableView.getItems();
+            items.removeAll(ts);
             label.setText(text_allHave + items.size() + text_file);
         });
         contextMenu.getItems().add(deleteDataMenuItem);
