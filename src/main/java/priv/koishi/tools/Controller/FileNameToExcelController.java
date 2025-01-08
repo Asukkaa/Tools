@@ -154,10 +154,9 @@ public class FileNameToExcelController extends CommonProperties {
         //设置组件宽度
         double stageWidth = stage.getWidth();
         double tableWidth = stageWidth * 0.94;
+        table.setMaxWidth(stageWidth);
         Node vbox = scene.lookup("#vbox_Name");
         vbox.setLayoutX(stageWidth * 0.03);
-        Node tableView = scene.lookup("#tableView_Name");
-        tableView.setStyle("-fx-pref-width: " + tableWidth + "px;");
         Node id = scene.lookup("#id_Name");
         id.setStyle("-fx-pref-width: " + tableWidth * 0.04 + "px;");
         Node name = scene.lookup("#name_Name");

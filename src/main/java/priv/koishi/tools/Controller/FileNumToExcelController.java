@@ -167,10 +167,9 @@ public class FileNumToExcelController extends CommonProperties {
         //设置组件宽度
         double stageWidth = stage.getWidth();
         double tableWidth = stageWidth * 0.94;
+        table.setMaxWidth(stageWidth);
         Node fileNumVbox = scene.lookup("#vbox_Num");
         fileNumVbox.setLayoutX(stageWidth * 0.03);
-        Node tableView = scene.lookup("#tableView_Num");
-        tableView.setStyle("-fx-pref-width: " + tableWidth + "px;");
         Node groupId = scene.lookup("#groupId_Num");
         groupId.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
         Node groupNameNum = scene.lookup("#groupName_Num");

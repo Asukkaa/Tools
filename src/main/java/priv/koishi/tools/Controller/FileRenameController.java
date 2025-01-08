@@ -149,10 +149,9 @@ public class FileRenameController extends CommonProperties {
         //设置组件宽度
         double stageWidth = stage.getWidth();
         double tableWidth = stageWidth * 0.94;
+        table.setMaxWidth(stageWidth);
         Node vbox = scene.lookup("#vbox_Re");
         vbox.setLayoutX(stageWidth * 0.03);
-        Node tableView = scene.lookup("#tableView_Re");
-        tableView.setStyle("-fx-pref-width: " + tableWidth + "px;");
         Node id = scene.lookup("#id_Re");
         id.setStyle("-fx-pref-width: " + tableWidth * 0.04 + "px;");
         Node name = scene.lookup("#name_Re");
