@@ -476,6 +476,9 @@ public class CommonTexts {
      */
     public static final String userHome = System.getProperty("user.home");
 
+    /**
+     * 程序根目录
+     */
     public static final String Tools = "Tools" + File.separator;
 
     /**

@@ -50,7 +50,7 @@ public class ReadDataService {
         return new Task<>() {
             @Override
             protected List<FileNumBean> call() throws Exception {
-                //改变要防重复点击的组件状态
+                // 改变要防重复点击的组件状态
                 changeDisableControls(taskBean, true);
                 updateMessage(text_readData);
                 List<FileNumBean> fileNumBeanList = new ArrayList<>();
@@ -61,7 +61,7 @@ public class ReadDataService {
                 int maxRow = excelConfig.getMaxRowNum();
                 checkFileExists(excelInPath, text_excelNotExists);
                 Workbook workbook = getWorkbook(excelInPath);
-                //读取指定sheet
+                // 读取指定sheet
                 Sheet sheet;
                 if (StringUtils.isEmpty(sheetName)) {
                     sheet = workbook.getSheetAt(0);
@@ -71,12 +71,12 @@ public class ReadDataService {
                         throw new Exception("未读取到名称为 " + sheetName + " 的表");
                     }
                 }
-                //获取有文字的最后一行行号
+                // 获取有文字的最后一行行号
                 int lastRowNum = sheet.getLastRowNum();
                 DataFormatter dataFormatter = new DataFormatter();
                 for (int i = lastRowNum; i >= 0; i--) {
                     Row row = sheet.getRow(i);
-                    //过滤中间的空单元格
+                    // 过滤中间的空单元格
                     if (row != null) {
                         if (StringUtils.isNotBlank(dataFormatter.formatCellValue(row.getCell(readCell)))) {
                             lastRowNum = i;
@@ -87,13 +87,13 @@ public class ReadDataService {
                         throw new Exception("未读取到excel模板分组信息");
                     }
                 }
-                //获取要读取的最后一行
+                // 获取要读取的最后一行
                 if (maxRow == -1 || maxRow > lastRowNum) {
                     maxRow = lastRowNum;
                 } else {
                     maxRow += readRow - 1;
                 }
-                //读取excel数据
+                // 读取excel数据
                 int id = 0;
                 for (int i = readRow; i <= maxRow; ++i) {
                     Row row = sheet.getRow(i);
@@ -109,14 +109,14 @@ public class ReadDataService {
                     updateProgress(i, maxRow);
                 }
                 workbook.close();
-                //如果是文件重命名的excel模板则无需匹配数据
+                // 如果是文件重命名的excel模板则无需匹配数据
                 if (taskBean.isReturnRenameList()) {
                     if (CollectionUtils.isEmpty(fileNumBeanList)) {
                         throw new Exception(text_selectNull);
                     }
                     return fileNumBeanList;
                 }
-                //已经读取文件后再匹配数据
+                // 已经读取文件后再匹配数据
                 List<File> inFileList = taskBean.getInFileList();
                 if (CollectionUtils.isNotEmpty(inFileList)) {
                     FileConfig fileConfig = new FileConfig();
@@ -128,7 +128,7 @@ public class ReadDataService {
                 } else {
                     updateMessage(text_allHave + fileNumBeanList.size() + text_data);
                 }
-                //匹配数据
+                // 匹配数据
                 return showReadExcelData(fileNumBeanList, taskBean);
             }
         };
@@ -180,10 +180,10 @@ public class ReadDataService {
         return new Task<>() {
             @Override
             protected Void call() throws IOException {
-                //改变要防重复点击的组件状态
+                // 改变要防重复点击的组件状态
                 changeDisableControls(taskBean, true);
                 updateMessage(text_readData);
-                //判断是否为重命名功能的查询文件
+                // 判断是否为重命名功能的查询文件
                 Configuration configuration = taskBean.getConfiguration();
                 CodeRenameConfig codeRenameConfig = null;
                 StringRenameConfig stringRenameConfig = null;
@@ -199,9 +199,9 @@ public class ReadDataService {
                         stringRenameConfig = (StringRenameConfig) configuration;
                     }
                 }
-                //组装文件数据
+                // 组装文件数据
                 List<File> inFileList = taskBean.getInFileList();
-                //数据排序
+                // 数据排序
                 comparingData(taskBean, inFileList);
                 List<FileBean> fileBeans = new ArrayList<>();
                 int inFileSize = inFileList.size();
@@ -217,7 +217,7 @@ public class ReadDataService {
                     }
                     String showStatus = f.isHidden() ? "隐藏" : "非隐藏";
                     fileBean.setShowStatus(showStatus);
-                    //组装文件重命名数据
+                    // 组装文件重命名数据
                     buildRename(codeRenameConfig, fileBean, stringRenameConfig, startName, tag);
                     if (codeRenameConfig != null) {
                         if (nameNum < codeRenameConfig.getNameNum()) {
@@ -229,7 +229,7 @@ public class ReadDataService {
                             nameNum = 1;
                         }
                     }
-                    //组装文件基础数据
+                    // 组装文件基础数据
                     fileBean.setUpdateDate(getFileUpdateTime(f))
                             .setCreatDate(getFileCreatTime(f))
                             .setFileType(getFileType(f))
@@ -239,7 +239,7 @@ public class ReadDataService {
                     updateProgress(i + 1, inFileSize);
                 }
                 updateMessage(text_allHave + inFileSize + text_file);
-                //渲染数据
+                // 渲染数据
                 showFileSizeColumData(fileBeans, taskBean);
                 return null;
             }
@@ -254,7 +254,7 @@ public class ReadDataService {
      */
     private static void comparingData(TaskBean<?> taskBean, List<File> fileList) {
         String sortType = taskBean.getSortType();
-        //是否倒序排序
+        // 是否倒序排序
         boolean reverseSort = taskBean.isReverseSort();
         switch (sortType) {
             case "按文件名称排序": {

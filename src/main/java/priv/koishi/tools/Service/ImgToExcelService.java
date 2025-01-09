@@ -65,9 +65,9 @@ public class ImgToExcelService {
         return new Task<>() {
             @Override
             protected SXSSFWorkbook call() throws Exception {
-                //改变要防重复点击的组件状态
+                // 改变要防重复点击的组件状态
                 changeDisableControls(taskBean, true);
-                //校验excel输出路径是否与模板一致，若不一致则复制一份模板文件到输出路径
+                // 校验excel输出路径是否与模板一致，若不一致则复制一份模板文件到输出路径
                 checkCopyDestination(excelConfig);
                 String excelInPath = excelConfig.getInPath();
                 checkFileExists(excelInPath, text_excelNotExists);
@@ -93,7 +93,7 @@ public class ImgToExcelService {
                 boolean exportFileNum = excelConfig.isExportFileNum();
                 boolean exportFileSize = excelConfig.isExportFileSize();
                 List<String> titles = new ArrayList<>();
-                //创建表头
+                // 创建表头
                 if (excelConfig.isExportTitle()) {
                     titles = buildTitles(exportFileNum, exportFileSize, true);
                     rowNum = buildExcelTitle(sheet, startRowNum, titles, startCellNum);
@@ -107,31 +107,31 @@ public class ImgToExcelService {
                     List<String> imgList = fileNumBean.getFilePathList();
                     Row row = getOrCreateRow(sheet, rowNum);
                     Cell startCell = row.createCell(startCellNum);
-                    //判断附加项导出设置
+                    // 判断附加项导出设置
                     if (exportFileNum && !exportFileSize) {
-                        //附加项只导出文件数量
+                        // 附加项只导出文件数量
                         startCell.setCellValue(fileNumBean.getGroupNumber());
                         maxCellNum = buildImgExcel(imgList, excelConfig, startCellNum + 1, rowNum, sheet, sxssfWorkbook, row, maxCellNum);
                     } else if (!exportFileNum && exportFileSize) {
-                        //附加项只导出文件大小
+                        // 附加项只导出文件大小
                         startCell.setCellValue(fileNumBean.getFileUnitSize());
                         maxCellNum = buildImgExcel(imgList, excelConfig, startCellNum + 1, rowNum, sheet, sxssfWorkbook, row, maxCellNum);
                     } else if (exportFileNum) {
-                        //附加项导出文件数量和大小
+                        // 附加项导出文件数量和大小
                         startCell.setCellValue(fileNumBean.getGroupNumber());
                         int sizeCellNum = startCellNum + 1;
                         Cell sizeCell = row.createCell(sizeCellNum);
                         sizeCell.setCellValue(fileNumBean.getFileUnitSize());
                         maxCellNum = buildImgExcel(imgList, excelConfig, sizeCellNum + 1, rowNum, sheet, sxssfWorkbook, row, maxCellNum);
                     } else {
-                        //不导出附加项
+                        // 不导出附加项
                         maxCellNum = buildImgExcel(imgList, excelConfig, startCellNum, rowNum, sheet, sxssfWorkbook, row, maxCellNum);
                     }
                     updateMessage(text_printing + (i + 1) + "/" + fileNum + text_data);
                     updateProgress(i + 1, fileNum);
                     rowNum++;
                 }
-                //合并图片表头单元格
+                // 合并图片表头单元格
                 if (excelConfig.isExportTitle()) {
                     sheet.addMergedRegion(new CellRangeAddress(startRowNum, startRowNum, startCellNum + titles.size() - 1, maxCellNum - 1));
                 }
@@ -165,18 +165,18 @@ public class ImgToExcelService {
         } else {
             sxssfWorkbook.setCompressTempFiles(true);
             for (String i : imgList) {
-                //将图片插入Excel单元格
+                // 将图片插入Excel单元格
                 CreationHelper helper = sxssfWorkbook.getCreationHelper();
                 Drawing<?> drawing = sheet.createDrawingPatriarch();
                 ClientAnchor anchor = helper.createClientAnchor();
-                //设置图片的起始位置以及大小
+                // 设置图片的起始位置以及大小
                 anchor.setCol1(cellNum);
                 anchor.setRow1(rowNum);
                 anchor.setCol2(cellNum + 1);
                 anchor.setRow2(rowNum + 1);
                 anchor.setAnchorType(ClientAnchor.AnchorType.MOVE_DONT_RESIZE);
                 String extension = getFileType(new File(i));
-                //读取图片文件
+                // 读取图片文件
                 inputStream = Files.newInputStream(Paths.get(i));
                 try {
                     if (jpg.equals(extension) || jpeg.equals(extension)) {

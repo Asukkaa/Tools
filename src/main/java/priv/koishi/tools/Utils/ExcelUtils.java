@@ -48,7 +48,7 @@ public class ExcelUtils {
      */
     public static void autoSizeExcelCell(Sheet sheet, int cellNum) {
         sheet.autoSizeColumn(cellNum);
-        //手动调整列宽，解决中文不能自适应问题,单元格单行最长支持255*256的宽度（每个单元格样式已经设置自动换行，超出即换行）,设置最低列宽度，列宽约六个中文字符
+        // 手动调整列宽，解决中文不能自适应问题,单元格单行最长支持255*256的宽度（每个单元格样式已经设置自动换行，超出即换行）,设置最低列宽度，列宽约六个中文字符
         int width = Math.max(15 * 256, Math.min(255 * 256, sheet.getColumnWidth(cellNum) * 12 / 10));
         sheet.setColumnWidth(cellNum, width);
     }
@@ -112,21 +112,21 @@ public class ExcelUtils {
      */
     public static List<String> buildTitles(boolean exportFileNum, boolean exportFileSize, boolean isImg) {
         List<String> titles = new ArrayList<>();
-        //判断导出图片还是文件名
+        // 判断导出图片还是文件名
         if (isImg) {
             titles.add("匹配的图片");
         } else {
             titles.add("文件名称");
         }
-        //判断附加项导出设置
+        // 判断附加项导出设置
         if (exportFileNum && !exportFileSize) {
-            //附加项只导出文件数量
+            // 附加项只导出文件数量
             titles.addFirst("文件数量");
         } else if (!exportFileNum && exportFileSize) {
-            //附加项只导出文件大小
+            // 附加项只导出文件大小
             titles.addFirst("文件总大小");
         } else if (exportFileNum) {
-            //附加项导出文件数量和大小
+            // 附加项导出文件数量和大小
             titles.addFirst("文件总大小");
             titles.addFirst("文件数量");
         }

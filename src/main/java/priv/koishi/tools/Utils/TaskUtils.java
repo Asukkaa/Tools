@@ -36,15 +36,15 @@ public class TaskUtils {
         ProgressBar progressBar = taskBean.getProgressBar();
         Label massageLabel = taskBean.getMassageLabel();
         if (progressBar != null) {
-            //绑定进度条的值属性
+            // 绑定进度条的值属性
             progressBar.progressProperty().unbind();
             progressBar.setVisible(true);
-            //给进度条设置初始值
+            // 给进度条设置初始值
             progressBar.setProgress(0);
             progressBar.progressProperty().bind(task.progressProperty());
         }
         if (massageLabel != null) {
-            //绑定TextField的值属性
+            // 绑定TextField的值属性
             massageLabel.textProperty().unbind();
             massageLabel.textProperty().bind(task.messageProperty());
         }
@@ -114,19 +114,19 @@ public class TaskUtils {
      * @param taskBean 要解绑的线程组件信息
      */
     public static void taskUnbind(TaskBean<?> taskBean) {
-        //隐藏取消按钮
+        // 隐藏取消按钮
         Button cancelButton = taskBean.getCancelButton();
         if (cancelButton != null) {
             cancelButton.setVisible(false);
         }
-        //解除防重复点击按钮不可点击限制
+        // 解除防重复点击按钮不可点击限制
         changeDisableControls(taskBean, false);
-        //隐藏和解绑消息通知组件
+        // 隐藏和解绑消息通知组件
         Label massageLabel = taskBean.getMassageLabel();
         if (massageLabel != null) {
             massageLabel.textProperty().unbind();
         }
-        //隐藏和解绑进度条
+        // 隐藏和解绑进度条
         ProgressBar progressBar = taskBean.getProgressBar();
         if (progressBar != null) {
             progressBar.setVisible(false);

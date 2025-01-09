@@ -180,11 +180,11 @@ public class ImgToExcelController extends CommonProperties {
      */
     public static void imgToExcelAdaption(Stage stage) {
         Scene scene = stage.getScene();
-        //设置组件高度
+        // 设置组件高度
         double stageHeight = stage.getHeight();
         TableView<?> table = (TableView<?>) scene.lookup("#tableView_Img");
         table.setPrefHeight(stageHeight * 0.5);
-        //设置组件宽度
+        // 设置组件宽度
         double stageWidth = stage.getWidth();
         double tableWidth = stageWidth * 0.94;
         table.setMaxWidth(stageWidth);
@@ -304,7 +304,7 @@ public class ImgToExcelController extends CommonProperties {
      */
     private void addInFile(File selectedFile, List<String> filterExtensionList) throws Exception {
         FileConfig fileConfig = getInFileList(selectedFile, filterExtensionList);
-        //列表中有excel分组后再匹配数据
+        // 列表中有excel分组后再匹配数据
         ObservableList<FileNumBean> fileNumList = tableView_Img.getItems();
         if (CollectionUtils.isNotEmpty(fileNumList)) {
             machGroup(fileConfig, fileNumList, inFileList, tableView_Img, tabId, fileNumber_Img, fileUnitSize_Img);
@@ -356,11 +356,11 @@ public class ImgToExcelController extends CommonProperties {
      */
     private Task<List<FileNumBean>> addInData() throws Exception {
         removeAll();
-        //渲染表格前需要更新一下读取的文件
+        // 渲染表格前需要更新一下读取的文件
         updateInFileList();
         String excelPath = excelPath_Img.getText();
         excelType_Img.setText(getFileType(new File(excelPath)));
-        //组装数据
+        // 组装数据
         String maxImgValue = maxImgNum_Img.getText();
         int maxImgNum = 0;
         if (StringUtils.isNotBlank(maxImgValue)) {
@@ -383,9 +383,9 @@ public class ImgToExcelController extends CommonProperties {
                 .setInFileList(inFileList)
                 .setMaxImgNum(maxImgNum)
                 .setTabId(tabId);
-        //获取Task任务
+        // 获取Task任务
         Task<List<FileNumBean>> readExcelTask = readExcel(excelConfig, taskBean);
-        //绑定带进度条的线程
+        // 绑定带进度条的线程
         bindingProgressBarTask(readExcelTask, taskBean);
         readExcelTask.setOnSucceeded(event -> taskUnbind(taskBean));
         executorService.execute(readExcelTask);
@@ -513,27 +513,27 @@ public class ImgToExcelController extends CommonProperties {
      * 给输入框添加内容变化监听
      */
     private void textFieldChangeListener() {
-        //限制读取最大行数只能输入正整数
+        // 限制读取最大行数只能输入正整数
         integerRangeTextField(maxRow_Img, 1, null, tip_maxRow);
-        //最大匹配数量设置监听
+        // 最大匹配数量设置监听
         integerRangeTextField(maxImgNum_Img, 1, null, tip_maxImgNum);
-        //限制导出预留行只能输入自然数
+        // 限制导出预留行只能输入自然数
         integerRangeTextField(startRow_Img, 0, null, tip_startReadRow);
-        //限制导出预留列只能输入自然数
+        // 限制导出预留列只能输入自然数
         integerRangeTextField(startCell_Img, 0, null, text_onlyNaturalNumber + defaultStartCell);
-        //图片宽度设置监听
+        // 图片宽度设置监听
         integerRangeTextField(imgWidth_Img, 0, null, text_onlyNaturalNumber + defaultImgWidth + tip_imgWidth);
-        //图片高度设置监听
+        // 图片高度设置监听
         integerRangeTextField(imgHeight_Img, 0, null, text_onlyNaturalNumber + defaultImgHeight + tip_imgHeight);
-        //限制读取起始列只能输入自然数
+        // 限制读取起始列只能输入自然数
         integerRangeTextField(readCell_Img, 0, null, text_onlyNaturalNumber + defaultReadCell + text_formThe + (defaultReadCell + 1) + text_cell);
-        //限制读取起始行只能输入自然数
+        // 限制读取起始行只能输入自然数
         integerRangeTextField(readRow_Img, 0, null, text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row);
-        //鼠标悬留提示输入的文件名称分割符
+        // 鼠标悬留提示输入的文件名称分割符
         textFieldValueListener(subCode_Img, tip_subCode);
-        //鼠标悬留提示输入的导出excel表名称
+        // 鼠标悬留提示输入的导出excel表名称
         textFieldValueListener(sheetName_Img, tip_sheetName);
-        //鼠标悬留提示输入的导出excel文件名称
+        // 鼠标悬留提示输入的导出excel文件名称
         textFieldValueListener(excelName_Img, tip_excelName + defaultOutFileName);
     }
 
@@ -570,17 +570,17 @@ public class ImgToExcelController extends CommonProperties {
      */
     @FXML
     private void initialize() throws IOException {
-        //读取全局变量配置
+        // 读取全局变量配置
         getConfig();
-        //设置要防重复点击的组件
+        // 设置要防重复点击的组件
         setDisableControls();
-        //设置鼠标悬停提示
+        // 设置鼠标悬停提示
         setToolTip();
-        //设置javafx单元格宽度
+        // 设置javafx单元格宽度
         tableViewNumImgAdaption(groupId_Img, tableView_Img, groupName_Img.prefWidthProperty(), groupNumber_Img.prefWidthProperty(), fileName_Img, fileUnitSize_Img);
-        //给输入框添加内容变化监听
+        // 给输入框添加内容变化监听
         textFieldChangeListener();
-        //设置初始配置值为上次配置值
+        // 设置初始配置值为上次配置值
         setLastConfig();
     }
 
@@ -596,9 +596,9 @@ public class ImgToExcelController extends CommonProperties {
         // 显示文件选择器
         File selectedFile = creatDirectoryChooser(actionEvent, inFilePath, text_selectDirectory);
         if (selectedFile != null) {
-            //更新所选文件路径显示
+            // 更新所选文件路径显示
             inFilePath = updatePathLabel(selectedFile.getPath(), inFilePath, key_inFilePath, inPath_Img, configFile_Img, anchorPane_Img);
-            //读取文件数据
+            // 读取文件数据
             addInFile(selectedFile, getFilterExtension());
         }
     }
@@ -699,7 +699,7 @@ public class ImgToExcelController extends CommonProperties {
                 .setInPath(excelPath_Img.getText())
                 .setNoImg(noImg_Img.isSelected())
                 .setOutPath(outFilePath);
-        //重新查询任务
+        // 重新查询任务
         Task<List<FileNumBean>> reselectTask = reselect();
         reselectTask.setOnSucceeded(event -> {
             TaskBean<FileNumBean> taskBean = new TaskBean<>();
@@ -712,13 +712,13 @@ public class ImgToExcelController extends CommonProperties {
                     .setMassageLabel(log_Img)
                     .setTabId(tabId);
             taskUnbind(taskBean);
-            //校验匹配文件总大小是否能够正常导出
+            // 校验匹配文件总大小是否能够正常导出
             if (checkFileSize()) {
-                //组装excel任务
+                // 组装excel任务
                 buildExcelTask = buildImgGroupExcel(taskBean, excelConfig);
                 bindingProgressBarTask(buildExcelTask, taskBean);
                 buildExcelTask.setOnSucceeded(e -> {
-                    //保存excel任务
+                    // 保存excel任务
                     saveExcelTask = saveExcelTask(excelConfig, buildExcelTask.getValue());
                     bindingProgressBarTask(saveExcelTask, taskBean);
                     saveExcelTask.setOnSucceeded(s -> {
@@ -760,7 +760,7 @@ public class ImgToExcelController extends CommonProperties {
         getConfig();
         File selectedFile = creatDirectoryChooser(actionEvent, outFilePath, text_selectDirectory);
         if (selectedFile != null) {
-            //更新所选文件路径显示
+            // 更新所选文件路径显示
             outFilePath = updatePathLabel(selectedFile.getPath(), outFilePath, key_outFilePath, outPath_Img, configFile_Img, anchorPane_Img);
             if (StringUtils.isNotEmpty(excelPath_Img.getText())) {
                 reselect();
@@ -780,7 +780,7 @@ public class ImgToExcelController extends CommonProperties {
         List<FileChooser.ExtensionFilter> extensionFilters = new ArrayList<>(Collections.singleton(new FileChooser.ExtensionFilter("Excel", "*.xlsx")));
         File selectedFile = creatFileChooser(actionEvent, excelInPath, extensionFilters, text_selectExcel);
         if (selectedFile != null) {
-            //更新所选文件路径显示
+            // 更新所选文件路径显示
             excelInPath = updatePathLabel(selectedFile.getPath(), excelInPath, key_excelInPath, excelPath_Img, configFile_Img, anchorPane_Img);
             addInData();
         }

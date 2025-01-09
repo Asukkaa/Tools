@@ -160,11 +160,11 @@ public class FileNumToExcelController extends CommonProperties {
      */
     public static void fileNumToExcelAdaption(Stage stage) {
         Scene scene = stage.getScene();
-        //设置组件高度
+        // 设置组件高度
         double stageHeight = stage.getHeight();
         TableView<?> table = (TableView<?>) scene.lookup("#tableView_Num");
         table.setPrefHeight(stageHeight * 0.5);
-        //设置组件宽度
+        // 设置组件宽度
         double stageWidth = stage.getWidth();
         double tableWidth = stageWidth * 0.94;
         table.setMaxWidth(stageWidth);
@@ -262,7 +262,7 @@ public class FileNumToExcelController extends CommonProperties {
      */
     private void addInFile(File selectedFile, List<String> filterExtensionList) throws Exception {
         FileConfig fileConfig = getInFileList(selectedFile, filterExtensionList);
-        //列表中有excel分组后再匹配数据
+        // 列表中有excel分组后再匹配数据
         ObservableList<FileNumBean> fileNumList = tableView_Num.getItems();
         if (CollectionUtils.isNotEmpty(fileNumList)) {
             machGroup(fileConfig, fileNumList, inFileList, tableView_Num, tabId, fileNumber_Num, fileUnitSize_Num);
@@ -306,11 +306,11 @@ public class FileNumToExcelController extends CommonProperties {
      */
     private Task<List<FileNumBean>> addInData() {
         removeAll();
-        //渲染表格前需要更新一下读取的文件
+        // 渲染表格前需要更新一下读取的文件
         updateInFileList();
         String excelPath = excelPath_Num.getText();
         excelType_Num.setText(getFileType(new File(excelPath)));
-        //组装数据
+        // 组装数据
         ExcelConfig excelConfig = new ExcelConfig();
         excelConfig.setReadCellNum(setDefaultIntValue(readCell_Num, defaultReadCell, 0, null))
                 .setReadRowNum(setDefaultIntValue(readRow_Num, defaultReadRow, 0, null))
@@ -327,12 +327,12 @@ public class FileNumToExcelController extends CommonProperties {
                 .setTableView(tableView_Num)
                 .setInFileList(inFileList)
                 .setTabId(tabId);
-        //获取Task任务
+        // 获取Task任务
         Task<List<FileNumBean>> readExcelTask = readExcel(excelConfig, taskBean);
         readExcelTask.setOnSucceeded(event -> taskUnbind(taskBean));
-        //绑定带进度条的线程
+        // 绑定带进度条的线程
         bindingProgressBarTask(readExcelTask, taskBean);
-        //使用新线程启动
+        // 使用新线程启动
         executorService.execute(readExcelTask);
         return readExcelTask;
     }
@@ -444,23 +444,23 @@ public class FileNumToExcelController extends CommonProperties {
      * 给输入框添加内容变化监听
      */
     private void textFieldChangeListener() {
-        //限制读取最大行数只能输入正整数
+        // 限制读取最大行数只能输入正整数
         integerRangeTextField(maxRow_Num, 1, null, tip_maxRow);
-        //限制导出预留行只能输入自然数
+        // 限制导出预留行只能输入自然数
         integerRangeTextField(startRow_Num, 0, null, text_onlyNaturalNumber + defaultStartCell);
-        //限制导出预留列只能输入自然数
+        // 限制导出预留列只能输入自然数
         integerRangeTextField(startCell_Num, 0, null, text_onlyNaturalNumber + defaultStartCell);
-        //限制读取起始行只能输入自然数
+        // 限制读取起始行只能输入自然数
         integerRangeTextField(readRow_Num, 0, null, text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row);
-        //限制读取起始列只能输入自然数
+        // 限制读取起始列只能输入自然数
         integerRangeTextField(readCell_Num, 0, null, text_onlyNaturalNumber + defaultReadCell + text_formThe + (defaultReadCell + 1) + text_cell);
-        //鼠标悬留提示输入的文件名称分割符
+        // 鼠标悬留提示输入的文件名称分割符
         textFieldValueListener(subCode_Num, tip_subCode);
-        //鼠标悬留提示输入的导出excel表名称
+        // 鼠标悬留提示输入的导出excel表名称
         textFieldValueListener(sheetName_Num, tip_sheetName);
-        //鼠标悬留提示输入的导出excel文件名称
+        // 鼠标悬留提示输入的导出excel文件名称
         textFieldValueListener(excelName_Num, tip_excelName + defaultOutFileName);
-        //鼠标悬留提示输入的需要识别的文件后缀名
+        // 鼠标悬留提示输入的需要识别的文件后缀名
         textFieldValueListener(filterFileType_Num, tip_filterFileType);
     }
 
@@ -471,17 +471,17 @@ public class FileNumToExcelController extends CommonProperties {
      */
     @FXML
     private void initialize() throws IOException {
-        //读取全局变量配置
+        // 读取全局变量配置
         getConfig();
-        //设置要防重复点击的组件
+        // 设置要防重复点击的组件
         setDisableControls();
-        //设置鼠标悬停提示
+        // 设置鼠标悬停提示
         setToolTip();
-        //设置javafx单元格宽度
+        // 设置javafx单元格宽度
         tableViewNumImgAdaption(groupId_Num, tableView_Num, groupName_Num.prefWidthProperty(), groupNumber_Num.prefWidthProperty(), fileName_Num, fileUnitSize_Num);
-        //给输入框添加内容变化监听
+        // 给输入框添加内容变化监听
         textFieldChangeListener();
-        //设置初始配置值为上次配置值
+        // 设置初始配置值为上次配置值
         setLastConfig();
     }
 
@@ -497,9 +497,9 @@ public class FileNumToExcelController extends CommonProperties {
         // 显示文件选择器
         File selectedFile = creatDirectoryChooser(actionEvent, inFilePath, text_selectDirectory);
         if (selectedFile != null) {
-            //更新所选文件路径显示
+            // 更新所选文件路径显示
             inFilePath = updatePathLabel(selectedFile.getPath(), inFilePath, key_inFilePath, inPath_Num, configFile_Num, anchorPane_Num);
-            //读取文件数据
+            // 读取文件数据
             addInFile(selectedFile, getFilterExtensionList(filterFileType_Num));
         }
     }
@@ -585,12 +585,12 @@ public class FileNumToExcelController extends CommonProperties {
                     .setInFileList(inFileList)
                     .setMassageLabel(log_Num)
                     .setTabId(tabId);
-            //获取Task任务
+            // 获取Task任务
             Task<Workbook> buildExcelTask = buildNameGroupNumExcel(taskBean, excelConfig);
-            //线程成功后保存excel
+            // 线程成功后保存excel
             saveExcelOnSucceeded(excelConfig, taskBean, buildExcelTask, openDirectory_Num, openFile_Num, executorService);
         });
-        //使用新线程启动
+        // 使用新线程启动
         executorService.execute(reselectTask);
     }
 
@@ -605,7 +605,7 @@ public class FileNumToExcelController extends CommonProperties {
         getConfig();
         File selectedFile = creatDirectoryChooser(actionEvent, outFilePath, text_selectDirectory);
         if (selectedFile != null) {
-            //更新所选文件路径显示
+            // 更新所选文件路径显示
             outFilePath = updatePathLabel(selectedFile.getPath(), outFilePath, key_outFilePath, outPath_Num, configFile_Num, anchorPane_Num);
             if (StringUtils.isNotEmpty(excelPath_Num.getText())) {
                 reselect();
@@ -628,7 +628,7 @@ public class FileNumToExcelController extends CommonProperties {
         extensionFilters.add(new FileChooser.ExtensionFilter("Excel(2003)", "*.xls"));
         File selectedFile = creatFileChooser(actionEvent, excelInPath, extensionFilters, text_selectExcel);
         if (selectedFile != null) {
-            //更新所选文件路径显示
+            // 更新所选文件路径显示
             excelInPath = updatePathLabel(selectedFile.getPath(), excelInPath, key_excelInPath, excelPath_Num, configFile_Num, anchorPane_Num);
             addInData();
         }

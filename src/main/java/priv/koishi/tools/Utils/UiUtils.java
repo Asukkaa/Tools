@@ -136,7 +136,7 @@ public class UiUtils {
                 fileChooser.setInitialDirectory(file);
             }
         }
-        //设置过滤条件
+        // 设置过滤条件
         if (CollectionUtils.isNotEmpty(extensionFilters)) {
             fileChooser.getExtensionFilters().addAll(extensionFilters);
         }
@@ -184,9 +184,9 @@ public class UiUtils {
      * @param sizeColumn 要进行文件大小排序的列
      */
     public static void fileSizeColum(TableColumn<?, String> sizeColumn) {
-        //自定义比较器
+        // 自定义比较器
         Comparator<String> customComparator = Comparator.comparingDouble(FileUtils::fileSizeCompareValue);
-        //应用自定义比较器
+        // 应用自定义比较器
         sizeColumn.setComparator(customComparator);
     }
 
@@ -232,7 +232,7 @@ public class UiUtils {
      * @return 如果文本输入框填的是合法文件名则返回所填值，不合法则返回默认值
      */
     public static String setDefaultFileName(TextField textField, String defaultValue) {
-        //去掉开头的空字符
+        // 去掉开头的空字符
         String valueStr = textField.getText().replaceFirst("^\\s+", "");
         String value = defaultValue;
         if (isValidFileName(valueStr)) {
@@ -498,7 +498,7 @@ public class UiUtils {
      * @throws IOException io异常
      */
     public static String updatePathLabel(String selectedFilePath, String filePath, String pathKey, Label pathLabel, String configFile, AnchorPane anchorPane) throws IOException {
-        //只有跟上次选的路径不一样才更新
+        // 只有跟上次选的路径不一样才更新
         if (!filePath.equals(selectedFilePath)) {
             updateProperties(configFile, pathKey, selectedFilePath);
             filePath = selectedFilePath;
@@ -515,7 +515,7 @@ public class UiUtils {
     public static <T> void tableViewDragRow(TableView<T> tableView) {
         tableView.setRowFactory(tv -> {
             TableRow<T> row = new TableRow<>();
-            //拖拽-检测
+            // 拖拽-检测
             row.setOnDragDetected(e -> {
                 if (!row.isEmpty()) {
                     Integer index = row.getIndex();
@@ -527,7 +527,7 @@ public class UiUtils {
                     e.consume();
                 }
             });
-            //释放-验证
+            // 释放-验证
             row.setOnDragOver(e -> {
                 Dragboard db = e.getDragboard();
                 if (db.hasContent(dataFormat)) {
@@ -537,7 +537,7 @@ public class UiUtils {
                     }
                 }
             });
-            //释放-执行
+            // 释放-执行
             row.setOnDragDropped(e -> {
                 Dragboard db = e.getDragboard();
                 if (db.hasContent(dataFormat)) {
@@ -566,21 +566,21 @@ public class UiUtils {
      * @param anchorPane 列表所在布局
      */
     public static void tableViewContextMenu(TableView<FileBean> tableView, Label label, AnchorPane anchorPane) {
-        //设置可以选中多行
+        // 设置可以选中多行
         tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        //添加右键菜单
+        // 添加右键菜单
         ContextMenu contextMenu = new ContextMenu();
-        //所选行上移一行选项
+        // 所选行上移一行选项
         buildUpMoveDataMenuItem(tableView, contextMenu);
-        //所选行下移一行选项
+        // 所选行下移一行选项
         buildDownMoveDataMenuItem(tableView, contextMenu);
-        //打开所选文件选项
+        // 打开所选文件选项
         buildOpenFileMenuItem(tableView, contextMenu);
-        //打开所选文件所在文件夹选项
+        // 打开所选文件所在文件夹选项
         buildOpenDirectorMenuItem(tableView, contextMenu);
-        //复制文件路径选项
+        // 复制文件路径选项
         buildOpenCopyFilePathItem(tableView, contextMenu, anchorPane);
-        //删除所选数据选项
+        // 删除所选数据选项
         buildDeleteDataMenuItem(tableView, label, contextMenu);
         tableView.setContextMenu(contextMenu);
         tableView.setOnMousePressed(event -> {
@@ -615,12 +615,12 @@ public class UiUtils {
     public static<T> void buildUpMoveDataMenuItem(TableView<T> tableView, ContextMenu contextMenu) {
         MenuItem menuItem = new MenuItem("所选行上移一行");
         menuItem.setOnAction(event -> {
-            //getSelectedCells处理上移操作有bug，通过getSelectedItems拿到的数据是实时变化的，需要一个新的list来存
+            // getSelectedCells处理上移操作有bug，通过getSelectedItems拿到的数据是实时变化的，需要一个新的list来存
             List<T> selectionList = tableView.getSelectionModel().getSelectedItems();
             List<T> selections = new ArrayList<>(selectionList);
             List<T> fileList = tableView.getItems();
             List<T> tempList = new ArrayList<>(fileList);
-            //上移所选数据位置
+            // 上移所选数据位置
             for (int i = 0; i < selectionList.size(); i++) {
                 T t = selectionList.get(i);
                 int index = fileList.indexOf(t);
@@ -631,7 +631,7 @@ public class UiUtils {
             }
             fileList.clear();
             fileList.addAll(tempList);
-            //重新选中移动后的数据
+            // 重新选中移动后的数据
             for (T t : selections) {
                 int index = fileList.indexOf(t);
                 if (index != -1) {
@@ -789,17 +789,17 @@ public class UiUtils {
         pathLabel.getStyleClass().add("label-button-style");
         File file = new File(path);
         String openPath;
-        //判断是否打开文件
+        // 判断是否打开文件
         if (!openFile && file.isFile()) {
             openPath = file.getParent();
         } else {
             openPath = path;
         }
         pathLabel.setOnMouseClicked(event -> {
-            //只接受左键点击
+            // 只接受左键点击
             if (event.getButton() == MouseButton.PRIMARY) {
                 try {
-                    //判断是否打开文件
+                    // 判断是否打开文件
                     if (!openFile) {
                         openDirectory(path);
                     } else {
@@ -811,7 +811,7 @@ public class UiUtils {
             }
         });
         addToolTip(path + "\n鼠标左键点击打开 " + openPath, pathLabel);
-        //设置右键菜单
+        // 设置右键菜单
         setPathLabelContextMenu(pathLabel, anchorPane);
     }
 
@@ -873,7 +873,7 @@ public class UiUtils {
                 contextMenu.show(valueLabel, event.getScreenX(), event.getScreenY());
             }
         });
-        //设置右键菜单行为
+        // 设置右键菜单行为
         copyValueMenuItem.setOnAction(event -> copyText(valueLabel.getText(), anchorPane));
     }
 
@@ -884,15 +884,15 @@ public class UiUtils {
      * @param anchorPane 组件所在布局
      */
     public static void copyText(String value, AnchorPane anchorPane) {
-        //获取当前系统剪贴板
+        // 获取当前系统剪贴板
         Clipboard clipboard = Clipboard.getSystemClipboard();
-        //创建剪贴板内容对象
+        // 创建剪贴板内容对象
         ClipboardContent content = new ClipboardContent();
-        //将文本区域选中的文本放入剪贴板内容中
+        // 将文本区域选中的文本放入剪贴板内容中
         content.putString(value);
-        //设置剪贴板内容
+        // 设置剪贴板内容
         clipboard.setContent(content);
-        //复制成功消息气泡
+        // 复制成功消息气泡
         buildMessageBubble(anchorPane, text_copySuccess, 1);
     }
 
@@ -906,17 +906,17 @@ public class UiUtils {
     public static void buildMessageBubble(AnchorPane anchorPane, String text, double time) {
         MessageBubble bubble = new MessageBubble(text);
         anchorPane.getChildren().add(bubble);
-        //列表中无法监控鼠标位置需要判断是否监控到鼠标移动
+        // 列表中无法监控鼠标位置需要判断是否监控到鼠标移动
         AtomicBoolean getMouseMoved = new AtomicBoolean(false);
         anchorPane.addEventHandler(MouseEvent.MOUSE_MOVED, mouseEvent -> {
-            //获取鼠标位置
+            // 获取鼠标位置
             getMouseMoved.set(true);
             double mouseX = mouseEvent.getX();
             double mouseY = mouseEvent.getY();
             bubble.setLayoutX(mouseX + 30);
             bubble.setLayoutY(mouseY);
         });
-        //鼠标在列表时设置初位置
+        // 鼠标在列表时设置初位置
         if (!getMouseMoved.get()) {
             bubble.setLayoutX(anchorPane.getWidth() * 0.5);
             bubble.setLayoutY(anchorPane.getHeight() * 0.5);

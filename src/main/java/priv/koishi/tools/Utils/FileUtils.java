@@ -71,7 +71,7 @@ public class FileUtils {
         long win = 1024;
         long mac = 1000;
         long kb;
-        //macOS与Windows文件大小进制不同
+        // macOS与Windows文件大小进制不同
         if (systemName.contains(macos) && distinguishOS) {
             kb = mac;
         } else {
@@ -96,7 +96,7 @@ public class FileUtils {
         double win = 1024;
         double mac = 1000;
         double kb;
-        //macOS与Windows文件大小进制不同
+        // macOS与Windows文件大小进制不同
         if (systemName.contains(macos)) {
             kb = mac;
         } else {

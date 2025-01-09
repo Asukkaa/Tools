@@ -88,11 +88,11 @@ public class SettingController {
      */
     public static void settingAdaption(Stage stage) {
         Scene scene = stage.getScene();
-        //设置组件高度
+        // 设置组件高度
         double stageHeight = stage.getHeight();
         TableView<?> table = (TableView<?>) scene.lookup("#tableView_Set");
         table.setPrefHeight(stageHeight * 0.3);
-        //设置组件宽度
+        // 设置组件宽度
         double stageWidth = stage.getWidth();
         double tableWidth = stageWidth * 0.5;
         table.setMaxWidth(tableWidth);
@@ -111,9 +111,9 @@ public class SettingController {
      * @throws IOException io异常
      */
     public static void saveSetting(Scene scene) throws IOException {
-        //保存最大运行内存设置
+        // 保存最大运行内存设置
         saveMemorySetting(scene);
-        //保存页面开启状态与展示顺序设置
+        // 保存页面开启状态与展示顺序设置
         saveTabIds(scene);
     }
 
@@ -272,7 +272,7 @@ public class SettingController {
         long totalMemory = ((com.sun.management.OperatingSystemMXBean) osBean).getTotalMemorySize();
         String systemUnitSizeMemory = getUnitSize(totalMemory, false);
         String memoryUnit = systemUnitSizeMemory.substring(systemUnitSizeMemory.lastIndexOf(" ") + 1);
-        //获取操作系统内存整数部分作为下次启动时程序分配最大内存的限制
+        // 获取操作系统内存整数部分作为下次启动时程序分配最大内存的限制
         int systemMemoryValue = (int) Double.parseDouble(systemUnitSizeMemory.substring(0, systemUnitSizeMemory.lastIndexOf(" ")));
         if (TB.equals(memoryUnit)) {
             systemMemoryValue = systemMemoryValue * 1024;
@@ -283,7 +283,7 @@ public class SettingController {
         setPathLabel(thisPath_Set, currentDir, false, anchorPane_Set);
         String scriptPath = currentDir + File.separator + scriptName;
         addValueToolTip(nextRunMemory_Set, tip_defaultNextRunMemory, text_nowValue);
-        //下次运行的最大内存输入监听
+        // 下次运行的最大内存输入监听
         integerRangeTextField(nextRunMemory_Set, 1, systemMemoryValue, tip_defaultNextRunMemory);
         BufferedReader reader = new BufferedReader(new FileReader(scriptPath));
         String line;
@@ -292,7 +292,7 @@ public class SettingController {
                 scriptMemory = line.substring(line.lastIndexOf(Xmx) + Xmx.length(), line.lastIndexOf(g));
                 nextRunMemory_Set.setText(scriptMemory);
                 addValueToolTip(nextRunMemory_Set, text_nowSetting + scriptMemory + text_memorySetting, text_nowValue);
-                //下次运行的最大内存输入监听
+                // 下次运行的最大内存输入监听
                 integerRangeTextField(nextRunMemory_Set, 1, systemMemoryValue, text_nowSetting + scriptMemory + text_memorySetting);
                 break;
             }
@@ -330,13 +330,13 @@ public class SettingController {
      */
     @FXML
     private void initialize() throws IOException {
-        //设置列表各列宽度
+        // 设置列表各列宽度
         bindPrefWidthProperty();
-        //设置是否加载最后一次功能配置信息初始值
+        // 设置是否加载最后一次功能配置信息初始值
         setLoadLastConfigs();
-        //获取最大运行内存并展示
+        // 获取最大运行内存并展示
         getMaxMemory();
-        //设置鼠标悬停提示
+        // 设置鼠标悬停提示
         setToolTip();
     }
 

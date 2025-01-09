@@ -34,9 +34,9 @@ public class FileRenameService {
         return new Task<>() {
             @Override
             protected String call() throws Exception {
-                //改变要防重复点击的组件状态
+                // 改变要防重复点击的组件状态
                 changeDisableControls(taskBean, true);
-                //防止命名重复先将所有慰文件重命名为uuid生成的临时名称
+                // 防止命名重复先将所有慰文件重命名为uuid生成的临时名称
                 updateMessage("正在将文件重命名为临时名称");
                 List<FileBean> fileBeanList = taskBean.getBeanList();
                 int fileBeanListSize = fileBeanList.size();
@@ -51,7 +51,7 @@ public class FileRenameService {
                     updateMessage("已修改编号为 " + fileBean.getId() + " 的文件 " + fileBean.getName() + " 临时名称为 " + tempName);
                     updateProgress(i, fileBeanListSize);
                 }
-                //将重命名为临时名称的文件重命名为正式名称
+                // 将重命名为临时名称的文件重命名为正式名称
                 updateMessage("正在将文件重命名为正式名称");
                 updateProgress(0, fileBeanListSize);
                 for (int i = 0; i < fileBeanListSize; i++) {
@@ -73,7 +73,7 @@ public class FileRenameService {
                 return new File(fileBeanList.getFirst().getPath()).getParent();
             }
 
-            //给文件一个临时重命名
+            // 给文件一个临时重命名
             private static File tempRename(FileBean fileBean, String tempName) throws Exception {
                 String oldPath = fileBean.getPath();
                 File oldFile = new File(oldPath);
@@ -155,12 +155,12 @@ public class FileRenameService {
     private static String getSubCodeRename(CodeRenameConfig codeRenameConfig, FileBean fileBean, String tag) {
         int startSize = codeRenameConfig.getStartSize();
         String fileRename = fileBean.getCodeRename();
-        //使用String.format()函数进行补齐操作
+        // 使用String.format()函数进行补齐操作
         if (startSize > 0) {
             fileRename = String.format("%0" + startSize + "d", Integer.parseInt(fileRename));
         }
         fileBean.setTagRename("");
-        //只有同名文件超过0个才需要分隔符
+        // 只有同名文件超过0个才需要分隔符
         if (codeRenameConfig.getNameNum() > 0) {
             String subCode = codeRenameConfig.getSubCode();
             String space = "";
@@ -310,23 +310,23 @@ public class FileRenameService {
         if (!fileName.contains(renameValue)) {
             return fileName;
         }
-        //匹配最后一次相同字符串
+        // 匹配最后一次相同字符串
         int lastIndexOf = fileName.lastIndexOf(renameValue);
-        //组装左侧重命名
+        // 组装左侧重命名
         String leftName = fileName.substring(0, lastIndexOf);
         int leftSize = leftName.length();
         int left = Math.min(stringRenameConfig.getLeft(), leftSize);
         String leftRename = leftName.substring(0, leftSize - left);
         String leftBehavior = stringRenameConfig.getLeftBehavior();
         String renameLeft = getOneSideRename(leftRename, leftBehavior, true, stringRenameConfig.getLeftValue());
-        //组装右侧重命名
+        // 组装右侧重命名
         String rightName = fileName.substring(lastIndexOf + renameValue.length());
         int rightSize = rightName.length();
         int right = Math.min(stringRenameConfig.getRight(), rightSize);
         String rightRename = rightName.substring(right);
         String rightBehavior = stringRenameConfig.getRightBehavior();
         String renameRight = getOneSideRename(rightRename, rightBehavior, false, stringRenameConfig.getRightValue());
-        //中间字符串
+        // 中间字符串
         String middleName = leftName.substring(leftSize - left) + renameValue + rightName.substring(0, right);
         return renameLeft + middleName + renameRight;
     }

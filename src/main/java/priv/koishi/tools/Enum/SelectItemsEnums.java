@@ -14,13 +14,16 @@ import static priv.koishi.tools.Enum.SelectItemsEnum.*;
  */
 public enum SelectItemsEnums {
 
-    //阿拉伯数字
+    // 阿拉伯数字
     subCodeArabicNumItems(subCodeArabicNumAddSpaceItems, subCodeArabicNumNoSpaceItems),
-    //中文小写数字
+
+    // 中文小写数字
     subCodeChineseNumItems(subCodeChineseAddSpaceNumItems, subCodeChineseNoSpaceNumItems),
-    //英文小写字母
+
+    // 英文小写字母
     subCodeLowercaseItems(subCodeLowercaseAddSpaceNumItems, subCodeLowercaseNoSpaceNumItems),
-    //英文大写字母
+
+    // 英文大写字母
     subCodeUppercaseNumItems(subCodeUppercaseAddSpaceNumItems, subCodeUppercaseNoSpaceNumItems);
 
     private final SelectItemsEnum[] selectItemsEnums;

@@ -50,7 +50,7 @@ public class MainController {
      */
     public static void mainAdaption(Stage stage, List<TabBean> tabBeanList) {
         Scene scene = stage.getScene();
-        //设置组件高度
+        // 设置组件高度
         double stageHeight = stage.getHeight();
         TabPane tabPane = (TabPane) scene.lookup("#tabPane");
         tabPane.setStyle("-fx-pref-height: " + stageHeight + "px;");
@@ -98,19 +98,19 @@ public class MainController {
      */
     public static void saveLastConfig(Stage stage) throws IOException {
         Scene scene = stage.getScene();
-        //保存批量向excel功能插入图片最后设置
+        // 保存批量向excel功能插入图片最后设置
         imgToExcelSaveLastConfig(scene);
-        //保存分组统计文件信息导出到excel最后设置
+        // 保存分组统计文件信息导出到excel最后设置
         fileNumToExcelSaveLastConfig(scene);
-        //保存导出文件详细信息到excel最后设置
+        // 保存导出文件详细信息到excel最后设置
         fileNameToExcelSaveLastConfig(scene);
-        //保存文件批量重命名功能最后设置
+        // 保存文件批量重命名功能最后设置
         fileRenameSaveLastConfig(scene);
-        //保存关程序闭前页面状态设置
+        // 保存关程序闭前页面状态设置
         mainSavaLastConfig(stage);
-        //保存设置页面最后设置
+        // 保存设置页面最后设置
         saveSetting(scene);
-        //保存日志文件数量设置
+        // 保存日志文件数量设置
         saveLogsNumSetting(scene);
     }
 

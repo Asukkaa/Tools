@@ -48,7 +48,7 @@ public class FileNameToExcelService {
      * @throws Exception io异常
      */
     public static Task<Workbook> buildFileNameExcel(ExcelConfig excelConfig, TaskBean<FileBean> taskBean) throws Exception {
-        //改变要防重复点击的组件状态
+        // 改变要防重复点击的组件状态
         changeDisableControls(taskBean, true);
         String excelType = excelConfig.getOutExcelType();
         Workbook workbook = null;
@@ -63,7 +63,7 @@ public class FileNameToExcelService {
         String sheetName = excelConfig.getSheetName();
         if (excelInPath != null && !excelInPath.isEmpty()) {
             checkFileExists(excelInPath, text_excelNotExists);
-            //输出路径与编辑路径不同先将要编辑的文件复制到输出路径
+            // 输出路径与编辑路径不同先将要编辑的文件复制到输出路径
             checkCopyDestination(excelConfig);
             if (xlsx.equals(excelType)) {
                 workbook = new XSSFWorkbook(new FileInputStream(excelInPath));
@@ -95,7 +95,7 @@ public class FileNameToExcelService {
                 sheet = workbook.createSheet(sheetName);
             }
         }
-        //构建excel
+        // 构建excel
         return buildNoGroupExcel(taskBean, excelConfig, sheet, workbook);
     }
 
@@ -112,7 +112,7 @@ public class FileNameToExcelService {
         return new Task<>() {
             @Override
             protected Workbook call() throws IllegalAccessException, InvocationTargetException {
-                //改变要防重复点击的组件状态
+                // 改变要防重复点击的组件状态
                 changeDisableControls(taskBean, true);
                 updateMessage(text_printData);
                 List<FileBean> fileBeans = taskBean.getBeanList();
@@ -121,7 +121,7 @@ public class FileNameToExcelService {
                 int dataSize = fileBeans.size();
                 updateMessage(text_identify + dataSize + text_file);
                 if (!excelConfig.isExportFullList()) {
-                    //创建表头
+                    // 创建表头
                     if (excelConfig.isExportTitle()) {
                         Row row = getOrCreateRow(sheet, startRowNum);
                         Cell cell = row.createCell(startCellNum);
@@ -129,9 +129,9 @@ public class FileNameToExcelService {
                         startRowNum++;
                     }
                     List<String> names = new ArrayList<>();
-                    //获取文件名称
+                    // 获取文件名称
                     fileBeans.forEach(fileBean -> names.add(fileBean.getName()));
-                    //将数据写入单元格
+                    // 将数据写入单元格
                     for (int i = 0; i < dataSize; i++) {
                         String name = names.get(i);
                         Row row = getOrCreateRow(sheet, startRowNum);
@@ -146,7 +146,7 @@ public class FileNameToExcelService {
                     List<String> titles = new ArrayList<>();
                     List<String> ids = new ArrayList<>();
                     String tabId = "_Name";
-                    //获取属性顺序与名称
+                    // 获取属性顺序与名称
                     ObservableList<? extends TableColumn<?, ?>> columns = taskBean.getTableView().getColumns();
                     columns.forEach(c -> {
                         titles.add(c.getText());
@@ -154,11 +154,11 @@ public class FileNameToExcelService {
                         id = id.substring(0, id.lastIndexOf(tabId));
                         ids.add(id);
                     });
-                    //创建表头
+                    // 创建表头
                     if (excelConfig.isExportTitle()) {
                         startRowNum = buildExcelTitle(sheet, startRowNum, titles, startCellNum);
                     }
-                    //组装excel数据
+                    // 组装excel数据
                     int maxCellNum = startCellNum;
                     for (int i = 0; i < dataSize; i++) {
                         Row row = getOrCreateRow(sheet, startRowNum);
@@ -173,7 +173,7 @@ public class FileNameToExcelService {
                                 properties.put(propertyName, propertyValue);
                             }
                         }
-                        //将数据写入单元格
+                        // 将数据写入单元格
                         for (int j = 0; j < ids.size(); j++) {
                             int cellNum = startCellNum + j;
                             Cell cell = row.createCell(cellNum);

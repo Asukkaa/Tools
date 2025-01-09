@@ -44,9 +44,9 @@ public class FileNumToExcelService {
         return new Task<>() {
             @Override
             protected Workbook call() throws Exception {
-                //改变要防重复点击的组件状态
+                // 改变要防重复点击的组件状态
                 changeDisableControls(taskBean, true);
-                //校验excel输出路径是否与模板一致，若不一致则复制一份模板文件到输出路径
+                // 校验excel输出路径是否与模板一致，若不一致则复制一份模板文件到输出路径
                 checkCopyDestination(excelConfig);
                 String excelInPath = excelConfig.getInPath();
                 checkFileExists(excelInPath, text_excelNotExists);
@@ -86,7 +86,7 @@ public class FileNumToExcelService {
                 boolean exportFileNum = excelConfig.isExportFileNum();
                 boolean exportFileSize = excelConfig.isExportFileSize();
                 List<String> titles = new ArrayList<>();
-                //创建表头
+                // 创建表头
                 if (excelConfig.isExportTitle()) {
                     titles = buildTitles(exportFileNum, exportFileSize, false);
                     rowNum = buildExcelTitle(sheet, startRowNum, titles, startCellNum);
@@ -96,30 +96,30 @@ public class FileNumToExcelService {
                     List<String> fileNameList = fileBean.getFileNameList();
                     Row row = getOrCreateRow(sheet, rowNum);
                     Cell startCell = row.createCell(startCellNum);
-                    //判断附加项导出设置
+                    // 判断附加项导出设置
                     if (exportFileNum && !exportFileSize) {
                         startCell.setCellValue(fileBean.getGroupNumber());
                         maxCellNum = buildFileName(fileNameList, row, startCellNum + 1, maxCellNum);
                     } else if (!exportFileNum && exportFileSize) {
-                        //附加项只导出文件大小
+                        // 附加项只导出文件大小
                         startCell.setCellValue(fileBean.getFileUnitSize());
                         maxCellNum = buildFileName(fileNameList, row, startCellNum + 1, maxCellNum);
                     } else if (exportFileNum) {
-                        //附加项导出文件数量和大小
+                        // 附加项导出文件数量和大小
                         startCell.setCellValue(fileBean.getGroupNumber());
                         int sizeCellNum = startCellNum + 1;
                         Cell sizeCell = row.createCell(sizeCellNum);
                         sizeCell.setCellValue(fileBean.getFileUnitSize());
                         maxCellNum = buildFileName(fileNameList, row, sizeCellNum + 1, maxCellNum);
                     } else {
-                        //不导出附加项
+                        // 不导出附加项
                         maxCellNum = buildFileName(fileNameList, row, startCellNum, maxCellNum);
                     }
                     updateMessage(text_printing + (i + 1) + "/" + fileBeansSize + text_data);
                     updateProgress(i + 1, fileBeansSize);
                     rowNum++;
                 }
-                //合并文件名表头单元格
+                // 合并文件名表头单元格
                 if (excelConfig.isExportTitle()) {
                     sheet.addMergedRegion(new CellRangeAddress(startRowNum, startRowNum, startCellNum + titles.size() - 1, maxCellNum - 1));
                 }

@@ -142,11 +142,11 @@ public class FileRenameController extends CommonProperties {
      */
     public static void fileRenameAdaption(Stage stage) {
         Scene scene = stage.getScene();
-        //设置组件高度
+        // 设置组件高度
         double stageHeight = stage.getHeight();
         TableView<?> table = (TableView<?>) scene.lookup("#tableView_Re");
         table.setPrefHeight(stageHeight * 0.5);
-        //设置组件宽度
+        // 设置组件宽度
         double stageWidth = stage.getWidth();
         double tableWidth = stageWidth * 0.94;
         table.setMaxWidth(stageWidth);
@@ -207,7 +207,7 @@ public class FileRenameController extends CommonProperties {
             ChoiceBox<?> renameType = (ChoiceBox<?>) scene.lookup("#renameType_Re");
             String renameTypeValue = (String) renameType.getValue();
             prop.put(key_lastRenameType, renameTypeValue);
-            //根据文件重命名依据设置保存配置信息
+            // 根据文件重命名依据设置保存配置信息
             saveLastConfigByRenameType(prop, renameTypeValue, scene);
             OutputStream output = checkRunningOutputStream(configFile_Rename);
             prop.store(output, null);
@@ -226,17 +226,17 @@ public class FileRenameController extends CommonProperties {
     private static void saveLastConfigByRenameType(Properties prop, String renameTypeValue, Scene scene) {
         switch (renameTypeValue) {
             case text_codeRename: {
-                //按编号规则重命名保存配置信息
+                // 按编号规则重命名保存配置信息
                 saveLastConfigByCodeRename(prop, scene);
                 break;
             }
             case text_strRename: {
-                //按指定字符重命名保存配置信息
+                // 按指定字符重命名保存配置信息
                 saveLastConfigByStrRename(prop, scene);
                 break;
             }
             case text_excelRename: {
-                //按excel模板重命名保存配置信息
+                // 按excel模板重命名保存配置信息
                 saveLastConfigByExcelRename(prop, scene);
                 break;
             }
@@ -354,24 +354,24 @@ public class FileRenameController extends CommonProperties {
                 .setSortType(sortValue)
                 .setShowFileType(false)
                 .setTabId(tabId);
-        //匹配重命名规则
+        // 匹配重命名规则
         matchRenameConfig(taskBean);
-        //获取Task任务
+        // 获取Task任务
         Task<Void> readFileTask = readFile(taskBean);
-        //绑定带进度条的线程
+        // 绑定带进度条的线程
         bindingProgressBarTask(readFileTask, taskBean);
         readFileTask.setOnSucceeded(event -> {
             if (text_excelRename.equals(renameType_Re.getValue()) && StringUtils.isNotBlank(excelPath_Re.getText())) {
                 readExcelRename();
             } else {
-                //表格设置为可编辑
+                // 表格设置为可编辑
                 tableView_Re.setEditable(true);
                 rename_Re.setCellFactory((tableColumn) -> new EditingCell<>(FileBean::setRename));
                 taskUnbind(taskBean);
             }
-            //设置列表通过拖拽排序行
+            // 设置列表通过拖拽排序行
             tableViewDragRow(tableView_Re);
-            //构建右键菜单
+            // 构建右键菜单
             tableViewContextMenu(tableView_Re, fileNumber_Re, anchorPane_Re);
         });
         executorService.execute(readFileTask);
@@ -394,16 +394,16 @@ public class FileRenameController extends CommonProperties {
                 .setMassageLabel(log_Re)
                 .setShowFileType(false)
                 .setTabId(tabId);
-        //获取Task任务
+        // 获取Task任务
         Task<List<FileNumBean>> readExcelTask = readExcel(excelConfig, taskBean);
         readExcelTask.setOnSucceeded(event -> {
             List<String> excelRenameList = readExcelTask.getValue().stream().map(FileNumBean::getGroupName).toList();
             ObservableList<FileBean> fileBeanList = tableView_Re.getItems();
             showMatchExcelData(taskBean, fileBeanList, excelRenameList);
         });
-        //绑定带进度条的线程
+        // 绑定带进度条的线程
         bindingProgressBarTask(readExcelTask, taskBean);
-        //使用新线程启动
+        // 使用新线程启动
         executorService.execute(readExcelTask);
     }
 
@@ -418,7 +418,7 @@ public class FileRenameController extends CommonProperties {
         if (CollectionUtils.isNotEmpty(fileBeanList) && CollectionUtils.isNotEmpty(excelRenameList)) {
             matchExcelRename(fileBeanList, excelRenameList);
         }
-        //表格设置为可编辑
+        // 表格设置为可编辑
         tableView_Re.setEditable(true);
         rename_Re.setCellFactory((tableColumn) -> new EditingCell<>(FileBean::setRename));
         taskUnbind(taskBean);
@@ -554,7 +554,7 @@ public class FileRenameController extends CommonProperties {
             setControlLastConfig(openDirectory_Re, prop, key_lastOpenDirectory, false, null);
             setControlLastConfig(filterFileType_Re, prop, key_lastFilterFileType, false, null);
             setControlLastConfig(directoryNameType_Re, prop, key_lastDirectoryNameType, false, null);
-            //根据重命名类型设置上次配置值
+            // 根据重命名类型设置上次配置值
             setLastConfigByRenameType(prop);
         }
         input.close();
@@ -568,17 +568,17 @@ public class FileRenameController extends CommonProperties {
     private void setLastConfigByRenameType(Properties prop) {
         switch (prop.getProperty(key_lastRenameType)) {
             case text_codeRename: {
-                //按编号规则重命名设置上次配置值
+                // 按编号规则重命名设置上次配置值
                 setLastConfigByCodeRename(prop);
                 break;
             }
             case text_strRename: {
-                //按指定字符重命名设置上次配置值
+                // 按指定字符重命名设置上次配置值
                 setLastConfigByStrRename(prop);
                 break;
             }
             case text_excelRename: {
-                //根据excel重命名设置上次配置值
+                // 根据excel重命名设置上次配置值
                 setLastConfigByExcelRename(prop);
                 break;
             }
@@ -609,10 +609,10 @@ public class FileRenameController extends CommonProperties {
         setControlLastConfig(targetStr_Re, prop, key_lastTargetStr, false, null);
         String lastTargetStr = prop.getProperty(key_lastTargetStr);
         if (text_specifyString.equals(lastTargetStr)) {
-            //指定字符串设置上次配置值
+            // 指定字符串设置上次配置值
             setLastConfigBySpecifyString(prop);
         } else if (text_specifyIndex.equals(lastTargetStr)) {
-            //指定字符位置设置上次配置值
+            // 指定字符位置设置上次配置值
             setLastConfigBySpecifyIndex(prop);
         }
     }
@@ -629,9 +629,9 @@ public class FileRenameController extends CommonProperties {
         if (text_replace.equals(lastRenameBehavior)) {
             setControlLastConfig(renameStr_Re, prop, key_lastRenameStr, false, null);
         } else if (text_bothSides.equals(lastRenameBehavior)) {
-            //处理左侧字符设置上次配置值
+            // 处理左侧字符设置上次配置值
             setLastConfigByOneSide(prop, left_Re, key_lastLeft, leftBehavior_Re, key_lastLeftBehavior, leftValue_Re, key_lastLeftValue);
-            //处理右侧字符设置上次配置值
+            // 处理右侧字符设置上次配置值
             setLastConfigByOneSide(prop, right_Re, key_lastRight, rightBehavior_Re, key_lastRightBehavior, rightValue_Re, key_lastRightValue);
         }
     }
@@ -752,37 +752,37 @@ public class FileRenameController extends CommonProperties {
      * 给输入框添加内容变化监听
      */
     private void textFieldChangeListener() {
-        //要匹配的字符串鼠标悬停提示
+        // 要匹配的字符串鼠标悬停提示
         if (text_specifyIndex.equals(targetStr_Re.getValue())) {
             integerRangeTextField(renameValue_Re, 0, null, tip_renameValue);
         }
-        //限制相同编号文件起始尾缀输入框内容
+        // 限制相同编号文件起始尾缀输入框内容
         integerRangeTextField(tag_Re, 0, null, tip_tag);
-        //限制向左匹配字符位置输入框内容
+        // 限制向左匹配字符位置输入框内容
         integerRangeTextField(left_Re, 0, null, tip_left);
-        //限制向右匹配字符位置输入框内容
+        // 限制向右匹配字符位置输入框内容
         integerRangeTextField(right_Re, 0, null, tip_right);
-        //限制读取最大行数只能输入正整数
+        // 限制读取最大行数只能输入正整数
         integerRangeTextField(maxRow_Re, 1, null, tip_maxRow);
-        //鼠标悬留提示输入的相同编号文件数量
+        // 鼠标悬留提示输入的相同编号文件数量
         integerRangeTextField(nameNum_Re, 0, null, tip_nameNum);
-        //鼠标悬留提示输入的文件名起始编号位数
+        // 鼠标悬留提示输入的文件名起始编号位数
         integerRangeTextField(startSize_Re, 0, null, tip_startSize);
-        //鼠标悬留提示输入的文件名起始编号
+        // 鼠标悬留提示输入的文件名起始编号
         integerRangeTextField(startName_Re, 0, null, text_onlyNaturalNumber + defaultStartNameNum);
-        //限制读取起始行只能输入自然数
+        // 限制读取起始行只能输入自然数
         integerRangeTextField(readRow_Re, 0, null, text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row);
-        //限制读取起始列只能输入自然数
+        // 限制读取起始列只能输入自然数
         integerRangeTextField(readCell_Re, 0, null, text_onlyNaturalNumber + defaultReadCell + text_formThe + (defaultReadCell + 1) + text_cell);
-        //给目标字符串右侧替换或插入输入框添加鼠标悬停提示
+        // 给目标字符串右侧替换或插入输入框添加鼠标悬停提示
         textFieldValueListener(leftValue_Re, tip_leftValue);
-        //指定字符串所替换的字符串鼠标悬停提示
+        // 指定字符串所替换的字符串鼠标悬停提示
         textFieldValueListener(renameStr_Re, tip_renameStr);
-        //鼠标悬留提示输入的导出excel表名称
+        // 鼠标悬留提示输入的导出excel表名称
         textFieldValueListener(sheetName_Re, tip_sheetName);
-        //给目标字符串左侧替换或插入输入框添加鼠标悬停提示
+        // 给目标字符串左侧替换或插入输入框添加鼠标悬停提示
         textFieldValueListener(rightValue_Re, tip_rightValue);
-        //鼠标悬留提示输入的需要识别的文件后缀名
+        // 鼠标悬留提示输入的需要识别的文件后缀名
         textFieldValueListener(filterFileType_Re, tip_filterFileType);
     }
 
@@ -793,19 +793,19 @@ public class FileRenameController extends CommonProperties {
      */
     @FXML
     private void initialize() throws IOException {
-        //读取全局变量配置
+        // 读取全局变量配置
         getConfig();
-        //设置要暂时移除的组件
+        // 设置要暂时移除的组件
         removeChildren(vbox_Re, strRenameVBox_Re, excelRenameVBox_Re);
-        //设置要防重复点击的组件
+        // 设置要防重复点击的组件
         setDisableControls();
-        //设置鼠标悬停提示
+        // 设置鼠标悬停提示
         setToolTip();
-        //设置javafx单元格宽度
+        // 设置javafx单元格宽度
         bindPrefWidthProperty();
-        //给输入框添加内容变化监听
+        // 给输入框添加内容变化监听
         textFieldChangeListener();
-        //设置初始配置值为上次配置值
+        // 设置初始配置值为上次配置值
         setLastConfig();
     }
 
@@ -827,9 +827,9 @@ public class FileRenameController extends CommonProperties {
                 .setFilterExtensionList(filterExtensionList)
                 .setInFile(selectedFile);
         if (selectedFile != null) {
-            //更新所选文件路径显示
+            // 更新所选文件路径显示
             inFilePath = updatePathLabel(selectedFile.getAbsolutePath(), inFilePath, key_inFilePath, inPath_Re, configFile_Rename, anchorPane_Re);
-            //读取数据
+            // 读取数据
             List<File> inFileList = readAllFiles(fileConfig);
             addInData(inFileList);
         }
@@ -935,11 +935,11 @@ public class FileRenameController extends CommonProperties {
                     .setMassageLabel(log_Re)
                     .setBeanList(fileBeans)
                     .setTabId(tabId);
-            //匹配重命名规则
+            // 匹配重命名规则
             matchRenameConfig(taskBean);
-            //获取Task任务
+            // 获取Task任务
             Task<String> renameTask = fileRename(taskBean);
-            //绑定带进度条的线程
+            // 绑定带进度条的线程
             bindingProgressBarTask(renameTask, taskBean);
             renameTask.setOnSucceeded(event -> {
                 taskUnbind(taskBean);
@@ -1046,7 +1046,7 @@ public class FileRenameController extends CommonProperties {
             case text_strRename: {
                 vbox_Re.getChildren().add(index, strRenameVBox_Re);
                 updateSameCode_Re.setVisible(false);
-                //根据匹配字符规则选项展示组件
+                // 根据匹配字符规则选项展示组件
                 targetStrAction();
                 break;
             }
@@ -1070,7 +1070,7 @@ public class FileRenameController extends CommonProperties {
                 addValueToolTip(renameValue_Re, tip_renameValue, text_nowValue);
                 renameBehavior_Re.getItems().remove(text_bothSides);
                 renameBehavior_Re.getItems().add(text_bothSides);
-                //根据重命名方法选项展示组件
+                // 根据重命名方法选项展示组件
                 behaviorAction();
                 break;
             }
@@ -1080,7 +1080,7 @@ public class FileRenameController extends CommonProperties {
                 addValueToolTip(renameValue_Re, tip_renameValue, text_nowValue);
                 renameBehavior_Re.getItems().remove(text_bothSides);
                 renameBehavior_Re.setValue(renameBehavior_Re.getItems().getFirst());
-                //根据重命名方法选项展示组件
+                // 根据重命名方法选项展示组件
                 behaviorAction();
                 break;
             }
@@ -1150,7 +1150,7 @@ public class FileRenameController extends CommonProperties {
             readExcelRename();
         } else if (!text_excelRename.equals(renameType_Re.getValue())) {
             TaskBean<FileBean> taskBean = new TaskBean<>();
-            //匹配重命名规则
+            // 匹配重命名规则
             matchRenameConfig(taskBean);
             Configuration configuration = taskBean.getConfiguration();
             CodeRenameConfig codeRenameConfig = null;
@@ -1168,7 +1168,7 @@ public class FileRenameController extends CommonProperties {
                 }
             }
             for (FileBean fileBean : fileBeans) {
-                //组装文件重命名数据
+                // 组装文件重命名数据
                 buildRename(codeRenameConfig, fileBean, stringRenameConfig, startName, tag);
                 if (codeRenameConfig != null) {
                     if (nameNum < codeRenameConfig.getNameNum()) {
@@ -1182,7 +1182,7 @@ public class FileRenameController extends CommonProperties {
                 }
             }
             autoBuildTableViewData(tableView_Re, fileBeans, tabId);
-            //表格设置为可编辑
+            // 表格设置为可编辑
             tableView_Re.setEditable(true);
             rename_Re.setCellFactory((tableColumn) -> new EditingCell<>(FileBean::setRename));
         }
@@ -1200,7 +1200,7 @@ public class FileRenameController extends CommonProperties {
         if (CollectionUtils.isEmpty(selectedFileBeans)) {
             throw new Exception(text_nullSelect);
         }
-        //选中的数据按照最新设置进行重命名
+        // 选中的数据按照最新设置进行重命名
         CodeRenameConfig codeRenameConfig = new CodeRenameConfig();
         codeRenameConfig.setStartSize(setDefaultIntValue(startSize_Re, 0, 0, null))
                 .setTag(setDefaultIntValue(tag_Re, 1, 0, null))
@@ -1224,7 +1224,7 @@ public class FileRenameController extends CommonProperties {
             fileBean.setRename(getCodeRename(codeRenameConfig, fileBean, startCode, startTag));
             startTag++;
         }
-        //未选中的数据按照之前设置更新编号
+        // 未选中的数据按照之前设置更新编号
         int unSelectStartIndex = endSelectIndex + 1;
         FileBean firstUnSelectFileBean = tableViewItems.get(unSelectStartIndex);
         CodeRenameConfig unSelectCodeRenameConfig = firstUnSelectFileBean.getCodeRenameConfig();
@@ -1245,7 +1245,7 @@ public class FileRenameController extends CommonProperties {
             }
         }
         autoBuildTableViewData(tableView_Re, tableViewItems, tabId);
-        //表格设置为可编辑
+        // 表格设置为可编辑
         tableView_Re.setEditable(true);
         rename_Re.setCellFactory((tableColumn) -> new EditingCell<>(FileBean::setRename));
         updateLabel(log_Re, "");

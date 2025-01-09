@@ -42,26 +42,26 @@ public class CommonUtils {
         if (StringUtils.isEmpty(str)) {
             return false;
         }
-        //禁止出现0开头的非0数字
+        // 禁止出现0开头的非0数字
         if (str.indexOf("0") == 0 && str.length() > 1) {
             return false;
         }
         Pattern integerPattern = Pattern.compile("^-?\\d{1,10}$");
-        //使用正则表达式判断字符串是否为整数
+        // 使用正则表达式判断字符串是否为整数
         if (!integerPattern.matcher(str).matches()) {
             return false;
         }
-        //将字符串转换为整数并判断是否在指定范围内
+        // 将字符串转换为整数并判断是否在指定范围内
         int value = Integer.parseInt(str);
-        //只判断是否为整数，不限定范围
+        // 只判断是否为整数，不限定范围
         if (max == null && min == null) {
             return true;
         }
-        //限定最小值
+        // 限定最小值
         if (max == null) {
             return value >= min;
         }
-        //限定最大值
+        // 限定最大值
         if (min == null) {
             return value <= max;
         }
@@ -95,7 +95,7 @@ public class CommonUtils {
         String chineseNum = sb.toString().replaceAll("零[千百十]", "零").replaceAll("零+万", "万")
                 .replaceAll("零+亿", "亿").replaceAll("亿万", "亿零")
                 .replaceAll("零+", "零").replaceAll("零$", "");
-        //去掉10~19的一
+        // 去掉10~19的一
         if (chineseNum.indexOf("一") == 0 && chineseNum.indexOf("十") == 1 && chineseNum.length() < 4) {
             chineseNum = chineseNum.substring(1);
         }
@@ -123,7 +123,7 @@ public class CommonUtils {
             alphaNum.append(ALPHABET[remainder]);
             number = (number - 1) / ALPHABET.length;
         }
-        //因为从'A'开始，所以需要翻转字符串
+        // 因为从'A'开始，所以需要翻转字符串
         return alphaNum.reverse().toString();
     }
 
@@ -214,21 +214,21 @@ public class CommonUtils {
      * @return 分组后的map
      */
     public static Map<String, List<String>> getSortedByMap(List<String> keys, String nameSubstring, int maxValue) {
-        //key为完整且唯一的字符串，value为分隔后的部分，可重复，作为分组依据
+        // key为完整且唯一的字符串，value为分隔后的部分，可重复，作为分组依据
         Map<String, String> nameMap = new HashMap<>();
         Map<String, List<String>> groupedMap;
         keys.forEach(k -> {
             String leftName = getLeftName(k, nameSubstring);
             nameMap.put(k, leftName);
         });
-        //根据value分组
+        // 根据value分组
         if (maxValue > 0) {
             groupedMap = groupByValueWithLimit(nameMap, maxValue);
         } else {
             groupedMap = nameMap.entrySet().stream().collect(Collectors.groupingBy(Map.Entry::getValue,
                     Collectors.mapping(Map.Entry::getKey, Collectors.toList())));
         }
-        //根据完整路径排序
+        // 根据完整路径排序
         return groupedMap.entrySet().stream()
                 .sorted(Map.Entry.comparingByKey())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
@@ -249,7 +249,7 @@ public class CommonUtils {
             if (list.size() < listSizeLimit) {
                 list.add(entry.getKey());
             }
-            //无论是否添加了元素都需要将更新后的列表放回groupedMap中，因为getOrDefault会返回一个新的列表，如果不添加元素则不需要更新，但如果添加了元素或者列表已经存在，需要确保groupedMap中的是最新状态
+            // 无论是否添加了元素都需要将更新后的列表放回groupedMap中，因为getOrDefault会返回一个新的列表，如果不添加元素则不需要更新，但如果添加了元素或者列表已经存在，需要确保groupedMap中的是最新状态
             groupedMap.put(value, list);
         }
         return groupedMap;

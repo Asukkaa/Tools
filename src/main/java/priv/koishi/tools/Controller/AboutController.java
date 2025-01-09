@@ -49,7 +49,7 @@ public class AboutController {
      */
     public static void aboutAdaption(Stage stage) {
         Scene scene = stage.getScene();
-        //设置组件宽度
+        // 设置组件宽度
         double stageWidth = stage.getWidth();
         Node settingVBox = scene.lookup("#vBox_Abt");
         settingVBox.setLayoutX(stageWidth * 0.03);
@@ -131,15 +131,15 @@ public class AboutController {
      */
     @FXML
     private void initialize() throws IOException {
-        //添加右键菜单
+        // 添加右键菜单
         setCopyValueContextMenu(mail_Abt, "复制反馈邮件", anchorPane_Abt);
-        //log 文件保留数量输入监听
+        // log 文件保留数量输入监听
         integerRangeTextField(logsNum_Abt, 0, null, tip_logsNum);
-        //读取配置文件
+        // 读取配置文件
         getConfig();
-        //获取logs文件夹路径并展示
+        // 获取logs文件夹路径并展示
         setLogsPath();
-        //清理多余log文件
+        // 清理多余log文件
         deleteLogs();
     }
 

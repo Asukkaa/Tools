@@ -59,11 +59,11 @@ public class MainApplication extends Application {
         stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResource("icon/Tools.png")).toExternalForm()));
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("css/Styles.css")).toExternalForm());
         TabPane tabPane = (TabPane) scene.lookup("#tabPane");
-        //读取各功能页面入口设置
+        // 读取各功能页面入口设置
         List<String> tabStateIds = Arrays.asList(prop.getProperty(key_tabIds).split(" "));
-        //初始化各功能页面入口
+        // 初始化各功能页面入口
         List<TabBean> tabBeanList = buildTabsData(scene, tabPane, tabStateIds);
-        //设置默认选中的Tab
+        // 设置默认选中的Tab
         if (activation.equals(prop.getProperty(key_loadLastConfig))) {
             tabPane.getTabs().forEach(tab -> {
                 if (tab.getId().equals(prop.getProperty(key_lastTab))) {
@@ -72,9 +72,9 @@ public class MainApplication extends Application {
             });
         }
         input.close();
-        //监听窗口面板宽度变化
+        // 监听窗口面板宽度变化
         stage.widthProperty().addListener((v1, v2, v3) -> Platform.runLater(() -> mainAdaption(stage, tabBeanList)));
-        //监听窗口面板高度变化
+        // 监听窗口面板高度变化
         stage.heightProperty().addListener((v1, v2, v3) -> Platform.runLater(() -> mainAdaption(stage, tabBeanList)));
         stage.setOnCloseRequest(event -> {
             try {
@@ -114,7 +114,7 @@ public class MainApplication extends Application {
                 CheckBox checkBox = new CheckBox(text_activation);
                 addToolTip(tip_tabSwitch, checkBox);
                 boolean isActivation = activation.equals(state);
-                //设置页面和关于页面不允许禁用
+                // 设置页面和关于页面不允许禁用
                 if (id_settingTab.equals(tabId) || id_aboutTab.equals(tabId)) {
                     checkBox.setDisable(true);
                     checkBox.setSelected(true);
@@ -130,13 +130,13 @@ public class MainApplication extends Application {
                 }
             }
         });
-        //功能页按照设置排序
+        // 功能页按照设置排序
         List<Tab> sortTabs = new ArrayList<>(sortTabsByIds(tabs, tabIds));
         tabs.clear();
         tabs.addAll(sortTabs);
-        //构建tab信息列表
+        // 构建tab信息列表
         buildTableView(tableView, tabBeanList);
-        //为tab信息列表添加右键菜单
+        // 为tab信息列表添加右键菜单
         tableViewContextMenu(tableView);
         return tabBeanList;
     }
@@ -147,11 +147,11 @@ public class MainApplication extends Application {
      * @param tableView 要添加右键菜单的列表
      */
     private static void tableViewContextMenu(TableView<TabBean> tableView) {
-        //添加右键菜单
+        // 添加右键菜单
         ContextMenu contextMenu = new ContextMenu();
-        //所选行上移一行选项
+        // 所选行上移一行选项
         buildUpMoveDataMenuItem(tableView, contextMenu);
-        //所选行下移一行选项
+        // 所选行下移一行选项
         buildDownMoveDataMenuItem(tableView, contextMenu);
         tableView.setContextMenu(contextMenu);
         tableView.setOnMousePressed(event -> {
@@ -176,7 +176,7 @@ public class MainApplication extends Application {
             }
         }
         tableView.setItems(FXCollections.observableArrayList(tabBeanList));
-        //设置列表通过拖拽排序行
+        // 设置列表通过拖拽排序行
         tableViewDragRow(tableView);
     }
 
@@ -199,7 +199,7 @@ public class MainApplication extends Application {
      * @throws IOException io异常
      */
     public static void main(String[] args) throws IOException {
-        //打包后需要手动指定日志配置文件位置
+        // 打包后需要手动指定日志配置文件位置
         if (!isRunningFromJar()) {
             ConfigurationSource source = new ConfigurationSource(new FileInputStream("log4j2.xml"));
             Configurator.initialize(null, source);
