@@ -44,6 +44,7 @@ public class MainApplication extends Application {
      */
     @Override
     public void start(Stage stage) throws Exception {
+        // 读取fxml页面
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("fxml/Main-view.fxml"));
         Properties prop = new Properties();
         InputStream input = checkRunningInputStream(configFile);
@@ -76,6 +77,7 @@ public class MainApplication extends Application {
         stage.widthProperty().addListener((v1, v2, v3) -> Platform.runLater(() -> mainAdaption(stage, tabBeanList)));
         // 监听窗口面板高度变化
         stage.heightProperty().addListener((v1, v2, v3) -> Platform.runLater(() -> mainAdaption(stage, tabBeanList)));
+        // 程序关闭时保存各个页面的设置
         stage.setOnCloseRequest(event -> {
             try {
                 saveLastConfig(stage);
