@@ -3,21 +3,24 @@ package priv.koishi.tools.Controller;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import static priv.koishi.tools.Text.CommonTexts.*;
+import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningOutputStream;
 import static priv.koishi.tools.Utils.FileUtils.getFileType;
@@ -30,6 +33,11 @@ import static priv.koishi.tools.Utils.UiUtils.*;
  */
 public class AboutController {
 
+    /**
+     * 百度、夸克、迅雷网盘地址
+     */
+    private String baiduLink, quarkLink, xunleiLink;
+
     @FXML
     private AnchorPane anchorPane_Abt;
 
@@ -41,6 +49,9 @@ public class AboutController {
 
     @FXML
     private Label logsPath_Abt, mail_Abt;
+
+    @FXML
+    private Button openBaiduLinkBtn, openQuarkLinkBtn, openXunleiLinkBtn;
 
     /**
      * 组件自适应宽高
@@ -64,7 +75,12 @@ public class AboutController {
         Properties prop = new Properties();
         InputStream input = checkRunningInputStream(configFile);
         prop.load(input);
+        // 获取日志储存数量配置
         setControlLastConfig(logsNum_Abt, prop, key_logsNum, false, null);
+        // 获取网盘地址配置
+        baiduLink = prop.getProperty(key_baiduLink);
+        quarkLink = prop.getProperty(key_quarkLink);
+        xunleiLink = prop.getProperty(key_xunleiLink);
         input.close();
     }
 
@@ -137,10 +153,42 @@ public class AboutController {
         integerRangeTextField(logsNum_Abt, 0, null, tip_logsNum);
         // 读取配置文件
         getConfig();
+        // 给网盘跳转按钮添加鼠标悬停提示
+        addToolTip(tip_openLink, openBaiduLinkBtn, openQuarkLinkBtn, openXunleiLinkBtn);
         // 获取logs文件夹路径并展示
         setLogsPath();
         // 清理多余log文件
         deleteLogs();
+    }
+
+    /**
+     * 打开百度云盘链接
+     *
+     * @throws Exception 链接打开失败
+     */
+    @FXML
+    private void openBaiduLink() throws Exception {
+        Desktop.getDesktop().browse(new URI(baiduLink));
+    }
+
+    /**
+     * 打开夸克云盘链接
+     *
+     * @throws Exception 链接打开失败
+     */
+    @FXML
+    private void openQuarkLink() throws Exception {
+        Desktop.getDesktop().browse(new URI(quarkLink));
+    }
+
+    /**
+     * 打开迅雷云盘链接
+     *
+     * @throws Exception 链接打开失败
+     */
+    @FXML
+    private void openXunleiLink() throws Exception {
+        Desktop.getDesktop().browse(new URI(xunleiLink));
     }
 
 }

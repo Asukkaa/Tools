@@ -20,7 +20,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
-import static priv.koishi.tools.Text.CommonTexts.*;
+import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningOutputStream;
 

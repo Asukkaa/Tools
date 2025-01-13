@@ -25,7 +25,7 @@ import static priv.koishi.tools.Controller.ImgToExcelController.imgToExcelAdapti
 import static priv.koishi.tools.Controller.ImgToExcelController.imgToExcelSaveLastConfig;
 import static priv.koishi.tools.Controller.SettingController.saveSetting;
 import static priv.koishi.tools.Controller.SettingController.settingAdaption;
-import static priv.koishi.tools.Text.CommonTexts.*;
+import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningOutputStream;
 

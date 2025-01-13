@@ -42,7 +42,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static priv.koishi.tools.Service.ReadDataService.showReadExcelData;
-import static priv.koishi.tools.Text.CommonTexts.*;
+import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.Utils.CommonUtils.*;
 import static priv.koishi.tools.Utils.FileUtils.*;
 

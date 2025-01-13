@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Properties;
 
 import static priv.koishi.tools.Controller.MainController.saveLastConfig;
-import static priv.koishi.tools.Text.CommonTexts.*;
+import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.Utils.CommonUtils.*;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;

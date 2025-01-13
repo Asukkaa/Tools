@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static priv.koishi.tools.Text.CommonTexts.*;
+import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.Utils.CommonUtils.getPropertyName;
 import static priv.koishi.tools.Utils.CommonUtils.isGetterMethod;
 import static priv.koishi.tools.Utils.ExcelUtils.*;

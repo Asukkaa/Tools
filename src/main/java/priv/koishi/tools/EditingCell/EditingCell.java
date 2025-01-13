@@ -6,7 +6,7 @@ import javafx.scene.control.TextField;
 
 import java.util.Objects;
 
-import static priv.koishi.tools.Text.CommonTexts.text_nowValue;
+import static priv.koishi.tools.Finals.CommonFinals.text_nowValue;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
 /**

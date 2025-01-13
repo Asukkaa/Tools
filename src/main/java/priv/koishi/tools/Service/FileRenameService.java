@@ -11,7 +11,7 @@ import java.io.File;
 import java.util.List;
 import java.util.UUID;
 
-import static priv.koishi.tools.Text.CommonTexts.*;
+import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.Utils.CommonUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.changeDisableControls;
 

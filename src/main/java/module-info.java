@@ -21,6 +21,6 @@ module priv.koishi.tools {
     opens priv.koishi.tools.Bean to javafx.fxml;
     exports priv.koishi.tools.Enum;
     exports priv.koishi.tools.Configuration;
-    exports priv.koishi.tools.Text;
+    exports priv.koishi.tools.Finals;
     exports priv.koishi.tools.Vo;
 }

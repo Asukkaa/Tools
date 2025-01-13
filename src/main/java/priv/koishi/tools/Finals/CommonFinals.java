@@ -1,4 +1,4 @@
-package priv.koishi.tools.Text;
+package priv.koishi.tools.Finals;
 
 import javafx.util.Duration;
 
@@ -11,7 +11,7 @@ import java.io.File;
  * Date:2024-11-13
  * Time:下午2:41
  */
-public class CommonTexts {
+public class CommonFinals {
 
     public static final String tip_startSize = "只能填自然数，0为不限制编号位数，不填默认为0";
 
@@ -120,6 +120,8 @@ public class CommonTexts {
     public static final String tip_renameBehavior = "点击可选择重命名方法";
 
     public static final String tip_tabSwitch = "点击即可启用或禁用该功能页";
+
+    public static final String tip_openLink = "点击即可跳转对应网盘分享页";
 
     public static final String tip_defaultNextRunMemory = "当前配置值为空，程序最大内存设置为操作系统最大内存1/4，填写其他值关闭程序即可保存修改，重启动程序即可生效";
 
@@ -323,6 +325,12 @@ public class CommonTexts {
     public static final String key_appTitle = "appTitle";
 
     public static final String key_tabIds = "tabIds";
+
+    public static final String key_baiduLink = "baiduLink";
+
+    public static final String key_quarkLink = "quarkLink";
+
+    public static final String key_xunleiLink = "xunleiLink";
 
     public static final String key_loadLastConfig = "loadLastConfig";
 

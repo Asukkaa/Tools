@@ -21,7 +21,7 @@ import java.util.*;
 
 import static priv.koishi.tools.Controller.MainController.mainAdaption;
 import static priv.koishi.tools.Controller.MainController.saveLastConfig;
-import static priv.koishi.tools.Text.CommonTexts.*;
+import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
 import static priv.koishi.tools.Utils.CommonUtils.isRunningFromJar;
 import static priv.koishi.tools.Utils.UiUtils.*;
