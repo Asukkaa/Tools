@@ -48,10 +48,10 @@ public class AboutController {
     private TextField logsNum_Abt;
 
     @FXML
-    private Label logsPath_Abt, mail_Abt;
+    private Label logsPath_Abt, mail_Abt, version_Abt;
 
     @FXML
-    private Button openBaiduLinkBtn, openQuarkLinkBtn, openXunleiLinkBtn;
+    private Button openBaiduLinkBtn_Abt, openQuarkLinkBtn_Abt, openXunleiLinkBtn_Abt;
 
     /**
      * 组件自适应宽高
@@ -141,6 +141,16 @@ public class AboutController {
     }
 
     /**
+     * 设置鼠标悬停提示
+     */
+    private void setToolTip() {
+        // 给网盘跳转按钮添加鼠标悬停提示
+        addToolTip(tip_openLink, openBaiduLinkBtn_Abt, openQuarkLinkBtn_Abt, openXunleiLinkBtn_Abt);
+        // 版本号鼠标悬停提示
+        addToolTip(tip_version, version_Abt);
+    }
+
+    /**
      * 界面初始化
      *
      * @throws IOException io异常
@@ -153,8 +163,8 @@ public class AboutController {
         integerRangeTextField(logsNum_Abt, 0, null, tip_logsNum);
         // 读取配置文件
         getConfig();
-        // 给网盘跳转按钮添加鼠标悬停提示
-        addToolTip(tip_openLink, openBaiduLinkBtn, openQuarkLinkBtn, openXunleiLinkBtn);
+        // 设置鼠标悬停提示
+        setToolTip();
         // 获取logs文件夹路径并展示
         setLogsPath();
         // 清理多余log文件
