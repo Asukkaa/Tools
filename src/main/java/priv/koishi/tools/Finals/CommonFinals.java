@@ -336,6 +336,8 @@ public class CommonFinals {
 
     public static final String key_xunleiLink = "xunleiLink";
 
+    public static final String key_alipanLink = "alipanLink";
+
     public static final String key_loadLastConfig = "loadLastConfig";
 
     public static final String key_loadLastFullWindow = "loadLastFullWindow";

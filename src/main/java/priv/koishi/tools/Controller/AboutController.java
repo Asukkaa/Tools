@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -82,6 +81,7 @@ public class AboutController {
         baiduLink = prop.getProperty(key_baiduLink);
         quarkLink = prop.getProperty(key_quarkLink);
         xunleiLink = prop.getProperty(key_xunleiLink);
+        alipanLink = prop.getProperty(key_alipanLink);
         input.close();
     }
 
