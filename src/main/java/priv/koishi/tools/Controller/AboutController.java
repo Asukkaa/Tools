@@ -36,7 +36,7 @@ public class AboutController {
     /**
      * 百度、夸克、迅雷、阿里网盘地址
      */
-    private String baiduLink, quarkLink, xunleiLink, alipanLink;
+    private String baiduLink, quarkLink, xunleiLink;
 
     @FXML
     private AnchorPane anchorPane_Abt;
@@ -51,7 +51,7 @@ public class AboutController {
     private Label logsPath_Abt, mail_Abt, version_Abt;
 
     @FXML
-    private Button openBaiduLinkBtn_Abt, openQuarkLinkBtn_Abt, openXunleiLinkBtn_Abt, openAlipanLinkBtn_Abt;
+    private Button openBaiduLinkBtn_Abt, openQuarkLinkBtn_Abt, openXunleiLinkBtn_Abt;
 
     /**
      * 组件自适应宽高
@@ -81,7 +81,6 @@ public class AboutController {
         baiduLink = prop.getProperty(key_baiduLink);
         quarkLink = prop.getProperty(key_quarkLink);
         xunleiLink = prop.getProperty(key_xunleiLink);
-        alipanLink = prop.getProperty(key_alipanLink);
         input.close();
     }
 
@@ -146,7 +145,7 @@ public class AboutController {
      */
     private void setToolTip() {
         // 给网盘跳转按钮添加鼠标悬停提示
-        addToolTip(tip_openLink, openBaiduLinkBtn_Abt, openQuarkLinkBtn_Abt, openXunleiLinkBtn_Abt, openAlipanLinkBtn_Abt);
+        addToolTip(tip_openLink, openBaiduLinkBtn_Abt, openQuarkLinkBtn_Abt, openXunleiLinkBtn_Abt);
         // 版本号鼠标悬停提示
         addToolTip(tip_version, version_Abt);
     }
@@ -200,16 +199,6 @@ public class AboutController {
     @FXML
     private void openXunleiLink() throws Exception {
         Desktop.getDesktop().browse(new URI(xunleiLink));
-    }
-
-    /**
-     * 打开阿里云盘链接
-     *
-     * @throws Exception 链接打开失败
-     */
-    @FXML
-    private void openAlipanLink() throws Exception {
-        Desktop.getDesktop().browse(new URI(alipanLink));
     }
 
 }
