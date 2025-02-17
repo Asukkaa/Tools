@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<AnchorPane fx:id="anchorPane_Click" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            stylesheets="@../css/Styles.css"
+            fx:controller="priv.koishi.tools.Controller.AutoClickController">
+    <VBox fx:id="vbox_Click" spacing="10" AnchorPane.topAnchor="10">
+        <HBox spacing="10">
+            <Label text="当前鼠标坐标："/>
+            <Label fx:id="mousePosition_Click"/>
+        </HBox>
+
+        <HBox spacing="10">
+            <Label text="鼠标点击横（X）坐标："/>
+            <TextField fx:id="mouseX_Click" prefWidth="100"/>
+
+            <Label text="鼠标点击纵（Y）坐标："/>
+            <TextField fx:id="mouseY_Click" prefWidth="100"/>
+
+            <Button fx:id="addPosition_Click" onAction="#addPosition" style="-fx-cursor: hand" text="添加坐标"/>
+        </HBox>
+
+        <HBox fx:id="fileNumberHBox_Click" spacing="10">
+            <Button fx:id="clickTest_Click" onAction="#clickTest" style="-fx-cursor: hand" text="测试坐标"/>
+            <Button fx:id="clearButton_Click" onAction="#removeAll" style="-fx-cursor: hand" text="清空列表"/>
+            <Button fx:id="runClick_Click" onAction="#runClick" style="-fx-cursor: hand" text="运行"/>
+            <Label fx:id="fileNumber_Click" alignment="CENTER_RIGHT" prefHeight="20" text="列表为空"/>
+        </HBox>
+
+        <TableView fx:id="tableView_Click">
+            <placeholder>
+                <Label text="设置横纵坐标后将添加到表格内"/>
+            </placeholder>
+
+            <columns>
+                <TableColumn fx:id="x_Click" text="横（X）坐标"/>
+                <TableColumn fx:id="y_Click" text="纵（Y）坐标"/>
+            </columns>
+        </TableView>
+
+        <Label fx:id="log_Click" prefHeight="20"/>
+    </VBox>
+</AnchorPane>

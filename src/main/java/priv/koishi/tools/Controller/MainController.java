@@ -15,6 +15,7 @@ import java.util.Properties;
 
 import static priv.koishi.tools.Controller.AboutController.aboutAdaption;
 import static priv.koishi.tools.Controller.AboutController.saveLogsNumSetting;
+import static priv.koishi.tools.Controller.AutoClickController.autoClickAdaption;
 import static priv.koishi.tools.Controller.FileNameToExcelController.fileNameToExcelAdaption;
 import static priv.koishi.tools.Controller.FileNameToExcelController.fileNameToExcelSaveLastConfig;
 import static priv.koishi.tools.Controller.FileNumToExcelController.fileNumToExcelAdaption;
@@ -41,7 +42,7 @@ public class MainController {
     private TabPane tabPane;
 
     @FXML
-    private Tab fileNumToExcelTab, fileNameToExcelTab, imgToExcelTab, fileRenameTab, settingTab, aboutTab;
+    private Tab fileNumToExcelTab, fileNameToExcelTab, imgToExcelTab, fileRenameTab, settingTab, aboutTab, autoClickTab;
 
     /**
      * 组件自适应宽高
@@ -85,6 +86,11 @@ public class MainController {
                 case id_aboutTab:
                     if (isActivation) {
                         aboutAdaption(stage);
+                    }
+                    break;
+                case id_autoClickTab:
+                    if (isActivation) {
+                        autoClickAdaption(stage);
                     }
                     break;
             }

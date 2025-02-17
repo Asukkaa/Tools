@@ -302,6 +302,8 @@ public class CommonFinals {
 
     public static final String id_aboutTab = "aboutTab";
 
+    public static final String id_autoClickTab = "autoClickTab";
+
     public static final String id_fileNameToExcelTab = "fileNameToExcelTab";
 
     public static final String id_fileNumToExcelTab = "fileNumToExcelTab";
