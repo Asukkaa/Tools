@@ -14,6 +14,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.robot.Robot;
 import javafx.stage.Stage;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import priv.koishi.tools.Bean.ClickPositionBean;
 import priv.koishi.tools.Properties.CommonProperties;
@@ -21,6 +22,8 @@ import priv.koishi.tools.Properties.CommonProperties;
 import java.awt.*;
 
 import static javafx.scene.input.MouseButton.PRIMARY;
+import static priv.koishi.tools.Finals.CommonFinals.macos;
+import static priv.koishi.tools.Finals.CommonFinals.systemName;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
 /**
@@ -66,10 +69,10 @@ public class AutoClickController extends CommonProperties {
         // 设置组件高度
         double stageHeight = stage.getHeight();
         TableView<?> table = (TableView<?>) scene.lookup("#tableView_Click");
-        table.setPrefHeight(stageHeight * 0.3);
+        table.setPrefHeight(stageHeight * 0.6);
         // 设置组件宽度
         double stageWidth = stage.getWidth();
-        double tableWidth = stageWidth * 0.5;
+        double tableWidth = stageWidth * 0.8;
         table.setMaxWidth(tableWidth);
         Node settingVBox = scene.lookup("#vbox_Click");
         settingVBox.setLayoutX(stageWidth * 0.03);
@@ -101,14 +104,29 @@ public class AutoClickController extends CommonProperties {
     @FXML
     public void runClick() {
         ObservableList<ClickPositionBean> tableViewItems = tableView_Click.getItems();
-        Robot robot = new Robot();
-        tableViewItems.forEach(clickPositionBean -> {
-            double x = clickPositionBean.getX();
-            double y = clickPositionBean.getY();
-            robot.mouseMove(x, y);
-            robot.mousePress(PRIMARY);
-            robot.mouseRelease(PRIMARY);
-        });
+        if (CollectionUtils.isNotEmpty(tableViewItems)) {
+            Robot robot = new Robot();
+            if (systemName.contains(macos)) {
+                ClickPositionBean clickPositionBean = tableViewItems.getFirst();
+                double x = clickPositionBean.getX();
+                double y = clickPositionBean.getY();
+                robot.mouseMove(x, y);
+                robot.mousePress(PRIMARY);
+                robot.mouseRelease(PRIMARY);
+            }
+            tableViewItems.forEach(clickPositionBean -> {
+                double x = clickPositionBean.getX();
+                double y = clickPositionBean.getY();
+                robot.mouseMove(x, y);
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                robot.mousePress(PRIMARY);
+                robot.mouseRelease(PRIMARY);
+            });
+        }
     }
 
     @FXML
@@ -133,6 +151,10 @@ public class AutoClickController extends CommonProperties {
         }
         // 移动鼠标到指定位置并点击
         robot.mouseMove(x, y);
+        if (systemName.contains(macos)) {
+            robot.mousePress(PRIMARY);
+            robot.mouseRelease(PRIMARY);
+        }
         robot.mousePress(PRIMARY);
         robot.mouseRelease(PRIMARY);
     }
