@@ -27,6 +27,8 @@ import static priv.koishi.tools.Utils.FileUtils.getFileType;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
 /**
+ * 关于页面控制器
+ *
  * @author KOISHI
  * Date:2025-01-07
  * Time:16:45

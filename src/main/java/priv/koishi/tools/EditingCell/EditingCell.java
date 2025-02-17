@@ -48,7 +48,7 @@ public class EditingCell<T> extends TableCell<T, String> {
         if (!isEmpty()) {
             super.startEdit();
             if (Objects.isNull(textField)) {
-                createTextField();
+                createTextField(getTableColumn().getText());
             }
             setText(null);
             setGraphic(textField);
@@ -106,7 +106,7 @@ public class EditingCell<T> extends TableCell<T, String> {
     /**
      * 在单元格中创建输入框
      */
-    private void createTextField() {
+    private void createTextField(String tableColumnText) {
         textField = new TextField(getString());
         textField.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
         textField.focusedProperty().addListener((ob, old, now) -> {
@@ -114,7 +114,7 @@ public class EditingCell<T> extends TableCell<T, String> {
                 commitEdit(textField.getText());
             }
         });
-        addValueToolTip(textField, "双击单元格可编辑修改后的文件名称", text_nowValue);
+        addValueToolTip(textField, "双击单元格可编辑 " + tableColumnText, text_nowValue);
     }
 
     /**

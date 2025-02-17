@@ -3,7 +3,11 @@ package priv.koishi.tools.Bean;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.util.UUID;
+
 /**
+ * javafx列表展示自动鼠标点击步骤类
+ *
  * @author KOISHI
  * Date:2025-02-17
  * Time:17:45
@@ -12,8 +16,44 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class ClickPositionBean {
 
-    double x;
+    /**
+     * 唯一标识符
+     */
+    String uuid = UUID.randomUUID().toString();
 
-    double y;
+    /**
+     * 鼠标点击横（X）坐标字符串
+     */
+    String x;
+
+    /**
+     * 鼠标点击横（X）坐标
+     */
+    double xPosition;
+
+    /**
+     * 鼠标点击横（Y）坐标字符串
+     */
+    String y;
+
+    /**
+     * 鼠标点击横（Y）坐标
+     */
+    double yPosition;
+
+    /**
+     * 等待时间字符串
+     */
+    String waitTime;
+
+    /**
+     * 待时间
+     */
+    long wait;
+
+    /**
+     * 鼠标点击类型字符串
+     */
+    String type;
 
 }

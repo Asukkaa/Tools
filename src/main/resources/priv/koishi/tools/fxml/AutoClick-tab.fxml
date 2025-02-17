@@ -18,6 +18,9 @@
             <Label text="鼠标点击纵（Y）坐标："/>
             <TextField fx:id="mouseY_Click" prefWidth="100"/>
 
+            <Label text="鼠标点击前等待时间："/>
+            <TextField fx:id="wait_Click" prefWidth="100"/>
+
             <Button fx:id="addPosition_Click" onAction="#addPosition" style="-fx-cursor: hand" text="添加坐标"/>
         </HBox>
 
@@ -36,6 +39,8 @@
             <columns>
                 <TableColumn fx:id="x_Click" text="横（X）坐标"/>
                 <TableColumn fx:id="y_Click" text="纵（Y）坐标"/>
+                <TableColumn fx:id="waitTime_Click" text="鼠标点击前等待时间"/>
+                <TableColumn fx:id="type_Click" text="鼠标点击类型"/>
             </columns>
         </TableView>
 

@@ -717,7 +717,7 @@ public class UiUtils {
      * @param label       列表对应的统计信息展示栏
      * @param contextMenu 右键菜单集合
      */
-    private static<T> void buildDeleteDataMenuItem(TableView<T> tableView, Label label, ContextMenu contextMenu) {
+    public static<T> void buildDeleteDataMenuItem(TableView<T> tableView, Label label, ContextMenu contextMenu) {
         MenuItem deleteDataMenuItem = new MenuItem("删除所选数据");
         deleteDataMenuItem.setOnAction(event -> {
             List<T> ts = tableView.getSelectionModel().getSelectedItems();
