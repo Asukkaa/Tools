@@ -6,7 +6,7 @@ import lombok.experimental.Accessors;
 import java.util.UUID;
 
 /**
- * javafx列表展示自动鼠标点击步骤类
+ * 自动操作步骤类
  *
  * @author KOISHI
  * Date:2025-02-17
@@ -22,22 +22,42 @@ public class ClickPositionBean {
     String uuid = UUID.randomUUID().toString();
 
     /**
-     * 鼠标点击横（X）坐标
+     * 起始横（X）坐标
      */
-    String x;
+    String startX;
 
     /**
-     * 鼠标点击横（Y）坐标
+     * 起始纵（Y）坐标
      */
-    String y;
+    String startY;
 
     /**
-     * 等待时间
+     * 结束横（X）坐标
+     */
+    String endX;
+
+    /**
+     * 结束纵（Y）坐标
+     */
+    String endY;
+
+    /**
+     * 点击时长（单位：秒）
+     */
+    String clickTime;
+
+    /**
+     * 点击次数
+     */
+    String clickNum;
+
+    /**
+     * 操作执行前等待时间（单位：秒）
      */
     String waitTime;
 
     /**
-     * 鼠标点击类型
+     * 操作类型
      */
     String type;
 

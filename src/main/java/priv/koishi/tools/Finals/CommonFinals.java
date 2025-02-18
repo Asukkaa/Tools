@@ -127,15 +127,27 @@ public class CommonFinals {
 
     public static final String tip_wait = "每步操作执行前等待时间，单位为秒，只能填自然数，不填默认为 0";
 
-    public static final String tip_mouseX = "鼠标点击位置横坐标，只能填自然数，不填默认为 0";
+    public static final String tip_mouseStartX = "鼠标点击位置起始横坐标，只能填自然数，不填默认为 0";
 
-    public static final String tip_mouseY = "鼠标点击位置纵坐标，只能填自然数，不填默认为 0";
+    public static final String tip_mouseStartY = "鼠标点击位置起始纵坐标，只能填自然数，不填默认为 0";
 
-    public static final String tip_runClick = "点击后将会按照列表中的步骤执行自动操作";
+    public static final String tip_mouseEndX = "鼠标点击位置结束横坐标，只能填自然数，不填默认为 起始横坐标";
+
+    public static final String tip_mouseEndY = "鼠标点击位置结束纵坐标，只能填自然数，不填默认为 起始纵坐标";
+
+    public static final String tip_runClick = "点击后将会按照列表中的步骤执行自动操作，执行自动化任务时按下 esc 即可取消任务";
 
     public static final String tip_addPosition = "点击后将会根据设置在列表中添加一条操作步骤";
 
     public static final String tip_clickTest = "点击后将会按照设置位置点击";
+
+    public static final String tip_loopTime = "自动操作循环次数，只能填自然数，不填默认为 1，填 0 为无限循环";
+
+    public static final String tip_clickNumBer = "每步操作点击次数，只能填自然数，不填默认为 1";
+
+    public static final String tip_clickType = "每步操作需要按下的键";
+
+    public static final String tip_clickTime = "每步操作时长，只能填自然数，不填默认为 0";
 
     public static final String tip_version = """
             version：1.0.0.0

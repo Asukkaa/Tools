@@ -1,5 +1,7 @@
 package priv.koishi.tools;
 
+import com.github.kwhat.jnativehook.GlobalScreen;
+import com.github.kwhat.jnativehook.NativeHookException;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -81,7 +83,9 @@ public class MainApplication extends Application {
         stage.setOnCloseRequest(event -> {
             try {
                 saveLastConfig(stage);
-            } catch (IOException e) {
+                // 程序退出时注销全局键盘监听器
+                GlobalScreen.unregisterNativeHook();
+            } catch (IOException | NativeHookException e) {
                 throw new RuntimeException(e);
             }
             System.exit(0);

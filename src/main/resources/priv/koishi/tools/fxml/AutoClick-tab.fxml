@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.collections.FXCollections?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import java.lang.String?>
 <AnchorPane fx:id="anchorPane_Click" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
             stylesheets="@../css/Styles.css"
             fx:controller="priv.koishi.tools.Controller.AutoClickController">
@@ -12,22 +14,52 @@
         </HBox>
 
         <HBox spacing="10">
-            <Label text="鼠标点击横（X）坐标："/>
-            <TextField fx:id="mouseX_Click" prefWidth="100"/>
+            <Label text="鼠标点击起始横(X)坐标："/>
+            <TextField fx:id="mouseStartX_Click" prefWidth="80"/>
 
-            <Label text="鼠标点击纵（Y）坐标："/>
-            <TextField fx:id="mouseY_Click" prefWidth="100"/>
+            <Label text="鼠标点击起始纵(Y)坐标："/>
+            <TextField fx:id="mouseStartY_Click" prefWidth="80"/>
 
+            <Label text="鼠标点击结束横(X)坐标："/>
+            <TextField fx:id="mouseEndX_Click" prefWidth="80"/>
+
+            <Label text="鼠标点击结束纵(Y)坐标："/>
+            <TextField fx:id="mouseEndY_Click" prefWidth="80"/>
+        </HBox>
+
+        <HBox spacing="10">
             <Label text="鼠标点击前等待时间："/>
-            <TextField fx:id="wait_Click" prefWidth="100"/>
+            <TextField fx:id="wait_Click" prefWidth="80"/>
 
-            <Button fx:id="addPosition_Click" onAction="#addPosition" style="-fx-cursor: hand" text="添加坐标"/>
+            <Label text="点击次数："/>
+            <TextField fx:id="clickNumBer_Click" prefWidth="80"/>
+
+            <Label text="点击时长："/>
+            <TextField fx:id="timeClick_Click" prefWidth="80"/>
+
+            <Label text="操作类型："/>
+            <ChoiceBox fx:id="clickType_Click" prefHeight="20" prefWidth="120">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="鼠标左键点击"/>
+                        <String fx:value="鼠标右键点击"/>
+                        <String fx:value="鼠标中键点击"/>
+                    </FXCollections>
+                </items>
+                <value>
+                    <String fx:value="鼠标左键点击"/>
+                </value>
+            </ChoiceBox>
+
+            <Label text="循环次数："/>
+            <TextField fx:id="loopTime_Click" prefWidth="80"/>
         </HBox>
 
         <HBox fx:id="fileNumberHBox_Click" spacing="10">
+            <Button fx:id="addPosition_Click" onAction="#addPosition" style="-fx-cursor: hand" text="添加坐标"/>
             <Button fx:id="clickTest_Click" onAction="#clickTest" style="-fx-cursor: hand" text="测试坐标"/>
             <Button fx:id="clearButton_Click" onAction="#removeAll" style="-fx-cursor: hand" text="清空列表"/>
-            <Button fx:id="runClick_Click" onAction="#runClick" style="-fx-cursor: hand" text="运行"/>
+            <Button fx:id="runClick_Click" onAction="#runClick" style="-fx-cursor: hand" text="运行自动操作"/>
             <Label fx:id="dataNumber_Click" alignment="CENTER_RIGHT" prefHeight="20" text="列表为空"/>
         </HBox>
 
@@ -37,13 +69,28 @@
             </placeholder>
 
             <columns>
-                <TableColumn fx:id="x_Click" text="横（X）坐标"/>
-                <TableColumn fx:id="y_Click" text="纵（Y）坐标"/>
-                <TableColumn fx:id="waitTime_Click" text="鼠标点击前等待时间（单位：秒）"/>
-                <TableColumn fx:id="type_Click" text="鼠标点击类型"/>
+                <TableColumn fx:id="startX_Click" text="起始横(X)坐标"/>
+                <TableColumn fx:id="startY_Click" text="起始纵(Y)坐标"/>
+                <TableColumn fx:id="endX_Click" text="结束横(X)坐标"/>
+                <TableColumn fx:id="endY_Click" text="结束纵(Y)坐标"/>
+                <TableColumn fx:id="clickTime_Click" text="点击时长(单位:秒)"/>
+                <TableColumn fx:id="clickNum_Click" text="点击次数"/>
+                <TableColumn fx:id="waitTime_Click" text="操作执行前等待时间(单位:秒)"/>
+                <TableColumn fx:id="type_Click" text="操作类型"/>
             </columns>
         </TableView>
 
-        <Label fx:id="log_Click" prefHeight="20"/>
+        <HBox fx:id="tipHBox_Click" spacing="10">
+            <ProgressBar fx:id="progressBar_Click" visible="false" prefWidth="200.0" progress="0.0"/>
+            <Label fx:id="tip_Click" prefHeight="20" textFill="red" alignment="CENTER_RIGHT"
+                   text="设置操作步骤后上下拖拽数据行可调整数据顺序，右键点击数据行可进行调整操作，双击单元格可进行编辑"/>
+        </HBox>
+
+        <HBox fx:id="cancelTipHBox_Click" spacing="10">
+            <Label fx:id="cancelTip_Click" prefHeight="20" textFill="red" alignment="CENTER_RIGHT"
+                   text="执行自动化任务时按下 esc 即可取消任务"/>
+        </HBox>
+
+        <Label fx:id="log_Click"/>
     </VBox>
 </AnchorPane>

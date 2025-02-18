@@ -4,12 +4,12 @@ module priv.koishi.tools {
 
     requires static lombok;
     requires org.apache.poi.ooxml;
-    requires java.desktop;
     requires org.apache.commons.collections4;
     requires org.apache.commons.lang3;
     requires org.apache.logging.log4j;
     requires org.apache.logging.log4j.core;
     requires jdk.management;
+    requires com.github.kwhat.jnativehook;
 
     opens priv.koishi.tools to javafx.fxml;
     exports priv.koishi.tools;

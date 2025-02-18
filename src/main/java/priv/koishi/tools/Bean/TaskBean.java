@@ -99,4 +99,9 @@ public class TaskBean<T> {
      */
     boolean reverseSort;
 
+    /**
+     * 自动点击任务循环次数
+     */
+    int loopTime;
+
 }

@@ -30,7 +30,7 @@
             </AnchorPane>
         </Tab>
 
-        <Tab style="-fx-cursor: hand" fx:id="autoClickTab" text="自动点击工具">
+        <Tab style="-fx-cursor: hand" fx:id="autoClickTab" text="自动操作工具">
             <AnchorPane>
                 <fx:include source="AutoClick-tab.fxml"/>
             </AnchorPane>
