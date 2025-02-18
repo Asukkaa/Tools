@@ -180,6 +180,8 @@ public class AutoClickController extends CommonProperties {
 
     /**
      * 运行自动点击按钮
+     *
+     * @throws Exception 列表中没有要执行的操作
      */
     @FXML
     public void runClick() throws Exception {
