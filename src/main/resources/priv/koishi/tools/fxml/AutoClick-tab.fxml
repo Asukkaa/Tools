@@ -28,7 +28,7 @@
             <Button fx:id="clickTest_Click" onAction="#clickTest" style="-fx-cursor: hand" text="测试坐标"/>
             <Button fx:id="clearButton_Click" onAction="#removeAll" style="-fx-cursor: hand" text="清空列表"/>
             <Button fx:id="runClick_Click" onAction="#runClick" style="-fx-cursor: hand" text="运行"/>
-            <Label fx:id="fileNumber_Click" alignment="CENTER_RIGHT" prefHeight="20" text="列表为空"/>
+            <Label fx:id="dataNumber_Click" alignment="CENTER_RIGHT" prefHeight="20" text="列表为空"/>
         </HBox>
 
         <TableView fx:id="tableView_Click">
@@ -39,7 +39,7 @@
             <columns>
                 <TableColumn fx:id="x_Click" text="横（X）坐标"/>
                 <TableColumn fx:id="y_Click" text="纵（Y）坐标"/>
-                <TableColumn fx:id="waitTime_Click" text="鼠标点击前等待时间"/>
+                <TableColumn fx:id="waitTime_Click" text="鼠标点击前等待时间（单位：秒）"/>
                 <TableColumn fx:id="type_Click" text="鼠标点击类型"/>
             </columns>
         </TableView>

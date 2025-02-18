@@ -125,6 +125,18 @@ public class CommonFinals {
 
     public static final String tip_defaultNextRunMemory = "当前配置值为空，程序最大内存设置为操作系统最大内存1/4，填写其他值关闭程序即可保存修改，重启动程序即可生效";
 
+    public static final String tip_wait = "每步操作执行前等待时间，单位为秒，只能填自然数，不填默认为 0";
+
+    public static final String tip_mouseX = "鼠标点击位置横坐标，只能填自然数，不填默认为 0";
+
+    public static final String tip_mouseY = "鼠标点击位置纵坐标，只能填自然数，不填默认为 0";
+
+    public static final String tip_runClick = "点击后将会按照列表中的步骤执行自动操作";
+
+    public static final String tip_addPosition = "点击后将会根据设置在列表中添加一条操作步骤";
+
+    public static final String tip_clickTest = "点击后将会按照设置位置点击";
+
     public static final String tip_version = """
             version：1.0.0.0
             2025年2月10日构建""";

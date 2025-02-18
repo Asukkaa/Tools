@@ -22,37 +22,22 @@ public class ClickPositionBean {
     String uuid = UUID.randomUUID().toString();
 
     /**
-     * 鼠标点击横（X）坐标字符串
+     * 鼠标点击横（X）坐标
      */
     String x;
 
     /**
-     * 鼠标点击横（X）坐标
-     */
-    double xPosition;
-
-    /**
-     * 鼠标点击横（Y）坐标字符串
+     * 鼠标点击横（Y）坐标
      */
     String y;
 
     /**
-     * 鼠标点击横（Y）坐标
-     */
-    double yPosition;
-
-    /**
-     * 等待时间字符串
+     * 等待时间
      */
     String waitTime;
 
     /**
-     * 待时间
-     */
-    long wait;
-
-    /**
-     * 鼠标点击类型字符串
+     * 鼠标点击类型
      */
     String type;
 

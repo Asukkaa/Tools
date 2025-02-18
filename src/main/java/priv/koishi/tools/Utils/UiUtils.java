@@ -581,7 +581,7 @@ public class UiUtils {
         // 复制文件路径选项
         buildOpenCopyFilePathItem(tableView, contextMenu, anchorPane);
         // 删除所选数据选项
-        buildDeleteDataMenuItem(tableView, label, contextMenu);
+        buildDeleteDataMenuItem(tableView, label, contextMenu, text_file);
         tableView.setContextMenu(contextMenu);
         tableView.setOnMousePressed(event -> {
             if (event.isSecondaryButtonDown()) {
@@ -717,13 +717,13 @@ public class UiUtils {
      * @param label       列表对应的统计信息展示栏
      * @param contextMenu 右键菜单集合
      */
-    public static<T> void buildDeleteDataMenuItem(TableView<T> tableView, Label label, ContextMenu contextMenu) {
+    public static<T> void buildDeleteDataMenuItem(TableView<T> tableView, Label label, ContextMenu contextMenu, String unit) {
         MenuItem deleteDataMenuItem = new MenuItem("删除所选数据");
         deleteDataMenuItem.setOnAction(event -> {
             List<T> ts = tableView.getSelectionModel().getSelectedItems();
             ObservableList<T> items = tableView.getItems();
             items.removeAll(ts);
-            label.setText(text_allHave + items.size() + text_file);
+            label.setText(text_allHave + items.size() + unit);
         });
         contextMenu.getItems().add(deleteDataMenuItem);
     }
