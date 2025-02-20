@@ -35,6 +35,7 @@ import java.util.concurrent.ExecutorService;
 import static javafx.scene.input.MouseButton.PRIMARY;
 import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.Service.AutoClickService.autoClick;
+import static priv.koishi.tools.Service.AutoClickService.click;
 import static priv.koishi.tools.Utils.TaskUtils.bindingProgressBarTask;
 import static priv.koishi.tools.Utils.TaskUtils.taskUnbind;
 import static priv.koishi.tools.Utils.UiUtils.*;
@@ -90,13 +91,13 @@ public class AutoClickController extends CommonProperties {
     private Button clearButton_Click, runClick_Click, clickTest_Click, addPosition_Click;
 
     @FXML
-    private TextField mouseStartX_Click, mouseStartY_Click, mouseEndX_Click, mouseEndY_Click, wait_Click, loopTime_Click, clickNumBer_Click, timeClick_Click;
+    private TextField mouseStartX_Click, mouseStartY_Click, mouseEndX_Click, mouseEndY_Click, wait_Click, loopTime_Click, clickNumBer_Click, timeClick_Click, clickName_Click, interval_Click;
 
     @FXML
     private TableView<ClickPositionBean> tableView_Click;
 
     @FXML
-    public TableColumn<ClickPositionBean, String> startX_Click, startY_Click, endX_Click, endY_Click, clickTime_Click, clickNum_Click, waitTime_Click, type_Click;
+    public TableColumn<ClickPositionBean, String> name_Click, startX_Click, startY_Click, endX_Click, endY_Click, clickTime_Click, clickNum_Click, clickInterval_Click, waitTime_Click, type_Click;
 
     /**
      * 组件自适应宽高
@@ -111,10 +112,12 @@ public class AutoClickController extends CommonProperties {
         table.setPrefHeight(stageHeight * 0.5);
         // 设置组件宽度
         double stageWidth = stage.getWidth();
-        double tableWidth = stageWidth * 0.92;
+        double tableWidth = stageWidth * 0.95;
         table.setMaxWidth(tableWidth);
         Node settingVBox = scene.lookup("#vbox_Click");
         settingVBox.setLayoutX(stageWidth * 0.03);
+        Node name = scene.lookup("#name_Click");
+        name.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
         Node startX = scene.lookup("#startX_Click");
         startX.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
         Node startY = scene.lookup("#startY_Click");
@@ -124,11 +127,13 @@ public class AutoClickController extends CommonProperties {
         Node endY = scene.lookup("#endY_Click");
         endY.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
         Node clickTime = scene.lookup("#clickTime_Click");
-        clickTime.setStyle("-fx-pref-width: " + tableWidth * 0.2 + "px;");
+        clickTime.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
         Node clickNum = scene.lookup("#clickNum_Click");
-        clickNum.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
+        clickNum.setStyle("-fx-pref-width: " + tableWidth * 0.07 + "px;");
+        Node clickInterval = scene.lookup("#clickInterval_Click");
+        clickInterval.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
         Node waitTime = scene.lookup("#waitTime_Click");
-        waitTime.setStyle("-fx-pref-width: " + tableWidth * 0.2 + "px;");
+        waitTime.setStyle("-fx-pref-width: " + tableWidth * 0.13 + "px;");
         Node type = scene.lookup("#type_Click");
         type.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
         Label dataNum = (Label) scene.lookup("#dataNumber_Click");
@@ -171,14 +176,54 @@ public class AutoClickController extends CommonProperties {
      * 设置javafx单元格宽度
      */
     private void bindPrefWidthProperty() {
+        name_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.1));
         startX_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.1));
         startY_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.1));
         endX_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.1));
         endY_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.1));
-        clickTime_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.2));
-        clickNum_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.1));
-        waitTime_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.2));
+        clickTime_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.1));
+        clickNum_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.07));
+        clickInterval_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.1));
+        waitTime_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.13));
         type_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.1));
+    }
+
+    /**
+     * 设置单元格可编辑
+     */
+    private void makeCellCanEdit() {
+        tableView_Click.setEditable(true);
+        name_Click.setCellFactory((tableColumn) -> new EditingCell<>(ClickPositionBean::setName));
+        startX_Click.setCellFactory((tableColumn) -> new EditingCell<>(ClickPositionBean::setStartX));
+        endX_Click.setCellFactory((tableColumn) -> new EditingCell<>(ClickPositionBean::setEndX));
+        startY_Click.setCellFactory((tableColumn) -> new EditingCell<>(ClickPositionBean::setStartY));
+        endY_Click.setCellFactory((tableColumn) -> new EditingCell<>(ClickPositionBean::setEndY));
+        clickInterval_Click.setCellFactory((tableColumn) -> new EditingCell<>(ClickPositionBean::setClickInterval));
+        waitTime_Click.setCellFactory((tableColumn) -> new EditingCell<>(ClickPositionBean::setWaitTime));
+        clickTime_Click.setCellFactory((tableColumn) -> new EditingCell<>(ClickPositionBean::setClickTime));
+        clickNum_Click.setCellFactory((tableColumn) -> new EditingCell<>(ClickPositionBean::setClickNum));
+    }
+
+    /**
+     * 构建右键菜单
+     */
+    private void buildContextMenu() {
+        // 设置可以选中多行
+        tableView_Click.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        // 添加右键菜单
+        ContextMenu contextMenu = new ContextMenu();
+        // 所选行上移一行选项
+        buildUpMoveDataMenuItem(tableView_Click, contextMenu);
+        // 所选行下移一行选项
+        buildDownMoveDataMenuItem(tableView_Click, contextMenu);
+        // 删除所选数据选项
+        buildDeleteDataMenuItem(tableView_Click, dataNumber_Click, contextMenu, text_data);
+        tableView_Click.setContextMenu(contextMenu);
+        tableView_Click.setOnMousePressed(event -> {
+            if (event.isSecondaryButtonDown()) {
+                contextMenu.show(tableView_Click, event.getScreenX(), event.getScreenY());
+            }
+        });
     }
 
     /**
@@ -186,13 +231,15 @@ public class AutoClickController extends CommonProperties {
      *
      * @return clickPositionBean 自动操作步骤类
      */
-    private ClickPositionBean getClickSetting() {
+    private ClickPositionBean getClickSetting(int tableViewItemSize) {
         ClickPositionBean clickPositionBean = new ClickPositionBean();
         int startX = setDefaultIntValue(mouseStartX_Click, 0, 0, null);
         int startY = setDefaultIntValue(mouseStartY_Click, 0, 0, null);
         clickPositionBean.setWaitTime(String.valueOf(setDefaultIntValue(wait_Click, 0, 0, null)))
+                .setClickInterval(String.valueOf(setDefaultIntValue(interval_Click, 0, 0, null)))
                 .setClickNum(String.valueOf(setDefaultIntValue(clickNumBer_Click, 1, 0, null)))
                 .setClickTime(String.valueOf(setDefaultIntValue(timeClick_Click, 0, 0, null)))
+                .setName(setDefaultStrValue(clickName_Click, "步骤" + (tableViewItemSize + 1)))
                 .setEndX(String.valueOf(setDefaultIntValue(mouseEndX_Click, startX, 0, null)))
                 .setEndY(String.valueOf(setDefaultIntValue(mouseEndY_Click, startY, 0, null)))
                 .setType(clickType_Click.getValue())
@@ -205,14 +252,24 @@ public class AutoClickController extends CommonProperties {
      * 给输入框添加内容变化监听
      */
     private void textFieldChangeListener() {
+        // 操作每次文本输入框鼠标悬停提示
+        textFieldValueListener(clickName_Click, tip_clickName);
+        // 限制单次操作点击间隔文本输入框内容
         integerRangeTextField(wait_Click, 0, null, tip_wait);
-        integerRangeTextField(mouseStartX_Click, 0, null, tip_mouseStartX);
-        integerRangeTextField(mouseEndX_Click, 0, null, tip_mouseEndX);
-        integerRangeTextField(mouseStartY_Click, 0, null, tip_mouseStartY);
-        integerRangeTextField(mouseEndY_Click, 0, null, tip_mouseEndY);
+        // 限制循环次数文本输入框内容
         integerRangeTextField(loopTime_Click, 0, null, tip_loopTime);
-        integerRangeTextField(clickNumBer_Click, 0, null, tip_clickNumBer);
+        // 限制操作时长文本输入内容
         integerRangeTextField(timeClick_Click, 0, null, tip_clickTime);
+        // 限制鼠标结束位置横(X)坐标文本输入框内容
+        integerRangeTextField(mouseEndX_Click, 0, null, tip_mouseEndX);
+        // 限制鼠标结束位置纵(Y)坐标文本输入框内容
+        integerRangeTextField(mouseEndY_Click, 0, null, tip_mouseEndY);
+        // 限制鼠标起始位置横(X)坐标文本输入框内容
+        integerRangeTextField(mouseStartX_Click, 0, null, tip_mouseStartX);
+        // 限制鼠标起始位置纵(Y)坐标文本输入框内容
+        integerRangeTextField(mouseStartY_Click, 0, null, tip_mouseStartY);
+        // 限制点击次数文本输入框内容
+        integerRangeTextField(clickNumBer_Click, 0, null, tip_clickNumBer);
     }
 
     /**
@@ -220,18 +277,20 @@ public class AutoClickController extends CommonProperties {
      */
     private void setToolTip() {
         addToolTip(tip_wait, wait_Click);
-        addToolTip(tip_mouseStartX, mouseStartX_Click);
-        addToolTip(tip_mouseEndX, mouseEndX_Click);
-        addToolTip(tip_mouseStartY, mouseStartY_Click);
-        addToolTip(tip_mouseEndY, mouseEndY_Click);
-        addToolTip(tip_learButton, clearButton_Click);
         addToolTip(tip_runClick, runClick_Click);
-        addToolTip(tip_addPosition, addPosition_Click);
-        addToolTip(tip_clickTest, clickTest_Click);
         addToolTip(tip_loopTime, loopTime_Click);
-        addToolTip(tip_clickNumBer, clickNumBer_Click);
+        addToolTip(tip_mouseEndX, mouseEndX_Click);
+        addToolTip(tip_mouseEndY, mouseEndY_Click);
         addToolTip(tip_clickType, clickType_Click);
         addToolTip(tip_clickTime, timeClick_Click);
+        addToolTip(tip_clickName, clickName_Click);
+        addToolTip(tip_clickTest, clickTest_Click);
+        addToolTip(tip_clickInterval, interval_Click);
+        addToolTip(tip_learButton, clearButton_Click);
+        addToolTip(tip_addPosition, addPosition_Click);
+        addToolTip(tip_clickNumBer, clickNumBer_Click);
+        addToolTip(tip_mouseStartX, mouseStartX_Click);
+        addToolTip(tip_mouseStartY, mouseStartY_Click);
     }
 
     /**
@@ -324,18 +383,27 @@ public class AutoClickController extends CommonProperties {
      */
     @FXML
     private void clickTest() {
+        // 获取点击步骤设置
+        ClickPositionBean clickPositionBean = getClickSetting(-1);
+        // 操作执行前等待时间
+        try {
+            Thread.sleep(Long.parseLong(clickPositionBean.getWaitTime()));
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         // 创建一个Robot实例
         Robot robot = new Robot();
-        ClickPositionBean clickPositionBean = getClickSetting();
-        // 移动鼠标到指定位置并点击
-        robot.mouseMove(Double.parseDouble(clickPositionBean.getStartX()), Double.parseDouble(clickPositionBean.getStartY()));
         // macos需要多点一次将切换目标程序窗口
         if (systemName.contains(macos)) {
+            // 起止坐标
+            double startX = Double.parseDouble(clickPositionBean.getStartX());
+            double startY = Double.parseDouble(clickPositionBean.getStartY());
+            // 移动鼠标到起始位置
+            robot.mouseMove(startX, startY);
             robot.mousePress(PRIMARY);
             robot.mouseRelease(PRIMARY);
         }
-        robot.mousePress(PRIMARY);
-        robot.mouseRelease(PRIMARY);
+        click(clickPositionBean, robot);
     }
 
     /**
@@ -343,36 +411,22 @@ public class AutoClickController extends CommonProperties {
      */
     @FXML
     private void addPosition() {
-        ClickPositionBean clickPositionBean = getClickSetting();
         ObservableList<ClickPositionBean> tableViewItems = tableView_Click.getItems();
+        int tableViewItemSize = tableViewItems.size();
+        // 获取点击步骤设置
+        ClickPositionBean clickPositionBean = getClickSetting(tableViewItemSize);
         tableViewItems.add(clickPositionBean);
+        // 自动填充javafx表格
         autoBuildTableViewData(tableView_Click, tableViewItems, tabId);
-        dataNumber_Click.setText(text_allHave + tableViewItems.size() + text_data);
+        // 同步表格数据量
+        dataNumber_Click.setText(text_allHave + (tableViewItemSize + 1) + text_process);
         // 表格设置为可编辑
-        tableView_Click.setEditable(true);
-        startX_Click.setCellFactory((tableColumn) -> new EditingCell<>(ClickPositionBean::setStartX));
-        endX_Click.setCellFactory((tableColumn) -> new EditingCell<>(ClickPositionBean::setEndX));
-        startY_Click.setCellFactory((tableColumn) -> new EditingCell<>(ClickPositionBean::setStartY));
-        endY_Click.setCellFactory((tableColumn) -> new EditingCell<>(ClickPositionBean::setEndY));
-        waitTime_Click.setCellFactory((tableColumn) -> new EditingCell<>(ClickPositionBean::setWaitTime));
-        clickTime_Click.setCellFactory((tableColumn) -> new EditingCell<>(ClickPositionBean::setClickTime));
-        clickNum_Click.setCellFactory((tableColumn) -> new EditingCell<>(ClickPositionBean::setClickNum));
-        // 设置可以选中多行
-        tableView_Click.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        // 添加右键菜单
-        ContextMenu contextMenu = new ContextMenu();
-        // 所选行上移一行选项
-        buildUpMoveDataMenuItem(tableView_Click, contextMenu);
-        // 所选行下移一行选项
-        buildDownMoveDataMenuItem(tableView_Click, contextMenu);
-        // 删除所选数据选项
-        buildDeleteDataMenuItem(tableView_Click, dataNumber_Click, contextMenu, text_data);
-        tableView_Click.setContextMenu(contextMenu);
-        tableView_Click.setOnMousePressed(event -> {
-            if (event.isSecondaryButtonDown()) {
-                contextMenu.show(tableView_Click, event.getScreenX(), event.getScreenY());
-            }
-        });
+        makeCellCanEdit();
+        // 设置列表通过拖拽排序行
+        tableViewDragRow(tableView_Click);
+        // 构建右键菜单
+        buildContextMenu();
+        // 初始化信息栏
         updateLabel(log_Click, "");
     }
 

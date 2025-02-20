@@ -2,6 +2,7 @@ package priv.koishi.tools.Service;
 
 import javafx.application.Platform;
 import javafx.concurrent.Task;
+import javafx.scene.input.MouseButton;
 import javafx.scene.robot.Robot;
 import priv.koishi.tools.Bean.ClickPositionBean;
 import priv.koishi.tools.Bean.TaskBean;
@@ -9,8 +10,7 @@ import priv.koishi.tools.Bean.TaskBean;
 import java.util.List;
 
 import static javafx.scene.input.MouseButton.PRIMARY;
-import static priv.koishi.tools.Finals.CommonFinals.macos;
-import static priv.koishi.tools.Finals.CommonFinals.systemName;
+import static priv.koishi.tools.Finals.CommonFinals.*;
 
 /**
  * 自动点击线程任务类
@@ -40,38 +40,48 @@ public class AutoClickService {
                         robot.mouseMove(x, y);
                         robot.mousePress(PRIMARY);
                         robot.mouseRelease(PRIMARY);
+                        updateMessage("已切换到目标窗口");
                     });
-                    updateMessage("已切换到目标窗口");
                 }
                 int loopTime = taskBean.getLoopTime();
                 if (loopTime == 0) {
                     int i = 0;
                     while (!isCancelled()) {
                         i++;
-                        String loopTimeText = "正在执行第 " + i + " / ∞" + " 轮操作\n";
-                        click(tableViewItems, loopTimeText);
+                        String loopTimeText = "第 " + i + " / ∞" + " 轮操作\n";
+                        // 执行点击任务
+                        clicks(tableViewItems, loopTimeText);
                     }
                 } else {
                     for (int i = 0; i < loopTime; i++) {
-                        String loopTimeText = "正在执行第 " + (i + 1) + " / " + loopTime + " 轮操作\n";
-                        click(tableViewItems, loopTimeText);
+                        String loopTimeText = "第 " + (i + 1) + " / " + loopTime + " 轮操作\n";
+                        // 执行点击任务
+                        clicks(tableViewItems, loopTimeText);
                     }
                 }
                 updateMessage("所有操作都以执行完毕");
                 return null;
             }
 
-            private void click(List<ClickPositionBean> tableViewItems, String loopTimeText) {
+            // 执行点击任务
+            private void clicks(List<ClickPositionBean> tableViewItems, String loopTimeText) {
                 int dataSize = tableViewItems.size();
                 updateProgress(0, dataSize);
                 for (int j = 0; j < dataSize; j++) {
                     ClickPositionBean clickPositionBean = tableViewItems.get(j);
-                    double x = Double.parseDouble(clickPositionBean.getStartX());
-                    double y = Double.parseDouble(clickPositionBean.getStartY());
+                    double startX = Double.parseDouble(clickPositionBean.getStartX());
+                    double startY = Double.parseDouble(clickPositionBean.getStartY());
+                    double endX = Double.parseDouble(clickPositionBean.getEndX());
+                    double endY = Double.parseDouble(clickPositionBean.getEndY());
                     String waitTime = clickPositionBean.getWaitTime();
-                    updateMessage(loopTimeText + waitTime + " 秒后将执行 " + clickPositionBean.getType() + " X：" + x + " Y：" + y);
+                    String clickTime = clickPositionBean.getClickTime();
+                    String name = clickPositionBean.getName();
+                    String clickNum = clickPositionBean.getClickNum();
+                    Platform.runLater(() -> updateMessage(loopTimeText + waitTime + " 毫秒后将执行: " + name + "\n" +
+                            "操作内容：" + clickPositionBean.getType() + " X：" + startX + " Y：" + startY + " 在 " +
+                            clickTime + " 毫秒内移动到 X：" + endX + " Y：" + endY + " 共 " + clickNum + " 次"));
                     try {
-                        Thread.sleep(Long.parseLong(waitTime) * 1000);
+                        Thread.sleep(Long.parseLong(waitTime));
                     } catch (InterruptedException e) {
                         if (isCancelled()) {
                             break;
@@ -79,16 +89,60 @@ public class AutoClickService {
                         throw new RuntimeException(e);
                     }
                     Platform.runLater(() -> {
-                        robot.mouseMove(x, y);
-                        robot.mousePress(PRIMARY);
+                        click(clickPositionBean, robot);
+                        updateMessage(loopTimeText + name + "执行完毕");
                     });
-                    updateMessage(loopTimeText + "正在执行 " + clickPositionBean.getType() + " X：" + x + " Y：" + y);
-                    Platform.runLater(() -> robot.mouseRelease(PRIMARY));
-                    updateMessage(loopTimeText + clickPositionBean.getType() + " X：" + x + " Y：" + y + "执行完毕");
                     updateProgress(j + 1, dataSize);
                 }
             }
         };
+    }
+
+    /**
+     * 按照操作设置执行操作
+     *
+     * @param clickPositionBean 操作设置
+     * @param robot             Robot实例
+     */
+    public static void click(ClickPositionBean clickPositionBean, Robot robot) {
+        // 操作次数
+        int clickNum = Integer.parseInt(clickPositionBean.getClickNum());
+        double startX = Double.parseDouble(clickPositionBean.getStartX());
+        double startY = Double.parseDouble(clickPositionBean.getStartY());
+        double endX = Double.parseDouble(clickPositionBean.getEndX());
+        double endY = Double.parseDouble(clickPositionBean.getEndY());
+        long clickTime = Long.parseLong(clickPositionBean.getClickTime());
+        long clickInterval = Long.parseLong(clickPositionBean.getClickInterval());
+        for (int i = 0; i < clickNum; i++) {
+            // 每次操作的间隔时间
+            if (i > 0 && i < clickNum - 1) {
+                try {
+                    Thread.sleep(clickInterval);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            MouseButton mouseButton = clickTypeMap.get(clickPositionBean.getType());
+            robot.mouseMove(startX, startY);
+            robot.mousePress(mouseButton);
+            // 计算鼠标移动的轨迹
+            double deltaX = endX - startX;
+            double deltaY = endY - startY;
+            int steps = 10;
+            long stepDuration = clickTime / steps;
+            for (int j = 0; j <= steps; j++) {
+                double x = startX + deltaX * j / steps;
+                double y = startY + deltaY * j / steps;
+                robot.mouseMove(x, y);
+                try {
+                    Thread.sleep(stepDuration);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+            }
+            robot.mouseRelease(mouseButton);
+        }
     }
 
 }

@@ -1,8 +1,11 @@
 package priv.koishi.tools.Finals;
 
+import javafx.scene.input.MouseButton;
 import javafx.util.Duration;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 通用常量类
@@ -125,7 +128,7 @@ public class CommonFinals {
 
     public static final String tip_defaultNextRunMemory = "当前配置值为空，程序最大内存设置为操作系统最大内存1/4，填写其他值关闭程序即可保存修改，重启动程序即可生效";
 
-    public static final String tip_wait = "每步操作执行前等待时间，单位为秒，只能填自然数，不填默认为 0";
+    public static final String tip_wait = "每步操作执行前等待时间，单位为毫秒，只能填自然数，不填默认为 0";
 
     public static final String tip_mouseStartX = "鼠标点击位置起始横坐标，只能填自然数，不填默认为 0";
 
@@ -147,7 +150,11 @@ public class CommonFinals {
 
     public static final String tip_clickType = "每步操作需要按下的键";
 
-    public static final String tip_clickTime = "每步操作时长，只能填自然数，不填默认为 0";
+    public static final String tip_clickTime = "每步操作时长，单位为毫秒，只能填自然数，不填默认为 0";
+
+    public static final String tip_clickInterval = "单次操作中，每次点击的时间间隔，只能填自然数，不填默认为 0";
+
+    public static final String tip_clickName = "每步操作的名称，不填将给一个默认名称";
 
     public static final String tip_version = """
             version：1.0.0.0
@@ -255,6 +262,8 @@ public class CommonFinals {
     public static final String text_coordinate = " 数据坐标：";
 
     public static final String text_data = " 组数据";
+
+    public static final String text_process = " 步操作";
 
     public static final String text_printing = "正在输出第 ";
 
@@ -523,5 +532,19 @@ public class CommonFinals {
      * ToolTip统一显示时长
      */
     public static final Duration showDuration = Duration.seconds(6000000);
+
+    /**
+     * 自动操作的操作类型选项对应的鼠标行为
+     */
+    public static final Map<String, MouseButton> clickTypeMap = new HashMap<>();
+
+    static {
+        clickTypeMap.put("鼠标左键点击", MouseButton.PRIMARY);
+        clickTypeMap.put("鼠标右键点击", MouseButton.SECONDARY);
+        clickTypeMap.put("鼠标中键点击", MouseButton.MIDDLE);
+        clickTypeMap.put("鼠标前侧键点击", MouseButton.FORWARD);
+        clickTypeMap.put("鼠标后侧键点击", MouseButton.BACK);
+        clickTypeMap.put("鼠标未点击", MouseButton.NONE);
+    }
 
 }

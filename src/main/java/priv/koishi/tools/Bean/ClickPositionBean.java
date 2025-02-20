@@ -22,6 +22,11 @@ public class ClickPositionBean {
     String uuid = UUID.randomUUID().toString();
 
     /**
+     * 操作名称
+     */
+    String name;
+
+    /**
      * 起始横（X）坐标
      */
     String startX;
@@ -42,7 +47,7 @@ public class ClickPositionBean {
     String endY;
 
     /**
-     * 点击时长（单位：秒）
+     * 点击时长（单位：毫秒）
      */
     String clickTime;
 
@@ -52,7 +57,12 @@ public class ClickPositionBean {
     String clickNum;
 
     /**
-     * 操作执行前等待时间（单位：秒）
+     * 点击间隔时间（单位：毫秒）
+     */
+    String clickInterval;
+
+    /**
+     * 操作执行前等待时间（单位：毫秒）
      */
     String waitTime;
 
