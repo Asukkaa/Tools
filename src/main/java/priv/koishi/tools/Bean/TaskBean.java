@@ -104,4 +104,9 @@ public class TaskBean<T> {
      */
     int loopTime;
 
+    /**
+     * 执行自动流程前点击第一个起始坐标
+     */
+    boolean firstClick;
+
 }

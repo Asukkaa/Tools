@@ -156,8 +156,15 @@ public class CommonFinals {
 
     public static final String tip_clickName = "每步操作的名称，不填将给一个默认名称";
 
+    public static final String tip_firstClick = """
+            勾选后：
+            如果是运行 测试操作流程 则会 鼠标左键 点击一次设置栏设置的起始坐标后再执行测试操作
+            如果是运行 自动化操作 则会 鼠标左键 点击一次第一步操作的起始坐标后再执行自动化操作
+            建议 Windows 用户不要勾选， macOS 用户需要勾选
+            Windows 会直接点击对应窗口的对应坐标，macOS 需要先点击对应窗口将焦点切换过去才能点中对应窗口的对应坐标""";
+
     public static final String tip_version = """
-            version：1.0.0.0
+            version：1.1.0.0
             2025年2月10日构建""";
 
     public static final String tip_updateSameCode = """

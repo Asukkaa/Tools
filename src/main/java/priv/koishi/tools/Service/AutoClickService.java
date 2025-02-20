@@ -31,8 +31,8 @@ public class AutoClickService {
             @Override
             protected Void call() {
                 List<ClickPositionBean> tableViewItems = taskBean.getBeanList();
-                // macos系统需要先点击一下将焦点切换到目标窗口
-                if (systemName.contains(macos)) {
+                // 执行自动流程前点击第一个起始坐标
+                if (taskBean.isFirstClick()) {
                     ClickPositionBean clickPositionBean = tableViewItems.getFirst();
                     double x = Double.parseDouble(clickPositionBean.getStartX());
                     double y = Double.parseDouble(clickPositionBean.getStartY());

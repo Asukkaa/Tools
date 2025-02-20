@@ -79,7 +79,11 @@ public class AutoClickController extends CommonProperties {
     private HBox fileNumberHBox_Click, tipHBox_Click, cancelTipHBox_Click;
 
     @FXML
+    private CheckBox firstClick_Click;
+
+    @FXML
     private ProgressBar progressBar_Click;
+
 
     @FXML
     private ChoiceBox<String> clickType_Click;
@@ -285,6 +289,7 @@ public class AutoClickController extends CommonProperties {
         addToolTip(tip_clickTime, timeClick_Click);
         addToolTip(tip_clickName, clickName_Click);
         addToolTip(tip_clickTest, clickTest_Click);
+        addToolTip(tip_firstClick, firstClick_Click);
         addToolTip(tip_clickInterval, interval_Click);
         addToolTip(tip_learButton, clearButton_Click);
         addToolTip(tip_addPosition, addPosition_Click);
@@ -354,6 +359,7 @@ public class AutoClickController extends CommonProperties {
         }
         TaskBean<ClickPositionBean> taskBean = new TaskBean<>();
         taskBean.setLoopTime(setDefaultIntValue(loopTime_Click, 1, 0, null))
+                .setFirstClick(firstClick_Click.isSelected())
                 .setProgressBar(progressBar_Click)
                 .setBeanList(tableViewItems)
                 .setMassageLabel(log_Click);
@@ -393,8 +399,8 @@ public class AutoClickController extends CommonProperties {
         }
         // 创建一个Robot实例
         Robot robot = new Robot();
-        // macos需要多点一次将切换目标程序窗口
-        if (systemName.contains(macos)) {
+        // 执行自动流程前点击第一个起始坐标
+        if (firstClick_Click.isSelected()) {
             // 起止坐标
             double startX = Double.parseDouble(clickPositionBean.getStartX());
             double startY = Double.parseDouble(clickPositionBean.getStartY());

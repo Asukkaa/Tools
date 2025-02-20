@@ -67,6 +67,8 @@
 
             <Label text="循环次数："/>
             <TextField fx:id="loopTime_Click" prefWidth="80"/>
+
+            <CheckBox fx:id="firstClick_Click" prefHeight="20" style="-fx-cursor: hand" text="执行自动流程前点击第一个起始坐标"/>
         </HBox>
 
         <HBox fx:id="fileNumberHBox_Click" spacing="10">
