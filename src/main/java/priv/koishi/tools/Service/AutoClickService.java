@@ -115,7 +115,7 @@ public class AutoClickService {
         long clickInterval = Long.parseLong(clickPositionBean.getClickInterval());
         for (int i = 0; i < clickNum; i++) {
             // 每次操作的间隔时间
-            if (i > 0 && i < clickNum - 1) {
+            if (i > 0) {
                 try {
                     Thread.sleep(clickInterval);
                 } catch (InterruptedException e) {
