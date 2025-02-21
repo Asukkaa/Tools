@@ -1,5 +1,8 @@
 package priv.koishi.tools.Controller;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.github.kwhat.jnativehook.GlobalScreen;
 import com.github.kwhat.jnativehook.NativeHookException;
 import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
@@ -8,6 +11,7 @@ import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -20,8 +24,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.robot.Robot;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import priv.koishi.tools.Bean.ClickPositionBean;
 import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Bean.TaskBean;
@@ -30,9 +36,13 @@ import priv.koishi.tools.Properties.CommonProperties;
 import priv.koishi.tools.ThreadPool.CommonThreadPoolExecutor;
 
 import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 
@@ -42,10 +52,11 @@ import static priv.koishi.tools.Service.AutoClickService.autoClick;
 import static priv.koishi.tools.Service.AutoClickService.click;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningOutputStream;
+import static priv.koishi.tools.Utils.FileUtils.openDirectory;
+import static priv.koishi.tools.Utils.FileUtils.updateProperties;
 import static priv.koishi.tools.Utils.TaskUtils.bindingProgressBarTask;
 import static priv.koishi.tools.Utils.TaskUtils.taskUnbind;
 import static priv.koishi.tools.Utils.UiUtils.*;
-import static priv.koishi.tools.Utils.UiUtils.setControlLastConfig;
 
 /**
  * 自动点击工具页面控制器
@@ -55,6 +66,21 @@ import static priv.koishi.tools.Utils.UiUtils.setControlLastConfig;
  * Time:17:21
  */
 public class AutoClickController extends CommonProperties {
+
+    /**
+     * 导出文件路径
+     */
+    private static String outFilePath;
+
+    /**
+     * 导入文件路径
+     */
+    private static String inFilePath;
+
+    /**
+     * 默认导出文件名称
+     */
+    private static String defaultOutFileName;
 
     /**
      * 线程池
@@ -86,23 +112,22 @@ public class AutoClickController extends CommonProperties {
     private HBox fileNumberHBox_Click, tipHBox_Click, cancelTipHBox_Click;
 
     @FXML
-    private CheckBox firstClick_Click;
-
-    @FXML
     private ProgressBar progressBar_Click;
-
 
     @FXML
     private ChoiceBox<String> clickType_Click;
 
     @FXML
-    private Label mousePosition_Click, dataNumber_Click, log_Click, tip_Click, cancelTip_Click;
+    private CheckBox firstClick_Click, openDirectory_Click;
 
     @FXML
-    private Button clearButton_Click, runClick_Click, clickTest_Click, addPosition_Click;
+    private Label mousePosition_Click, dataNumber_Click, log_Click, tip_Click, cancelTip_Click, outPath_Click;
 
     @FXML
-    private TextField mouseStartX_Click, mouseStartY_Click, mouseEndX_Click, mouseEndY_Click, wait_Click, loopTime_Click, clickNumBer_Click, timeClick_Click, clickName_Click, interval_Click;
+    private Button clearButton_Click, runClick_Click, clickTest_Click, addPosition_Click, loadAutoClick_Click, exportAutoClick_Click, addOutPath_Click;
+
+    @FXML
+    private TextField mouseStartX_Click, mouseStartY_Click, mouseEndX_Click, mouseEndY_Click, wait_Click, loopTime_Click, clickNumBer_Click, timeClick_Click, clickName_Click, interval_Click, outFileName_Click;
 
     @FXML
     private TableView<ClickPositionBean> tableView_Click;
@@ -120,7 +145,7 @@ public class AutoClickController extends CommonProperties {
         // 设置组件高度
         double stageHeight = stage.getHeight();
         TableView<?> table = (TableView<?>) scene.lookup("#tableView_Click");
-        table.setPrefHeight(stageHeight * 0.5);
+        table.setPrefHeight(stageHeight * 0.45);
         // 设置组件宽度
         double stageWidth = stage.getWidth();
         double tableWidth = stageWidth * 0.95;
@@ -172,30 +197,35 @@ public class AutoClickController extends CommonProperties {
             Properties prop = new Properties();
             prop.load(input);
             TextField mouseStartX = (TextField) scene.lookup("#mouseStartX_Click");
-            prop.put(key_mouseStartX, mouseStartX.getText());
+            prop.put(key_lastMouseStartX, mouseStartX.getText());
             TextField mouseStartY = (TextField) scene.lookup("#mouseStartY_Click");
-            prop.put(key_mouseStartY, mouseStartY.getText());
+            prop.put(key_lastMouseStartY, mouseStartY.getText());
             TextField mouseEndX = (TextField) scene.lookup("#mouseEndX_Click");
-            prop.put(key_mouseEndX, mouseEndX.getText());
+            prop.put(key_lastMouseEndX, mouseEndX.getText());
             TextField mouseEndY = (TextField) scene.lookup("#mouseEndY_Click");
-            prop.put(key_mouseEndY, mouseEndY.getText());
+            prop.put(key_lastMouseEndY, mouseEndY.getText());
             TextField wait = (TextField) scene.lookup("#wait_Click");
-            prop.put(key_wait, wait.getText());
+            prop.put(key_lastWait, wait.getText());
             TextField loopTime = (TextField) scene.lookup("#loopTime_Click");
-            prop.put(key_loopTime, loopTime.getText());
+            prop.put(key_lastLoopTime, loopTime.getText());
             TextField clickNumBer = (TextField) scene.lookup("#clickNumBer_Click");
-            prop.put(key_clickNumBer, clickNumBer.getText());
+            prop.put(key_lastClickNumBer, clickNumBer.getText());
             TextField timeClick = (TextField) scene.lookup("#timeClick_Click");
-            prop.put(key_timeClick, timeClick.getText());
+            prop.put(key_lastTimeClick, timeClick.getText());
             TextField interval = (TextField) scene.lookup("#interval_Click");
-            prop.put(key_interval, interval.getText());
+            prop.put(key_lastInterval, interval.getText());
             CheckBox firstClick = (CheckBox) scene.lookup("#firstClick_Click");
             String lastFirstClickValue = firstClick.isSelected() ? activation : unActivation;
-            prop.put(key_firstClick, lastFirstClickValue);
+            prop.put(key_lastFirstClick, lastFirstClickValue);
             TextField clickName = (TextField) scene.lookup("#clickName_Click");
-            prop.put(key_clickName, clickName.getText());
+            prop.put(key_lastClickName, clickName.getText());
             ChoiceBox<?> clickType = (ChoiceBox<?>) scene.lookup("#clickType_Click");
-            prop.put(key_clickType, clickType.getValue());
+            prop.put(key_lastClickType, clickType.getValue());
+            TextField outFileName = (TextField) scene.lookup("#outFileName_Click");
+            prop.put(key_lastOutFileName, outFileName.getText());
+            CheckBox openDirectory = (CheckBox) scene.lookup("#openDirectory_Click");
+            String lastOpenDirectoryValue = openDirectory.isSelected() ? activation : unActivation;
+            prop.put(key_lastOpenDirectory, lastOpenDirectoryValue);
             OutputStream output = checkRunningOutputStream(configFile_Click);
             prop.store(output, null);
             input.close();
@@ -213,19 +243,37 @@ public class AutoClickController extends CommonProperties {
         InputStream input = checkRunningInputStream(configFile_Click);
         prop.load(input);
         if (activation.equals(prop.getProperty(key_loadLastConfig))) {
-            setControlLastConfig(wait_Click, prop, key_wait, false, null);
-            setControlLastConfig(interval_Click, prop, key_interval, false, null);
-            setControlLastConfig(loopTime_Click, prop, key_loopTime, false, null);
-            setControlLastConfig(clickName_Click, prop, key_clickName, true, null);
-            setControlLastConfig(mouseEndX_Click, prop, key_mouseEndX, false, null);
-            setControlLastConfig(mouseEndY_Click, prop, key_mouseEndY, false, null);
-            setControlLastConfig(timeClick_Click, prop, key_timeClick, false, null);
-            setControlLastConfig(clickType_Click, prop, key_clickType, false, null);
-            setControlLastConfig(firstClick_Click, prop, key_firstClick, false, null);
-            setControlLastConfig(mouseStartX_Click, prop, key_mouseStartX, false, null);
-            setControlLastConfig(mouseStartY_Click, prop, key_mouseStartY, false, null);
-            setControlLastConfig(clickNumBer_Click, prop, key_clickNumBer, false, null);
+            setControlLastConfig(wait_Click, prop, key_lastWait, false, null);
+            setControlLastConfig(outPath_Click, prop, key_outFilePath, false, null);
+            setControlLastConfig(interval_Click, prop, key_lastInterval, false, null);
+            setControlLastConfig(loopTime_Click, prop, key_lastLoopTime, false, null);
+            setControlLastConfig(clickName_Click, prop, key_lastClickName, true, null);
+            setControlLastConfig(mouseEndX_Click, prop, key_lastMouseEndX, false, null);
+            setControlLastConfig(mouseEndY_Click, prop, key_lastMouseEndY, false, null);
+            setControlLastConfig(timeClick_Click, prop, key_lastTimeClick, false, null);
+            setControlLastConfig(clickType_Click, prop, key_lastClickType, false, null);
+            setControlLastConfig(firstClick_Click, prop, key_lastFirstClick, false, null);
+            setControlLastConfig(mouseStartX_Click, prop, key_lastMouseStartX, false, null);
+            setControlLastConfig(mouseStartY_Click, prop, key_lastMouseStartY, false, null);
+            setControlLastConfig(clickNumBer_Click, prop, key_lastClickNumBer, false, null);
+            setControlLastConfig(outFileName_Click, prop, key_lastOutFileName, false, null);
+            setControlLastConfig(openDirectory_Click, prop, key_lastOpenDirectory, false, null);
         }
+        input.close();
+    }
+
+    /**
+     * 读取配置文件
+     *
+     * @throws IOException io异常
+     */
+    private void getConfig() throws IOException {
+        Properties prop = new Properties();
+        InputStream input = checkRunningInputStream(configFile_Click);
+        prop.load(input);
+        inFilePath = prop.getProperty(key_inFilePath);
+        outFilePath = prop.getProperty(key_outFilePath);
+        defaultOutFileName = prop.getProperty(key_defaultOutFileName);
         input.close();
     }
 
@@ -298,9 +346,10 @@ public class AutoClickController extends CommonProperties {
         buildUpMoveDataMenuItem(tableView_Click, contextMenu);
         // 所选行下移一行选项
         buildDownMoveDataMenuItem(tableView_Click, contextMenu);
+        // 修改操作类型
+        buildEditClickType(tableView_Click, contextMenu);
         // 删除所选数据选项
         buildDeleteDataMenuItem(tableView_Click, dataNumber_Click, contextMenu, text_data);
-        editClickType(tableView_Click, contextMenu);
         tableView_Click.setContextMenu(contextMenu);
         tableView_Click.setOnMousePressed(event -> {
             if (event.isSecondaryButtonDown()) {
@@ -335,8 +384,10 @@ public class AutoClickController extends CommonProperties {
      * 给输入框添加内容变化监听
      */
     private void textFieldChangeListener() {
-        // 操作每次文本输入框鼠标悬停提示
+        // 操作名称文本输入框鼠标悬停提示
         textFieldValueListener(clickName_Click, tip_clickName);
+        // 导出自动流程文件名称文本输入框鼠标悬停提示
+        textFieldValueListener(outFileName_Click, tip_autoClickFileName + defaultOutFileName);
         // 限制单次操作点击间隔文本输入框内容
         integerRangeTextField(wait_Click, 0, null, tip_wait);
         // 限制循环次数文本输入框内容
@@ -375,6 +426,11 @@ public class AutoClickController extends CommonProperties {
         addToolTip(tip_clickNumBer, clickNumBer_Click);
         addToolTip(tip_mouseStartX, mouseStartX_Click);
         addToolTip(tip_mouseStartY, mouseStartY_Click);
+        addToolTip(tip_outAutoClickPath, addOutPath_Click);
+        addToolTip(tip_openDirectory, openDirectory_Click);
+        addToolTip(tip_loadAutoClick, loadAutoClick_Click);
+        addToolTip(tip_exportAutoClick, exportAutoClick_Click);
+        addToolTip(tip_autoClickFileName + defaultOutFileName, outFileName_Click);
     }
 
     /**
@@ -417,6 +473,8 @@ public class AutoClickController extends CommonProperties {
         moussePositionListener();
         // 设置javafx单元格宽度
         bindPrefWidthProperty();
+        // 读取配置文件
+        getConfig();
         // 设置鼠标悬停提示
         setToolTip();
         // 设置初始配置值为上次配置值
@@ -515,6 +573,85 @@ public class AutoClickController extends CommonProperties {
         buildContextMenu();
         // 初始化信息栏
         updateLabel(log_Click, "");
+    }
+
+    /**
+     * 导入操作流程按钮
+     *
+     * @throws IOException io异常
+     */
+    @FXML
+    public void loadAutoClick(ActionEvent actionEvent) throws IOException {
+        getConfig();
+        List<FileChooser.ExtensionFilter> extensionFilters = new ArrayList<>(Collections.singleton(new FileChooser.ExtensionFilter("Json", "*.json")));
+        File selectedFile = creatFileChooser(actionEvent, inFilePath, extensionFilters, text_selectAutoFile);
+        if (selectedFile != null) {
+            inFilePath = selectedFile.getPath();
+            updateProperties(configFile_Click, key_inFilePath, new File(inFilePath).getParent());
+            // 读取 JSON 文件并转换为 List<ClickPositionBean>
+            ObjectMapper objectMapper = new ObjectMapper();
+            File jsonFile = new File(inFilePath);
+            List<ClickPositionBean> clickPositionBeans;
+            try {
+                clickPositionBeans = objectMapper.readValue(jsonFile, objectMapper.getTypeFactory().constructCollectionType(List.class, ClickPositionBean.class));
+            } catch (MismatchedInputException | JsonParseException e) {
+                throw new IOException("导入自动化流程文件：" + inFilePath + " 内容格式不正确");
+            }
+            List<ClickPositionBean> tableViewItems = tableView_Click.getItems();
+            tableViewItems.addAll(clickPositionBeans);
+            // 自动填充javafx表格
+            autoBuildTableViewData(tableView_Click, tableViewItems, tabId);
+            // 同步表格数据量
+            dataNumber_Click.setText(text_allHave + (tableViewItems.size() + 1) + text_process);
+            // 表格设置为可编辑
+            makeCellCanEdit();
+            // 设置列表通过拖拽排序行
+            tableViewDragRow(tableView_Click);
+            // 构建右键菜单
+            buildContextMenu();
+            updateLabel(log_Click, text_loadSuccess + inFilePath);
+            log_Click.setTextFill(Color.GREEN);
+        }
+    }
+
+    /**
+     * 导出操作流程按钮
+     *
+     * @throws Exception 列表中无要导出的自动操作流程
+     */
+    @FXML
+    public void exportAutoClick() throws Exception {
+        ObservableList<ClickPositionBean> tableViewItems = tableView_Click.getItems();
+        if (CollectionUtils.isEmpty(tableViewItems)) {
+            throw new Exception("列表中没有要导出的自动操作流程");
+        }
+        if (StringUtils.isBlank(outFilePath)) {
+            throw new Exception(text_outPathNull);
+        }
+        String fileName = setDefaultFileName(outFileName_Click, defaultOutFileName);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String path = outFilePath + File.separator + fileName + json;
+        objectMapper.writeValue(new File(path), tableViewItems);
+        updateLabel(log_Click, text_saveSuccess + path);
+        log_Click.setTextFill(Color.GREEN);
+        if (openDirectory_Click.isSelected()) {
+            openDirectory(path);
+        }
+    }
+
+    /**
+     * 设置操作流程导出文件夹地址按钮
+     *
+     * @throws IOException io异常
+     */
+    @FXML
+    private void addOutPath(ActionEvent actionEvent) throws IOException {
+        getConfig();
+        File selectedFile = creatDirectoryChooser(actionEvent, outFilePath, text_selectDirectory);
+        if (selectedFile != null) {
+            // 更新所选文件路径显示
+            outFilePath = updatePathLabel(selectedFile.getPath(), outFilePath, key_outFilePath, outPath_Click, configFile_Click, anchorPane_Click);
+        }
     }
 
 }

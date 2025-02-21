@@ -10,6 +10,7 @@ module priv.koishi.tools {
     requires org.apache.logging.log4j.core;
     requires jdk.management;
     requires com.github.kwhat.jnativehook;
+    requires com.fasterxml.jackson.databind;
 
     opens priv.koishi.tools to javafx.fxml;
     exports priv.koishi.tools;

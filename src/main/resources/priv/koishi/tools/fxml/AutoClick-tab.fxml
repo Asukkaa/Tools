@@ -71,9 +71,19 @@
             <CheckBox fx:id="firstClick_Click" prefHeight="20" style="-fx-cursor: hand" text="执行自动流程前点击第一个起始坐标"/>
         </HBox>
 
+        <HBox spacing="10">
+            <Button fx:id="addOutPath_Click" onAction="#addOutPath" style="-fx-cursor: hand" text="选择导出文件夹"/>
+            <Label fx:id="outPath_Click" prefHeight="20" prefWidth="300" style="-fx-font-size: 15px;"/>
+            <Label text="导出自动流程文件名称："/>
+            <TextField fx:id="outFileName_Click" prefWidth="150"/>
+            <CheckBox fx:id="openDirectory_Click" prefHeight="20" selected="true" style="-fx-cursor: hand" text="导出后打开文件夹"/>
+        </HBox>
+
         <HBox fx:id="fileNumberHBox_Click" spacing="10">
             <Button fx:id="addPosition_Click" onAction="#addPosition" style="-fx-cursor: hand" text="添加操作流程"/>
             <Button fx:id="clickTest_Click" onAction="#clickTest" style="-fx-cursor: hand" text="测试操作流程"/>
+            <Button fx:id="loadAutoClick_Click" onAction="#loadAutoClick" style="-fx-cursor: hand" text="导入操作流程"/>
+            <Button fx:id="exportAutoClick_Click" onAction="#exportAutoClick" style="-fx-cursor: hand" text="导出操作流程"/>
             <Button fx:id="clearButton_Click" onAction="#removeAll" style="-fx-cursor: hand" text="清空操作列表"/>
             <Button fx:id="runClick_Click" onAction="#runClick" style="-fx-cursor: hand" text="运行自动操作"/>
             <Label fx:id="dataNumber_Click" alignment="CENTER_RIGHT" prefHeight="20" text="列表为空"/>
@@ -85,16 +95,16 @@
             </placeholder>
 
             <columns>
-                <TableColumn fx:id="name_Click" text="操作名称"/>
-                <TableColumn fx:id="startX_Click" text="起始横(X)坐标"/>
-                <TableColumn fx:id="startY_Click" text="起始纵(Y)坐标"/>
-                <TableColumn fx:id="endX_Click" text="结束横(X)坐标"/>
-                <TableColumn fx:id="endY_Click" text="结束纵(Y)坐标"/>
-                <TableColumn fx:id="clickTime_Click" text="操作时长(毫秒)"/>
-                <TableColumn fx:id="clickNum_Click" text="操作次数"/>
-                <TableColumn fx:id="clickInterval_Click" text="点击间隔(毫秒)"/>
-                <TableColumn fx:id="waitTime_Click" text="执行前等待时间(毫秒)"/>
-                <TableColumn fx:id="type_Click" text="操作类型"/>
+                <TableColumn fx:id="name_Click" text="操作名称" sortable="false"/>
+                <TableColumn fx:id="startX_Click" text="起始横(X)坐标" sortable="false"/>
+                <TableColumn fx:id="startY_Click" text="起始纵(Y)坐标" sortable="false"/>
+                <TableColumn fx:id="endX_Click" text="结束横(X)坐标" sortable="false"/>
+                <TableColumn fx:id="endY_Click" text="结束纵(Y)坐标" sortable="false"/>
+                <TableColumn fx:id="clickTime_Click" text="操作时长(毫秒)" sortable="false"/>
+                <TableColumn fx:id="clickNum_Click" text="操作次数" sortable="false"/>
+                <TableColumn fx:id="clickInterval_Click" text="点击间隔(毫秒)" sortable="false"/>
+                <TableColumn fx:id="waitTime_Click" text="执行前等待时间(毫秒)" sortable="false"/>
+                <TableColumn fx:id="type_Click" text="操作类型" sortable="false"/>
             </columns>
         </TableView>
 

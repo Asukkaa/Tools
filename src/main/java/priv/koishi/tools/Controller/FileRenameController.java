@@ -57,37 +57,37 @@ public class FileRenameController extends CommonProperties {
     /**
      * 要处理的文件夹路径
      */
-    static String inFilePath;
+    private static String inFilePath;
 
     /**
      * excel模板路径
      */
-    static String excelInPath;
+    private static String excelInPath;
 
     /**
      * 页面标识符
      */
-    static String tabId = "_Re";
+    private static final String tabId = "_Re";
 
     /**
      * 文件名起始编号
      */
-    static int defaultStartNameNum;
+    private static int defaultStartNameNum;
 
     /**
      * 默认起始读取行
      */
-    static int defaultReadRow;
+    private static int defaultReadRow;
 
     /**
      * 默认起始读取列
      */
-    static int defaultReadCell;
+    private static int defaultReadCell;
 
     /**
      * 要防重复点击的组件
      */
-    static List<Control> disableControls = new ArrayList<>();
+    private static final List<Control> disableControls = new ArrayList<>();
 
     /**
      * 线程池
@@ -97,7 +97,7 @@ public class FileRenameController extends CommonProperties {
     /**
      * 线程池实例
      */
-    ExecutorService executorService = commonThreadPoolExecutor.createNewThreadPool();
+    private final ExecutorService executorService = commonThreadPoolExecutor.createNewThreadPool();
 
     @FXML
     private AnchorPane anchorPane_Re;

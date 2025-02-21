@@ -44,8 +44,6 @@ public class CommonFinals {
 
     public static final String tip_recursion = "勾选后将会查询文件夹中的文件夹里的文件";
 
-    public static final String tip_excelName = "如果导出地址和名称与模板一样则会覆盖模板excel文件，文件名不能包含 <>:\"/\\|?*\n设置为空或者不合法将会以默认名称命名，默认名称为：";
-
     public static final String tip_sheet = "须填与excel模板相同的表名才能正常读取模板，若填表名不存在或不需要读取模板则会创建一个所填表";
 
     public static final String tip_subCode = "填写后会按所填写的字符串来分割文件名称，按照分割后的文件名称左侧字符串进行分组";
@@ -156,6 +154,22 @@ public class CommonFinals {
 
     public static final String tip_clickName = "每步操作的名称，不填将给一个默认名称";
 
+    public static final String tip_outAutoClickPath = "点击可设置操作流程导出文件夹地址";
+
+    public static final String tip_loadAutoClick = "点击后选择要导入的操作流程即可在列表中追加";
+
+    public static final String tip_exportAutoClick = "点击即可按照设置导出文件夹与文件名导出列表中的操作流程";
+
+    public static final String tip_excelName = """
+            不用填写文件拓展名，如果导出文件夹已经存在同名文件将会覆盖模板excel文件
+            文件名不能包含 <>:"/\\|?*
+            设置为空或者不合法将会以默认名称命名，默认名称为：""";
+
+    public static final String tip_autoClickFileName = """
+            不用填写文件拓展名，导出文件为 .json 格式，如果导出文件夹已经存在同名文件将会覆盖
+            文件名不能包含  <>:"/\\|?*
+            设置为空或者不合法将会以默认名称命名，默认名称为：""";
+
     public static final String tip_firstClick = """
             勾选后：
             如果是运行 测试操作流程 则会 鼠标左键 点击一次设置栏设置的起始坐标后再执行测试操作
@@ -201,6 +215,8 @@ public class CommonFinals {
     public static final String text_excelPathNull = "excel模板文件位置为空，需要先设置excel模板文件位置再继续";
 
     public static final String text_selectExcel = "选择excel模板文件";
+
+    public static final String text_selectAutoFile = "选择自动化操作流程文件";
 
     public static final String text_arabicNumerals = "阿拉伯数字：123";
 
@@ -306,6 +322,10 @@ public class CommonFinals {
 
     public static final String text_activation = "启用";
 
+    public static final String text_saveSuccess = "所有数据已导出到： ";
+
+    public static final String text_loadSuccess = "已导入自动操作流程：";
+
     public static final String xlsx = ".xlsx";
 
     public static final String xls = ".xls";
@@ -317,6 +337,8 @@ public class CommonFinals {
     public static final String jpeg = ".jpeg";
 
     public static final String log = ".log";
+
+    public static final String json = ".json";
 
     public static final String macos = "mac";
 
@@ -474,6 +496,32 @@ public class CommonFinals {
 
     public static final String key_lastExportFullList = "lastExportFullList";
 
+    public static final String key_lastMouseStartX = "lastMouseStartX";
+
+    public static final String key_lastMouseStartY = "lastMouseStartY";
+
+    public static final String key_lastMouseEndX = "lastMouseEndX";
+
+    public static final String key_lastMouseEndY = "lastMouseEndY";
+
+    public static final String key_lastWait = "lastWait";
+
+    public static final String key_lastClickNumBer = "lastClickNumBer";
+
+    public static final String key_lastTimeClick = "lastTimeClick";
+
+    public static final String key_lastInterval = "lastInterval";
+
+    public static final String key_lastClickName = "lastClickName";
+
+    public static final String key_lastClickType = "lastClickType";
+
+    public static final String key_lastLoopTime = "lastLoopTime";
+
+    public static final String key_lastFirstClick = "lastFirstClick";
+
+    public static final String key_lastOutFileName = "lastOutFileName";
+
     public static final String key_defaultOutFileName = "defaultOutFileName";
 
     public static final String key_defaultSheetName = "defaultSheetName";
@@ -489,30 +537,6 @@ public class CommonFinals {
     public static final String key_defaultImgHeight = "defaultImgHeight";
 
     public static final String key_defaultStartNameNum = "defaultStartNameNum";
-
-    public static final String key_mouseStartX = "mouseStartX";
-
-    public static final String key_mouseStartY = "mouseStartY";
-
-    public static final String key_mouseEndX = "mouseEndX";
-
-    public static final String key_mouseEndY = "mouseEndY";
-
-    public static final String key_wait = "wait";
-
-    public static final String key_clickNumBer = "clickNumBer";
-
-    public static final String key_timeClick = "timeClick";
-
-    public static final String key_interval = "interval";
-
-    public static final String key_clickName = "clickName";
-
-    public static final String key_clickType = "clickType";
-
-    public static final String key_loopTime = "loopTime";
-
-    public static final String key_firstClick = "firstClick";
 
     /**
      * excel插入图片功能配置文件路径

@@ -13,6 +13,7 @@ import priv.koishi.tools.Configuration.ExcelConfig;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 
+import static priv.koishi.tools.Finals.CommonFinals.text_saveSuccess;
 import static priv.koishi.tools.Utils.ExcelUtils.saveExcel;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.changeDisableControls;
@@ -84,7 +85,7 @@ public class TaskUtils {
                 } finally {
                     taskUnbind(taskBean);
                 }
-                taskBean.getMassageLabel().setText("所有数据已保存到： " + excelPath);
+                taskBean.getMassageLabel().setText(text_saveSuccess + excelPath);
                 taskBean.getMassageLabel().setTextFill(Color.GREEN);
             });
             executorService.execute(saveExcelTask);

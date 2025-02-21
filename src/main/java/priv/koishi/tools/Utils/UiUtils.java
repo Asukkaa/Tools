@@ -500,7 +500,7 @@ public class UiUtils {
      */
     public static String updatePathLabel(String selectedFilePath, String filePath, String pathKey, Label pathLabel, String configFile, AnchorPane anchorPane) throws IOException {
         // 只有跟上次选的路径不一样才更新
-        if (!filePath.equals(selectedFilePath)) {
+        if (StringUtils.isBlank(filePath) || !filePath.equals(selectedFilePath)) {
             updateProperties(configFile, pathKey, selectedFilePath);
             filePath = selectedFilePath;
         }
@@ -672,7 +672,7 @@ public class UiUtils {
      * @param tableView   要添加右键菜单的列表
      * @param contextMenu 右键菜单集合
      */
-    public static void editClickType(TableView<ClickPositionBean> tableView, ContextMenu contextMenu) {
+    public static void buildEditClickType(TableView<ClickPositionBean> tableView, ContextMenu contextMenu) {
         Menu menuItem = new Menu("更改操作类型");
         // 创建二级菜单项
         MenuItem primary = new MenuItem("鼠标左键点击");

@@ -39,17 +39,17 @@ public class SettingController {
     /**
      * 启动脚本设置的最大内存值
      */
-    static String scriptMemory;
+    private static String scriptMemory;
 
     /**
      * app.bat最大内存设置参数
      */
-    static final String Xmx = "-Xmx";
+    private static final String Xmx = "-Xmx";
 
     /**
      * 启动脚本名称
      */
-    static final String scriptName = getScriptName();
+    private static final String scriptName = getScriptName();
 
     @FXML
     private TableView<TabBean> tableView_Set;
