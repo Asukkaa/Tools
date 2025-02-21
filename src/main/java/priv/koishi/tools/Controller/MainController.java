@@ -16,6 +16,7 @@ import java.util.Properties;
 import static priv.koishi.tools.Controller.AboutController.aboutAdaption;
 import static priv.koishi.tools.Controller.AboutController.saveLogsNumSetting;
 import static priv.koishi.tools.Controller.AutoClickController.autoClickAdaption;
+import static priv.koishi.tools.Controller.AutoClickController.autoClickSaveLastConfig;
 import static priv.koishi.tools.Controller.FileNameToExcelController.fileNameToExcelAdaption;
 import static priv.koishi.tools.Controller.FileNameToExcelController.fileNameToExcelSaveLastConfig;
 import static priv.koishi.tools.Controller.FileNumToExcelController.fileNumToExcelAdaption;
@@ -112,6 +113,8 @@ public class MainController {
         fileNameToExcelSaveLastConfig(scene);
         // 保存文件批量重命名功能最后设置
         fileRenameSaveLastConfig(scene);
+        // 保存自动操作工具功能最后设置
+        autoClickSaveLastConfig(scene);
         // 保存关程序闭前页面状态设置
         mainSavaLastConfig(stage);
         // 保存设置页面最后设置

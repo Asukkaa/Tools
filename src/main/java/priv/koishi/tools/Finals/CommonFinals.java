@@ -490,6 +490,30 @@ public class CommonFinals {
 
     public static final String key_defaultStartNameNum = "defaultStartNameNum";
 
+    public static final String key_mouseStartX = "mouseStartX";
+
+    public static final String key_mouseStartY = "mouseStartY";
+
+    public static final String key_mouseEndX = "mouseEndX";
+
+    public static final String key_mouseEndY = "mouseEndY";
+
+    public static final String key_wait = "wait";
+
+    public static final String key_clickNumBer = "clickNumBer";
+
+    public static final String key_timeClick = "timeClick";
+
+    public static final String key_interval = "interval";
+
+    public static final String key_clickName = "clickName";
+
+    public static final String key_clickType = "clickType";
+
+    public static final String key_loopTime = "loopTime";
+
+    public static final String key_firstClick = "firstClick";
+
     /**
      * excel插入图片功能配置文件路径
      */
@@ -514,6 +538,11 @@ public class CommonFinals {
      * app配置文件路径
      */
     public static final String configFile = "config/config.properties";
+
+    /**
+     * 读取自动操作工具功能配置文件路径
+     */
+    public static final String configFile_Click = "config/autoClickConfig.properties";
 
     /**
      * 当前程序运行位置

@@ -30,15 +30,22 @@ import priv.koishi.tools.Properties.CommonProperties;
 import priv.koishi.tools.ThreadPool.CommonThreadPoolExecutor;
 
 import java.awt.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 
 import static javafx.scene.input.MouseButton.PRIMARY;
 import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.Service.AutoClickService.autoClick;
 import static priv.koishi.tools.Service.AutoClickService.click;
+import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
+import static priv.koishi.tools.Utils.CommonUtils.checkRunningOutputStream;
 import static priv.koishi.tools.Utils.TaskUtils.bindingProgressBarTask;
 import static priv.koishi.tools.Utils.TaskUtils.taskUnbind;
 import static priv.koishi.tools.Utils.UiUtils.*;
+import static priv.koishi.tools.Utils.UiUtils.setControlLastConfig;
 
 /**
  * 自动点击工具页面控制器
@@ -149,6 +156,77 @@ public class AutoClickController extends CommonProperties {
         Label cancelTip = (Label) scene.lookup("#cancelTip_Click");
         HBox cancelTipHBox = (HBox) scene.lookup("#cancelTipHBox_Click");
         nodeRightAlignment(cancelTipHBox, tableWidth, cancelTip);
+    }
+
+
+    /**
+     * 保存最后一次配置的值
+     *
+     * @param scene 程序主场景
+     * @throws IOException io异常
+     */
+    public static void autoClickSaveLastConfig(Scene scene) throws IOException {
+        AnchorPane anchorPane = (AnchorPane) scene.lookup("#anchorPane_Click");
+        if (anchorPane != null) {
+            InputStream input = checkRunningInputStream(configFile_Click);
+            Properties prop = new Properties();
+            prop.load(input);
+            TextField mouseStartX = (TextField) scene.lookup("#mouseStartX_Click");
+            prop.put(key_mouseStartX, mouseStartX.getText());
+            TextField mouseStartY = (TextField) scene.lookup("#mouseStartY_Click");
+            prop.put(key_mouseStartY, mouseStartY.getText());
+            TextField mouseEndX = (TextField) scene.lookup("#mouseEndX_Click");
+            prop.put(key_mouseEndX, mouseEndX.getText());
+            TextField mouseEndY = (TextField) scene.lookup("#mouseEndY_Click");
+            prop.put(key_mouseEndY, mouseEndY.getText());
+            TextField wait = (TextField) scene.lookup("#wait_Click");
+            prop.put(key_wait, wait.getText());
+            TextField loopTime = (TextField) scene.lookup("#loopTime_Click");
+            prop.put(key_loopTime, loopTime.getText());
+            TextField clickNumBer = (TextField) scene.lookup("#clickNumBer_Click");
+            prop.put(key_clickNumBer, clickNumBer.getText());
+            TextField timeClick = (TextField) scene.lookup("#timeClick_Click");
+            prop.put(key_timeClick, timeClick.getText());
+            TextField interval = (TextField) scene.lookup("#interval_Click");
+            prop.put(key_interval, interval.getText());
+            CheckBox firstClick = (CheckBox) scene.lookup("#firstClick_Click");
+            String lastFirstClickValue = firstClick.isSelected() ? activation : unActivation;
+            prop.put(key_firstClick, lastFirstClickValue);
+            TextField clickName = (TextField) scene.lookup("#clickName_Click");
+            prop.put(key_clickName, clickName.getText());
+            ChoiceBox<?> clickType = (ChoiceBox<?>) scene.lookup("#clickType_Click");
+            prop.put(key_clickType, clickType.getValue());
+            OutputStream output = checkRunningOutputStream(configFile_Click);
+            prop.store(output, null);
+            input.close();
+            output.close();
+        }
+    }
+
+    /**
+     * 设置初始配置值为上次配置值
+     *
+     * @throws IOException io异常
+     */
+    private void setLastConfig() throws IOException {
+        Properties prop = new Properties();
+        InputStream input = checkRunningInputStream(configFile_Click);
+        prop.load(input);
+        if (activation.equals(prop.getProperty(key_loadLastConfig))) {
+            setControlLastConfig(wait_Click, prop, key_wait, false, null);
+            setControlLastConfig(interval_Click, prop, key_interval, false, null);
+            setControlLastConfig(loopTime_Click, prop, key_loopTime, false, null);
+            setControlLastConfig(clickName_Click, prop, key_clickName, true, null);
+            setControlLastConfig(mouseEndX_Click, prop, key_mouseEndX, false, null);
+            setControlLastConfig(mouseEndY_Click, prop, key_mouseEndY, false, null);
+            setControlLastConfig(timeClick_Click, prop, key_timeClick, false, null);
+            setControlLastConfig(clickType_Click, prop, key_clickType, false, null);
+            setControlLastConfig(firstClick_Click, prop, key_firstClick, false, null);
+            setControlLastConfig(mouseStartX_Click, prop, key_mouseStartX, false, null);
+            setControlLastConfig(mouseStartY_Click, prop, key_mouseStartY, false, null);
+            setControlLastConfig(clickNumBer_Click, prop, key_clickNumBer, false, null);
+        }
+        input.close();
     }
 
     /**
@@ -334,13 +412,15 @@ public class AutoClickController extends CommonProperties {
      * 页面初始化
      */
     @FXML
-    private void initialize() {
+    private void initialize() throws IOException {
         // 获取鼠标坐标监听器
         moussePositionListener();
         // 设置javafx单元格宽度
         bindPrefWidthProperty();
         // 设置鼠标悬停提示
         setToolTip();
+        // 设置初始配置值为上次配置值
+        setLastConfig();
         // 给输入框添加内容变化监听
         textFieldChangeListener();
         // 注册全局按键监听器

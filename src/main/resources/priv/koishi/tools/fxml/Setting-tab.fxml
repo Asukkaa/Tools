@@ -12,15 +12,13 @@
 
         <HBox spacing="50">
             <CheckBox fx:id="loadRename_Set" onAction="#loadRenameAction" prefHeight="25" prefWidth="320"
-                      style="-fx-cursor: hand"
-                      selected="true" text="按指定规则批量重命名文件 功能加载上次设置信息"/>
+                      style="-fx-cursor: hand" selected="true" text="按指定规则批量重命名文件 功能加载上次设置信息"/>
 
             <CheckBox fx:id="loadImgToExcel_Set" onAction="#loadImgToExcelAction" prefHeight="25" prefWidth="320"
-                      style="-fx-cursor: hand"
-                      selected="true" text="将图片与excel匹配并插入 功能加载上次设置信息"/>
+                      style="-fx-cursor: hand" selected="true" text="将图片与excel匹配并插入 功能加载上次设置信息"/>
 
-            <CheckBox fx:id="lastTab_Set" onAction="#loadLastTabAction" prefHeight="25" style="-fx-cursor: hand"
-                      selected="true" text="记住关闭前打开的页面"/>
+            <CheckBox fx:id="loadAutoClick_Set" onAction="#loadAutoClickAction" prefHeight="25" prefWidth="320"
+                      style="-fx-cursor: hand" selected="true" text="自动操作工具 功能加载上次设置信息"/>
         </HBox>
 
         <HBox spacing="50">
@@ -28,10 +26,7 @@
                       style="-fx-cursor: hand" selected="true" text="分组统计文件夹下文件数量 功能加载上次设置信息"/>
 
             <CheckBox fx:id="loadFileName_Set" onAction="#loadFileNameAction" prefHeight="25" prefWidth="320"
-                      style="-fx-cursor: hand" selected="true" text="获取文件夹下的文件名称 功能加载上次设置信息"/>
-
-            <CheckBox fx:id="fullWindow_Set" onAction="#loadFullWindowAction" prefHeight="25"
-                      style="-fx-cursor: hand" selected="true" text="记住程序关闭时窗口是否最大化"/>
+                      style="-fx-cursor: hand" selected="true" text="获取文件夹下的文件信息 功能加载上次设置信息"/>
         </HBox>
 
         <HBox spacing="10">
@@ -52,9 +47,17 @@
                 </value>
             </ChoiceBox>
 
-            <Label prefWidth="55"/>
-            <CheckBox fx:id="reverseSort_Set" onAction="#reverseSorAction" prefHeight="25" style="-fx-cursor: hand"
-                      text="文件查询默认倒序排序"/>
+            <Label prefWidth="30"/>
+            <HBox spacing="30">
+                <CheckBox fx:id="reverseSort_Set" onAction="#reverseSorAction" prefHeight="25" style="-fx-cursor: hand"
+                          text="文件查询默认倒序排序"/>
+
+                <CheckBox fx:id="lastTab_Set" onAction="#loadLastTabAction" prefHeight="25" style="-fx-cursor: hand"
+                          selected="true" text="记住关闭前打开的页面"/>
+
+                <CheckBox fx:id="fullWindow_Set" onAction="#loadFullWindowAction" prefHeight="25"
+                          style="-fx-cursor: hand" selected="true" text="记住程序关闭时窗口是否最大化"/>
+            </HBox>
         </HBox>
 
         <Separator/>

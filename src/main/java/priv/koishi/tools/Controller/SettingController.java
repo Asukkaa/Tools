@@ -79,7 +79,7 @@ public class SettingController {
     private Label runningMemory_Set, thisPath_Set, systemMemory_Set;
 
     @FXML
-    private CheckBox loadRename_Set, loadFileNum_Set, loadFileName_Set, loadImgToExcel_Set, lastTab_Set, fullWindow_Set, reverseSort_Set;
+    private CheckBox loadRename_Set, loadFileNum_Set, loadFileName_Set, loadImgToExcel_Set, lastTab_Set, fullWindow_Set, reverseSort_Set, loadAutoClick_Set;
 
     /**
      * 组件自适应宽高
@@ -257,6 +257,7 @@ public class SettingController {
         setLoadLastConfig(prop, loadFileNum_Set, configFile_Num);
         setLoadLastConfig(prop, loadFileName_Set, configFile_Name);
         setLoadLastConfig(prop, loadImgToExcel_Set, configFile_Img);
+        setLoadLastConfig(prop, loadAutoClick_Set, configFile_Click);
         getConfig(prop);
     }
 
@@ -381,6 +382,16 @@ public class SettingController {
     }
 
     /**
+     * 自动操作工具功能加载上次设置信息
+     *
+     * @throws IOException io异常
+     */
+    @FXML
+    private void loadAutoClickAction() throws IOException {
+        setLoadLastConfigCheckBox(loadAutoClick_Set, configFile_Click, key_loadLastConfig);
+    }
+
+    /**
      * 记住关闭前打开的页面设置
      *
      * @throws IOException io异常
@@ -398,6 +409,16 @@ public class SettingController {
     @FXML
     private void loadFullWindowAction() throws IOException {
         setLoadLastConfigCheckBox(fullWindow_Set, configFile, key_loadLastFullWindow);
+    }
+
+    /**
+     * 倒序排序设置
+     *
+     * @throws IOException io异常
+     */
+    @FXML
+    private void reverseSorAction() throws IOException {
+        setLoadLastConfigCheckBox(reverseSort_Set, configFile, key_reverseSort);
     }
 
     /**
@@ -442,16 +463,6 @@ public class SettingController {
         prop.store(output, null);
         input.close();
         output.close();
-    }
-
-    /**
-     * 倒序排序设置
-     *
-     * @throws IOException io异常
-     */
-    @FXML
-    private void reverseSorAction() throws IOException {
-        setLoadLastConfigCheckBox(reverseSort_Set, configFile, key_reverseSort);
     }
 
 }
