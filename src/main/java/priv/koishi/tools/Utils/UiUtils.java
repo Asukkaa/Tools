@@ -26,6 +26,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import priv.koishi.tools.Bean.ClickPositionBean;
 import priv.koishi.tools.Bean.FileBean;
 import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Bean.TaskBean;
@@ -41,8 +42,8 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static priv.koishi.tools.Service.ReadDataService.showReadExcelData;
 import static priv.koishi.tools.Finals.CommonFinals.*;
+import static priv.koishi.tools.Service.ReadDataService.showReadExcelData;
 import static priv.koishi.tools.Utils.CommonUtils.*;
 import static priv.koishi.tools.Utils.FileUtils.*;
 
@@ -612,7 +613,7 @@ public class UiUtils {
      * @param tableView   要添加右键菜单的列表
      * @param contextMenu 右键菜单集合
      */
-    public static<T> void buildUpMoveDataMenuItem(TableView<T> tableView, ContextMenu contextMenu) {
+    public static <T> void buildUpMoveDataMenuItem(TableView<T> tableView, ContextMenu contextMenu) {
         MenuItem menuItem = new MenuItem("所选行上移一行");
         menuItem.setOnAction(event -> {
             // getSelectedCells处理上移操作有bug，通过getSelectedItems拿到的数据是实时变化的，需要一个新的list来存
@@ -648,7 +649,7 @@ public class UiUtils {
      * @param tableView   要添加右键菜单的列表
      * @param contextMenu 右键菜单集合
      */
-    public static<T> void buildDownMoveDataMenuItem(TableView<T> tableView, ContextMenu contextMenu) {
+    public static <T> void buildDownMoveDataMenuItem(TableView<T> tableView, ContextMenu contextMenu) {
         MenuItem menuItem = new MenuItem("所选行下移一行");
         menuItem.setOnAction(event -> {
             var selectedCells = tableView.getSelectionModel().getSelectedCells();
@@ -663,6 +664,47 @@ public class UiUtils {
             }
         });
         contextMenu.getItems().add(menuItem);
+    }
+
+    /**
+     * 修改操作类型
+     *
+     * @param tableView   要添加右键菜单的列表
+     * @param contextMenu 右键菜单集合
+     */
+    public static void editClickType(TableView<ClickPositionBean> tableView, ContextMenu contextMenu) {
+        Menu menuItem = new Menu("更改操作类型");
+        // 创建二级菜单项
+        MenuItem primary = new MenuItem("鼠标左键点击");
+        MenuItem secondary = new MenuItem("鼠标右键点击");
+        MenuItem middle = new MenuItem("鼠标中键点击");
+        MenuItem forward = new MenuItem("鼠标前侧键点击");
+        MenuItem back = new MenuItem("鼠标后侧键点击");
+        // 为每个菜单项添加事件处理
+        primary.setOnAction(event -> updateClickType(tableView, "鼠标左键点击"));
+        secondary.setOnAction(event -> updateClickType(tableView, "鼠标右键点击"));
+        middle.setOnAction(event -> updateClickType(tableView, "鼠标中键点击"));
+        forward.setOnAction(event -> updateClickType(tableView, "鼠标前侧键点击"));
+        back.setOnAction(event -> updateClickType(tableView, "鼠标后侧键点击"));
+        menuItem.getItems().addAll(primary, secondary, middle, forward, back);
+        contextMenu.getItems().add(menuItem);
+    }
+
+    /**
+     * 修改操作类型二级菜单选项
+     *
+     * @param tableView 要添加右键菜单的列表
+     * @param clickType 操作类型
+     */
+    private static void updateClickType(TableView<ClickPositionBean> tableView, String clickType) {
+        // 获取当前选中的行
+        List<ClickPositionBean> selectedItem = tableView.getSelectionModel().getSelectedItems();
+        if (CollectionUtils.isNotEmpty(selectedItem)) {
+            selectedItem.forEach(bean -> {
+                bean.setType(clickType);
+                tableView.refresh();
+            });
+        }
     }
 
     /**
@@ -717,7 +759,7 @@ public class UiUtils {
      * @param label       列表对应的统计信息展示栏
      * @param contextMenu 右键菜单集合
      */
-    public static<T> void buildDeleteDataMenuItem(TableView<T> tableView, Label label, ContextMenu contextMenu, String unit) {
+    public static <T> void buildDeleteDataMenuItem(TableView<T> tableView, Label label, ContextMenu contextMenu, String unit) {
         MenuItem deleteDataMenuItem = new MenuItem("删除所选数据");
         deleteDataMenuItem.setOnAction(event -> {
             List<T> ts = tableView.getSelectionModel().getSelectedItems();

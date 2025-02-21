@@ -222,6 +222,7 @@ public class AutoClickController extends CommonProperties {
         buildDownMoveDataMenuItem(tableView_Click, contextMenu);
         // 删除所选数据选项
         buildDeleteDataMenuItem(tableView_Click, dataNumber_Click, contextMenu, text_data);
+        editClickType(tableView_Click, contextMenu);
         tableView_Click.setContextMenu(contextMenu);
         tableView_Click.setOnMousePressed(event -> {
             if (event.isSecondaryButtonDown()) {
