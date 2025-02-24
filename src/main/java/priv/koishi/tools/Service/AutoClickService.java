@@ -82,14 +82,9 @@ public class AutoClickService {
                     String clickTime = clickPositionBean.getClickTime();
                     String name = clickPositionBean.getName();
                     String clickNum = clickPositionBean.getClickNum();
-                    Platform.runLater(() -> {
-                        updateMessage(loopTimeText + waitTime + " 毫秒后将执行: " + name + "\n" +
-                                "操作内容：" + clickPositionBean.getType() + " X：" + startX + " Y：" + startY + " 在 " +
-                                clickTime + " 毫秒内移动到 X：" + endX + " Y：" + endY + " 共 " + clickNum + " 次");
-                        System.out.println(loopTimeText + waitTime + " 毫秒后将执行: " + name + "\n" +
-                                "操作内容：" + clickPositionBean.getType() + " X：" + startX + " Y：" + startY + " 在 " +
-                                clickTime + " 毫秒内移动到 X：" + endX + " Y：" + endY + " 共 " + clickNum + " 次");
-                    });
+                    Platform.runLater(() -> updateMessage(loopTimeText + waitTime + " 毫秒后将执行: " + name + "\n" +
+                            "操作内容：" + clickPositionBean.getType() + " X：" + startX + " Y：" + startY + " 在 " +
+                            clickTime + " 毫秒内移动到 X：" + endX + " Y：" + endY + " 共 " + clickNum + " 次"));
                     try {
                         Thread.sleep(Long.parseLong(waitTime));
                     } catch (InterruptedException e) {
@@ -98,10 +93,7 @@ public class AutoClickService {
                         }
                     }
                     click(clickPositionBean, robot);
-                    Platform.runLater(() -> {
-                        updateMessage(loopTimeText + name + "执行完毕");
-                        System.out.println(loopTimeText + name + "执行完毕");
-                    });
+                    Platform.runLater(() -> updateMessage(loopTimeText + name + "执行完毕"));
                     updateProgress(j + 1, dataSize);
                 }
             }
