@@ -697,7 +697,6 @@ public class UiUtils {
      * @param clickType 操作类型
      */
     private static void updateClickType(TableView<ClickPositionBean> tableView, String clickType) {
-        // 获取当前选中的行
         List<ClickPositionBean> selectedItem = tableView.getSelectionModel().getSelectedItems();
         if (CollectionUtils.isNotEmpty(selectedItem)) {
             selectedItem.forEach(bean -> {

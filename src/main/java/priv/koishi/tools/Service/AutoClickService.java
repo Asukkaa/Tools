@@ -8,6 +8,7 @@ import priv.koishi.tools.Bean.ClickPositionBean;
 import priv.koishi.tools.Bean.TaskBean;
 
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import static javafx.scene.input.MouseButton.PRIMARY;
 import static priv.koishi.tools.Finals.CommonFinals.clickTypeMap;
@@ -85,6 +86,7 @@ public class AutoClickService {
                     Platform.runLater(() -> updateMessage(loopTimeText + waitTime + " 毫秒后将执行: " + name + "\n" +
                             "操作内容：" + clickPositionBean.getType() + " X：" + startX + " Y：" + startY + " 在 " +
                             clickTime + " 毫秒内移动到 X：" + endX + " Y：" + endY + " 共 " + clickNum + " 次"));
+                    // 执行前等待时间
                     try {
                         Thread.sleep(Long.parseLong(waitTime));
                     } catch (InterruptedException e) {
@@ -92,6 +94,7 @@ public class AutoClickService {
                             break;
                         }
                     }
+                    // 执行自动流程
                     click(clickPositionBean, robot);
                     Platform.runLater(() -> updateMessage(loopTimeText + name + "执行完毕"));
                     updateProgress(j + 1, dataSize);
@@ -126,27 +129,37 @@ public class AutoClickService {
                 }
             }
             MouseButton mouseButton = clickTypeMap.get(clickPositionBean.getType());
+            CountDownLatch latch = new CountDownLatch(1);
             Platform.runLater(() -> {
                 robot.mouseMove(startX, startY);
                 robot.mousePress(mouseButton);
-            });
-            // 计算鼠标移动的轨迹
-            double deltaX = endX - startX;
-            double deltaY = endY - startY;
-            int steps = 10;
-            long stepDuration = clickTime / steps;
-            for (int j = 0; j <= steps; j++) {
-                double x = startX + deltaX * j / steps;
-                double y = startY + deltaY * j / steps;
-                Platform.runLater(() -> robot.mouseMove(x, y));
-                try {
-                    Thread.sleep(stepDuration);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    break;
+                // 计算鼠标移动的轨迹
+                double deltaX = endX - startX;
+                double deltaY = endY - startY;
+                int steps = 10;
+                long stepDuration = clickTime / steps;
+                for (int j = 0; j < steps; j++) {
+                    double x = startX + deltaX * j / steps;
+                    double y = startY + deltaY * j / steps;
+                    robot.mouseMove(x, y);
+                    // 单次操作时间
+                    try {
+                        Thread.sleep(stepDuration);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        break;
+                    }
                 }
+                robot.mouseRelease(mouseButton);
+                latch.countDown();
+            });
+            // 等待任务完成
+            try {
+                latch.await();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
             }
-            Platform.runLater(() -> robot.mouseRelease(mouseButton));
         }
     }
 

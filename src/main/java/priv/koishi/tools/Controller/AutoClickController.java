@@ -17,6 +17,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
@@ -46,10 +47,8 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 
-import static javafx.scene.input.MouseButton.PRIMARY;
 import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.Service.AutoClickService.autoClick;
-import static priv.koishi.tools.Service.AutoClickService.click;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningOutputStream;
 import static priv.koishi.tools.Utils.FileUtils.openDirectory;
@@ -335,6 +334,50 @@ public class AutoClickController extends CommonProperties {
     }
 
     /**
+     * 启动自动操作流程
+     *
+     * @param clickPositionBeans 自动操作流程
+     */
+    private void launchClickTask(List<ClickPositionBean> clickPositionBeans) {
+        TaskBean<ClickPositionBean> taskBean = new TaskBean<>();
+        taskBean.setLoopTime(setDefaultIntValue(loopTime_Click, 1, 0, null))
+                .setFirstClick(firstClick_Click.isSelected())
+                .setProgressBar(progressBar_Click)
+                .setBeanList(clickPositionBeans)
+                .setMassageLabel(log_Click);
+        updateLabel(log_Click, "");
+        // 创建一个Robot实例
+        Robot robot = new Robot();
+        autoClickTask = autoClick(taskBean, robot);
+        // 绑定带进度条的线程
+        bindingProgressBarTask(autoClickTask, taskBean);
+        autoClickTask.setOnSucceeded(event -> {
+            taskUnbind(taskBean);
+            taskBean.getMassageLabel().setTextFill(Color.GREEN);
+            taskBean.getMassageLabel().setText("所有操作都以执行完毕");
+        });
+        // 使用新线程启动
+        executorService.execute(autoClickTask);
+    }
+
+    /**
+     * 执行选中的步骤选项
+     *
+     * @param tableView   要添加右键菜单的列表
+     * @param contextMenu 右键菜单集合
+     */
+    private void buildClickTestMenuItem(TableView<ClickPositionBean> tableView, ContextMenu contextMenu) {
+        MenuItem menuItem = new MenuItem("执行选中的步骤");
+        menuItem.setOnAction(event -> {
+            List<ClickPositionBean> selectedItem = tableView.getSelectionModel().getSelectedItems();
+            if (CollectionUtils.isNotEmpty(selectedItem)) {
+                launchClickTask(selectedItem);
+            }
+        });
+        contextMenu.getItems().add(menuItem);
+    }
+
+    /**
      * 构建右键菜单
      */
     private void buildContextMenu() {
@@ -342,6 +385,8 @@ public class AutoClickController extends CommonProperties {
         tableView_Click.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         // 添加右键菜单
         ContextMenu contextMenu = new ContextMenu();
+        // 添加测试点击选项
+        buildClickTestMenuItem(tableView_Click, contextMenu);
         // 所选行上移一行选项
         buildUpMoveDataMenuItem(tableView_Click, contextMenu);
         // 所选行下移一行选项
@@ -496,24 +541,8 @@ public class AutoClickController extends CommonProperties {
         if (CollectionUtils.isEmpty(tableViewItems)) {
             throw new Exception("列表中没有要执行的操作");
         }
-        TaskBean<ClickPositionBean> taskBean = new TaskBean<>();
-        taskBean.setLoopTime(setDefaultIntValue(loopTime_Click, 1, 0, null))
-                .setFirstClick(firstClick_Click.isSelected())
-                .setProgressBar(progressBar_Click)
-                .setBeanList(tableViewItems)
-                .setMassageLabel(log_Click);
-        updateLabel(log_Click, "");
-        Robot robot = new Robot();
-        autoClickTask = autoClick(taskBean, robot);
-        // 绑定带进度条的线程
-        bindingProgressBarTask(autoClickTask, taskBean);
-        autoClickTask.setOnSucceeded(event -> {
-            taskUnbind(taskBean);
-            taskBean.getMassageLabel().setTextFill(Color.GREEN);
-            taskBean.getMassageLabel().setText("所有操作都以执行完毕");
-        });
-        // 使用新线程启动
-        executorService.execute(autoClickTask);
+        // 启动自动操作流程
+        launchClickTask(tableViewItems);
     }
 
     /**
@@ -529,27 +558,12 @@ public class AutoClickController extends CommonProperties {
      */
     @FXML
     private void clickTest() {
-        // 获取点击步骤设置
+        // 获取步骤设置
+        List<ClickPositionBean> clickPositionBeans = new ArrayList<>();
         ClickPositionBean clickPositionBean = getClickSetting(-1);
-        // 操作执行前等待时间
-        try {
-            Thread.sleep(Long.parseLong(clickPositionBean.getWaitTime()));
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        // 创建一个Robot实例
-        Robot robot = new Robot();
-        // 执行自动流程前点击第一个起始坐标
-        if (firstClick_Click.isSelected()) {
-            // 起止坐标
-            double startX = Double.parseDouble(clickPositionBean.getStartX());
-            double startY = Double.parseDouble(clickPositionBean.getStartY());
-            // 移动鼠标到起始位置
-            robot.mouseMove(startX, startY);
-            robot.mousePress(PRIMARY);
-            robot.mouseRelease(PRIMARY);
-        }
-        click(clickPositionBean, robot);
+        clickPositionBeans.add(clickPositionBean);
+        // 启动自动操作流程
+        launchClickTask(clickPositionBeans);
     }
 
     /**
