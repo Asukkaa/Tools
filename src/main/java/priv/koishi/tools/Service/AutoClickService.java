@@ -10,7 +10,7 @@ import priv.koishi.tools.Bean.TaskBean;
 import java.util.List;
 
 import static javafx.scene.input.MouseButton.PRIMARY;
-import static priv.koishi.tools.Finals.CommonFinals.*;
+import static priv.koishi.tools.Finals.CommonFinals.clickTypeMap;
 
 /**
  * 自动点击线程任务类
@@ -49,18 +49,22 @@ public class AutoClickService {
                     while (!isCancelled()) {
                         i++;
                         String loopTimeText = "第 " + i + " / ∞" + " 轮操作\n";
+                        if (isCancelled()) {
+                            break;
+                        }
                         // 执行点击任务
                         clicks(tableViewItems, loopTimeText);
                     }
                 } else {
-                    for (int i = 0; i < loopTime; i++) {
+                    for (int i = 0; i < loopTime && !isCancelled(); i++) {
                         String loopTimeText = "第 " + (i + 1) + " / " + loopTime + " 轮操作\n";
+                        if (isCancelled()) {
+                            break;
+                        }
                         // 执行点击任务
                         clicks(tableViewItems, loopTimeText);
                     }
                 }
-                updateMessage("所有操作都以执行完毕");
-                System.out.println("所有操作都以执行完毕");
                 return null;
             }
 
@@ -85,12 +89,16 @@ public class AutoClickService {
                         System.out.println(loopTimeText + waitTime + " 毫秒后将执行: " + name + "\n" +
                                 "操作内容：" + clickPositionBean.getType() + " X：" + startX + " Y：" + startY + " 在 " +
                                 clickTime + " 毫秒内移动到 X：" + endX + " Y：" + endY + " 共 " + clickNum + " 次");
-                        try {
-                            Thread.sleep(Long.parseLong(waitTime));
-                        } catch (InterruptedException e) {
-                            throw new RuntimeException(e);
+                    });
+                    try {
+                        Thread.sleep(Long.parseLong(waitTime));
+                    } catch (InterruptedException e) {
+                        if (isCancelled()) {
+                            break;
                         }
-                        click(clickPositionBean, robot);
+                    }
+                    click(clickPositionBean, robot);
+                    Platform.runLater(() -> {
                         updateMessage(loopTimeText + name + "执行完毕");
                         System.out.println(loopTimeText + name + "执行完毕");
                     });
@@ -121,12 +129,15 @@ public class AutoClickService {
                 try {
                     Thread.sleep(clickInterval);
                 } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
+                    Thread.currentThread().interrupt();
+                    break;
                 }
             }
             MouseButton mouseButton = clickTypeMap.get(clickPositionBean.getType());
-            robot.mouseMove(startX, startY);
-            robot.mousePress(mouseButton);
+            Platform.runLater(() -> {
+                robot.mouseMove(startX, startY);
+                robot.mousePress(mouseButton);
+            });
             // 计算鼠标移动的轨迹
             double deltaX = endX - startX;
             double deltaY = endY - startY;
@@ -135,7 +146,7 @@ public class AutoClickService {
             for (int j = 0; j <= steps; j++) {
                 double x = startX + deltaX * j / steps;
                 double y = startY + deltaY * j / steps;
-                robot.mouseMove(x, y);
+                Platform.runLater(() -> robot.mouseMove(x, y));
                 try {
                     Thread.sleep(stepDuration);
                 } catch (InterruptedException e) {
@@ -143,7 +154,7 @@ public class AutoClickService {
                     break;
                 }
             }
-            robot.mouseRelease(mouseButton);
+            Platform.runLater(() -> robot.mouseRelease(mouseButton));
         }
     }
 

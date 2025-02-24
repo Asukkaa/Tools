@@ -510,6 +510,8 @@ public class AutoClickController extends CommonProperties {
         autoClickTask.setOnSucceeded(event -> {
             taskUnbind(taskBean);
             taskBean.getMassageLabel().setTextFill(Color.GREEN);
+            taskBean.getMassageLabel().setText("所有操作都以执行完毕");
+            System.out.println("所有操作都以执行完毕");
         });
         // 使用新线程启动
         executorService.execute(autoClickTask);
@@ -602,7 +604,7 @@ public class AutoClickController extends CommonProperties {
             // 自动填充javafx表格
             autoBuildTableViewData(tableView_Click, tableViewItems, tabId);
             // 同步表格数据量
-            dataNumber_Click.setText(text_allHave + (tableViewItems.size() + 1) + text_process);
+            dataNumber_Click.setText(text_allHave + tableViewItems.size() + text_process);
             // 表格设置为可编辑
             makeCellCanEdit();
             // 设置列表通过拖拽排序行

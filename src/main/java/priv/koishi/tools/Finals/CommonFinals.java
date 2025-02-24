@@ -128,13 +128,13 @@ public class CommonFinals {
 
     public static final String tip_wait = "每步操作执行前等待时间，单位为毫秒，只能填自然数，不填默认为 0";
 
-    public static final String tip_mouseStartX = "鼠标点击位置起始横坐标，只能填自然数，不填默认为 0";
+    public static final String tip_mouseStartX = "鼠标点击位置起始横坐标，与结束位置横坐标不同则执行拖拽操作，只能填自然数，不填默认为 0";
 
-    public static final String tip_mouseStartY = "鼠标点击位置起始纵坐标，只能填自然数，不填默认为 0";
+    public static final String tip_mouseStartY = "鼠标点击位置起始纵坐标，与结束位置纵坐标不同则执行拖拽操作，只能填自然数，不填默认为 0";
 
-    public static final String tip_mouseEndX = "鼠标点击位置结束横坐标，只能填自然数，不填默认为 起始横坐标";
+    public static final String tip_mouseEndX = "鼠标点击位置结束横坐标，与起始位置横坐标不同则执行拖拽操作，只能填自然数，不填默认为 起始横坐标";
 
-    public static final String tip_mouseEndY = "鼠标点击位置结束纵坐标，只能填自然数，不填默认为 起始纵坐标";
+    public static final String tip_mouseEndY = "鼠标点击位置结束纵坐标，与起始位置纵坐标不同则执行拖拽操作，只能填自然数，不填默认为 起始纵坐标";
 
     public static final String tip_runClick = "点击后将会按照列表中的步骤执行自动操作，执行自动化任务时按下 esc 即可取消任务";
 
@@ -144,13 +144,13 @@ public class CommonFinals {
 
     public static final String tip_loopTime = "自动操作循环次数，只能填自然数，不填默认为 1，填 0 为无限循环";
 
-    public static final String tip_clickNumBer = "每步操作点击次数，只能填自然数，不填默认为 1";
+    public static final String tip_clickNumBer = "每步操作执行次数，点击为多次点击，长按为多次长按，拖拽为多次拖拽，只能填自然数，不填默认为 1";
 
     public static final String tip_clickType = "每步操作需要按下的键";
 
-    public static final String tip_clickTime = "每步操作时长，单位为毫秒，只能填自然数，不填默认为 0";
+    public static final String tip_clickTime = "每步操作中，单次操作的点击时长，单位为毫秒，只能填自然数，不填默认为 0";
 
-    public static final String tip_clickInterval = "单次操作中，每次点击的时间间隔，只能填自然数，不填默认为 0";
+    public static final String tip_clickInterval = "每步操作中，单次操作的时间间隔，只能填自然数，不填默认为 0";
 
     public static final String tip_clickName = "每步操作的名称，不填将给一个默认名称";
 

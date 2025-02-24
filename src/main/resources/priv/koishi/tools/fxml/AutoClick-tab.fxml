@@ -11,7 +11,7 @@
             <Label prefHeight="20" text="当前鼠标坐标："/>
             <Label prefHeight="20" prefWidth="150" fx:id="mousePosition_Click"/>
 
-            <Label prefHeight="20" textFill="coral" text="提示：1 秒 = 1000 毫秒"/>
+            <Label prefHeight="20" textFill="coral" text="提示：1 秒 = 1000 毫秒  列表中每条数据为一步，每步可操作多次"/>
 
             <Label fx:id="cancelTip_Click" prefHeight="20" textFill="red" alignment="CENTER_RIGHT"
                    text="执行自动化任务时按下 esc 即可取消任务"/>
@@ -32,23 +32,23 @@
         </HBox>
 
         <HBox spacing="10">
-            <Label text="执行前等待时间："/>
+            <Label text="每步执行前等待时间："/>
             <TextField fx:id="wait_Click" prefWidth="80"/>
 
-            <Label text="点击次数："/>
+            <Label text="每步操作次数："/>
             <TextField fx:id="clickNumBer_Click" prefWidth="80"/>
 
-            <Label text="操作时长："/>
+            <Label text="单次操作点击时长："/>
             <TextField fx:id="timeClick_Click" prefWidth="80"/>
 
             <Label text="单次操作点击间隔时间："/>
             <TextField fx:id="interval_Click" prefWidth="80"/>
-
-            <Label text="操作名称："/>
-            <TextField fx:id="clickName_Click" prefWidth="150"/>
         </HBox>
 
         <HBox spacing="10">
+            <Label text="操作名称："/>
+            <TextField fx:id="clickName_Click" prefWidth="150"/>
+
             <Label text="操作类型："/>
             <ChoiceBox fx:id="clickType_Click" prefHeight="20" prefWidth="120">
                 <items>
