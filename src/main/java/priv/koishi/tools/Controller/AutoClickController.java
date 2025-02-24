@@ -324,14 +324,14 @@ public class AutoClickController extends CommonProperties {
     private void makeCellCanEdit() {
         tableView_Click.setEditable(true);
         name_Click.setCellFactory((tableColumn) -> new EditingCell<>(ClickPositionBean::setName));
-        startX_Click.setCellFactory((tableColumn) -> new EditingCell<>(ClickPositionBean::setStartX));
-        endX_Click.setCellFactory((tableColumn) -> new EditingCell<>(ClickPositionBean::setEndX));
-        startY_Click.setCellFactory((tableColumn) -> new EditingCell<>(ClickPositionBean::setStartY));
-        endY_Click.setCellFactory((tableColumn) -> new EditingCell<>(ClickPositionBean::setEndY));
-        clickInterval_Click.setCellFactory((tableColumn) -> new EditingCell<>(ClickPositionBean::setClickInterval));
-        waitTime_Click.setCellFactory((tableColumn) -> new EditingCell<>(ClickPositionBean::setWaitTime));
-        clickTime_Click.setCellFactory((tableColumn) -> new EditingCell<>(ClickPositionBean::setClickTime));
-        clickNum_Click.setCellFactory((tableColumn) -> new EditingCell<>(ClickPositionBean::setClickNum));
+        startX_Click.setCellFactory((tableColumn) -> new EditingCell<>(ClickPositionBean::setStartX, true, 0, null));
+        endX_Click.setCellFactory((tableColumn) -> new EditingCell<>(ClickPositionBean::setEndX, true, 0, null));
+        startY_Click.setCellFactory((tableColumn) -> new EditingCell<>(ClickPositionBean::setStartY, true, 0, null));
+        endY_Click.setCellFactory((tableColumn) -> new EditingCell<>(ClickPositionBean::setEndY, true, 0, null));
+        clickInterval_Click.setCellFactory((tableColumn) -> new EditingCell<>(ClickPositionBean::setClickInterval, true, 0, null));
+        waitTime_Click.setCellFactory((tableColumn) -> new EditingCell<>(ClickPositionBean::setWaitTime, true, 0, null));
+        clickTime_Click.setCellFactory((tableColumn) -> new EditingCell<>(ClickPositionBean::setClickTime, true, 0, null));
+        clickNum_Click.setCellFactory((tableColumn) -> new EditingCell<>(ClickPositionBean::setClickNum, true, 0, null));
     }
 
     /**
@@ -511,7 +511,6 @@ public class AutoClickController extends CommonProperties {
             taskUnbind(taskBean);
             taskBean.getMassageLabel().setTextFill(Color.GREEN);
             taskBean.getMassageLabel().setText("所有操作都以执行完毕");
-            System.out.println("所有操作都以执行完毕");
         });
         // 使用新线程启动
         executorService.execute(autoClickTask);

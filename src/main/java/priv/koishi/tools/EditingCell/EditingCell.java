@@ -3,10 +3,12 @@ package priv.koishi.tools.EditingCell;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Objects;
 
 import static priv.koishi.tools.Finals.CommonFinals.text_nowValue;
+import static priv.koishi.tools.Utils.CommonUtils.isInIntegerRange;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
 /**
@@ -31,7 +33,22 @@ public class EditingCell<T> extends TableCell<T, String> {
     /**
      * 单元格鼠标悬停提示
      */
-    private final String tip = "双击单元格可进行编辑";
+    private final String tip = "双击单元格可进行编辑 ";
+
+    /**
+     * 输入框可输入的最小值
+     */
+    private Integer min;
+
+    /**
+     * 输入框可输入的最大值
+     */
+    private Integer max;
+
+    /**
+     * 输入框限制只能输入整数
+     */
+    private boolean integerRange = false;
 
     /**
      * 构造EditingCell对象,并且明确将该cell的值保存进相应的JavaBean的属性值的方法
@@ -40,6 +57,22 @@ public class EditingCell<T> extends TableCell<T, String> {
      */
     public EditingCell(ItemConsumer<T> itemConsumer) {
         this.itemConsumer = itemConsumer;
+        setTooltip(creatTooltip(tip));
+    }
+
+    /**
+     * 构造EditingCell对象,并且明确将该cell的值保存进相应的JavaBean的属性值的方法
+     *
+     * @param itemConsumer 用于引入lambda表达式的对象
+     * @param integerRange 输入框是否限制只能输入整数
+     * @param min          输入框可输入的最小值
+     * @param max          输入框可输入的最大值
+     */
+    public EditingCell(ItemConsumer<T> itemConsumer, boolean integerRange, Integer min, Integer max) {
+        this.itemConsumer = itemConsumer;
+        this.integerRange = integerRange;
+        this.min = min;
+        this.max = max;
         setTooltip(creatTooltip(tip));
     }
 
@@ -105,16 +138,27 @@ public class EditingCell<T> extends TableCell<T, String> {
 
     /**
      * 在单元格中创建输入框
+     *
+     * @param tableColumnText 表格列名
      */
     private void createTextField(String tableColumnText) {
         textField = new TextField(getString());
         textField.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
+        // 限制只能输入整数
+        if (integerRange) {
+            textField.textProperty().addListener((observable, oldValue, newValue) -> {
+                // 这里处理文本变化的逻辑
+                if (!isInIntegerRange(newValue, min, max) && StringUtils.isNotBlank(newValue)) {
+                    textField.setText(oldValue);
+                }
+            });
+        }
         textField.focusedProperty().addListener((ob, old, now) -> {
             if (!now) {
                 commitEdit(textField.getText());
             }
         });
-        addValueToolTip(textField, "双击单元格可编辑 " + tableColumnText, text_nowValue);
+        addValueToolTip(textField, tip + tableColumnText, text_nowValue);
     }
 
     /**
