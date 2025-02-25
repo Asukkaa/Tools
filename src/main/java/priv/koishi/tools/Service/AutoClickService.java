@@ -2,6 +2,7 @@ package priv.koishi.tools.Service;
 
 import javafx.application.Platform;
 import javafx.concurrent.Task;
+import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
 import javafx.scene.robot.Robot;
 import priv.koishi.tools.Bean.ClickPositionBean;
@@ -11,7 +12,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import static javafx.scene.input.MouseButton.PRIMARY;
-import static priv.koishi.tools.Finals.CommonFinals.clickTypeMap;
+import static priv.koishi.tools.Finals.CommonFinals.*;
 
 /**
  * 自动点击线程任务类
@@ -32,6 +33,7 @@ public class AutoClickService {
             @Override
             protected Void call() {
                 List<ClickPositionBean> tableViewItems = taskBean.getBeanList();
+                Label floatingLabel = taskBean.getFloatingLabel();
                 // 执行自动流程前点击第一个起始坐标
                 if (taskBean.isFirstClick()) {
                     ClickPositionBean clickPositionBean = tableViewItems.getFirst();
@@ -41,7 +43,8 @@ public class AutoClickService {
                         robot.mouseMove(x, y);
                         robot.mousePress(PRIMARY);
                         robot.mouseRelease(PRIMARY);
-                        updateMessage("已切换到目标窗口");
+                        updateMessage(text_changeWindow);
+                        floatingLabel.setText(text_cancelTask + text_changeWindow);
                     });
                 }
                 int loopTime = taskBean.getLoopTime();
@@ -72,6 +75,7 @@ public class AutoClickService {
             // 执行点击任务
             private void clicks(List<ClickPositionBean> tableViewItems, String loopTimeText) {
                 int dataSize = tableViewItems.size();
+                Label floatingLabel = taskBean.getFloatingLabel();
                 updateProgress(0, dataSize);
                 for (int j = 0; j < dataSize; j++) {
                     ClickPositionBean clickPositionBean = tableViewItems.get(j);
@@ -83,9 +87,13 @@ public class AutoClickService {
                     String clickTime = clickPositionBean.getClickTime();
                     String name = clickPositionBean.getName();
                     String clickNum = clickPositionBean.getClickNum();
-                    Platform.runLater(() -> updateMessage(loopTimeText + waitTime + " 毫秒后将执行: " + name + "\n" +
-                            "操作内容：" + clickPositionBean.getType() + " X：" + startX + " Y：" + startY + " 在 " +
-                            clickTime + " 毫秒内移动到 X：" + endX + " Y：" + endY + " 共 " + clickNum + " 次"));
+                    Platform.runLater(() -> {
+                        String text = loopTimeText + waitTime + " 毫秒后将执行: " + name + "\n" +
+                                "操作内容：" + clickPositionBean.getType() + " X：" + startX + " Y：" + startY + " 在 " +
+                                clickTime + " 毫秒内移动到 X：" + endX + " Y：" + endY + " 共 " + clickNum + " 次";
+                        updateMessage(text);
+                        floatingLabel.setText(text_cancelTask + text);
+                    });
                     // 执行前等待时间
                     try {
                         Thread.sleep(Long.parseLong(waitTime));
@@ -96,7 +104,11 @@ public class AutoClickService {
                     }
                     // 执行自动流程
                     click(clickPositionBean, robot);
-                    Platform.runLater(() -> updateMessage(loopTimeText + name + "执行完毕"));
+                    Platform.runLater(() -> {
+                        String text = loopTimeText + name + text_finishedExecution;
+                        updateMessage(text);
+                        floatingLabel.setText(text_cancelTask + text);
+                    });
                     updateProgress(j + 1, dataSize);
                 }
             }

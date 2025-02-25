@@ -109,4 +109,6 @@ public class TaskBean<T> {
      */
     boolean firstClick;
 
+    Label floatingLabel;
+
 }

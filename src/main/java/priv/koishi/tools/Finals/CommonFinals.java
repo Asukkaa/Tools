@@ -326,6 +326,12 @@ public class CommonFinals {
 
     public static final String text_loadSuccess = "已导入自动操作流程：";
 
+    public static final String text_changeWindow = "已切换到目标窗口";
+
+    public static final String text_finishedExecution = " 执行完毕";
+
+    public static final String text_cancelTask = "按下 esc 即可取消任务\n";
+
     public static final String xlsx = ".xlsx";
 
     public static final String xls = ".xls";

@@ -12,6 +12,7 @@ import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -22,15 +23,17 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.robot.Robot;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import priv.koishi.tools.Bean.ClickPositionBean;
-import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.EditingCell.EditingCell;
 import priv.koishi.tools.Properties.CommonProperties;
@@ -100,6 +103,13 @@ public class AutoClickController extends CommonProperties {
      * 页面标识符
      */
     private static final String tabId = "_Click";
+
+    /**
+     * 浮窗Stage
+     */
+    private Stage floatingStage;
+
+    private Label floatingLabel;
 
     @FXML
     private AnchorPane anchorPane_Click;
@@ -334,6 +344,62 @@ public class AutoClickController extends CommonProperties {
     }
 
     /**
+     * 初始化浮窗
+     */
+    private void initFloatingWindow() {
+        double width = 600;
+        double height = 90;
+        // 创建一个矩形作为浮窗的内容
+        Rectangle rectangle = new Rectangle(width, height, Color.BLACK);
+        // 设置透明度
+        rectangle.setOpacity(0.3);
+        StackPane root = new StackPane();
+        floatingLabel = new Label(text_cancelTask);
+        floatingLabel.setTextFill(Color.WHITE);
+        floatingLabel.setStyle("-fx-font-size: 14px;");
+        root.getChildren().addAll(rectangle, floatingLabel);
+        Scene scene = new Scene(root, Color.TRANSPARENT);
+        // 设置鼠标事件穿透
+        scene.setOnMousePressed(javafx.event.Event::consume);
+        scene.setOnMouseReleased(javafx.event.Event::consume);
+        scene.setOnMouseClicked(Event::consume);
+        floatingStage = new Stage();
+        // 设置透明样式
+        floatingStage.initStyle(StageStyle.TRANSPARENT);
+        // 设置始终置顶
+        floatingStage.setAlwaysOnTop(true);
+        floatingStage.setScene(scene);
+        // 设置浮窗的位置在屏幕最上方正中间
+        java.awt.Rectangle screenBounds = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+        double x = (screenBounds.getWidth() - width) / 2;
+        double y = 0;
+        floatingStage.setX(x);
+        floatingStage.setY(y);
+    }
+
+    /**
+     * 显示浮窗
+     */
+    private void showFloatingWindow() {
+        Platform.runLater(() -> {
+            if (floatingStage != null && !floatingStage.isShowing()) {
+                floatingStage.show();
+            }
+        });
+    }
+
+    /**
+     * 隐藏浮窗
+     */
+    private void hideFloatingWindow() {
+        Platform.runLater(() -> {
+            if (floatingStage != null && floatingStage.isShowing()) {
+                floatingStage.hide();
+            }
+        });
+    }
+
+    /**
      * 启动自动操作流程
      *
      * @param clickPositionBeans 自动操作流程
@@ -344,6 +410,7 @@ public class AutoClickController extends CommonProperties {
                 .setFirstClick(firstClick_Click.isSelected())
                 .setProgressBar(progressBar_Click)
                 .setBeanList(clickPositionBeans)
+                .setFloatingLabel(floatingLabel)
                 .setMassageLabel(log_Click);
         updateLabel(log_Click, "");
         // 创建一个Robot实例
@@ -351,13 +418,28 @@ public class AutoClickController extends CommonProperties {
         autoClickTask = autoClick(taskBean, robot);
         // 绑定带进度条的线程
         bindingProgressBarTask(autoClickTask, taskBean);
+        Label massageLabel = taskBean.getMassageLabel();
         autoClickTask.setOnSucceeded(event -> {
             taskUnbind(taskBean);
-            taskBean.getMassageLabel().setTextFill(Color.GREEN);
-            taskBean.getMassageLabel().setText("所有操作都以执行完毕");
+            massageLabel.setTextFill(Color.GREEN);
+            massageLabel.setText("所有操作都以执行完毕");
+            hideFloatingWindow();
+        });
+        autoClickTask.setOnFailed(event -> {
+            taskUnbind(taskBean);
+            massageLabel.setTextFill(Color.RED);
+            massageLabel.setText("出现错误，任务终止");
+            hideFloatingWindow();
+        });
+        autoClickTask.setOnCancelled(event -> {
+            taskUnbind(taskBean);
+            massageLabel.setTextFill(Color.RED);
+            massageLabel.setText("任务已取消");
+            hideFloatingWindow();
         });
         // 使用新线程启动
         executorService.execute(autoClickTask);
+        showFloatingWindow();
     }
 
     /**
@@ -496,12 +578,6 @@ public class AutoClickController extends CommonProperties {
                     Platform.runLater(() -> {
                         if (autoClickTask != null && autoClickTask.isRunning()) {
                             autoClickTask.cancel();
-                            TaskBean<FileNumBean> taskBean = new TaskBean<>();
-                            taskBean.setProgressBar(progressBar_Click)
-                                    .setMassageLabel(log_Click);
-                            taskUnbind(taskBean);
-                            log_Click.setText("任务已取消");
-                            log_Click.setTextFill(Color.RED);
                         }
                     });
                 }
@@ -528,6 +604,8 @@ public class AutoClickController extends CommonProperties {
         textFieldChangeListener();
         // 注册全局按键监听器
         getGlobalScreen();
+        // 初始化浮窗
+        initFloatingWindow();
     }
 
     /**
