@@ -528,6 +528,10 @@ public class CommonFinals {
 
     public static final String key_lastOutFileName = "lastOutFileName";
 
+    public static final String key_lastHideWindow = "lastHideWindow";
+
+    public static final String key_lastShowWindow = "lastShowWindow";
+
     public static final String key_defaultOutFileName = "defaultOutFileName";
 
     public static final String key_defaultSheetName = "defaultSheetName";

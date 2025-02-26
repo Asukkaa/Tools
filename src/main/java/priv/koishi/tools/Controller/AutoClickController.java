@@ -129,7 +129,7 @@ public class AutoClickController extends CommonProperties {
     private ChoiceBox<String> clickType_Click;
 
     @FXML
-    private CheckBox firstClick_Click, openDirectory_Click;
+    private CheckBox firstClick_Click, openDirectory_Click, hideWindow_Click, showWindow_Click;
 
     @FXML
     private Label mousePosition_Click, dataNumber_Click, log_Click, tip_Click, cancelTip_Click, outPath_Click;
@@ -156,7 +156,7 @@ public class AutoClickController extends CommonProperties {
         // 设置组件高度
         double stageHeight = stage.getHeight();
         TableView<?> table = (TableView<?>) scene.lookup("#tableView_Click");
-        table.setPrefHeight(stageHeight * 0.45);
+        table.setPrefHeight(stageHeight * 0.4);
         // 设置组件宽度
         double stageWidth = stage.getWidth();
         double tableWidth = stageWidth * 0.95;
@@ -237,6 +237,12 @@ public class AutoClickController extends CommonProperties {
             CheckBox openDirectory = (CheckBox) scene.lookup("#openDirectory_Click");
             String lastOpenDirectoryValue = openDirectory.isSelected() ? activation : unActivation;
             prop.put(key_lastOpenDirectory, lastOpenDirectoryValue);
+            CheckBox hideWindow = (CheckBox) scene.lookup("#hideWindow_Click");
+            String lastHideWindowValue = hideWindow.isSelected() ? activation : unActivation;
+            prop.put(key_lastHideWindow, lastHideWindowValue);
+            CheckBox showWindow = (CheckBox) scene.lookup("#showWindow_Click");
+            String lastShowWindowValue = showWindow.isSelected() ? activation : unActivation;
+            prop.put(key_lastShowWindow, lastShowWindowValue);
             OutputStream output = checkRunningOutputStream(configFile_Click);
             prop.store(output, null);
             input.close();
@@ -264,6 +270,8 @@ public class AutoClickController extends CommonProperties {
             setControlLastConfig(timeClick_Click, prop, key_lastTimeClick, false, null);
             setControlLastConfig(clickType_Click, prop, key_lastClickType, false, null);
             setControlLastConfig(firstClick_Click, prop, key_lastFirstClick, false, null);
+            setControlLastConfig(hideWindow_Click, prop, key_lastHideWindow, false, null);
+            setControlLastConfig(showWindow_Click, prop, key_lastShowWindow, false, null);
             setControlLastConfig(mouseStartX_Click, prop, key_lastMouseStartX, false, null);
             setControlLastConfig(mouseStartY_Click, prop, key_lastMouseStartY, false, null);
             setControlLastConfig(clickNumBer_Click, prop, key_lastClickNumBer, false, null);
@@ -415,6 +423,10 @@ public class AutoClickController extends CommonProperties {
                 .setBeanList(clickPositionBeans)
                 .setMassageLabel(log_Click);
         updateLabel(log_Click, "");
+        Stage stage = (Stage) anchorPane_Click.getScene().getWindow();
+        if (hideWindow_Click.isSelected()) {
+            stage.setIconified(true);
+        }
         // 创建一个Robot实例
         Robot robot = new Robot();
         autoClickTask = autoClick(taskBean, robot);
@@ -426,6 +438,9 @@ public class AutoClickController extends CommonProperties {
             massageLabel.setTextFill(Color.GREEN);
             massageLabel.setText("所有操作都以执行完毕");
             hideFloatingWindow();
+            if (showWindow_Click.isSelected()) {
+                stage.requestFocus();
+            }
         });
         autoClickTask.setOnFailed(event -> {
             taskUnbind(taskBean);
