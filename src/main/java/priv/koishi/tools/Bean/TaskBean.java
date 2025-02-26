@@ -99,16 +99,4 @@ public class TaskBean<T> {
      */
     boolean reverseSort;
 
-    /**
-     * 自动点击任务循环次数
-     */
-    int loopTime;
-
-    /**
-     * 执行自动流程前点击第一个起始坐标
-     */
-    boolean firstClick;
-
-    Label floatingLabel;
-
 }

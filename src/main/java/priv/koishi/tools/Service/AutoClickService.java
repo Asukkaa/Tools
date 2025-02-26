@@ -5,8 +5,8 @@ import javafx.concurrent.Task;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
 import javafx.scene.robot.Robot;
+import priv.koishi.tools.Bean.AutoClickTaskBean;
 import priv.koishi.tools.Bean.ClickPositionBean;
-import priv.koishi.tools.Bean.TaskBean;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -28,7 +28,7 @@ public class AutoClickService {
      *
      * @param taskBean 线程任务参数
      */
-    public static Task<Void> autoClick(TaskBean<ClickPositionBean> taskBean, Robot robot) {
+    public static Task<Void> autoClick(AutoClickTaskBean taskBean, Robot robot) {
         return new Task<>() {
             @Override
             protected Void call() {
@@ -78,6 +78,7 @@ public class AutoClickService {
                 Label floatingLabel = taskBean.getFloatingLabel();
                 updateProgress(0, dataSize);
                 for (int j = 0; j < dataSize; j++) {
+                    updateProgress(j + 1, dataSize);
                     ClickPositionBean clickPositionBean = tableViewItems.get(j);
                     double startX = Double.parseDouble(clickPositionBean.getStartX());
                     double startY = Double.parseDouble(clickPositionBean.getStartY());
@@ -109,7 +110,6 @@ public class AutoClickService {
                         updateMessage(text);
                         floatingLabel.setText(text_cancelTask + text);
                     });
-                    updateProgress(j + 1, dataSize);
                 }
             }
         };
