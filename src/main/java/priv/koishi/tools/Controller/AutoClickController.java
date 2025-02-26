@@ -439,6 +439,7 @@ public class AutoClickController extends CommonProperties {
             massageLabel.setText("所有操作都以执行完毕");
             hideFloatingWindow();
             if (showWindow_Click.isSelected()) {
+                stage.setIconified(false);
                 stage.requestFocus();
             }
         });
