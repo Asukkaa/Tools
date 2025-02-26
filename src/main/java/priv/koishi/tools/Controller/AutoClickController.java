@@ -12,7 +12,6 @@ import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -33,8 +32,8 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import priv.koishi.tools.Bean.AutoClickTaskBean;
 import priv.koishi.tools.Bean.ClickPositionBean;
-import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.EditingCell.EditingCell;
 import priv.koishi.tools.Properties.CommonProperties;
 import priv.koishi.tools.ThreadPool.CommonThreadPoolExecutor;
@@ -109,6 +108,9 @@ public class AutoClickController extends CommonProperties {
      */
     private Stage floatingStage;
 
+    /**
+     * 顶部浮窗信息输出栏
+     */
     private Label floatingLabel;
 
     @FXML
@@ -289,12 +291,12 @@ public class AutoClickController extends CommonProperties {
     /**
      * 获取鼠标坐标
      */
-    private void getMousePosition() {
+    private void getNowMousePosition() {
         // 使用java.awt.MouseInfo获取鼠标的全局位置
         Point mousePoint = MouseInfo.getPointerInfo().getLocation();
         double x = mousePoint.getX();
         double y = mousePoint.getY();
-        mousePosition_Click.setText("X：" + x + " , Y：" + y);
+        mousePosition_Click.setText("当前鼠标位置为： X: " + x + " Y: " + y);
     }
 
     /**
@@ -305,7 +307,7 @@ public class AutoClickController extends CommonProperties {
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                getMousePosition();
+                getNowMousePosition();
             }
         };
         timer.start();
@@ -347,22 +349,22 @@ public class AutoClickController extends CommonProperties {
      * 初始化浮窗
      */
     private void initFloatingWindow() {
-        double width = 600;
-        double height = 90;
+        double width = 550;
+        double height = 70;
         // 创建一个矩形作为浮窗的内容
-        Rectangle rectangle = new Rectangle(width, height, Color.BLACK);
+        Rectangle rectangle = new Rectangle(width, height);
         // 设置透明度
-        rectangle.setOpacity(0.3);
+        rectangle.setOpacity(0.0);
         StackPane root = new StackPane();
+        root.setStyle("-fx-background-color: rgba(255,255,255,0)");
+        Color labelTextFill = Color.RED;
         floatingLabel = new Label(text_cancelTask);
-        floatingLabel.setTextFill(Color.WHITE);
-        floatingLabel.setStyle("-fx-font-size: 14px;");
-        root.getChildren().addAll(rectangle, floatingLabel);
+        floatingLabel.setTextFill(labelTextFill);
+        VBox vBox = new VBox();
+        vBox.getChildren().addAll(floatingLabel);
+        root.getChildren().addAll(rectangle, vBox);
         Scene scene = new Scene(root, Color.TRANSPARENT);
-        // 设置鼠标事件穿透
-        scene.setOnMousePressed(javafx.event.Event::consume);
-        scene.setOnMouseReleased(javafx.event.Event::consume);
-        scene.setOnMouseClicked(Event::consume);
+        vBox.setMouseTransparent(true);
         floatingStage = new Stage();
         // 设置透明样式
         floatingStage.initStyle(StageStyle.TRANSPARENT);
@@ -405,12 +407,12 @@ public class AutoClickController extends CommonProperties {
      * @param clickPositionBeans 自动操作流程
      */
     private void launchClickTask(List<ClickPositionBean> clickPositionBeans) {
-        TaskBean<ClickPositionBean> taskBean = new TaskBean<>();
+        AutoClickTaskBean taskBean = new AutoClickTaskBean();
         taskBean.setLoopTime(setDefaultIntValue(loopTime_Click, 1, 0, null))
                 .setFirstClick(firstClick_Click.isSelected())
+                .setFloatingLabel(floatingLabel)
                 .setProgressBar(progressBar_Click)
                 .setBeanList(clickPositionBeans)
-                .setFloatingLabel(floatingLabel)
                 .setMassageLabel(log_Click);
         updateLabel(log_Click, "");
         // 创建一个Robot实例
@@ -590,6 +592,8 @@ public class AutoClickController extends CommonProperties {
      */
     @FXML
     private void initialize() throws IOException {
+        // 初始化浮窗
+        initFloatingWindow();
         // 获取鼠标坐标监听器
         moussePositionListener();
         // 设置javafx单元格宽度
@@ -604,8 +608,6 @@ public class AutoClickController extends CommonProperties {
         textFieldChangeListener();
         // 注册全局按键监听器
         getGlobalScreen();
-        // 初始化浮窗
-        initFloatingWindow();
     }
 
     /**
