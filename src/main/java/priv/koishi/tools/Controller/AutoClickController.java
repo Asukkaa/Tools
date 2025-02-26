@@ -564,6 +564,8 @@ public class AutoClickController extends CommonProperties {
         addToolTip(tip_clickTime, timeClick_Click);
         addToolTip(tip_clickName, clickName_Click);
         addToolTip(tip_clickTest, clickTest_Click);
+        addToolTip(tip_hideWindow, hideWindow_Click);
+        addToolTip(tip_showWindow, showWindow_Click);
         addToolTip(tip_firstClick, firstClick_Click);
         addToolTip(tip_clickInterval, interval_Click);
         addToolTip(tip_learButton, clearButton_Click);

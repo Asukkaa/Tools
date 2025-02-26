@@ -160,6 +160,10 @@ public class CommonFinals {
 
     public static final String tip_exportAutoClick = "点击即可按照设置导出文件夹与文件名导出列表中的操作流程";
 
+    public static final String tip_hideWindow = "勾选后运行或测试自动操作前将会隐藏本程序的窗口";
+
+    public static final String tip_showWindow = "勾选后运行或测试自动操作后将会弹出本程序的窗口";
+
     public static final String tip_excelName = """
             不用填写文件拓展名，如果导出文件夹已经存在同名文件将会覆盖模板excel文件
             文件名不能包含 <>:"/\\|?*
