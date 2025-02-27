@@ -680,13 +680,15 @@ public class UiUtils {
         MenuItem middle = new MenuItem("鼠标中键点击");
         MenuItem forward = new MenuItem("鼠标前侧键点击");
         MenuItem back = new MenuItem("鼠标后侧键点击");
+        MenuItem none = new MenuItem("鼠标仅移动");
         // 为每个菜单项添加事件处理
         primary.setOnAction(event -> updateClickType(tableView, "鼠标左键点击"));
         secondary.setOnAction(event -> updateClickType(tableView, "鼠标右键点击"));
         middle.setOnAction(event -> updateClickType(tableView, "鼠标中键点击"));
         forward.setOnAction(event -> updateClickType(tableView, "鼠标前侧键点击"));
         back.setOnAction(event -> updateClickType(tableView, "鼠标后侧键点击"));
-        menuItem.getItems().addAll(primary, secondary, middle, forward, back);
+        none.setOnAction(event -> updateClickType(tableView, "鼠标仅移动"));
+        menuItem.getItems().addAll(primary, secondary, middle, forward, back, none);
         contextMenu.getItems().add(menuItem);
     }
 
