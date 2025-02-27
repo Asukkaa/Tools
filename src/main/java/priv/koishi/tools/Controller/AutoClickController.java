@@ -403,7 +403,7 @@ public class AutoClickController extends CommonProperties {
      */
     private void initFloatingWindow() {
         double width = 550;
-        double height = 80;
+        double height = 90;
         // 创建一个矩形作为浮窗的内容
         Rectangle rectangle = new Rectangle(width, height);
         // 设置透明度
