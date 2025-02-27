@@ -76,7 +76,10 @@
 
         <HBox spacing="10">
             <Button fx:id="addOutPath_Click" onAction="#addOutPath" style="-fx-cursor: hand" text="选择导出文件夹"/>
-            <Label fx:id="outPath_Click" prefHeight="20" style="-fx-font-size: 15px;"/>
+            <Label fx:id="outPath_Click" prefHeight="20" prefWidth="300" style="-fx-font-size: 15px;"/>
+
+            <Label text="录制自动操作前准备时间："/>
+            <TextField fx:id="preparationTime_Click" prefWidth="50"/>
         </HBox>
 
         <HBox spacing="10">
@@ -95,8 +98,7 @@
             <Button fx:id="clearButton_Click" onAction="#removeAll" style="-fx-cursor: hand" text="清空操作列表"/>
             <Button fx:id="runClick_Click" onAction="#runClick" style="-fx-cursor: hand" text="运行自动操作"/>
             <Button fx:id="recordClick_Click" onAction="#recordClick" style="-fx-cursor: hand" text="录制自动操作"/>
-            <Label text="录制自动操作前准备时间："/>
-            <TextField fx:id="preparationTime_Click" prefWidth="50"/>
+
             <Label fx:id="dataNumber_Click" alignment="CENTER_RIGHT" prefHeight="20" text="列表为空"/>
         </HBox>
 
