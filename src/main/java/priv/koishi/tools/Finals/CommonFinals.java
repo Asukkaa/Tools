@@ -336,6 +336,14 @@ public class CommonFinals {
 
     public static final String text_cancelTask = "按下 esc 即可取消任务\n";
 
+    public static final String text_loadAutoClick = "导入自动化流程文件：";
+
+    public static final String text_formatError = " 内容格式不正确";
+
+    public static final String text_noAutoClickList = "列表中没有要导出的自动操作流程";
+
+    public static final String text_noAutoClickToRun = "列表中没有要执行的操作";
+
     public static final String xlsx = ".xlsx";
 
     public static final String xls = ".xls";
@@ -618,7 +626,7 @@ public class CommonFinals {
         clickTypeMap.put("鼠标中键点击", MouseButton.MIDDLE);
         clickTypeMap.put("鼠标前侧键点击", MouseButton.FORWARD);
         clickTypeMap.put("鼠标后侧键点击", MouseButton.BACK);
-        clickTypeMap.put("鼠标未点击", MouseButton.NONE);
+        clickTypeMap.put("鼠标仅移动", MouseButton.NONE);
     }
 
 }

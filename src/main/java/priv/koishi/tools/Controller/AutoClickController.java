@@ -20,6 +20,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.control.*;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -43,18 +45,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 
 import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.Service.AutoClickService.autoClick;
-import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
-import static priv.koishi.tools.Utils.CommonUtils.checkRunningOutputStream;
-import static priv.koishi.tools.Utils.FileUtils.openDirectory;
-import static priv.koishi.tools.Utils.FileUtils.updateProperties;
+import static priv.koishi.tools.Utils.CommonUtils.*;
+import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.TaskUtils.bindingProgressBarTask;
 import static priv.koishi.tools.Utils.TaskUtils.taskUnbind;
 import static priv.koishi.tools.Utils.UiUtils.*;
@@ -581,6 +579,38 @@ public class AutoClickController extends CommonProperties {
     }
 
     /**
+     * 将自动流程添加到列表中
+     *
+     * @param clickPositionBeans 自动流程集合
+     */
+    private void addAutoClickPositions(List<ClickPositionBean> clickPositionBeans) throws IOException {
+        for (ClickPositionBean clickPositionBean : clickPositionBeans) {
+            clickPositionBean.setUuid(UUID.randomUUID().toString());
+            if (!isInIntegerRange(clickPositionBean.getStartX(), 0, null) || !isInIntegerRange(clickPositionBean.getStartY(), 0, null)
+                    || !isInIntegerRange(clickPositionBean.getEndX(), 0, null) || !isInIntegerRange(clickPositionBean.getEndY(), 0, null)
+                    || !isInIntegerRange(clickPositionBean.getClickTime(), 0, null) || !isInIntegerRange(clickPositionBean.getClickNum(), 0, null)
+                    || !isInIntegerRange(clickPositionBean.getClickInterval(), 0, null) || !isInIntegerRange(clickPositionBean.getWaitTime(), 0, null)
+                    || !clickTypeMap.containsKey(clickPositionBean.getType())) {
+                throw new IOException("导入文件缺少关键数据");
+            }
+        }
+        List<ClickPositionBean> tableViewItems = tableView_Click.getItems();
+        tableViewItems.addAll(clickPositionBeans);
+        // 自动填充javafx表格
+        autoBuildTableViewData(tableView_Click, tableViewItems, tabId);
+        // 同步表格数据量
+        dataNumber_Click.setText(text_allHave + tableViewItems.size() + text_process);
+        // 表格设置为可编辑
+        makeCellCanEdit();
+        // 设置列表通过拖拽排序行
+        tableViewDragRow(tableView_Click);
+        // 构建右键菜单
+        buildContextMenu();
+        updateLabel(log_Click, text_loadSuccess + inFilePath);
+        log_Click.setTextFill(Color.GREEN);
+    }
+
+    /**
      * 注册全局按键监听器
      */
     private void getGlobalScreen() {
@@ -637,7 +667,7 @@ public class AutoClickController extends CommonProperties {
     public void runClick() throws Exception {
         ObservableList<ClickPositionBean> tableViewItems = tableView_Click.getItems();
         if (CollectionUtils.isEmpty(tableViewItems)) {
-            throw new Exception("列表中没有要执行的操作");
+            throw new Exception(text_noAutoClickToRun);
         }
         // 启动自动操作流程
         launchClickTask(tableViewItems);
@@ -708,22 +738,10 @@ public class AutoClickController extends CommonProperties {
             try {
                 clickPositionBeans = objectMapper.readValue(jsonFile, objectMapper.getTypeFactory().constructCollectionType(List.class, ClickPositionBean.class));
             } catch (MismatchedInputException | JsonParseException e) {
-                throw new IOException("导入自动化流程文件：" + inFilePath + " 内容格式不正确");
+                throw new IOException(text_loadAutoClick + inFilePath + text_formatError);
             }
-            List<ClickPositionBean> tableViewItems = tableView_Click.getItems();
-            tableViewItems.addAll(clickPositionBeans);
-            // 自动填充javafx表格
-            autoBuildTableViewData(tableView_Click, tableViewItems, tabId);
-            // 同步表格数据量
-            dataNumber_Click.setText(text_allHave + tableViewItems.size() + text_process);
-            // 表格设置为可编辑
-            makeCellCanEdit();
-            // 设置列表通过拖拽排序行
-            tableViewDragRow(tableView_Click);
-            // 构建右键菜单
-            buildContextMenu();
-            updateLabel(log_Click, text_loadSuccess + inFilePath);
-            log_Click.setTextFill(Color.GREEN);
+            // 将自动流程添加到列表中
+            addAutoClickPositions(clickPositionBeans);
         }
     }
 
@@ -736,7 +754,7 @@ public class AutoClickController extends CommonProperties {
     public void exportAutoClick() throws Exception {
         ObservableList<ClickPositionBean> tableViewItems = tableView_Click.getItems();
         if (CollectionUtils.isEmpty(tableViewItems)) {
-            throw new Exception("列表中没有要导出的自动操作流程");
+            throw new Exception(text_noAutoClickList);
         }
         if (StringUtils.isBlank(outFilePath)) {
             throw new Exception(text_outPathNull);
@@ -765,6 +783,47 @@ public class AutoClickController extends CommonProperties {
             // 更新所选文件路径显示
             outFilePath = updatePathLabel(selectedFile.getPath(), outFilePath, key_outFilePath, outPath_Click, configFile_Click, anchorPane_Click);
         }
+    }
+
+    /**
+     * 拖拽释放行为
+     *
+     * @param dragEvent 拖拽事件
+     * @throws IOException 导入自动化流程文件内容格式不正确、导入文件缺少关键数据
+     */
+    @FXML
+    public void handleDrop(DragEvent dragEvent) throws IOException {
+        List<File> files = dragEvent.getDragboard().getFiles();
+        List<ClickPositionBean> clickPositionBeans = new ArrayList<>();
+        for (File file : files) {
+            // 读取 JSON 文件并转换为 List<ClickPositionBean>
+            ObjectMapper objectMapper = new ObjectMapper();
+            File jsonFile = new File(file.getPath());
+            try {
+                clickPositionBeans.addAll(objectMapper.readValue(jsonFile, objectMapper.getTypeFactory().constructCollectionType(List.class, ClickPositionBean.class)));
+            } catch (IOException e) {
+                throw new IOException(text_loadAutoClick + inFilePath + text_formatError);
+            }
+        }
+        // 将自动流程添加到列表中
+        addAutoClickPositions(clickPositionBeans);
+    }
+
+    /**
+     * 拖拽中行为
+     *
+     * @param dragEvent 拖拽事件
+     */
+    @FXML
+    public void acceptDrop(DragEvent dragEvent) {
+        List<File> files = dragEvent.getDragboard().getFiles();
+        files.forEach(file -> {
+            if (json.equals(getFileType(file))) {
+                // 接受拖放
+                dragEvent.acceptTransferModes(TransferMode.COPY);
+                dragEvent.consume();
+            }
+        });
     }
 
 }

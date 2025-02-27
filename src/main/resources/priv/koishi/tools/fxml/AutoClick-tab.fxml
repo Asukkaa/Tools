@@ -57,6 +57,7 @@
                         <String fx:value="鼠标中键点击"/>
                         <String fx:value="鼠标前侧键点击"/>
                         <String fx:value="鼠标后侧键点击"/>
+                        <String fx:value="鼠标仅移动"/>
                     </FXCollections>
                 </items>
                 <value>
@@ -96,9 +97,9 @@
             <Label fx:id="dataNumber_Click" alignment="CENTER_RIGHT" prefHeight="20" text="列表为空"/>
         </HBox>
 
-        <TableView fx:id="tableView_Click">
+        <TableView fx:id="tableView_Click" onDragDropped="#handleDrop" onDragOver="#acceptDrop">
             <placeholder>
-                <Label text="设置操作流程后点击 添加操作流程 将添加到表格内"/>
+                <Label text="拖拽操作流程文件或点击导入操作流程即可追加操作流程，设置操作流程后点击添加操作流程即可新增自定义流程"/>
             </placeholder>
 
             <columns>
