@@ -83,7 +83,7 @@ public class MainApplication extends Application {
         stage.setOnCloseRequest(event -> {
             try {
                 saveLastConfig(stage);
-                // 程序退出时注销全局键盘监听器
+                // 程序退出时注销全局输入监听器
                 GlobalScreen.unregisterNativeHook();
             } catch (IOException | NativeHookException e) {
                 throw new RuntimeException(e);

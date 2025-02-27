@@ -7,7 +7,11 @@ import com.github.kwhat.jnativehook.GlobalScreen;
 import com.github.kwhat.jnativehook.NativeHookException;
 import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
 import com.github.kwhat.jnativehook.keyboard.NativeKeyListener;
+import com.github.kwhat.jnativehook.mouse.NativeMouseEvent;
+import com.github.kwhat.jnativehook.mouse.NativeMouseListener;
 import javafx.animation.AnimationTimer;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -32,6 +36,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.Duration;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import priv.koishi.tools.Bean.AutoClickTaskBean;
@@ -48,6 +53,7 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.Service.AutoClickService.autoClick;
@@ -82,6 +88,11 @@ public class AutoClickController extends CommonProperties {
     private static String defaultOutFileName;
 
     /**
+     * 默认录制准备时间
+     */
+    private static String defaultPreparationTime;
+
+    /**
      * 线程池
      */
     private final CommonThreadPoolExecutor commonThreadPoolExecutor = new CommonThreadPoolExecutor();
@@ -111,6 +122,36 @@ public class AutoClickController extends CommonProperties {
      */
     private Label floatingLabel;
 
+    /**
+     * 顶部浮窗鼠标位置信息栏
+     */
+    private Label floatingMousePosition;
+
+    /**
+     * 正在录制标识
+     */
+    boolean recordClicking;
+
+    /**
+     * 录制时间线
+     */
+    private Timeline timeline;
+
+    /**
+     * 录制开始时间
+     */
+    private long recordingStartTime;
+
+    /**
+     * 全局鼠标监听器
+     */
+    private NativeMouseListener nativeMouseListener;
+
+    /**
+     * 全局键盘监听器
+     */
+    private NativeKeyListener nativeKeyListener;
+
     @FXML
     private AnchorPane anchorPane_Click;
 
@@ -133,10 +174,10 @@ public class AutoClickController extends CommonProperties {
     private Label mousePosition_Click, dataNumber_Click, log_Click, tip_Click, cancelTip_Click, outPath_Click;
 
     @FXML
-    private Button clearButton_Click, runClick_Click, clickTest_Click, addPosition_Click, loadAutoClick_Click, exportAutoClick_Click, addOutPath_Click;
+    private Button clearButton_Click, runClick_Click, clickTest_Click, addPosition_Click, loadAutoClick_Click, exportAutoClick_Click, addOutPath_Click, recordClick_Click;
 
     @FXML
-    private TextField mouseStartX_Click, mouseStartY_Click, mouseEndX_Click, mouseEndY_Click, wait_Click, loopTime_Click, clickNumBer_Click, timeClick_Click, clickName_Click, interval_Click, outFileName_Click;
+    private TextField mouseStartX_Click, mouseStartY_Click, mouseEndX_Click, mouseEndY_Click, wait_Click, loopTime_Click, clickNumBer_Click, timeClick_Click, clickName_Click, interval_Click, outFileName_Click, preparationTime_Click;
 
     @FXML
     private TableView<ClickPositionBean> tableView_Click;
@@ -241,6 +282,8 @@ public class AutoClickController extends CommonProperties {
             CheckBox showWindow = (CheckBox) scene.lookup("#showWindow_Click");
             String lastShowWindowValue = showWindow.isSelected() ? activation : unActivation;
             prop.put(key_lastShowWindow, lastShowWindowValue);
+            TextField preparationTime = (TextField) scene.lookup("#preparationTime_Click");
+            prop.put(key_lastPreparationTime, preparationTime.getText());
             OutputStream output = checkRunningOutputStream(configFile_Click);
             prop.store(output, null);
             input.close();
@@ -275,6 +318,7 @@ public class AutoClickController extends CommonProperties {
             setControlLastConfig(clickNumBer_Click, prop, key_lastClickNumBer, false, null);
             setControlLastConfig(outFileName_Click, prop, key_lastOutFileName, false, null);
             setControlLastConfig(openDirectory_Click, prop, key_lastOpenDirectory, false, null);
+            setControlLastConfig(preparationTime_Click, prop, key_lastPreparationTime, false, null);
         }
         input.close();
     }
@@ -291,6 +335,7 @@ public class AutoClickController extends CommonProperties {
         inFilePath = prop.getProperty(key_inFilePath);
         outFilePath = prop.getProperty(key_outFilePath);
         defaultOutFileName = prop.getProperty(key_defaultOutFileName);
+        defaultPreparationTime = prop.getProperty(key_defaultPreparationTime);
         input.close();
     }
 
@@ -302,7 +347,9 @@ public class AutoClickController extends CommonProperties {
         Point mousePoint = MouseInfo.getPointerInfo().getLocation();
         double x = mousePoint.getX();
         double y = mousePoint.getY();
-        mousePosition_Click.setText("当前鼠标位置为： X: " + x + " Y: " + y);
+        String text = "当前鼠标位置为： X: " + x + " Y: " + y;
+        floatingMousePosition.setText(text);
+        mousePosition_Click.setText(text);
     }
 
     /**
@@ -356,7 +403,7 @@ public class AutoClickController extends CommonProperties {
      */
     private void initFloatingWindow() {
         double width = 550;
-        double height = 70;
+        double height = 80;
         // 创建一个矩形作为浮窗的内容
         Rectangle rectangle = new Rectangle(width, height);
         // 设置透明度
@@ -366,8 +413,10 @@ public class AutoClickController extends CommonProperties {
         Color labelTextFill = Color.RED;
         floatingLabel = new Label(text_cancelTask);
         floatingLabel.setTextFill(labelTextFill);
+        floatingMousePosition = new Label();
+        floatingMousePosition.setTextFill(labelTextFill);
         VBox vBox = new VBox();
-        vBox.getChildren().addAll(floatingLabel);
+        vBox.getChildren().addAll(floatingMousePosition, floatingLabel);
         root.getChildren().addAll(rectangle, vBox);
         Scene scene = new Scene(root, Color.TRANSPARENT);
         vBox.setMouseTransparent(true);
@@ -425,6 +474,8 @@ public class AutoClickController extends CommonProperties {
         if (hideWindow_Click.isSelected()) {
             stage.setIconified(true);
         }
+        // 开启键盘监听
+        startNativeKeyListener();
         // 创建一个Robot实例
         Robot robot = new Robot();
         autoClickTask = autoClick(taskBean, robot);
@@ -440,18 +491,24 @@ public class AutoClickController extends CommonProperties {
                 stage.setIconified(false);
                 stage.requestFocus();
             }
+            // 移除键盘监听器
+            stopNativeKeyListener();
         });
         autoClickTask.setOnFailed(event -> {
             taskUnbind(taskBean);
             massageLabel.setTextFill(Color.RED);
             massageLabel.setText("出现错误，任务终止");
             hideFloatingWindow();
+            // 移除键盘监听器
+            stopNativeKeyListener();
         });
         autoClickTask.setOnCancelled(event -> {
             taskUnbind(taskBean);
             massageLabel.setTextFill(Color.RED);
             massageLabel.setText("任务已取消");
             hideFloatingWindow();
+            // 移除键盘监听器
+            stopNativeKeyListener();
         });
         // 使用新线程启动
         executorService.execute(autoClickTask);
@@ -547,6 +604,8 @@ public class AutoClickController extends CommonProperties {
         integerRangeTextField(mouseStartY_Click, 0, null, tip_mouseStartY);
         // 限制点击次数文本输入框内容
         integerRangeTextField(clickNumBer_Click, 0, null, tip_clickNumBer);
+        // 限制准备时间文本输入框内容
+        integerRangeTextField(preparationTime_Click, 0, null, tip_preparationTime + defaultPreparationTime);
     }
 
     /**
@@ -571,11 +630,33 @@ public class AutoClickController extends CommonProperties {
         addToolTip(tip_clickNumBer, clickNumBer_Click);
         addToolTip(tip_mouseStartX, mouseStartX_Click);
         addToolTip(tip_mouseStartY, mouseStartY_Click);
+        addToolTip(tip_recordClick, recordClick_Click);
         addToolTip(tip_outAutoClickPath, addOutPath_Click);
         addToolTip(tip_openDirectory, openDirectory_Click);
         addToolTip(tip_loadAutoClick, loadAutoClick_Click);
         addToolTip(tip_exportAutoClick, exportAutoClick_Click);
         addToolTip(tip_autoClickFileName + defaultOutFileName, outFileName_Click);
+        addToolTip(tip_preparationTime + defaultPreparationTime, preparationTime_Click);
+    }
+
+    /**
+     * 向列表添加数据
+     *
+     * @param clickPositionBeans 自动流程集合
+     */
+    private void addData(List<ClickPositionBean> clickPositionBeans) {
+        ObservableList<ClickPositionBean> tableViewItems = tableView_Click.getItems();
+        tableViewItems.addAll(clickPositionBeans);
+        // 自动填充javafx表格
+        autoBuildTableViewData(tableView_Click, tableViewItems, tabId);
+        // 同步表格数据量
+        dataNumber_Click.setText(text_allHave + (tableViewItems.size() + 1) + text_process);
+        // 表格设置为可编辑
+        makeCellCanEdit();
+        // 设置列表通过拖拽排序行
+        tableViewDragRow(tableView_Click);
+        // 构建右键菜单
+        buildContextMenu();
     }
 
     /**
@@ -591,55 +672,156 @@ public class AutoClickController extends CommonProperties {
                     || !isInIntegerRange(clickPositionBean.getClickTime(), 0, null) || !isInIntegerRange(clickPositionBean.getClickNum(), 0, null)
                     || !isInIntegerRange(clickPositionBean.getClickInterval(), 0, null) || !isInIntegerRange(clickPositionBean.getWaitTime(), 0, null)
                     || !clickTypeMap.containsKey(clickPositionBean.getType())) {
-                throw new IOException("导入文件缺少关键数据");
+                throw new IOException(text_LackKeyData);
             }
         }
-        List<ClickPositionBean> tableViewItems = tableView_Click.getItems();
-        tableViewItems.addAll(clickPositionBeans);
-        // 自动填充javafx表格
-        autoBuildTableViewData(tableView_Click, tableViewItems, tabId);
-        // 同步表格数据量
-        dataNumber_Click.setText(text_allHave + tableViewItems.size() + text_process);
-        // 表格设置为可编辑
-        makeCellCanEdit();
-        // 设置列表通过拖拽排序行
-        tableViewDragRow(tableView_Click);
-        // 构建右键菜单
-        buildContextMenu();
+        // 向列表添加数据
+        addData(clickPositionBeans);
         updateLabel(log_Click, text_loadSuccess + inFilePath);
         log_Click.setTextFill(Color.GREEN);
     }
 
     /**
-     * 注册全局按键监听器
+     * 开启全局键盘监听
      */
-    private void getGlobalScreen() {
-        // 注册全局键盘监听器
-        try {
-            GlobalScreen.registerNativeHook();
-        } catch (NativeHookException e) {
-            e.printStackTrace();
-        }
-        GlobalScreen.addNativeKeyListener(new NativeKeyListener() {
+    private void startNativeKeyListener() {
+        stopNativeKeyListener();
+        // 键盘监听器
+        nativeKeyListener = new NativeKeyListener() {
             @Override
             public void nativeKeyPressed(NativeKeyEvent e) {
-                // 检测快捷键 esc
-                if (e.getKeyCode() == NativeKeyEvent.VC_ESCAPE) {
-                    Platform.runLater(() -> {
-                        if (autoClickTask != null && autoClickTask.isRunning()) {
-                            autoClickTask.cancel();
+                Platform.runLater(() -> {
+                    // 仅在自动操作与录制情况下才监听键盘
+                    if (autoClickTask != null && autoClickTask.isRunning() || timeline != null) {
+                        // 检测快捷键 esc
+                        if (e.getKeyCode() == NativeKeyEvent.VC_ESCAPE) {
+                            // 停止自动操作
+                            if (autoClickTask != null && autoClickTask.isRunning()) {
+                                autoClickTask.cancel();
+                            }
+                            // 停止录制计时
+                            if (timeline != null) {
+                                timeline.stop();
+                            }
+                            // 移除鼠标监听器
+                            stopNativeMouseListener();
+                            hideFloatingWindow();
+                            recordClicking = false;
                         }
+                    }
+                });
+            }
+        };
+        GlobalScreen.addNativeKeyListener(nativeKeyListener);
+    }
+
+    /**
+     * 移除键盘监听器
+     */
+    private void stopNativeKeyListener() {
+        if (nativeKeyListener != null) {
+            GlobalScreen.removeNativeKeyListener(nativeKeyListener);
+            nativeKeyListener = null;
+        }
+    }
+
+    /**
+     * 开启全局鼠标监听
+     */
+    private void startNativeMouseListener() {
+        stopNativeMouseListener();
+        // 鼠标监听器
+        nativeMouseListener = new NativeMouseListener() {
+            // 记录点击时刻
+            private long pressTime;
+            // 记录松开时刻
+            private long releasedTime;
+            // 记录鼠标按钮
+            private int pressButton;
+            // 记录次数
+            private int clickNum = 0;
+            // 首次点击标记
+            private boolean isFirstClick = true;
+            // 记录点击信息
+            ClickPositionBean clickBean;
+
+            // 监听鼠标按下
+            @Override
+            public void nativeMousePressed(NativeMouseEvent e) {
+                if (recordClicking) {
+                    // 记录按下时刻的时间戳和坐标
+                    pressTime = System.currentTimeMillis();
+                    long waitTime;
+                    if (isFirstClick) {
+                        waitTime = pressTime - recordingStartTime;
+                    } else {
+                        waitTime = pressTime - releasedTime;
+                    }
+                    clickNum++;
+                    pressButton = e.getButton();
+                    Point mousePoint = MouseInfo.getPointerInfo().getLocation();
+                    clickBean = new ClickPositionBean();
+                    clickBean.setStartX(String.valueOf(mousePoint.getX()))
+                            .setStartY(String.valueOf(mousePoint.getY()))
+                            .setUuid(UUID.randomUUID().toString())
+                            .setType(typeClickMap.get(pressButton))
+                            .setWaitTime(String.valueOf(waitTime))
+                            .setName("录制操作" + clickNum);
+                    Platform.runLater(() -> {
+                        log_Click.setTextFill(Color.BLUE);
+                        log_Click.setText("已记录 " + typeClickMap.get(pressButton) + " 点击 (" + clickBean.getStartX() + "," + clickBean.getStartY() + ")");
                     });
                 }
             }
-        });
+
+            // 监听鼠标松开
+            @Override
+            public void nativeMouseReleased(NativeMouseEvent e) {
+                if (recordClicking && pressButton == e.getButton()) {
+                    isFirstClick = false;
+                    releasedTime = System.currentTimeMillis();
+                    // 计算点击持续时间（毫秒）
+                    long duration = releasedTime - pressTime;
+                    Point mousePoint = MouseInfo.getPointerInfo().getLocation();
+                    // 创建点击步骤对象
+                    clickBean.setEndX(String.valueOf(mousePoint.getX()))
+                            .setEndY(String.valueOf(mousePoint.getY()))
+                            .setClickTime(String.valueOf(duration))
+                            .setClickInterval("0")
+                            .setClickNum("1");
+                    Platform.runLater(() -> {
+                        // 添加至表格
+                        List<ClickPositionBean> clickPositionBeans = new ArrayList<>();
+                        clickPositionBeans.add(clickBean);
+                        addData(clickPositionBeans);
+                        // 日志反馈
+                        log_Click.setTextFill(Color.BLUE);
+                        log_Click.setText("已记录 " + typeClickMap.get(pressButton) + " 松开 (" + clickBean.getEndX() + "," + clickBean.getEndY() + ")");
+                    });
+                }
+            }
+        };
+        GlobalScreen.addNativeMouseListener(nativeMouseListener);
+    }
+
+    /**
+     * 移除鼠标监听器
+     */
+    private void stopNativeMouseListener() {
+        if (nativeMouseListener != null) {
+            GlobalScreen.removeNativeMouseListener(nativeMouseListener);
+            nativeMouseListener = null;
+        }
     }
 
     /**
      * 页面初始化
+     *
+     * @throws IOException         配置文件读取失败
+     * @throws NativeHookException 注册全局输入监听器失败
      */
     @FXML
-    private void initialize() throws IOException {
+    private void initialize() throws IOException, NativeHookException {
         // 初始化浮窗
         initFloatingWindow();
         // 获取鼠标坐标监听器
@@ -650,12 +832,12 @@ public class AutoClickController extends CommonProperties {
         getConfig();
         // 设置鼠标悬停提示
         setToolTip();
-        // 设置初始配置值为上次配置值
-        setLastConfig();
         // 给输入框添加内容变化监听
         textFieldChangeListener();
-        // 注册全局按键监听器
-        getGlobalScreen();
+        // 设置初始配置值为上次配置值
+        setLastConfig();
+        // 注册全局输入监听器
+        GlobalScreen.registerNativeHook();
     }
 
     /**
@@ -703,17 +885,10 @@ public class AutoClickController extends CommonProperties {
         int tableViewItemSize = tableViewItems.size();
         // 获取点击步骤设置
         ClickPositionBean clickPositionBean = getClickSetting(tableViewItemSize);
-        tableViewItems.add(clickPositionBean);
-        // 自动填充javafx表格
-        autoBuildTableViewData(tableView_Click, tableViewItems, tabId);
-        // 同步表格数据量
-        dataNumber_Click.setText(text_allHave + (tableViewItemSize + 1) + text_process);
-        // 表格设置为可编辑
-        makeCellCanEdit();
-        // 设置列表通过拖拽排序行
-        tableViewDragRow(tableView_Click);
-        // 构建右键菜单
-        buildContextMenu();
+        List<ClickPositionBean> clickPositionBeans = new ArrayList<>();
+        clickPositionBeans.add(clickPositionBean);
+        // 向列表添加数据
+        addData(clickPositionBeans);
         // 初始化信息栏
         updateLabel(log_Click, "");
     }
@@ -792,7 +967,7 @@ public class AutoClickController extends CommonProperties {
      * @throws IOException 导入自动化流程文件内容格式不正确、导入文件缺少关键数据
      */
     @FXML
-    public void handleDrop(DragEvent dragEvent) throws IOException {
+    private void handleDrop(DragEvent dragEvent) throws IOException {
         List<File> files = dragEvent.getDragboard().getFiles();
         List<ClickPositionBean> clickPositionBeans = new ArrayList<>();
         for (File file : files) {
@@ -815,7 +990,7 @@ public class AutoClickController extends CommonProperties {
      * @param dragEvent 拖拽事件
      */
     @FXML
-    public void acceptDrop(DragEvent dragEvent) {
+    private void acceptDrop(DragEvent dragEvent) {
         List<File> files = dragEvent.getDragboard().getFiles();
         files.forEach(file -> {
             if (json.equals(getFileType(file))) {
@@ -824,6 +999,57 @@ public class AutoClickController extends CommonProperties {
                 dragEvent.consume();
             }
         });
+    }
+
+    /**
+     * 录制自动操作按钮
+     */
+    @FXML
+    private void recordClick() {
+        // 获取准备时间值
+        int preparationTimeValue = setDefaultIntValue(preparationTime_Click, Integer.parseInt(defaultPreparationTime), 0, null);
+        // 开启键盘监听
+        startNativeKeyListener();
+        // 设置浮窗文本显示准备时间
+        floatingLabel.setText(text_cancelTask + preparationTimeValue + " 秒后开始录制操作");
+        // 显示浮窗
+        showFloatingWindow();
+        timeline = new Timeline();
+        if (preparationTimeValue > 0) {
+            AtomicInteger preparationTime = new AtomicInteger(preparationTimeValue);
+            // 创建 Timeline 来实现倒计时
+            Timeline finalTimeline = timeline;
+            timeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
+                preparationTime.getAndDecrement();
+                if (preparationTime.get() > 0) {
+                    floatingLabel.setText(text_cancelTask + preparationTime + " 秒后开始录制操作");
+                } else {
+                    // 开始录制
+                    recordClicking = true;
+                    // 开启鼠标监听
+                    startNativeMouseListener();
+                    // 录制开始时间
+                    recordingStartTime = System.currentTimeMillis();
+                    // 停止 Timeline
+                    finalTimeline.stop();
+                    // 更新浮窗文本
+                    floatingLabel.setText(text_cancelTask + " 正在录制操作");
+                }
+            }));
+            // 设置 Timeline 的循环次数
+            timeline.setCycleCount(preparationTimeValue);
+            // 启动 Timeline
+            timeline.play();
+        } else {
+            // 开始录制
+            recordClicking = true;
+            // 开启鼠标监听
+            startNativeMouseListener();
+            // 录制开始时间
+            recordingStartTime = System.currentTimeMillis();
+            // 更新浮窗文本
+            floatingLabel.setText(text_cancelTask + " 正在录制操作");
+        }
     }
 
 }

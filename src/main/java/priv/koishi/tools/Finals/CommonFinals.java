@@ -1,5 +1,6 @@
 package priv.koishi.tools.Finals;
 
+import com.github.kwhat.jnativehook.mouse.NativeMouseEvent;
 import javafx.scene.input.MouseButton;
 import javafx.util.Duration;
 
@@ -163,6 +164,12 @@ public class CommonFinals {
     public static final String tip_hideWindow = "勾选后运行或测试自动操作前将会隐藏本程序的窗口";
 
     public static final String tip_showWindow = "勾选后运行或测试自动操作后将会弹出本程序的窗口";
+
+    public static final String tip_preparationTime = "在录制自动操作前将会等待的时间，只能填自然数，单位秒，不填默认为 ";
+
+    public static final String tip_recordClick = """
+            点击录制自动操作按钮将会等待设置的准备时间后开始录制自动操作
+            每次鼠标点击并松开为一个步骤，每次点击间隔为操作前等待时间""";
 
     public static final String tip_excelName = """
             不用填写文件拓展名，如果导出文件夹已经存在同名文件将会覆盖模板excel文件
@@ -343,6 +350,8 @@ public class CommonFinals {
     public static final String text_noAutoClickList = "列表中没有要导出的自动操作流程";
 
     public static final String text_noAutoClickToRun = "列表中没有要执行的操作";
+
+    public static final String text_LackKeyData = "导入文件缺少关键数据";
 
     public static final String xlsx = ".xlsx";
 
@@ -544,6 +553,8 @@ public class CommonFinals {
 
     public static final String key_lastShowWindow = "lastShowWindow";
 
+    public static final String key_lastPreparationTime = "lastPreparationTime";
+
     public static final String key_defaultOutFileName = "defaultOutFileName";
 
     public static final String key_defaultSheetName = "defaultSheetName";
@@ -559,6 +570,8 @@ public class CommonFinals {
     public static final String key_defaultImgHeight = "defaultImgHeight";
 
     public static final String key_defaultStartNameNum = "defaultStartNameNum";
+
+    public static final String key_defaultPreparationTime = "defaultPreparationTime";
 
     /**
      * excel插入图片功能配置文件路径
@@ -616,7 +629,7 @@ public class CommonFinals {
     public static final Duration showDuration = Duration.seconds(6000000);
 
     /**
-     * 自动操作的操作类型选项对应的鼠标行为
+     * 自动操作的操作类型选项对应的鼠标行为（操作用）
      */
     public static final Map<String, MouseButton> clickTypeMap = new HashMap<>();
 
@@ -627,6 +640,19 @@ public class CommonFinals {
         clickTypeMap.put("鼠标前侧键点击", MouseButton.FORWARD);
         clickTypeMap.put("鼠标后侧键点击", MouseButton.BACK);
         clickTypeMap.put("鼠标仅移动", MouseButton.NONE);
+    }
+
+    /**
+     * 自动操作的操作类型选项对应的鼠标行为（录制用）
+     */
+    public static final Map<Integer, String> typeClickMap = new HashMap<>();
+
+    static {
+        typeClickMap.put(NativeMouseEvent.BUTTON1, "鼠标左键点击");
+        typeClickMap.put(NativeMouseEvent.BUTTON2, "鼠标右键点击");
+        typeClickMap.put(NativeMouseEvent.BUTTON3, "鼠标中键点击");
+        typeClickMap.put(NativeMouseEvent.BUTTON4, "鼠标后侧键点击");
+        typeClickMap.put(NativeMouseEvent.BUTTON5, "鼠标前侧键点击");
     }
 
 }

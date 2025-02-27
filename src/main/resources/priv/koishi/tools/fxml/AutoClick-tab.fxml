@@ -94,6 +94,9 @@
             <Button fx:id="exportAutoClick_Click" onAction="#exportAutoClick" style="-fx-cursor: hand" text="导出操作流程"/>
             <Button fx:id="clearButton_Click" onAction="#removeAll" style="-fx-cursor: hand" text="清空操作列表"/>
             <Button fx:id="runClick_Click" onAction="#runClick" style="-fx-cursor: hand" text="运行自动操作"/>
+            <Button fx:id="recordClick_Click" onAction="#recordClick" style="-fx-cursor: hand" text="录制自动操作"/>
+            <Label text="录制自动操作前准备时间："/>
+            <TextField fx:id="preparationTime_Click" prefWidth="50"/>
             <Label fx:id="dataNumber_Click" alignment="CENTER_RIGHT" prefHeight="20" text="列表为空"/>
         </HBox>
 
