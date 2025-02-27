@@ -353,6 +353,8 @@ public class CommonFinals {
 
     public static final String text_LackKeyData = "导入文件缺少关键数据";
 
+    public static final String text_step = "步骤 ";
+
     public static final String xlsx = ".xlsx";
 
     public static final String xls = ".xls";

@@ -183,7 +183,7 @@ public class AutoClickController extends CommonProperties {
     private TableView<ClickPositionBean> tableView_Click;
 
     @FXML
-    public TableColumn<ClickPositionBean, String> name_Click, startX_Click, startY_Click, endX_Click, endY_Click, clickTime_Click, clickNum_Click, clickInterval_Click, waitTime_Click, type_Click;
+    private TableColumn<ClickPositionBean, String> name_Click, startX_Click, startY_Click, endX_Click, endY_Click, clickTime_Click, clickNum_Click, clickInterval_Click, waitTime_Click, type_Click;
 
     /**
      * 组件自适应宽高
@@ -569,9 +569,9 @@ public class AutoClickController extends CommonProperties {
         int startY = setDefaultIntValue(mouseStartY_Click, 0, 0, null);
         clickPositionBean.setWaitTime(String.valueOf(setDefaultIntValue(wait_Click, 0, 0, null)))
                 .setClickInterval(String.valueOf(setDefaultIntValue(interval_Click, 0, 0, null)))
+                .setName(setDefaultStrValue(clickName_Click, text_step + (tableViewItemSize + 1) + " (添加)"))
                 .setClickNum(String.valueOf(setDefaultIntValue(clickNumBer_Click, 1, 0, null)))
                 .setClickTime(String.valueOf(setDefaultIntValue(timeClick_Click, 0, 0, null)))
-                .setName(setDefaultStrValue(clickName_Click, "步骤" + (tableViewItemSize + 1)))
                 .setEndX(String.valueOf(setDefaultIntValue(mouseEndX_Click, startX, 0, null)))
                 .setEndY(String.valueOf(setDefaultIntValue(mouseEndY_Click, startY, 0, null)))
                 .setType(clickType_Click.getValue())
@@ -738,8 +738,6 @@ public class AutoClickController extends CommonProperties {
             private long releasedTime;
             // 记录鼠标按钮
             private int pressButton;
-            // 记录次数
-            private int clickNum = 0;
             // 首次点击标记
             private boolean isFirstClick = true;
             // 记录点击信息
@@ -757,7 +755,7 @@ public class AutoClickController extends CommonProperties {
                     } else {
                         waitTime = pressTime - releasedTime;
                     }
-                    clickNum++;
+                    int dataSize = tableView_Click.getItems().size() + 1;
                     pressButton = e.getButton();
                     Point mousePoint = MouseInfo.getPointerInfo().getLocation();
                     clickBean = new ClickPositionBean();
@@ -766,7 +764,7 @@ public class AutoClickController extends CommonProperties {
                             .setUuid(UUID.randomUUID().toString())
                             .setType(typeClickMap.get(pressButton))
                             .setWaitTime(String.valueOf(waitTime))
-                            .setName("录制操作" + clickNum);
+                            .setName(text_step + dataSize + " (录制)");
                     Platform.runLater(() -> {
                         log_Click.setTextFill(Color.BLUE);
                         log_Click.setText("已记录 " + typeClickMap.get(pressButton) + " 点击 (" + clickBean.getStartX() + "," + clickBean.getStartY() + ")");
