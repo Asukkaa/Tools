@@ -11,6 +11,7 @@ import priv.koishi.tools.Bean.ClickPositionBean;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
+import static javafx.scene.input.MouseButton.NONE;
 import static javafx.scene.input.MouseButton.PRIMARY;
 import static priv.koishi.tools.Finals.CommonFinals.*;
 
@@ -144,7 +145,9 @@ public class AutoClickService {
             CountDownLatch latch = new CountDownLatch(1);
             Platform.runLater(() -> {
                 robot.mouseMove(startX, startY);
-                robot.mousePress(mouseButton);
+                if (mouseButton != NONE) {
+                    robot.mousePress(mouseButton);
+                }
                 // 计算鼠标移动的轨迹
                 double deltaX = endX - startX;
                 double deltaY = endY - startY;
@@ -162,7 +165,9 @@ public class AutoClickService {
                         break;
                     }
                 }
-                robot.mouseRelease(mouseButton);
+                if (mouseButton != NONE) {
+                    robot.mouseRelease(mouseButton);
+                }
                 latch.countDown();
             });
             // 等待任务完成
