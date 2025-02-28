@@ -779,6 +779,16 @@ public class UiUtils {
      */
     public static void changeDisableControls(TaskBean<?> taskBean, boolean disable) {
         List<Control> disableControls = taskBean.getDisableControls();
+        changeDisableControls(disableControls, disable);
+    }
+
+    /**
+     * 改变要防重复点击的组件状态
+     *
+     * @param disableControls 防重复点击组件列表
+     * @param disable  可点击状态，true设置为不可点击，false设置为可点击
+     */
+    public static void changeDisableControls(List<Control> disableControls, boolean disable) {
         if (CollectionUtils.isNotEmpty(disableControls)) {
             disableControls.forEach(dc -> dc.setDisable(disable));
         }
