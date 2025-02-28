@@ -358,8 +358,8 @@ public class AutoClickController extends CommonProperties {
     private void getNowMousePosition() {
         // 使用java.awt.MouseInfo获取鼠标的全局位置
         Point mousePoint = MouseInfo.getPointerInfo().getLocation();
-        double x = mousePoint.getX();
-        double y = mousePoint.getY();
+        int x = (int) mousePoint.getX();
+        int y = (int) mousePoint.getY();
         String text = "当前鼠标位置为： X: " + x + " Y: " + y;
         floatingMousePosition.setText(text);
         mousePosition_Click.setText(text);
@@ -422,7 +422,7 @@ public class AutoClickController extends CommonProperties {
         // 设置透明度
         rectangle.setOpacity(0.0);
         StackPane root = new StackPane();
-        root.setStyle("-fx-background-color: rgba(255,255,255,0)");
+        root.setStyle("-fx-background-color: transparent");
         Color labelTextFill = Color.WHITE;
         floatingLabel = new Label(text_cancelTask);
         floatingLabel.setTextFill(labelTextFill);
@@ -684,7 +684,7 @@ public class AutoClickController extends CommonProperties {
         // 自动填充javafx表格
         autoBuildTableViewData(tableView_Click, tableViewItems, tabId);
         // 同步表格数据量
-        dataNumber_Click.setText(text_allHave + (tableViewItems.size() + 1) + text_process);
+        dataNumber_Click.setText(text_allHave + tableViewItems.size() + text_process);
         // 表格设置为可编辑
         makeCellCanEdit();
         // 设置列表通过拖拽排序行
@@ -812,13 +812,15 @@ public class AutoClickController extends CommonProperties {
                     int dataSize = tableView_Click.getItems().size() + 1;
                     pressButton = e.getButton();
                     Point mousePoint = MouseInfo.getPointerInfo().getLocation();
+                    int startX = (int) mousePoint.getX();
+                    int startY = (int) mousePoint.getY();
                     clickBean = new ClickPositionBean();
                     clickBean.setName(text_step + dataSize + text_isRecord)
-                            .setStartX(String.valueOf(mousePoint.getX()))
-                            .setStartY(String.valueOf(mousePoint.getY()))
                             .setUuid(UUID.randomUUID().toString())
                             .setType(typeClickMap.get(pressButton))
-                            .setWaitTime(String.valueOf(waitTime));
+                            .setWaitTime(String.valueOf(waitTime))
+                            .setStartX(String.valueOf(startX))
+                            .setStartY(String.valueOf(startY));
                     Platform.runLater(() -> {
                         log_Click.setTextFill(Color.BLUE);
                         String log = text_recorded + typeClickMap.get(pressButton) + " 点击 (" + clickBean.getStartX() + "," + clickBean.getStartY() + ")";
@@ -837,10 +839,12 @@ public class AutoClickController extends CommonProperties {
                     // 计算点击持续时间（毫秒）
                     long duration = releasedTime - pressTime;
                     Point mousePoint = MouseInfo.getPointerInfo().getLocation();
+                    int endX = (int) mousePoint.getX();
+                    int endY = (int) mousePoint.getY();
                     // 创建点击步骤对象
-                    clickBean.setEndX(String.valueOf(mousePoint.getX()))
-                            .setEndY(String.valueOf(mousePoint.getY()))
-                            .setClickTime(String.valueOf(duration))
+                    clickBean.setClickTime(String.valueOf(duration))
+                            .setEndX(String.valueOf(endX))
+                            .setEndY(String.valueOf(endY))
                             .setClickInterval("0")
                             .setClickNum("1");
                     Platform.runLater(() -> {
