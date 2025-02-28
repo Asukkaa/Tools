@@ -841,7 +841,7 @@ public class ImgToExcelController extends CommonProperties {
                 .setCancelButton(cancel_Img)
                 .setMassageLabel(log_Img);
         taskUnbind(taskBean);
-        log_Img.setText("任务已取消");
+        log_Img.setText(text_taskCancelled);
         log_Img.setTextFill(Color.RED);
     }
 

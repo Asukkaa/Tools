@@ -161,9 +161,13 @@ public class CommonFinals {
 
     public static final String tip_exportAutoClick = "点击即可按照设置导出文件夹与文件名导出列表中的操作流程";
 
-    public static final String tip_hideWindow = "勾选后运行或测试自动操作前将会隐藏本程序的窗口";
+    public static final String tip_hideWindowRun = "勾选后运行或测试自动操作开始前将会隐藏本程序的窗口";
 
-    public static final String tip_showWindow = "勾选后运行或测试自动操作后将会弹出本程序的窗口";
+    public static final String tip_showWindowRun = "勾选后运行或测试自动操作结束后将会弹出本程序的窗口";
+
+    public static final String tip_hideWindowRecord = "勾选后录制自动操作开始前将会隐藏本程序的窗口";
+
+    public static final String tip_showWindowRecord = "勾选后录制自动操作结束后将会弹出本程序的窗口";
 
     public static final String tip_preparationTime = "在录制自动操作前将会等待的时间，只能填自然数，单位秒，不填默认为 ";
 
@@ -354,6 +358,22 @@ public class CommonFinals {
     public static final String text_LackKeyData = "导入文件缺少关键数据";
 
     public static final String text_step = "步骤 ";
+
+    public static final String text_recordClicking = " 正在录制操作";
+
+    public static final String text_preparation = " 秒后开始录制操作";
+
+    public static final String text_recorded = "已记录 ";
+
+    public static final String text_taskFailed = "出现错误，任务终止";
+
+    public static final String text_taskCancelled = "任务已取消";
+
+    public static final String text_taskFinished = "所有操作都以执行完毕";
+
+    public static final String text_isAdd = " (添加)";
+
+    public static final String text_isRecord = " (录制)";
 
     public static final String xlsx = ".xlsx";
 
@@ -551,9 +571,13 @@ public class CommonFinals {
 
     public static final String key_lastOutFileName = "lastOutFileName";
 
-    public static final String key_lastHideWindow = "lastHideWindow";
+    public static final String key_lastHideWindowRun = "lastHideWindowRun";
 
-    public static final String key_lastShowWindow = "lastShowWindow";
+    public static final String key_lastShowWindowRun = "lastShowWindowRun";
+
+    public static final String key_lastHideWindowRecord = "lastHideWindowRecord";
+
+    public static final String key_lastShowWindowRecord = "lastShowWindowRecord";
 
     public static final String key_lastPreparationTime = "lastPreparationTime";
 
