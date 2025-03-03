@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 
 import static priv.koishi.tools.Finals.CommonFinals.text_saveSuccess;
+import static priv.koishi.tools.Finals.CommonFinals.text_taskFailed;
 import static priv.koishi.tools.Utils.ExcelUtils.saveExcel;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.changeDisableControls;
@@ -63,10 +64,12 @@ public class TaskUtils {
      * @param openFile        打开文件选项
      * @param executorService 线程池
      * @throws RuntimeException io异常
+     * @return null
      */
-    public static void saveExcelOnSucceeded(ExcelConfig excelConfig, TaskBean<?> taskBean, Task<Workbook> buildExcelTask,
-                                            CheckBox openDirectory, CheckBox openFile, ExecutorService executorService) {
+    public static Task<Workbook> saveExcelOnSucceeded(ExcelConfig excelConfig, TaskBean<?> taskBean, Task<Workbook> buildExcelTask,
+                                                      CheckBox openDirectory, CheckBox openFile, ExecutorService executorService) {
         bindingProgressBarTask(buildExcelTask, taskBean);
+        Label massageLabel = taskBean.getMassageLabel();
         buildExcelTask.setOnSucceeded(event -> {
             Workbook workbook = buildExcelTask.getValue();
             Task<String> saveExcelTask = saveExcelTask(excelConfig, workbook);
@@ -85,12 +88,17 @@ public class TaskUtils {
                 } finally {
                     taskUnbind(taskBean);
                 }
-                taskBean.getMassageLabel().setText(text_saveSuccess + excelPath);
-                taskBean.getMassageLabel().setTextFill(Color.GREEN);
+                massageLabel.setTextFill(Color.GREEN);
+                massageLabel.setText(text_saveSuccess + excelPath);
             });
-            executorService.execute(saveExcelTask);
+            if (!saveExcelTask.isRunning()) {
+                executorService.execute(saveExcelTask);
+            }
         });
-        executorService.execute(buildExcelTask);
+        if (!buildExcelTask.isRunning()) {
+            executorService.execute(buildExcelTask);
+        }
+        return null;
     }
 
     /**
@@ -102,7 +110,7 @@ public class TaskUtils {
      */
     public static void throwTaskException(Task<?> task, TaskBean<?> taskBean) {
         task.setOnFailed(event -> {
-            taskUnbind(taskBean);
+            taskNotSuccess(taskBean, text_taskFailed);
             // 获取抛出的异常
             Throwable ex = task.getException();
             throw new RuntimeException(ex);
@@ -151,6 +159,19 @@ public class TaskUtils {
                 return saveExcel(workbook, excelConfig);
             }
         };
+    }
+
+    /**
+     * 线程没有完成统一处理方法
+     *
+     * @param taskBean 线程任务所需参数
+     * @param log      要显示的日志
+     */
+    public static void taskNotSuccess(TaskBean<?> taskBean, String log) {
+        taskUnbind(taskBean);
+        Label massageLabel = taskBean.getMassageLabel();
+        massageLabel.setTextFill(Color.RED);
+        massageLabel.setText(log);
     }
 
 }

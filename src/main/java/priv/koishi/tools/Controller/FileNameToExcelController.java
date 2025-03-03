@@ -33,16 +33,15 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 
+import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.Service.FileNameToExcelService.buildFileNameExcel;
 import static priv.koishi.tools.Service.ReadDataService.readFile;
-import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningOutputStream;
 import static priv.koishi.tools.Utils.FileUtils.getFileType;
 import static priv.koishi.tools.Utils.FileUtils.readAllFiles;
 import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
-import static priv.koishi.tools.Utils.UiUtils.nodeRightAlignment;
 
 /**
  * 获取文件夹下的文件信息页面控制器
@@ -102,6 +101,16 @@ public class FileNameToExcelController extends CommonProperties {
      * 线程池实例
      */
     private final ExecutorService executorService = commonThreadPoolExecutor.createNewThreadPool();
+
+    /**
+     * 读取文件线程
+     */
+    private Task<Void> readFileTask;
+
+    /**
+     * 构建excel线程
+     */
+    private Task<Workbook> buildExcelTask;
 
     @FXML
     private AnchorPane anchorPane_Name;
@@ -246,37 +255,42 @@ public class FileNameToExcelController extends CommonProperties {
      * @throws Exception 未查询到符合条件的数据
      */
     private void addInData(List<File> inFileList) throws Exception {
-        removeAll();
-        if (inFileList.isEmpty()) {
-            throw new Exception(text_selectNull);
+        if (readFileTask == null) {
+            removeAll();
+            if (inFileList.isEmpty()) {
+                throw new Exception(text_selectNull);
+            }
+            Scene scene = anchorPane_Name.getScene();
+            ChoiceBox<?> sort = (ChoiceBox<?>) scene.lookup("#sort_Set");
+            String sortValue = (String) sort.getValue();
+            CheckBox reverseSort = (CheckBox) scene.lookup("#reverseSort_Set");
+            TaskBean<FileBean> taskBean = new TaskBean<>();
+            taskBean.setShowFileType(showFileType_Name.isSelected())
+                    .setReverseSort(reverseSort.isSelected())
+                    .setComparatorTableColumn(size_Name)
+                    .setDisableControls(disableControls)
+                    .setProgressBar(progressBar_Name)
+                    .setMassageLabel(fileNumber_Name)
+                    .setTableView(tableView_Name)
+                    .setInFileList(inFileList)
+                    .setSortType(sortValue)
+                    .setTabId(tabId);
+            // 获取Task任务
+            readFileTask = readFile(taskBean);
+            // 绑定带进度条的线程
+            bindingProgressBarTask(readFileTask, taskBean);
+            readFileTask.setOnSucceeded(event -> {
+                taskUnbind(taskBean);
+                // 设置列表通过拖拽排序行
+                tableViewDragRow(tableView_Name);
+                // 构建右键菜单
+                tableViewContextMenu(tableView_Name, fileNumber_Name, anchorPane_Name);
+                readFileTask = null;
+            });
+            if (!readFileTask.isRunning()) {
+                executorService.execute(readFileTask);
+            }
         }
-        Scene scene = anchorPane_Name.getScene();
-        ChoiceBox<?> sort = (ChoiceBox<?>) scene.lookup("#sort_Set");
-        String sortValue = (String) sort.getValue();
-        CheckBox reverseSort = (CheckBox) scene.lookup("#reverseSort_Set");
-        TaskBean<FileBean> taskBean = new TaskBean<>();
-        taskBean.setShowFileType(showFileType_Name.isSelected())
-                .setReverseSort(reverseSort.isSelected())
-                .setComparatorTableColumn(size_Name)
-                .setDisableControls(disableControls)
-                .setProgressBar(progressBar_Name)
-                .setMassageLabel(fileNumber_Name)
-                .setTableView(tableView_Name)
-                .setInFileList(inFileList)
-                .setSortType(sortValue)
-                .setTabId(tabId);
-        // 获取Task任务
-        Task<Void> readFileTask = readFile(taskBean);
-        // 绑定带进度条的线程
-        bindingProgressBarTask(readFileTask, taskBean);
-        readFileTask.setOnSucceeded(event -> {
-            taskUnbind(taskBean);
-            // 设置列表通过拖拽排序行
-            tableViewDragRow(tableView_Name);
-            // 构建右键菜单
-            tableViewContextMenu(tableView_Name, fileNumber_Name, anchorPane_Name);
-        });
-        executorService.execute(readFileTask);
     }
 
     /**
@@ -507,41 +521,45 @@ public class FileNameToExcelController extends CommonProperties {
      */
     @FXML
     private void exportAll() throws Exception {
-        updateLabel(log_Name, "");
-        String outFilePath = outPath_Name.getText();
-        ObservableList<FileBean> fileBeans = tableView_Name.getItems();
-        if (StringUtils.isEmpty(outFilePath)) {
-            throw new Exception(text_outPathNull);
+        if (buildExcelTask == null) {
+            updateLabel(log_Name, "");
+            String outFilePath = outPath_Name.getText();
+            ObservableList<FileBean> fileBeans = tableView_Name.getItems();
+            if (StringUtils.isEmpty(outFilePath)) {
+                throw new Exception(text_outPathNull);
+            }
+            if (CollectionUtils.isEmpty(fileBeans)) {
+                throw new Exception(text_fileListNull);
+            }
+            updateLabel(log_Name, "");
+            ExcelConfig excelConfig = new ExcelConfig();
+            excelConfig.setStartCellNum(setDefaultIntValue(startCell_Name, defaultStartCell, 0, null))
+                    .setStartRowNum(setDefaultIntValue(startRow_Name, 0, 0, null))
+                    .setOutName(setDefaultFileName(excelName_Name, defaultOutFileName))
+                    .setSheetName(setDefaultStrValue(sheetName_Name, defaultSheetName))
+                    .setExportFullList(exportFullList_Name.isSelected())
+                    .setOutExcelType(excelType_Name.getValue())
+                    .setExportTitle(exportTitle_Name.isSelected())
+                    .setInPath(excelPath_Name.getText())
+                    .setOutPath(outFilePath);
+            TaskBean<FileBean> taskBean = new TaskBean<>();
+            taskBean.setShowFileType(showFileType_Name.isSelected())
+                    .setDisableControls(disableControls)
+                    .setProgressBar(progressBar_Name)
+                    .setTableView(tableView_Name)
+                    .setMassageLabel(log_Name)
+                    .setBeanList(fileBeans)
+                    .setTabId(tabId);
+            // 获取Task任务
+            buildExcelTask = buildFileNameExcel(excelConfig, taskBean);
+            // 绑定带进度条的线程
+            bindingProgressBarTask(buildExcelTask, taskBean);
+            if (!buildExcelTask.isRunning()) {
+                executorService.execute(buildExcelTask);
+            }
+            // 线程成功后保存excel
+            buildExcelTask = saveExcelOnSucceeded(excelConfig, taskBean, buildExcelTask, openDirectory_Name, openFile_Name, executorService);
         }
-        if (CollectionUtils.isEmpty(fileBeans)) {
-            throw new Exception(text_fileListNull);
-        }
-        updateLabel(log_Name, "");
-        ExcelConfig excelConfig = new ExcelConfig();
-        excelConfig.setStartCellNum(setDefaultIntValue(startCell_Name, defaultStartCell, 0, null))
-                .setStartRowNum(setDefaultIntValue(startRow_Name, 0, 0, null))
-                .setOutName(setDefaultFileName(excelName_Name, defaultOutFileName))
-                .setSheetName(setDefaultStrValue(sheetName_Name, defaultSheetName))
-                .setExportFullList(exportFullList_Name.isSelected())
-                .setOutExcelType(excelType_Name.getValue())
-                .setExportTitle(exportTitle_Name.isSelected())
-                .setInPath(excelPath_Name.getText())
-                .setOutPath(outFilePath);
-        TaskBean<FileBean> taskBean = new TaskBean<>();
-        taskBean.setShowFileType(showFileType_Name.isSelected())
-                .setDisableControls(disableControls)
-                .setProgressBar(progressBar_Name)
-                .setTableView(tableView_Name)
-                .setMassageLabel(log_Name)
-                .setBeanList(fileBeans)
-                .setTabId(tabId);
-        // 获取Task任务
-        Task<Workbook> buildExcelTask = buildFileNameExcel(excelConfig, taskBean);
-        // 绑定带进度条的线程
-        bindingProgressBarTask(buildExcelTask, taskBean);
-        executorService.execute(buildExcelTask);
-        // 线程成功后保存excel
-        saveExcelOnSucceeded(excelConfig, taskBean, buildExcelTask, openDirectory_Name, openFile_Name, executorService);
     }
 
     /**

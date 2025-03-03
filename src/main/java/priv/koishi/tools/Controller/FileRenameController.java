@@ -34,15 +34,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
 import static priv.koishi.tools.Enum.SelectItemsEnums.*;
+import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.Service.FileRenameService.*;
 import static priv.koishi.tools.Service.ReadDataService.readExcel;
 import static priv.koishi.tools.Service.ReadDataService.readFile;
-import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
 import static priv.koishi.tools.Utils.CommonUtils.checkRunningOutputStream;
 import static priv.koishi.tools.Utils.FileUtils.*;
-import static priv.koishi.tools.Utils.TaskUtils.bindingProgressBarTask;
-import static priv.koishi.tools.Utils.TaskUtils.taskUnbind;
+import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
 /**
@@ -98,6 +97,21 @@ public class FileRenameController extends CommonProperties {
      * 线程池实例
      */
     private final ExecutorService executorService = commonThreadPoolExecutor.createNewThreadPool();
+
+    /**
+     * 读取文件线程
+     */
+    private Task<Void> readFileTask;
+
+    /**
+     * 读取excel线程
+     */
+    private Task<List<FileNumBean>> readExcelTask;
+
+    /**
+     * 重命名线程
+     */
+    private Task<String> renameTask;
 
     @FXML
     private AnchorPane anchorPane_Re;
@@ -335,76 +349,86 @@ public class FileRenameController extends CommonProperties {
      * @throws Exception 未查询到符合条件的数据
      */
     private void addInData(List<File> inFileList) throws Exception {
-        removeAll();
-        if (inFileList.isEmpty()) {
-            throw new Exception(text_selectNull);
-        }
-        Scene scene = anchorPane_Re.getScene();
-        ChoiceBox<?> sort = (ChoiceBox<?>) scene.lookup("#sort_Set");
-        CheckBox reverseSort = (CheckBox) scene.lookup("#reverseSort_Set");
-        String sortValue = (String) sort.getValue();
-        TaskBean<FileBean> taskBean = new TaskBean<>();
-        taskBean.setReverseSort(reverseSort.isSelected())
-                .setDisableControls(disableControls)
-                .setComparatorTableColumn(size_Re)
-                .setProgressBar(progressBar_Re)
-                .setMassageLabel(fileNumber_Re)
-                .setTableView(tableView_Re)
-                .setInFileList(inFileList)
-                .setSortType(sortValue)
-                .setShowFileType(false)
-                .setTabId(tabId);
-        // 匹配重命名规则
-        matchRenameConfig(taskBean);
-        // 获取Task任务
-        Task<Void> readFileTask = readFile(taskBean);
-        // 绑定带进度条的线程
-        bindingProgressBarTask(readFileTask, taskBean);
-        readFileTask.setOnSucceeded(event -> {
-            if (text_excelRename.equals(renameType_Re.getValue()) && StringUtils.isNotBlank(excelPath_Re.getText())) {
-                readExcelRename();
-            } else {
-                // 表格设置为可编辑
-                tableView_Re.setEditable(true);
-                rename_Re.setCellFactory((tableColumn) -> new EditingCell<>(FileBean::setRename));
-                taskUnbind(taskBean);
+        if (readFileTask == null) {
+            removeAll();
+            if (inFileList.isEmpty()) {
+                throw new Exception(text_selectNull);
             }
-            // 设置列表通过拖拽排序行
-            tableViewDragRow(tableView_Re);
-            // 构建右键菜单
-            tableViewContextMenu(tableView_Re, fileNumber_Re, anchorPane_Re);
-        });
-        executorService.execute(readFileTask);
+            Scene scene = anchorPane_Re.getScene();
+            ChoiceBox<?> sort = (ChoiceBox<?>) scene.lookup("#sort_Set");
+            CheckBox reverseSort = (CheckBox) scene.lookup("#reverseSort_Set");
+            String sortValue = (String) sort.getValue();
+            TaskBean<FileBean> taskBean = new TaskBean<>();
+            taskBean.setReverseSort(reverseSort.isSelected())
+                    .setDisableControls(disableControls)
+                    .setComparatorTableColumn(size_Re)
+                    .setProgressBar(progressBar_Re)
+                    .setMassageLabel(fileNumber_Re)
+                    .setTableView(tableView_Re)
+                    .setInFileList(inFileList)
+                    .setSortType(sortValue)
+                    .setShowFileType(false)
+                    .setTabId(tabId);
+            // 匹配重命名规则
+            matchRenameConfig(taskBean);
+            // 获取Task任务
+            readFileTask = readFile(taskBean);
+            // 绑定带进度条的线程
+            bindingProgressBarTask(readFileTask, taskBean);
+            readFileTask.setOnSucceeded(event -> {
+                if (text_excelRename.equals(renameType_Re.getValue()) && StringUtils.isNotBlank(excelPath_Re.getText())) {
+                    readExcelRename();
+                } else {
+                    // 表格设置为可编辑
+                    tableView_Re.setEditable(true);
+                    rename_Re.setCellFactory((tableColumn) -> new EditingCell<>(FileBean::setRename));
+                    taskUnbind(taskBean);
+                }
+                // 设置列表通过拖拽排序行
+                tableViewDragRow(tableView_Re);
+                // 构建右键菜单
+                tableViewContextMenu(tableView_Re, fileNumber_Re, anchorPane_Re);
+                readFileTask = null;
+            });
+            if (!readFileTask.isRunning()) {
+                executorService.execute(readFileTask);
+            }
+        }
     }
 
     /**
      * 读取excel重命名模板
      */
     private void readExcelRename() {
-        ExcelConfig excelConfig = new ExcelConfig();
-        excelConfig.setReadCellNum(setDefaultIntValue(readCell_Re, defaultReadCell, 0, null))
-                .setReadRowNum(setDefaultIntValue(readRow_Re, defaultReadRow, 0, null))
-                .setMaxRowNum(setDefaultIntValue(maxRow_Re, -1, 1, null))
-                .setSheetName(sheetName_Re.getText())
-                .setInPath(excelPath_Re.getText());
-        TaskBean<FileNumBean> taskBean = new TaskBean<>();
-        taskBean.setDisableControls(disableControls)
-                .setProgressBar(progressBar_Re)
-                .setReturnRenameList(true)
-                .setMassageLabel(log_Re)
-                .setShowFileType(false)
-                .setTabId(tabId);
-        // 获取Task任务
-        Task<List<FileNumBean>> readExcelTask = readExcel(excelConfig, taskBean);
-        readExcelTask.setOnSucceeded(event -> {
-            List<String> excelRenameList = readExcelTask.getValue().stream().map(FileNumBean::getGroupName).toList();
-            ObservableList<FileBean> fileBeanList = tableView_Re.getItems();
-            showMatchExcelData(taskBean, fileBeanList, excelRenameList);
-        });
-        // 绑定带进度条的线程
-        bindingProgressBarTask(readExcelTask, taskBean);
-        // 使用新线程启动
-        executorService.execute(readExcelTask);
+        if (readExcelTask == null) {
+            ExcelConfig excelConfig = new ExcelConfig();
+            excelConfig.setReadCellNum(setDefaultIntValue(readCell_Re, defaultReadCell, 0, null))
+                    .setReadRowNum(setDefaultIntValue(readRow_Re, defaultReadRow, 0, null))
+                    .setMaxRowNum(setDefaultIntValue(maxRow_Re, -1, 1, null))
+                    .setSheetName(sheetName_Re.getText())
+                    .setInPath(excelPath_Re.getText());
+            TaskBean<FileNumBean> taskBean = new TaskBean<>();
+            taskBean.setDisableControls(disableControls)
+                    .setProgressBar(progressBar_Re)
+                    .setReturnRenameList(true)
+                    .setMassageLabel(log_Re)
+                    .setShowFileType(false)
+                    .setTabId(tabId);
+            // 获取Task任务
+            readExcelTask = readExcel(excelConfig, taskBean);
+            readExcelTask.setOnSucceeded(event -> {
+                List<String> excelRenameList = readExcelTask.getValue().stream().map(FileNumBean::getGroupName).toList();
+                ObservableList<FileBean> fileBeanList = tableView_Re.getItems();
+                showMatchExcelData(taskBean, fileBeanList, excelRenameList);
+                readExcelTask = null;
+            });
+            // 绑定带进度条的线程
+            bindingProgressBarTask(readExcelTask, taskBean);
+            // 使用新线程启动
+            if (!readExcelTask.isRunning()) {
+                executorService.execute(readExcelTask);
+            }
+        }
     }
 
     /**
@@ -891,68 +915,73 @@ public class FileRenameController extends CommonProperties {
      */
     @FXML
     private void renameAll() throws Exception {
-        updateLabel(log_Re, "");
-        ObservableList<FileBean> fileBeans = tableView_Re.getItems();
-        if (CollectionUtils.isEmpty(fileBeans)) {
-            throw new Exception(text_fileListNull);
-        }
-        Map<String, List<FileBean>> fileBeanMap = fileBeans.stream().collect(Collectors.groupingBy(FileBean::getFullRename));
-        List<String> repeatNameList = new ArrayList<>();
-        fileBeanMap.forEach((rename, fileBeanList) -> {
-            if (fileBeanList.size() > 1) {
-                List<String> ids = new ArrayList<>();
-                fileBeanList.forEach(fileBean -> ids.add(String.valueOf(fileBean.getId())));
-                String errString = "序号为: " + String.join("、", ids) + " 的文件重命名重复为 " + rename;
-                repeatNameList.add(errString);
+        if (renameTask == null) {
+            updateLabel(log_Re, "");
+            ObservableList<FileBean> fileBeans = tableView_Re.getItems();
+            if (CollectionUtils.isEmpty(fileBeans)) {
+                throw new Exception(text_fileListNull);
             }
-        });
-        String repeatNames = String.join("\n", repeatNameList) + "\n";
-        List<String> errNameList = new ArrayList<>();
-        fileBeans.forEach(fileBean -> {
-            String rename = fileBean.getFullRename();
-            if (!isValidFileName(rename)) {
-                String errString = "序号为: " + fileBean.getId() + " 的文件 " + fileBean.getFullName() + " 非法重命名为 " + fileBean.getFullRename();
-                errNameList.add(errString);
-            }
-        });
-        String errNames = String.join("\n", errNameList) + "\n";
-        String errString = "";
-        if (StringUtils.isNotBlank(repeatNames)) {
-            errString += "重复的名称：\n" + repeatNames;
-        }
-        if (StringUtils.isNotBlank(errNames)) {
-            errString += "错误的名称：\n" + errNames;
-        }
-        if (StringUtils.isNotBlank(errString)) {
-            Alert alert = creatErrorAlert(errString);
-            alert.setHeaderText("文件重命名配置错误");
-            // 展示弹窗
-            alert.showAndWait();
-        } else {
-            TaskBean<FileBean> taskBean = new TaskBean<>();
-            taskBean.setDisableControls(disableControls)
-                    .setProgressBar(progressBar_Re)
-                    .setMassageLabel(log_Re)
-                    .setBeanList(fileBeans)
-                    .setTabId(tabId);
-            // 匹配重命名规则
-            matchRenameConfig(taskBean);
-            // 获取Task任务
-            Task<String> renameTask = fileRename(taskBean);
-            // 绑定带进度条的线程
-            bindingProgressBarTask(renameTask, taskBean);
-            renameTask.setOnSucceeded(event -> {
-                taskUnbind(taskBean);
-                if (openDirectory_Re.isSelected()) {
-                    try {
-                        openDirectory(renameTask.getValue());
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
+            Map<String, List<FileBean>> fileBeanMap = fileBeans.stream().collect(Collectors.groupingBy(FileBean::getFullRename));
+            List<String> repeatNameList = new ArrayList<>();
+            fileBeanMap.forEach((rename, fileBeanList) -> {
+                if (fileBeanList.size() > 1) {
+                    List<String> ids = new ArrayList<>();
+                    fileBeanList.forEach(fileBean -> ids.add(String.valueOf(fileBean.getId())));
+                    String errString = "序号为: " + String.join("、", ids) + " 的文件重命名重复为 " + rename;
+                    repeatNameList.add(errString);
                 }
-                taskBean.getMassageLabel().setTextFill(Color.GREEN);
             });
-            executorService.execute(renameTask);
+            String repeatNames = String.join("\n", repeatNameList) + "\n";
+            List<String> errNameList = new ArrayList<>();
+            fileBeans.forEach(fileBean -> {
+                String rename = fileBean.getFullRename();
+                if (!isValidFileName(rename)) {
+                    String errString = "序号为: " + fileBean.getId() + " 的文件 " + fileBean.getFullName() + " 非法重命名为 " + fileBean.getFullRename();
+                    errNameList.add(errString);
+                }
+            });
+            String errNames = String.join("\n", errNameList) + "\n";
+            String errString = "";
+            if (StringUtils.isNotBlank(repeatNames)) {
+                errString += "重复的名称：\n" + repeatNames;
+            }
+            if (StringUtils.isNotBlank(errNames)) {
+                errString += "错误的名称：\n" + errNames;
+            }
+            if (StringUtils.isNotBlank(errString)) {
+                Alert alert = creatErrorAlert(errString);
+                alert.setHeaderText("文件重命名配置错误");
+                // 展示弹窗
+                alert.showAndWait();
+            } else {
+                TaskBean<FileBean> taskBean = new TaskBean<>();
+                taskBean.setDisableControls(disableControls)
+                        .setProgressBar(progressBar_Re)
+                        .setMassageLabel(log_Re)
+                        .setBeanList(fileBeans)
+                        .setTabId(tabId);
+                // 匹配重命名规则
+                matchRenameConfig(taskBean);
+                // 获取Task任务
+                renameTask = fileRename(taskBean);
+                // 绑定带进度条的线程
+                bindingProgressBarTask(renameTask, taskBean);
+                renameTask.setOnSucceeded(event -> {
+                    taskUnbind(taskBean);
+                    if (openDirectory_Re.isSelected()) {
+                        try {
+                            openDirectory(renameTask.getValue());
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                    taskBean.getMassageLabel().setTextFill(Color.GREEN);
+                    renameTask = null;
+                });
+                if (!renameTask.isRunning()) {
+                    executorService.execute(renameTask);
+                }
+            }
         }
     }
 

@@ -117,6 +117,16 @@ public class FileNumToExcelController extends CommonProperties {
      */
     private final ExecutorService executorService = commonThreadPoolExecutor.createNewThreadPool();
 
+    /**
+     * 读取文件线程
+     */
+    private Task<List<FileNumBean>> readExcelTask;
+
+    /**
+     * 构建excel线程
+     */
+    private Task<Workbook> buildExcelTask;
+
     @FXML
     private AnchorPane anchorPane_Num;
 
@@ -305,35 +315,42 @@ public class FileNumToExcelController extends CommonProperties {
      * @return 读取excel任务线程
      */
     private Task<List<FileNumBean>> addInData() {
-        removeAll();
-        // 渲染表格前需要更新一下读取的文件
-        updateInFileList();
-        String excelPath = excelPath_Num.getText();
-        excelType_Num.setText(getFileType(new File(excelPath)));
-        // 组装数据
-        ExcelConfig excelConfig = new ExcelConfig();
-        excelConfig.setReadCellNum(setDefaultIntValue(readCell_Num, defaultReadCell, 0, null))
-                .setReadRowNum(setDefaultIntValue(readRow_Num, defaultReadRow, 0, null))
-                .setMaxRowNum(setDefaultIntValue(maxRow_Num, -1, 1, null))
-                .setInPath(excelPath_Num.getText())
-                .setSheetName(sheetName_Num.getText());
-        TaskBean<FileNumBean> taskBean = new TaskBean<>();
-        taskBean.setShowFileType(showFileType_Num.isSelected())
-                .setComparatorTableColumn(fileUnitSize_Num)
-                .setDisableControls(disableControls)
-                .setSubCode(subCode_Num.getText())
-                .setProgressBar(progressBar_Num)
-                .setMassageLabel(fileNumber_Num)
-                .setTableView(tableView_Num)
-                .setInFileList(inFileList)
-                .setTabId(tabId);
-        // 获取Task任务
-        Task<List<FileNumBean>> readExcelTask = readExcel(excelConfig, taskBean);
-        readExcelTask.setOnSucceeded(event -> taskUnbind(taskBean));
-        // 绑定带进度条的线程
-        bindingProgressBarTask(readExcelTask, taskBean);
-        // 使用新线程启动
-        executorService.execute(readExcelTask);
+        if (readExcelTask == null) {
+            removeAll();
+            // 渲染表格前需要更新一下读取的文件
+            updateInFileList();
+            String excelPath = excelPath_Num.getText();
+            excelType_Num.setText(getFileType(new File(excelPath)));
+            // 组装数据
+            ExcelConfig excelConfig = new ExcelConfig();
+            excelConfig.setReadCellNum(setDefaultIntValue(readCell_Num, defaultReadCell, 0, null))
+                    .setReadRowNum(setDefaultIntValue(readRow_Num, defaultReadRow, 0, null))
+                    .setMaxRowNum(setDefaultIntValue(maxRow_Num, -1, 1, null))
+                    .setInPath(excelPath_Num.getText())
+                    .setSheetName(sheetName_Num.getText());
+            TaskBean<FileNumBean> taskBean = new TaskBean<>();
+            taskBean.setShowFileType(showFileType_Num.isSelected())
+                    .setComparatorTableColumn(fileUnitSize_Num)
+                    .setDisableControls(disableControls)
+                    .setSubCode(subCode_Num.getText())
+                    .setProgressBar(progressBar_Num)
+                    .setMassageLabel(fileNumber_Num)
+                    .setTableView(tableView_Num)
+                    .setInFileList(inFileList)
+                    .setTabId(tabId);
+            // 获取Task任务
+            readExcelTask = readExcel(excelConfig, taskBean);
+            readExcelTask.setOnSucceeded(event -> {
+                taskUnbind(taskBean);
+                readExcelTask = null;
+            });
+            // 绑定带进度条的线程
+            bindingProgressBarTask(readExcelTask, taskBean);
+            if (!readExcelTask.isRunning()) {
+                // 使用新线程启动
+                executorService.execute(readExcelTask);
+            }
+        }
         return readExcelTask;
     }
 
@@ -550,48 +567,53 @@ public class FileNumToExcelController extends CommonProperties {
      */
     @FXML
     private void exportAll() throws Exception {
-        updateLabel(log_Num, "");
-        String outFilePath = outPath_Num.getText();
-        if (StringUtils.isEmpty(outFilePath)) {
-            throw new Exception(text_outPathNull);
+        if (buildExcelTask == null) {
+            updateLabel(log_Num, "");
+            String outFilePath = outPath_Num.getText();
+            if (StringUtils.isEmpty(outFilePath)) {
+                throw new Exception(text_outPathNull);
+            }
+            if (StringUtils.isEmpty(inPath_Num.getText())) {
+                throw new Exception(text_filePathNull);
+            }
+            if (StringUtils.isEmpty(excelPath_Num.getText())) {
+                throw new Exception(text_excelPathNull);
+            }
+            int readRowValue = setDefaultIntValue(readRow_Num, defaultReadRow, 0, null);
+            ExcelConfig excelConfig = new ExcelConfig();
+            excelConfig.setStartCellNum(setDefaultIntValue(startCell_Num, defaultStartCell, 0, null))
+                    .setStartRowNum(setDefaultIntValue(startRow_Num, readRowValue, 0, null))
+                    .setOutName(setDefaultFileName(excelName_Num, defaultOutFileName))
+                    .setSheetName(setDefaultStrValue(sheetName_Num, defaultSheetName))
+                    .setExportFileSize(exportFileSize_Num.isSelected())
+                    .setExportFileNum(exportFileNum_Num.isSelected())
+                    .setOutExcelType(excelType_Num.getText())
+                    .setExportTitle(exportTitle_Num.isSelected())
+                    .setInPath(excelPath_Num.getText())
+                    .setOutPath(outFilePath);
+            readExcelTask = reselect();
+            readExcelTask.setOnSucceeded(event -> {
+                TaskBean<FileNumBean> taskBean = new TaskBean<>();
+                taskBean.setShowFileType(showFileType_Num.isSelected())
+                        .setBeanList(readExcelTask.getValue())
+                        .setDisableControls(disableControls)
+                        .setSubCode(subCode_Num.getText())
+                        .setProgressBar(progressBar_Num)
+                        .setTableView(tableView_Num)
+                        .setInFileList(inFileList)
+                        .setMassageLabel(log_Num)
+                        .setTabId(tabId);
+                // 获取Task任务
+                buildExcelTask = buildNameGroupNumExcel(taskBean, excelConfig);
+                // 线程成功后保存excel
+                buildExcelTask = saveExcelOnSucceeded(excelConfig, taskBean, buildExcelTask, openDirectory_Num, openFile_Num, executorService);
+                readExcelTask = null;
+            });
+            if (!readExcelTask.isRunning()) {
+                // 使用新线程启动
+                executorService.execute(readExcelTask);
+            }
         }
-        if (StringUtils.isEmpty(inPath_Num.getText())) {
-            throw new Exception(text_filePathNull);
-        }
-        if (StringUtils.isEmpty(excelPath_Num.getText())) {
-            throw new Exception(text_excelPathNull);
-        }
-        int readRowValue = setDefaultIntValue(readRow_Num, defaultReadRow, 0, null);
-        ExcelConfig excelConfig = new ExcelConfig();
-        excelConfig.setStartCellNum(setDefaultIntValue(startCell_Num, defaultStartCell, 0, null))
-                .setStartRowNum(setDefaultIntValue(startRow_Num, readRowValue, 0, null))
-                .setOutName(setDefaultFileName(excelName_Num, defaultOutFileName))
-                .setSheetName(setDefaultStrValue(sheetName_Num, defaultSheetName))
-                .setExportFileSize(exportFileSize_Num.isSelected())
-                .setExportFileNum(exportFileNum_Num.isSelected())
-                .setOutExcelType(excelType_Num.getText())
-                .setExportTitle(exportTitle_Num.isSelected())
-                .setInPath(excelPath_Num.getText())
-                .setOutPath(outFilePath);
-        Task<List<FileNumBean>> reselectTask = reselect();
-        reselectTask.setOnSucceeded(event -> {
-            TaskBean<FileNumBean> taskBean = new TaskBean<>();
-            taskBean.setShowFileType(showFileType_Num.isSelected())
-                    .setBeanList(reselectTask.getValue())
-                    .setDisableControls(disableControls)
-                    .setSubCode(subCode_Num.getText())
-                    .setProgressBar(progressBar_Num)
-                    .setTableView(tableView_Num)
-                    .setInFileList(inFileList)
-                    .setMassageLabel(log_Num)
-                    .setTabId(tabId);
-            // 获取Task任务
-            Task<Workbook> buildExcelTask = buildNameGroupNumExcel(taskBean, excelConfig);
-            // 线程成功后保存excel
-            saveExcelOnSucceeded(excelConfig, taskBean, buildExcelTask, openDirectory_Num, openFile_Num, executorService);
-        });
-        // 使用新线程启动
-        executorService.execute(reselectTask);
     }
 
     /**

@@ -140,6 +140,11 @@ public class ImgToExcelController extends CommonProperties {
      */
     private Task<String> saveExcelTask;
 
+    /**
+     * 读取excel分组信息线程
+     */
+    private Task<List<FileNumBean>> readExcelTask;
+
     @FXML
     private AnchorPane anchorPane_Img;
 
@@ -355,40 +360,47 @@ public class ImgToExcelController extends CommonProperties {
      * @throws Exception 未选择需要识别的图片格式
      */
     private Task<List<FileNumBean>> addInData() throws Exception {
-        removeAll();
-        // 渲染表格前需要更新一下读取的文件
-        updateInFileList();
-        String excelPath = excelPath_Img.getText();
-        excelType_Img.setText(getFileType(new File(excelPath)));
-        // 组装数据
-        String maxImgValue = maxImgNum_Img.getText();
-        int maxImgNum = 0;
-        if (StringUtils.isNotBlank(maxImgValue)) {
-            maxImgNum = Integer.parseInt(maxImgValue);
+        if (readExcelTask == null) {
+            removeAll();
+            // 渲染表格前需要更新一下读取的文件
+            updateInFileList();
+            String excelPath = excelPath_Img.getText();
+            excelType_Img.setText(getFileType(new File(excelPath)));
+            // 组装数据
+            String maxImgValue = maxImgNum_Img.getText();
+            int maxImgNum = 0;
+            if (StringUtils.isNotBlank(maxImgValue)) {
+                maxImgNum = Integer.parseInt(maxImgValue);
+            }
+            ExcelConfig excelConfig = new ExcelConfig();
+            excelConfig.setReadCellNum(setDefaultIntValue(readCell_Img, defaultReadCell, 0, null))
+                    .setReadRowNum(setDefaultIntValue(readRow_Img, defaultReadRow, 0, null))
+                    .setMaxRowNum(setDefaultIntValue(maxRow_Img, -1, 1, null))
+                    .setSheetName(sheetName_Img.getText())
+                    .setInPath(excelPath_Img.getText());
+            TaskBean<FileNumBean> taskBean = new TaskBean<>();
+            taskBean.setShowFileType(showFileType_Img.isSelected())
+                    .setComparatorTableColumn(fileUnitSize_Img)
+                    .setDisableControls(disableControls)
+                    .setSubCode(subCode_Img.getText())
+                    .setMassageLabel(fileNumber_Img)
+                    .setProgressBar(progressBar_Img)
+                    .setTableView(tableView_Img)
+                    .setInFileList(inFileList)
+                    .setMaxImgNum(maxImgNum)
+                    .setTabId(tabId);
+            // 获取Task任务
+            readExcelTask = readExcel(excelConfig, taskBean);
+            // 绑定带进度条的线程
+            bindingProgressBarTask(readExcelTask, taskBean);
+            readExcelTask.setOnSucceeded(event -> {
+                taskUnbind(taskBean);
+                readExcelTask = null;
+            });
+            if (!readExcelTask.isRunning()) {
+                executorService.execute(readExcelTask);
+            }
         }
-        ExcelConfig excelConfig = new ExcelConfig();
-        excelConfig.setReadCellNum(setDefaultIntValue(readCell_Img, defaultReadCell, 0, null))
-                .setReadRowNum(setDefaultIntValue(readRow_Img, defaultReadRow, 0, null))
-                .setMaxRowNum(setDefaultIntValue(maxRow_Img, -1, 1, null))
-                .setSheetName(sheetName_Img.getText())
-                .setInPath(excelPath_Img.getText());
-        TaskBean<FileNumBean> taskBean = new TaskBean<>();
-        taskBean.setShowFileType(showFileType_Img.isSelected())
-                .setComparatorTableColumn(fileUnitSize_Img)
-                .setDisableControls(disableControls)
-                .setSubCode(subCode_Img.getText())
-                .setMassageLabel(fileNumber_Img)
-                .setProgressBar(progressBar_Img)
-                .setTableView(tableView_Img)
-                .setInFileList(inFileList)
-                .setMaxImgNum(maxImgNum)
-                .setTabId(tabId);
-        // 获取Task任务
-        Task<List<FileNumBean>> readExcelTask = readExcel(excelConfig, taskBean);
-        // 绑定带进度条的线程
-        bindingProgressBarTask(readExcelTask, taskBean);
-        readExcelTask.setOnSucceeded(event -> taskUnbind(taskBean));
-        executorService.execute(readExcelTask);
         return readExcelTask;
     }
 
@@ -673,80 +685,113 @@ public class ImgToExcelController extends CommonProperties {
      */
     @FXML
     private void exportAll() throws Exception {
-        updateLabel(log_Img, "");
-        String outFilePath = outPath_Img.getText();
-        if (StringUtils.isEmpty(outFilePath)) {
-            throw new Exception(text_outPathNull);
-        }
-        if (StringUtils.isEmpty(inPath_Img.getText())) {
-            throw new Exception(text_filePathNull);
-        }
-        if (StringUtils.isEmpty(excelPath_Img.getText())) {
-            throw new Exception(text_excelPathNull);
-        }
-        int readRowValue = setDefaultIntValue(readRow_Img, defaultReadRow, 0, null);
-        ExcelConfig excelConfig = new ExcelConfig();
-        excelConfig.setStartCellNum(setDefaultIntValue(startCell_Img, defaultStartCell, 0, null))
-                .setImgHeight(setDefaultIntValue(imgHeight_Img, defaultImgHeight, 0, null))
-                .setStartRowNum(setDefaultIntValue(startRow_Img, readRowValue, 0, null))
-                .setImgWidth(setDefaultIntValue(imgWidth_Img, defaultImgWidth, 0, null))
-                .setOutName(setDefaultFileName(excelName_Img, defaultOutFileName))
-                .setSheetName(setDefaultStrValue(sheetName_Img, defaultSheetName))
-                .setExportFileSize(exportFileSize_Img.isSelected())
-                .setExportFileNum(exportFileNum_Img.isSelected())
-                .setOutExcelType(excelType_Img.getText())
-                .setExportTitle(exportTitle_Img.isSelected())
-                .setInPath(excelPath_Img.getText())
-                .setNoImg(noImg_Img.isSelected())
-                .setOutPath(outFilePath);
-        // 重新查询任务
-        Task<List<FileNumBean>> reselectTask = reselect();
-        reselectTask.setOnSucceeded(event -> {
+        if (buildExcelTask == null && saveExcelTask == null) {
+            updateLabel(log_Img, "");
+            String outFilePath = outPath_Img.getText();
+            if (StringUtils.isEmpty(outFilePath)) {
+                throw new Exception(text_outPathNull);
+            }
+            if (StringUtils.isEmpty(inPath_Img.getText())) {
+                throw new Exception(text_filePathNull);
+            }
+            if (StringUtils.isEmpty(excelPath_Img.getText())) {
+                throw new Exception(text_excelPathNull);
+            }
+            int readRowValue = setDefaultIntValue(readRow_Img, defaultReadRow, 0, null);
+            ExcelConfig excelConfig = new ExcelConfig();
+            excelConfig.setStartCellNum(setDefaultIntValue(startCell_Img, defaultStartCell, 0, null))
+                    .setImgHeight(setDefaultIntValue(imgHeight_Img, defaultImgHeight, 0, null))
+                    .setStartRowNum(setDefaultIntValue(startRow_Img, readRowValue, 0, null))
+                    .setImgWidth(setDefaultIntValue(imgWidth_Img, defaultImgWidth, 0, null))
+                    .setOutName(setDefaultFileName(excelName_Img, defaultOutFileName))
+                    .setSheetName(setDefaultStrValue(sheetName_Img, defaultSheetName))
+                    .setExportFileSize(exportFileSize_Img.isSelected())
+                    .setExportFileNum(exportFileNum_Img.isSelected())
+                    .setOutExcelType(excelType_Img.getText())
+                    .setExportTitle(exportTitle_Img.isSelected())
+                    .setInPath(excelPath_Img.getText())
+                    .setNoImg(noImg_Img.isSelected())
+                    .setOutPath(outFilePath);
             TaskBean<FileNumBean> taskBean = new TaskBean<>();
-            taskBean.setShowFileType(showFileType_Img.isSelected())
-                    .setBeanList(reselectTask.getValue())
-                    .setDisableControls(disableControls)
+            taskBean.setDisableControls(disableControls)
                     .setProgressBar(progressBar_Img)
-                    .setCancelButton(cancel_Img)
-                    .setTableView(tableView_Img)
-                    .setMassageLabel(log_Img)
-                    .setTabId(tabId);
-            taskUnbind(taskBean);
-            // 校验匹配文件总大小是否能够正常导出
-            if (checkFileSize()) {
-                // 组装excel任务
-                buildExcelTask = buildImgGroupExcel(taskBean, excelConfig);
-                bindingProgressBarTask(buildExcelTask, taskBean);
-                buildExcelTask.setOnSucceeded(e -> {
-                    // 保存excel任务
-                    saveExcelTask = saveExcelTask(excelConfig, buildExcelTask.getValue());
-                    bindingProgressBarTask(saveExcelTask, taskBean);
-                    saveExcelTask.setOnSucceeded(s -> {
-                        String excelPath = saveExcelTask.getValue();
-                        try {
-                            if (openDirectory_Img.isSelected()) {
-                                openDirectory(excelPath);
+                    .setMassageLabel(log_Img);
+            // 重新查询任务
+            readExcelTask = reselect();
+            readExcelTask.setOnSucceeded(event -> {
+                taskBean.setShowFileType(showFileType_Img.isSelected())
+                        .setBeanList(readExcelTask.getValue())
+                        .setCancelButton(cancel_Img)
+                        .setTableView(tableView_Img)
+                        .setTabId(tabId);
+                taskUnbind(taskBean);
+                readExcelTask = null;
+                // 校验匹配文件总大小是否能够正常导出
+                if (checkFileSize()) {
+                    // 组装excel任务
+                    buildExcelTask = buildImgGroupExcel(taskBean, excelConfig);
+                    bindingProgressBarTask(buildExcelTask, taskBean);
+                    buildExcelTask.setOnSucceeded(e -> {
+                        // 保存excel任务
+                        saveExcelTask = saveExcelTask(excelConfig, buildExcelTask.getValue());
+                        bindingProgressBarTask(saveExcelTask, taskBean);
+                        saveExcelTask.setOnSucceeded(s -> {
+                            String excelPath = saveExcelTask.getValue();
+                            try {
+                                if (openDirectory_Img.isSelected()) {
+                                    openDirectory(excelPath);
+                                }
+                                if (openFile_Img.isSelected()) {
+                                    openFile(excelPath);
+                                }
+                                ImgToExcelService.closeStream();
+                            } catch (IOException ex) {
+                                throw new RuntimeException(ex);
+                            } finally {
+                                saveExcelTask = null;
+                                buildExcelTask = null;
+                                inFileList = null;
+                                taskUnbind(taskBean);
                             }
-                            if (openFile_Img.isSelected()) {
-                                openFile(excelPath);
-                            }
-                            ImgToExcelService.closeStream();
-                        } catch (IOException ex) {
-                            throw new RuntimeException(ex);
-                        } finally {
+                            taskBean.getMassageLabel().setText(text_saveSuccess + excelPath);
+                            taskBean.getMassageLabel().setTextFill(Color.GREEN);
+                        });
+                        saveExcelTask.setOnFailed(s -> {
+                            taskNotSuccess(taskBean, text_taskFailed);
+                            // 获取抛出的异常
+                            Throwable ex = saveExcelTask.getException();
                             saveExcelTask = null;
                             buildExcelTask = null;
                             inFileList = null;
-                            taskUnbind(taskBean);
+                            throw new RuntimeException(ex);
+                        });
+                        if (!saveExcelTask.isRunning()) {
+                            executorService.execute(saveExcelTask);
                         }
-                        taskBean.getMassageLabel().setText(text_saveSuccess + excelPath);
-                        taskBean.getMassageLabel().setTextFill(Color.GREEN);
                     });
-                    executorService.execute(saveExcelTask);
-                });
-                executorService.execute(buildExcelTask);
-            }
-        });
+                    buildExcelTask.setOnFailed(s -> {
+                        taskNotSuccess(taskBean, text_taskFailed);
+                        // 获取抛出的异常
+                        Throwable ex = buildExcelTask.getException();
+                        saveExcelTask = null;
+                        buildExcelTask = null;
+                        inFileList = null;
+                        throw new RuntimeException(ex);
+                    });
+                    if (!buildExcelTask.isRunning()) {
+                        executorService.execute(buildExcelTask);
+                    }
+                }
+            });
+            readExcelTask.setOnFailed(event -> {
+                taskNotSuccess(taskBean, text_taskFailed);
+                // 获取抛出的异常
+                Throwable ex = readExcelTask.getException();
+                readExcelTask = null;
+                inFileList = null;
+                throw new RuntimeException(ex);
+            });
+        }
     }
 
     /**
@@ -840,9 +885,7 @@ public class ImgToExcelController extends CommonProperties {
                 .setProgressBar(progressBar_Img)
                 .setCancelButton(cancel_Img)
                 .setMassageLabel(log_Img);
-        taskUnbind(taskBean);
-        log_Img.setText(text_taskCancelled);
-        log_Img.setTextFill(Color.RED);
+        taskNotSuccess(taskBean, text_taskCancelled);
     }
 
 }

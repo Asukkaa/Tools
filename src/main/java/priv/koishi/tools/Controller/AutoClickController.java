@@ -59,8 +59,7 @@ import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.Service.AutoClickService.autoClick;
 import static priv.koishi.tools.Utils.CommonUtils.*;
 import static priv.koishi.tools.Utils.FileUtils.*;
-import static priv.koishi.tools.Utils.TaskUtils.bindingProgressBarTask;
-import static priv.koishi.tools.Utils.TaskUtils.taskUnbind;
+import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
 /**
@@ -507,36 +506,29 @@ public class AutoClickController extends CommonProperties {
                 if (showWindowRun_Click.isSelected()) {
                     showStage(stage);
                 }
-                // 改变要防重复点击的组件状态
-                changeDisableControls(taskBean, false);
                 // 移除键盘监听器
                 stopNativeKeyListener();
                 autoClickTask = null;
             });
             autoClickTask.setOnFailed(event -> {
-                taskUnbind(taskBean);
-                massageLabel.setTextFill(Color.RED);
-                massageLabel.setText(text_taskFailed);
+                taskNotSuccess(taskBean, text_taskFailed);
                 hideFloatingWindow();
                 if (showWindowRun_Click.isSelected()) {
                     showStage(stage);
                 }
-                // 改变要防重复点击的组件状态
-                changeDisableControls(taskBean, false);
                 // 移除键盘监听器
                 stopNativeKeyListener();
+                // 获取抛出的异常
+                Throwable ex = autoClickTask.getException();
                 autoClickTask = null;
+                throw new RuntimeException(ex);
             });
             autoClickTask.setOnCancelled(event -> {
-                taskUnbind(taskBean);
-                massageLabel.setTextFill(Color.RED);
-                massageLabel.setText(text_taskCancelled);
+                taskNotSuccess(taskBean, text_taskCancelled);
                 hideFloatingWindow();
                 if (showWindowRun_Click.isSelected()) {
                     showStage(stage);
                 }
-                // 改变要防重复点击的组件状态
-                changeDisableControls(taskBean, false);
                 // 移除键盘监听器
                 stopNativeKeyListener();
                 autoClickTask = null;

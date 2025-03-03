@@ -112,8 +112,6 @@ public class FileNameToExcelService {
         return new Task<>() {
             @Override
             protected Workbook call() throws IllegalAccessException, InvocationTargetException {
-                // 改变要防重复点击的组件状态
-                changeDisableControls(taskBean, true);
                 updateMessage(text_printData);
                 List<FileBean> fileBeans = taskBean.getBeanList();
                 int startRowNum = excelConfig.getStartRowNum();
@@ -145,13 +143,12 @@ public class FileNameToExcelService {
                 } else {
                     List<String> titles = new ArrayList<>();
                     List<String> ids = new ArrayList<>();
-                    String tabId = "_Name";
                     // 获取属性顺序与名称
                     ObservableList<? extends TableColumn<?, ?>> columns = taskBean.getTableView().getColumns();
                     columns.forEach(c -> {
                         titles.add(c.getText());
                         String id = c.getId();
-                        id = id.substring(0, id.lastIndexOf(tabId));
+                        id = id.substring(0, id.lastIndexOf(taskBean.getTabId()));
                         ids.add(id);
                     });
                     // 创建表头
