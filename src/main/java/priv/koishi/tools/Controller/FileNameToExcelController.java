@@ -154,7 +154,6 @@ public class FileNameToExcelController extends CommonProperties {
      * @param stage 程序主舞台
      */
     public static void fileNameToExcelAdaption(Stage stage) {
-        System.out.println("组件自适应");
         Scene scene = stage.getScene();
         // 设置组件高度
         double stageHeight = stage.getHeight();
