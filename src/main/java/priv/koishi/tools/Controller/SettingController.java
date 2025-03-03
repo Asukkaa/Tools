@@ -21,10 +21,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import static priv.koishi.tools.Controller.MainController.saveLastConfig;
 import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.Utils.CommonUtils.*;
-import static priv.koishi.tools.Utils.FileUtils.*;
+import static priv.koishi.tools.Utils.FileUtils.getUnitSize;
+import static priv.koishi.tools.Utils.FileUtils.updateProperties;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
 /**
@@ -428,8 +428,6 @@ public class SettingController {
      */
     @FXML
     private void reLaunch() throws IOException {
-        Stage stage = (Stage) anchorPane_Set.getScene().getWindow();
-        saveLastConfig(stage);
         Platform.exit();
         if (!isRunningFromJar()) {
             ProcessBuilder processBuilder = null;

@@ -1,7 +1,6 @@
 package priv.koishi.tools;
 
 import com.github.kwhat.jnativehook.GlobalScreen;
-import com.github.kwhat.jnativehook.NativeHookException;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -15,11 +14,14 @@ import javafx.stage.Stage;
 import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.Configurator;
 import priv.koishi.tools.Bean.TabBean;
+import priv.koishi.tools.ThreadPool.CommonThreadPoolExecutor;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static priv.koishi.tools.Controller.MainController.mainAdaption;
 import static priv.koishi.tools.Controller.MainController.saveLastConfig;
@@ -38,6 +40,21 @@ import static priv.koishi.tools.Utils.UiUtils.*;
 public class MainApplication extends Application {
 
     /**
+     * 程序主舞台
+     */
+    private Stage primaryStage;
+
+    /**
+     * 线程池
+     */
+    private final CommonThreadPoolExecutor commonThreadPoolExecutor = new CommonThreadPoolExecutor();
+
+    /**
+     * 线程池实例
+     */
+    ExecutorService executorService = commonThreadPoolExecutor.createNewThreadPool();
+
+    /**
      * 加载fxml页面
      *
      * @param stage 程序主舞台
@@ -46,6 +63,7 @@ public class MainApplication extends Application {
      */
     @Override
     public void start(Stage stage) throws Exception {
+        primaryStage = stage;
         // 读取fxml页面
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("fxml/Main-view.fxml"));
         Properties prop = new Properties();
@@ -79,17 +97,6 @@ public class MainApplication extends Application {
         stage.widthProperty().addListener((v1, v2, v3) -> Platform.runLater(() -> mainAdaption(stage, tabBeanList)));
         // 监听窗口面板高度变化
         stage.heightProperty().addListener((v1, v2, v3) -> Platform.runLater(() -> mainAdaption(stage, tabBeanList)));
-        // 程序关闭时保存各个页面的设置
-        stage.setOnCloseRequest(event -> {
-            try {
-                saveLastConfig(stage);
-                // 程序退出时注销全局输入监听器
-                GlobalScreen.unregisterNativeHook();
-            } catch (IOException | NativeHookException e) {
-                throw new RuntimeException(e);
-            }
-            System.exit(0);
-        });
         stage.show();
     }
 
@@ -196,6 +203,24 @@ public class MainApplication extends Application {
         super.init();
         // 在init()方法中设置全局异常处理器
         Platform.runLater(() -> Thread.setDefaultUncaughtExceptionHandler((e, exception) -> showExceptionAlert(exception)));
+    }
+
+    /**
+     * 程序停止时保存设置并关闭资源
+     *
+     * @throws IOException io异常、钩子异常、线程池关闭异常
+     */
+    @Override
+    public void stop() throws Exception {
+        if (executorService != null) {
+            executorService.shutdown();
+            if (!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
+                executorService.shutdownNow();
+            }
+        }
+        saveLastConfig(primaryStage);
+        GlobalScreen.unregisterNativeHook();
+        System.exit(0);
     }
 
     /**
