@@ -361,8 +361,10 @@ public class AutoClickController extends CommonProperties {
         int x = (int) mousePoint.getX();
         int y = (int) mousePoint.getY();
         String text = "当前鼠标位置为： X: " + x + " Y: " + y;
-        floatingMousePosition.setText(text);
-        mousePosition_Click.setText(text);
+        Platform.runLater(() -> {
+            floatingMousePosition.setText(text);
+            mousePosition_Click.setText(text);
+        });
     }
 
     /**

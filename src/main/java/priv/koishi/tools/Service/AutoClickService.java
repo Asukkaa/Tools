@@ -9,7 +9,7 @@ import priv.koishi.tools.Bean.AutoClickTaskBean;
 import priv.koishi.tools.Bean.ClickPositionBean;
 
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.CompletableFuture;
 
 import static javafx.scene.input.MouseButton.NONE;
 import static javafx.scene.input.MouseButton.PRIMARY;
@@ -56,7 +56,7 @@ public class AutoClickService {
                     int i = 0;
                     while (!isCancelled()) {
                         i++;
-                        String loopTimeText = "第 " + i + " / ∞" + " 轮操作\n";
+                        String loopTimeText = text_execution + i + " / ∞" + text_executionTime;
                         if (isCancelled()) {
                             break;
                         }
@@ -65,7 +65,7 @@ public class AutoClickService {
                     }
                 } else {
                     for (int i = 0; i < loopTime && !isCancelled(); i++) {
-                        String loopTimeText = "第 " + (i + 1) + " / " + loopTime + " 轮操作\n";
+                        String loopTimeText = text_execution + (i + 1) + " / " + loopTime + text_executionTime;
                         if (isCancelled()) {
                             break;
                         }
@@ -93,9 +93,10 @@ public class AutoClickService {
                     String name = clickPositionBean.getName();
                     String clickNum = clickPositionBean.getClickNum();
                     Platform.runLater(() -> {
-                        String text = loopTimeText + waitTime + " 毫秒后将执行: " + name + "\n" +
-                                "操作内容：" + clickPositionBean.getType() + " X：" + startX + " Y：" + startY + " 在 " +
-                                clickTime + " 毫秒内移动到 X：" + endX + " Y：" + endY + " 共 " + clickNum + " 次";
+                        String text = loopTimeText + waitTime + " 毫秒后将执行: " + name +
+                                "\n操作内容：" + clickPositionBean.getType() + " X：" + startX + " Y：" + startY + " 在 " +
+                                clickTime + " 毫秒内移动到 X：" + endX + " Y：" + endY +
+                                "\n每次操作间隔：" + clickPositionBean.getClickInterval() + " 毫秒，共 " + clickNum + " 次";
                         updateMessage(text);
                         floatingLabel.setText(text_cancelTask + text);
                     });
@@ -109,11 +110,6 @@ public class AutoClickService {
                     }
                     // 执行自动流程
                     click(clickPositionBean, robot);
-                    Platform.runLater(() -> {
-                        String text = loopTimeText + name + text_finishedExecution;
-                        updateMessage(text);
-                        floatingLabel.setText(text_cancelTask + text);
-                    });
                 }
             }
         };
@@ -125,7 +121,7 @@ public class AutoClickService {
      * @param clickPositionBean 操作设置
      * @param robot             Robot实例
      */
-    public static void click(ClickPositionBean clickPositionBean, Robot robot) {
+    private static void click(ClickPositionBean clickPositionBean, Robot robot) {
         // 操作次数
         int clickNum = Integer.parseInt(clickPositionBean.getClickNum());
         double startX = Double.parseDouble(clickPositionBean.getStartX());
@@ -134,6 +130,7 @@ public class AutoClickService {
         double endY = Double.parseDouble(clickPositionBean.getEndY());
         long clickTime = Long.parseLong(clickPositionBean.getClickTime());
         long clickInterval = Long.parseLong(clickPositionBean.getClickInterval());
+        // 按照操作次数执行
         for (int i = 0; i < clickNum; i++) {
             // 每次操作的间隔时间
             if (i > 0) {
@@ -145,38 +142,51 @@ public class AutoClickService {
                 }
             }
             MouseButton mouseButton = clickTypeMap.get(clickPositionBean.getType());
-            CountDownLatch latch = new CountDownLatch(1);
             Platform.runLater(() -> {
                 robot.mouseMove(startX, startY);
                 if (mouseButton != NONE) {
                     robot.mousePress(mouseButton);
                 }
-                // 计算鼠标移动的轨迹
-                double deltaX = endX - startX;
-                double deltaY = endY - startY;
-                int steps = 10;
-                long stepDuration = clickTime / steps;
-                for (int j = 0; j < steps; j++) {
-                    double x = startX + deltaX * j / steps;
-                    double y = startY + deltaY * j / steps;
+            });
+            // 计算鼠标移动的轨迹
+            double deltaX = endX - startX;
+            double deltaY = endY - startY;
+            int steps = 10;
+            long stepDuration = clickTime / steps;
+            for (int j = 1; j <= steps; j++) {
+                double x = startX + deltaX * j / steps;
+                double y = startY + deltaY * j / steps;
+                CompletableFuture<Void> moveFuture = new CompletableFuture<>();
+                Platform.runLater(() -> {
                     robot.mouseMove(x, y);
-                    // 单次操作时间
-                    try {
-                        Thread.sleep(stepDuration);
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                        break;
-                    }
+                    moveFuture.complete(null);
+                });
+                // 等待任务完成
+                try {
+                    moveFuture.get();
+                } catch (Exception e) {
+                    Thread.currentThread().interrupt();
+                    break;
                 }
+                // 单次操作时间
+                try {
+                    Thread.sleep(stepDuration);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+            }
+            CompletableFuture<Void> releaseFuture = new CompletableFuture<>();
+            Platform.runLater(() -> {
                 if (mouseButton != NONE) {
                     robot.mouseRelease(mouseButton);
                 }
-                latch.countDown();
+                releaseFuture.complete(null);
             });
             // 等待任务完成
             try {
-                latch.await();
-            } catch (InterruptedException e) {
+                releaseFuture.get();
+            } catch (Exception e) {
                 Thread.currentThread().interrupt();
                 break;
             }

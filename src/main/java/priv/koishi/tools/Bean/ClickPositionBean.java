@@ -52,12 +52,12 @@ public class ClickPositionBean {
     String clickTime;
 
     /**
-     * 点击次数
+     * 操作次数
      */
     String clickNum;
 
     /**
-     * 点击间隔时间（单位：毫秒）
+     * 操作间隔时间（单位：毫秒）
      */
     String clickInterval;
 

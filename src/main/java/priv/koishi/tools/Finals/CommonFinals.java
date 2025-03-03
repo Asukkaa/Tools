@@ -343,7 +343,9 @@ public class CommonFinals {
 
     public static final String text_changeWindow = "已切换到目标窗口";
 
-    public static final String text_finishedExecution = " 执行完毕";
+    public static final String text_executionTime = " 轮操作\n";
+
+    public static final String text_execution = "正在执行第 ";
 
     public static final String text_cancelTask = "按下 esc 即可取消任务\n";
 
