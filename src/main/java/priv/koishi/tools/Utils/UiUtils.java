@@ -379,8 +379,7 @@ public class UiUtils {
      * @param log        用于展示任务消息的文本框
      */
     public static <T> void removeTableViewData(TableView<T> tableView, Label fileNumber, Label log) {
-        ObservableList<T> nullData = FXCollections.observableArrayList(new ArrayList<>());
-        tableView.setItems(nullData);
+        tableView.getItems().clear();
         updateLabel(fileNumber, text_dataListNull);
         updateLabel(log, "");
         System.gc();
