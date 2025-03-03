@@ -192,7 +192,7 @@ public class ImgToExcelController extends CommonProperties {
         // 设置组件宽度
         double stageWidth = stage.getWidth();
         double tableWidth = stageWidth * 0.94;
-        table.setMaxWidth(stageWidth);
+        table.setMaxWidth(tableWidth);
         Node fileNumVbox = scene.lookup("#vbox_Img");
         fileNumVbox.setLayoutX(stageWidth * 0.03);
         Node groupId = scene.lookup("#groupId_Img");
