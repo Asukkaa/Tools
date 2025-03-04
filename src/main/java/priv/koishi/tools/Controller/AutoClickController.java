@@ -199,7 +199,7 @@ public class AutoClickController extends CommonProperties {
         // 设置组件高度
         double stageHeight = stage.getHeight();
         TableView<?> table = (TableView<?>) scene.lookup("#tableView_Click");
-        table.setPrefHeight(stageHeight * 0.4);
+        table.setPrefHeight(stageHeight * 0.35);
         // 设置组件宽度
         double stageWidth = stage.getWidth();
         double tableWidth = stageWidth * 0.95;
@@ -417,7 +417,7 @@ public class AutoClickController extends CommonProperties {
      */
     private void initFloatingWindow() {
         double width = 550;
-        double height = 90;
+        double height = 100;
         // 创建一个矩形作为浮窗的内容
         Rectangle rectangle = new Rectangle(width, height);
         // 设置透明度
