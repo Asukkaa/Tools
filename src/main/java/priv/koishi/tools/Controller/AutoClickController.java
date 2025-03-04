@@ -975,7 +975,7 @@ public class AutoClickController extends CommonProperties {
     public void loadAutoClick(ActionEvent actionEvent) throws IOException {
         if (autoClickTask == null && !recordClicking) {
             getConfig();
-            List<FileChooser.ExtensionFilter> extensionFilters = new ArrayList<>(Collections.singleton(new FileChooser.ExtensionFilter("Json", "*.json")));
+            List<FileChooser.ExtensionFilter> extensionFilters = new ArrayList<>(Collections.singleton(new FileChooser.ExtensionFilter("Perfect Mind Control", "*.pmc")));
             File selectedFile = creatFileChooser(actionEvent, inFilePath, extensionFilters, text_selectAutoFile);
             if (selectedFile != null) {
                 inFilePath = selectedFile.getPath();
@@ -1012,7 +1012,7 @@ public class AutoClickController extends CommonProperties {
             }
             String fileName = setDefaultFileName(outFileName_Click, defaultOutFileName);
             ObjectMapper objectMapper = new ObjectMapper();
-            String path = outFilePath + File.separator + fileName + json;
+            String path = outFilePath + File.separator + fileName + PMC;
             objectMapper.writeValue(new File(path), tableViewItems);
             updateLabel(log_Click, text_saveSuccess + path);
             log_Click.setTextFill(Color.GREEN);
@@ -1073,7 +1073,7 @@ public class AutoClickController extends CommonProperties {
         if (autoClickTask == null && !recordClicking) {
             List<File> files = dragEvent.getDragboard().getFiles();
             files.forEach(file -> {
-                if (json.equals(getFileType(file))) {
+                if (PMC.equals(getFileType(file))) {
                     // 接受拖放
                     dragEvent.acceptTransferModes(TransferMode.COPY);
                     dragEvent.consume();

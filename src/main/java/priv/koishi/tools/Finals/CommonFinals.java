@@ -181,7 +181,7 @@ public class CommonFinals {
             设置为空或者不合法将会以默认名称命名，默认名称为：""";
 
     public static final String tip_autoClickFileName = """
-            不用填写文件拓展名，导出文件为 .json 格式，如果导出文件夹已经存在同名文件将会覆盖
+            不用填写文件拓展名，导出文件为 .pmc 格式，如果导出文件夹已经存在同名文件将会覆盖
             文件名不能包含  <>:"/\\|?*
             设置为空或者不合法将会以默认名称命名，默认名称为：""";
 
@@ -193,8 +193,8 @@ public class CommonFinals {
             Windows 会直接点击对应窗口的对应坐标，macOS 需要先点击对应窗口将焦点切换过去才能点中对应窗口的对应坐标""";
 
     public static final String tip_version = """
-            version：1.1.0.0
-            2025年2月10日构建""";
+            version：2.0.0.0
+            2025年3月构建""";
 
     public static final String tip_updateSameCode = """
             选中列表中的数据后点击这个按钮，会将选中数据的第一行到最后一行，
@@ -389,7 +389,7 @@ public class CommonFinals {
 
     public static final String log = ".log";
 
-    public static final String json = ".json";
+    public static final String PMC = ".pmc";
 
     public static final String macos = "mac";
 
