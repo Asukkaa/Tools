@@ -1,8 +1,11 @@
 <h1>Tools</h1>
 
 ## 项目简介
-本项目是一个用 javafx 开发的文件信息管理工具，可以按照设置批量重命名文件、将图片按照名称与设置批量插入 excel 、按照 excel 分组与查询设置统计并导出文件信息、将指定目录下文件信息导出到excel中。
-其中 excel 相关功能是使用 apache poi 实现的，打包工具为 maven javafx:jlink 插件，使用 jdk 版本为 Amazon Corretto 21.0.5 。
+本项目是一个用 javafx 开发的工具集合，可以按照设置批量重命名文件、将图片按照名称与设置批量插入 excel 、按照 excel 分组与查询设置统计并导出文件信息、将指定目录下文件信息导出到excel中。
+可以编辑自动操作流程或录制自动操作流程，支持导入导出自动操作流程，支持循环自动操作。
+自动流程文件为 .pmc 文件，本质为 json 文件，更改文件拓展名只为方便过滤可导入的文件。
+其中 excel 相关功能是使用 apache poi 实现的， json 文件解析与封装为 jackson 实现，自动流程录制相关监听为 jnativehook 实现。
+打包工具为 maven javafx:jlink 插件，使用 jdk 版本为 Amazon Corretto 21.0.6 。
 
 ## 项目背景
 开发这个项目主要目的是为了辅助资产审计业务中统计资产时资产信息归档的工作，目前遇到的资产审计业务需要给资产贴上资产标签并拍照归档。
@@ -25,6 +28,10 @@ win 系统下程序最终打包为 exe 文件，直接将 app.bat 转换为 exe 
 bat 转 exe 工具使用的是 Bat To Exe Converter ，转换过程中 win 的安全中心报毒为正常现象信任即可。
 
 macOS 的 app 文件本质为文件夹，无需额外封装，所以可直接对启动脚本进行编辑，无需使用启动脚本的启动脚本这么绕的启动方式打包，只需替换项目中的 Tools.app 文件夹下的 lib 文件夹即可更新程序，其中 Info.plist 为 app 的基础信息，可进行版本号和文件名等基础信息的配置。
+
+因为自动操作工具需要监听全局键盘与鼠标时间，使用 jnativehook 实现，打包需要将 jnativehook-2.2.2.jar 所在文件夹下的 JNativeHook.x86_64.dll（win系统） 复制到 ../app/bin/ 下并更名为 JNativeHook.dll ;
+libJJNativeHook.x86_64.dylib （macOS） 复制到 ../Contents/MacOS/ 下并更名为 libJJNativeHook.dylib 。
+macOS下只能在应用程序文件夹下运行，且需要开启辅助操作权限。
 
 # 项目地址
 GitHub：https://github.com/Asukkaa/Tools
