@@ -732,6 +732,8 @@ public class AutoClickController extends CommonProperties {
                             if (timeline != null) {
                                 timeline.stop();
                                 timeline = null;
+                                log_Click.setTextFill(Color.BLUE);
+                                log_Click.setText("录制已结束");
                             }
                             // 改变要防重复点击的组件状态
                             changeDisableControls(disableControls, false);
