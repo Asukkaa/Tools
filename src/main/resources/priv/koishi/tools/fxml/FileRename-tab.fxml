@@ -9,8 +9,8 @@
             fx:controller="priv.koishi.tools.Controller.FileRenameController">
     <VBox fx:id="vbox_Re" spacing="10" AnchorPane.topAnchor="10">
         <HBox fx:id="warnHBox_Re" spacing="10">
-            <Label prefHeight="20" text="文件夹查询设置:"/>
-            <ChoiceBox fx:id="directoryNameType_Re" prefHeight="20" prefWidth="140">
+            <Label prefHeight="25" text="文件夹查询设置:"/>
+            <ChoiceBox fx:id="directoryNameType_Re" prefHeight="25" prefWidth="140">
                 <items>
                     <FXCollections fx:factory="observableArrayList">
                         <String fx:value="只查询文件"/>
@@ -22,8 +22,8 @@
                     <String fx:value="只查询文件"/>
                 </value>
             </ChoiceBox>
-            <Label prefHeight="20" text="隐藏文件查询设置:"/>
-            <ChoiceBox fx:id="hideFileType_Re" prefHeight="20" prefWidth="120">
+            <Label prefHeight="25" text="隐藏文件查询设置:"/>
+            <ChoiceBox fx:id="hideFileType_Re" prefHeight="25" prefWidth="120">
                 <items>
                     <FXCollections fx:factory="observableArrayList">
                         <String fx:value="不查询隐藏文件"/>
@@ -35,14 +35,14 @@
                     <String fx:value="不查询隐藏文件"/>
                 </value>
             </ChoiceBox>
-            <CheckBox fx:id="openDirectory_Re" prefHeight="20" selected="true" style="-fx-cursor: hand"
+            <CheckBox fx:id="openDirectory_Re" prefHeight="25" selected="true" style="-fx-cursor: hand"
                       text="重命名后打开文件夹"/>
-            <Label fx:id="warn_Re" text='注意：文件名不能包含 &lt;>:"/\|?*' prefHeight="20" textFill="red" alignment="CENTER_RIGHT"/>
+            <Label fx:id="warn_Re" text='注意：文件名不能包含 &lt;>:"/\|?*' prefHeight="25" textFill="red" alignment="CENTER_RIGHT"/>
         </HBox>
 
         <HBox fx:id="renameTypeHBox_Re" spacing="10">
-            <Label prefHeight="20" text="文件重命名依据设置:"/>
-            <ChoiceBox fx:id="renameType_Re" prefHeight="20" prefWidth="130" onAction="#renameTypeAction">
+            <Label prefHeight="25" text="文件重命名依据设置:"/>
+            <ChoiceBox fx:id="renameType_Re" prefHeight="25" prefWidth="130" onAction="#renameTypeAction">
                 <items>
                     <FXCollections fx:factory="observableArrayList">
                         <String fx:value="按编号规则重命名"/>
@@ -54,27 +54,27 @@
                     <String fx:value="按编号规则重命名"/>
                 </value>
             </ChoiceBox>
-            <Label prefHeight="20" text="需要识别的文件后缀名:"/>
+            <Label prefHeight="25" text="需要识别的文件后缀名:"/>
             <TextField fx:id="filterFileType_Re" prefHeight="20" prefWidth="300"/>
         </HBox>
 
         <VBox fx:id="codeRenameVBox_Re" spacing="10">
             <HBox spacing="10">
-                <Label prefHeight="20" text="文件名起始编号:"/>
+                <Label prefHeight="25" text="文件名起始编号:"/>
                 <TextField fx:id="startName_Re" prefHeight="20" prefWidth="100"/>
-                <Label prefHeight="20" text="文件编号位数:"/>
+                <Label prefHeight="25" text="文件编号位数:"/>
                 <TextField fx:id="startSize_Re" prefHeight="20" prefWidth="50"/>
-                <Label prefHeight="20" text="相同编号文件数量:"/>
+                <Label prefHeight="25" text="相同编号文件数量:"/>
                 <TextField fx:id="nameNum_Re" prefHeight="20" prefWidth="50"/>
-                <Label prefHeight="20" text="相同编号文件起始尾缀:"/>
+                <Label prefHeight="25" text="相同编号文件起始尾缀:"/>
                 <TextField fx:id="tag_Re" prefHeight="20" prefWidth="50"/>
-                <CheckBox onAction="#handleCheckBoxAction" fx:id="addSpace_Re" prefHeight="20" selected="true"
+                <CheckBox onAction="#handleCheckBoxAction" fx:id="addSpace_Re" prefHeight="25" selected="true"
                           style="-fx-cursor: hand" text="向分隔符左侧添加一个空格"/>
             </HBox>
 
             <HBox spacing="10">
-                <Label prefHeight="20" text="区分编码类型:"/>
-                <ChoiceBox onAction="#differenceCodeAction" fx:id="differenceCode_Re" prefHeight="20" prefWidth="150">
+                <Label prefHeight="25" text="区分编码类型:"/>
+                <ChoiceBox onAction="#differenceCodeAction" fx:id="differenceCode_Re" prefHeight="25" prefWidth="150">
                     <items>
                         <FXCollections fx:factory="observableArrayList">
                             <String fx:value="阿拉伯数字：123"/>
@@ -87,8 +87,8 @@
                         <String fx:value="阿拉伯数字：123"/>
                     </value>
                 </ChoiceBox>
-                <Label prefHeight="20" text="分隔符:"/>
-                <ChoiceBox fx:id="subCode_Re" prefHeight="20" prefWidth="150">
+                <Label prefHeight="25" text="分隔符:"/>
+                <ChoiceBox fx:id="subCode_Re" prefHeight="25" prefWidth="150">
                     <items>
                         <FXCollections fx:factory="observableArrayList">
                             <String fx:value="英文括号：01 (1).xx"/>
@@ -106,8 +106,8 @@
 
         <VBox fx:id="strRenameVBox_Re" spacing="10">
             <HBox spacing="10">
-                <Label prefHeight="20" text="匹配字符规则:"/>
-                <ChoiceBox onAction="#targetStrAction" fx:id="targetStr_Re" prefHeight="20" prefWidth="160">
+                <Label prefHeight="25" text="匹配字符规则:"/>
+                <ChoiceBox onAction="#targetStrAction" fx:id="targetStr_Re" prefHeight="25" prefWidth="160">
                     <items>
                         <FXCollections fx:factory="observableArrayList">
                             <String fx:value="指定字符串"/>
@@ -122,11 +122,10 @@
                     </value>
                 </ChoiceBox>
                 <HBox fx:id="targetStrHBox_Re" spacing="10" visible="false">
-                    <Label fx:id="typeLabel_Re" prefHeight="20" text="要匹配的字符串:"/>
-                    <TextField fx:id="renameValue_Re" prefHeight="20"
-                               prefWidth="100"/>
-                    <Label prefHeight="20" text="重命名方法:"/>
-                    <ChoiceBox onAction="#behaviorAction" fx:id="renameBehavior_Re" prefHeight="20" prefWidth="120">
+                    <Label fx:id="typeLabel_Re" prefHeight="25" text="要匹配的字符串:"/>
+                    <TextField fx:id="renameValue_Re" prefHeight="20" prefWidth="100"/>
+                    <Label prefHeight="25" text="重命名方法:"/>
+                    <ChoiceBox onAction="#behaviorAction" fx:id="renameBehavior_Re" prefHeight="25" prefWidth="120">
                         <items>
                             <FXCollections fx:factory="observableArrayList">
                                 <String fx:value="替换所有字符为:"/>
@@ -137,15 +136,14 @@
                             <String fx:value="替换所有字符为:"/>
                         </value>
                     </ChoiceBox>
-                    <TextField fx:id="renameStr_Re" prefHeight="20"
-                               prefWidth="100" visible="false"/>
+                    <TextField fx:id="renameStr_Re" prefHeight="20" prefWidth="100" visible="false"/>
                 </HBox>
             </HBox>
 
             <HBox fx:id="behaviorHBox_Re" spacing="10" visible="false">
-                <Label prefHeight="20" text="左侧:"/>
+                <Label prefHeight="25" text="左侧:"/>
                 <TextField fx:id="left_Re" prefHeight="20" prefWidth="50"/>
-                <ChoiceBox onAction="#leftBehaviorAction" fx:id="leftBehavior_Re" prefHeight="20" prefWidth="160">
+                <ChoiceBox onAction="#leftBehaviorAction" fx:id="leftBehavior_Re" prefHeight="25" prefWidth="160">
                     <items>
                         <FXCollections fx:factory="observableArrayList">
                             <String fx:value="插入字符串为:"/>
@@ -162,9 +160,9 @@
                     </value>
                 </ChoiceBox>
                 <TextField fx:id="leftValue_Re" prefHeight="20" prefWidth="100"/>
-                <Label prefHeight="20" text="右侧:"/>
+                <Label prefHeight="25" text="右侧:"/>
                 <TextField fx:id="right_Re" prefHeight="20" prefWidth="50"/>
-                <ChoiceBox onAction="#rightBehaviorAction" fx:id="rightBehavior_Re" prefHeight="20" prefWidth="160">
+                <ChoiceBox onAction="#rightBehaviorAction" fx:id="rightBehavior_Re" prefHeight="25" prefWidth="160">
                     <items>
                         <FXCollections fx:factory="observableArrayList">
                             <String fx:value="插入字符串为:"/>
@@ -186,27 +184,27 @@
 
         <VBox fx:id="excelRenameVBox_Re" spacing="10">
             <HBox spacing="10">
-                <Label prefHeight="20" text="excel表名称:"/>
+                <Label prefHeight="25" text="excel表名称:"/>
                 <TextField fx:id="sheetName_Re" prefHeight="20" prefWidth="100"/>
-                <Label prefHeight="20" text="读取预留行:"/>
+                <Label prefHeight="25" text="读取预留行:"/>
                 <TextField fx:id="readRow_Re" prefHeight="20" prefWidth="50"/>
-                <Label prefHeight="20" text="读取预留列:"/>
+                <Label prefHeight="25" text="读取预留列:"/>
                 <TextField fx:id="readCell_Re" prefHeight="20" prefWidth="50"/>
-                <Label prefHeight="20" text="读取行数:"/>
+                <Label prefHeight="25" text="读取行数:"/>
                 <TextField fx:id="maxRow_Re" prefHeight="20" prefWidth="50"/>
             </HBox>
 
             <HBox spacing="10">
                 <Button fx:id="excelPathButton_Re" onAction="#getExcelPath" style="-fx-cursor: hand"
                         text="选择excel模板位置"/>
-                <Label fx:id="excelPath_Re" prefHeight="20" style="-fx-font-size: 15px;"/>
+                <Label fx:id="excelPath_Re" prefHeight="25" style="-fx-font-size: 15px;"/>
             </HBox>
         </VBox>
 
         <HBox spacing="10">
             <Button fx:id="fileButton_Re" onAction="#inDirectoryButton" style="-fx-cursor: hand"
                     text="选择要读取的文件夹"/>
-            <Label fx:id="inPath_Re" prefHeight="20" prefWidth="300" style="-fx-font-size: 15px;"/>
+            <Label fx:id="inPath_Re" prefHeight="25" prefWidth="300" style="-fx-font-size: 15px;"/>
         </HBox>
 
         <HBox fx:id="fileNumberHBox_Re" spacing="10">

@@ -8,48 +8,48 @@
             stylesheets="@../css/Styles.css" fx:controller="priv.koishi.tools.Controller.AutoClickController">
     <VBox fx:id="vbox_Click" spacing="10" AnchorPane.topAnchor="10">
         <HBox fx:id="cancelTipHBox_Click" spacing="10">
-            <Label prefHeight="20" prefWidth="250" fx:id="mousePosition_Click"/>
+            <Label prefHeight="25" prefWidth="250" fx:id="mousePosition_Click"/>
 
-            <Label prefHeight="20" textFill="coral" text="提示：1 秒 = 1000 毫秒  列表中每条数据为一步，每步可操作多次"/>
+            <Label prefHeight="25" textFill="coral" text="提示：1 秒 = 1000 毫秒  列表中每条数据为一步，每步可操作多次"/>
 
-            <Label fx:id="cancelTip_Click" prefHeight="20" textFill="red" alignment="CENTER_RIGHT"
+            <Label fx:id="cancelTip_Click" prefHeight="25" textFill="red" alignment="CENTER_RIGHT"
                    text="执行或录制自动化任务时按下 esc 即可取消任务"/>
         </HBox>
 
         <HBox spacing="10">
-            <Label text="鼠标点击起始横(X)坐标："/>
+            <Label prefHeight="25" text="鼠标点击起始横(X)坐标："/>
             <TextField fx:id="mouseStartX_Click" prefWidth="80"/>
 
-            <Label text="鼠标点击起始纵(Y)坐标："/>
+            <Label prefHeight="25" text="鼠标点击起始纵(Y)坐标："/>
             <TextField fx:id="mouseStartY_Click" prefWidth="80"/>
 
-            <Label text="鼠标点击结束横(X)坐标："/>
+            <Label prefHeight="25" text="鼠标点击结束横(X)坐标："/>
             <TextField fx:id="mouseEndX_Click" prefWidth="80"/>
 
-            <Label text="鼠标点击结束纵(Y)坐标："/>
+            <Label prefHeight="25" text="鼠标点击结束纵(Y)坐标："/>
             <TextField fx:id="mouseEndY_Click" prefWidth="80"/>
         </HBox>
 
         <HBox spacing="10">
-            <Label text="每步执行前等待时间："/>
+            <Label prefHeight="25" text="每步执行前等待时间："/>
             <TextField fx:id="wait_Click" prefWidth="80"/>
 
-            <Label text="每步操作次数："/>
+            <Label prefHeight="25" text="每步操作次数："/>
             <TextField fx:id="clickNumBer_Click" prefWidth="80"/>
 
-            <Label text="单次操作点击时长："/>
+            <Label prefHeight="25" text="单次操作点击时长："/>
             <TextField fx:id="timeClick_Click" prefWidth="80"/>
 
-            <Label text="单次操作点击间隔时间："/>
+            <Label prefHeight="25" text="单次操作点击间隔时间："/>
             <TextField fx:id="interval_Click" prefWidth="80"/>
         </HBox>
 
         <HBox spacing="10">
-            <Label text="操作名称："/>
+            <Label prefHeight="25" text="操作名称："/>
             <TextField fx:id="clickName_Click" prefWidth="150"/>
 
-            <Label text="操作类型："/>
-            <ChoiceBox fx:id="clickType_Click" prefHeight="20" prefWidth="120">
+            <Label prefHeight="25" text="操作类型："/>
+            <ChoiceBox fx:id="clickType_Click" prefHeight="25" prefWidth="120">
                 <items>
                     <FXCollections fx:factory="observableArrayList">
                         <String fx:value="鼠标左键点击"/>
@@ -65,33 +65,33 @@
                 </value>
             </ChoiceBox>
 
-            <Label text="循环次数："/>
+            <Label prefHeight="25" text="循环次数："/>
             <TextField fx:id="loopTime_Click" prefWidth="80"/>
 
-            <Label text="导出自动流程文件名称："/>
+            <Label prefHeight="25" text="导出自动流程文件名称："/>
             <TextField fx:id="outFileName_Click" prefWidth="140"/>
 
-            <CheckBox fx:id="openDirectory_Click" prefHeight="20" selected="true" style="-fx-cursor: hand" text="导出后打开文件夹"/>
+            <CheckBox fx:id="openDirectory_Click" prefHeight="25" selected="true" style="-fx-cursor: hand" text="导出后打开文件夹"/>
         </HBox>
 
         <HBox spacing="10">
             <Button fx:id="addOutPath_Click" onAction="#addOutPath" style="-fx-cursor: hand" text="选择导出文件夹"/>
-            <Label fx:id="outPath_Click" prefHeight="20" prefWidth="300" style="-fx-font-size: 15px;"/>
+            <Label fx:id="outPath_Click" prefHeight="25" prefWidth="300" style="-fx-font-size: 15px;"/>
 
-            <Label text="录制自动操作前准备时间："/>
+            <Label prefHeight="25" text="录制自动操作前准备时间："/>
             <TextField fx:id="preparationTime_Click" prefWidth="50"/>
         </HBox>
 
         <HBox spacing="10">
-            <CheckBox fx:id="firstClick_Click" prefHeight="20" style="-fx-cursor: hand" text="执行自动流程前点击第一个起始坐标"/>
+            <CheckBox fx:id="firstClick_Click" prefHeight="25" style="-fx-cursor: hand" text="执行自动流程前点击第一个起始坐标"/>
 
-            <CheckBox fx:id="hideWindowRun_Click" prefHeight="20" style="-fx-cursor: hand" text="执行自动流程前最小化本程序" selected="true"/>
+            <CheckBox fx:id="hideWindowRun_Click" prefHeight="25" style="-fx-cursor: hand" text="执行自动流程前最小化本程序" selected="true"/>
 
-            <CheckBox fx:id="showWindowRun_Click" prefHeight="20" style="-fx-cursor: hand" text="执行自动流程结束后弹出本程序" selected="true"/>
+            <CheckBox fx:id="showWindowRun_Click" prefHeight="25" style="-fx-cursor: hand" text="执行自动流程结束后弹出本程序" selected="true"/>
 
-            <CheckBox fx:id="hideWindowRecord_Click" prefHeight="20" style="-fx-cursor: hand" text="录制自动流程前最小化本程序" selected="true"/>
+            <CheckBox fx:id="hideWindowRecord_Click" prefHeight="25" style="-fx-cursor: hand" text="录制自动流程前最小化本程序" selected="true"/>
 
-            <CheckBox fx:id="showWindowRecord_Click" prefHeight="20" style="-fx-cursor: hand" text="录制自动流程结束后弹出本程序" selected="true"/>
+            <CheckBox fx:id="showWindowRecord_Click" prefHeight="25" style="-fx-cursor: hand" text="录制自动流程结束后弹出本程序" selected="true"/>
         </HBox>
 
         <HBox fx:id="fileNumberHBox_Click" spacing="10">

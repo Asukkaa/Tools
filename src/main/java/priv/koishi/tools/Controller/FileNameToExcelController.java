@@ -158,7 +158,7 @@ public class FileNameToExcelController extends CommonProperties {
         // 设置组件高度
         double stageHeight = stage.getHeight();
         TableView<?> table = (TableView<?>) scene.lookup("#tableView_Name");
-        table.setPrefHeight(stageHeight * 0.5);
+        table.setPrefHeight(stageHeight * 0.45);
         // 设置组件宽度
         double stageWidth = stage.getWidth();
         double tableWidth = stageWidth * 0.94;
