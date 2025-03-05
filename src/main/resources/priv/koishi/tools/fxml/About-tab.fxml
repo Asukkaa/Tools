@@ -8,7 +8,10 @@
 
         <Label prefHeight="25" text="关于："/>
 
-        <Label prefHeight="25" text="Tools 是一个由 javafx 实现的文件处理小工具，可以用来获取文件信息、批量修改文件名称、按照设置流程进行自动操作。"/>
+        <HBox >
+            <Label prefHeight="25" fx:id="title_Abt"/>
+            <Label prefHeight="25" text=" 是一个由 javafx 实现的文件处理小工具，可以用来获取文件信息、批量修改文件名称、按照设置流程进行自动操作。"/>
+        </HBox>
 
         <Label prefHeight="25" text="excel 相关功能只支持 .xlsx 与 .xls 格式文件，如果需要使用 excel模板 则导出的文件格式只能与模板文件格式相同。"/>
 
