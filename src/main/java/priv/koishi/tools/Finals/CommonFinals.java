@@ -169,7 +169,9 @@ public class CommonFinals {
 
     public static final String tip_showWindowRecord = "勾选后录制自动操作结束后将会弹出本程序的窗口";
 
-    public static final String tip_preparationTime = "在录制自动操作前将会等待的时间，只能填自然数，单位秒，不填默认为 ";
+    public static final String tip_preparationRecordTime = "在录制自动操作前将会等待的时间，只能填自然数，单位秒，不填默认为 ";
+
+    public static final String tip_preparationRunTime = "在运行自动操作前将会等待的时间，只能填自然数，单位秒，不填默认为 ";
 
     public static final String tip_recordClick = """
             点击录制自动操作按钮将会等待设置的准备时间后开始录制自动操作
@@ -364,6 +366,8 @@ public class CommonFinals {
     public static final String text_recordClicking = " 正在录制操作";
 
     public static final String text_preparation = " 秒后开始录制操作";
+
+    public static final String text_run = " 秒后开始自动操作";
 
     public static final String text_recorded = "已记录 ";
 
@@ -581,7 +585,9 @@ public class CommonFinals {
 
     public static final String key_lastShowWindowRecord = "lastShowWindowRecord";
 
-    public static final String key_lastPreparationTime = "lastPreparationTime";
+    public static final String key_lastPreparationRecordTime = "lastPreparationRecordTime";
+
+    public static final String key_lastPreparationRunTime = "lastPreparationRunTime";
 
     public static final String key_defaultOutFileName = "defaultOutFileName";
 
@@ -599,7 +605,9 @@ public class CommonFinals {
 
     public static final String key_defaultStartNameNum = "defaultStartNameNum";
 
-    public static final String key_defaultPreparationTime = "defaultPreparationTime";
+    public static final String key_defaultPreparationRecordTime = "defaultPreparationRecordTime";
+
+    public static final String key_defaultPreparationRunTime = "defaultPreparationRunTime";
 
     /**
      * excel插入图片功能配置文件路径

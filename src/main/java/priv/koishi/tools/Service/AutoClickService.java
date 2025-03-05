@@ -1,5 +1,6 @@
 package priv.koishi.tools.Service;
 
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.control.Label;
@@ -14,7 +15,6 @@ import java.util.concurrent.CompletableFuture;
 import static javafx.scene.input.MouseButton.NONE;
 import static javafx.scene.input.MouseButton.PRIMARY;
 import static priv.koishi.tools.Finals.CommonFinals.*;
-import static priv.koishi.tools.Utils.UiUtils.changeDisableControls;
 
 /**
  * 自动点击线程任务类
@@ -34,8 +34,10 @@ public class AutoClickService {
         return new Task<>() {
             @Override
             protected Void call() {
-                // 改变要防重复点击的组件状态
-                changeDisableControls(taskBean, true);
+                Timeline timeline = taskBean.getRunTimeline();
+                if (timeline != null) {
+                    timeline.stop();
+                }
                 List<ClickPositionBean> tableViewItems = taskBean.getBeanList();
                 Label floatingLabel = taskBean.getFloatingLabel();
                 // 执行自动流程前点击第一个起始坐标
