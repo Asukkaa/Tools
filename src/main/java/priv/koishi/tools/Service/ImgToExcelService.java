@@ -50,11 +50,6 @@ public class ImgToExcelService {
     private static FileInputStream fileInputStream;
 
     /**
-     * 图片输入流
-     */
-    private static InputStream inputStream;
-
-    /**
      * 构建分组的图片excel
      *
      * @param taskBean    线程设置参数
@@ -177,15 +172,12 @@ public class ImgToExcelService {
                 anchor.setAnchorType(ClientAnchor.AnchorType.MOVE_DONT_RESIZE);
                 String extension = getFileType(new File(i));
                 // 读取图片文件
-                inputStream = Files.newInputStream(Paths.get(i));
-                try {
+                try (InputStream inputStream = Files.newInputStream(Paths.get(i))) {
                     if (jpg.equals(extension) || jpeg.equals(extension)) {
                         drawing.createPicture(anchor, sxssfWorkbook.addPicture(inputStream.readAllBytes(), Workbook.PICTURE_TYPE_JPEG));
                     } else if (png.equals(extension)) {
                         drawing.createPicture(anchor, sxssfWorkbook.addPicture(inputStream.readAllBytes(), Workbook.PICTURE_TYPE_PNG));
                     }
-                } finally {
-                    inputStream.close();
                 }
                 sheet.setColumnWidth(cellNum, 256 * excelConfig.getImgWidth());
                 sheet.getRow(rowNum).setHeightInPoints(excelConfig.getImgHeight());
@@ -213,10 +205,6 @@ public class ImgToExcelService {
         if (fileInputStream != null) {
             fileInputStream.close();
             fileInputStream = null;
-        }
-        if (inputStream != null) {
-            inputStream.close();
-            inputStream = null;
         }
     }
 
