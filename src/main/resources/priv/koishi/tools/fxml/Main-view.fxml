@@ -7,45 +7,59 @@
       fx:controller="priv.koishi.tools.Controller.MainController">
     <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE">
         <Tab style="-fx-cursor: hand" fx:id="fileRenameTab" text="按指定规则批量重命名文件">
-            <AnchorPane>
-                <fx:include source="FileRename-tab.fxml"/>
-            </AnchorPane>
+            <ScrollPane fitToWidth="true" fitToHeight="true">
+                <AnchorPane>
+                    <fx:include source="FileRename-tab.fxml"/>
+                </AnchorPane>
+            </ScrollPane>
         </Tab>
 
         <Tab style="-fx-cursor: hand" fx:id="imgToExcelTab" text="将图片与excel匹配并插入">
-            <AnchorPane>
-                <fx:include source="ImgToExcel-tab.fxml"/>
-            </AnchorPane>
+            <ScrollPane fitToWidth="true" fitToHeight="true">
+                <AnchorPane>
+                    <fx:include source="ImgToExcel-tab.fxml"/>
+                </AnchorPane>
+            </ScrollPane>
         </Tab>
 
         <Tab style="-fx-cursor: hand" fx:id="fileNumToExcelTab" text="分组统计文件夹下文件数量">
-            <AnchorPane>
-                <fx:include source="FileNumToExcel-tab.fxml"/>
-            </AnchorPane>
+            <ScrollPane fitToWidth="true" fitToHeight="true">
+                <AnchorPane>
+                    <fx:include source="FileNumToExcel-tab.fxml"/>
+                </AnchorPane>
+            </ScrollPane>
         </Tab>
 
         <Tab style="-fx-cursor: hand" fx:id="fileNameToExcelTab" text="获取文件夹下的文件信息">
-            <AnchorPane>
-                <fx:include source="FileNameToExcel-tab.fxml"/>
-            </AnchorPane>
+            <ScrollPane fitToWidth="true" fitToHeight="true">
+                <AnchorPane>
+                    <fx:include source="FileNameToExcel-tab.fxml"/>
+                </AnchorPane>
+            </ScrollPane>
         </Tab>
 
         <Tab style="-fx-cursor: hand" fx:id="autoClickTab" text="自动操作工具">
-            <AnchorPane>
-                <fx:include source="AutoClick-tab.fxml"/>
-            </AnchorPane>
+            <ScrollPane fitToWidth="true" fitToHeight="true">
+                <AnchorPane>
+                    <fx:include source="AutoClick-tab.fxml"/>
+                </AnchorPane>
+            </ScrollPane>
         </Tab>
 
         <Tab style="-fx-cursor: hand" fx:id="settingTab" text="设置">
-            <AnchorPane>
-                <fx:include source="Setting-tab.fxml"/>
-            </AnchorPane>
+            <ScrollPane fitToWidth="true" fitToHeight="true">
+                <AnchorPane>
+                    <fx:include source="Setting-tab.fxml"/>
+                </AnchorPane>
+            </ScrollPane>
         </Tab>
 
         <Tab style="-fx-cursor: hand" fx:id="aboutTab" text="关于">
-            <AnchorPane>
-                <fx:include source="About-tab.fxml"/>
-            </AnchorPane>
+            <ScrollPane fitToWidth="true" fitToHeight="true">
+                <AnchorPane>
+                    <fx:include source="About-tab.fxml"/>
+                </AnchorPane>
+            </ScrollPane>
         </Tab>
     </TabPane>
 </VBox>

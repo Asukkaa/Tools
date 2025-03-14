@@ -1,5 +1,6 @@
 package priv.koishi.tools.Bean;
 
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -87,7 +88,7 @@ public class TaskBean<T> {
     /**
      * 要防重复点击的组件
      */
-    List<Control> disableControls;
+    List<Node> disableNodes;
 
     /**
      * 默认排序类型

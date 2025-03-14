@@ -1,5 +1,6 @@
 package priv.koishi.tools.Controller;
 
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -36,10 +37,7 @@ import java.util.concurrent.ExecutorService;
 import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.Service.FileNameToExcelService.buildFileNameExcel;
 import static priv.koishi.tools.Service.ReadDataService.readFile;
-import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
-import static priv.koishi.tools.Utils.CommonUtils.checkRunningOutputStream;
-import static priv.koishi.tools.Utils.FileUtils.getFileType;
-import static priv.koishi.tools.Utils.FileUtils.readAllFiles;
+import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
@@ -90,7 +88,7 @@ public class FileNameToExcelController extends CommonProperties {
     /**
      * 要防重复点击的组件
      */
-    private static final List<Control> disableControls = new ArrayList<>();
+    private static final List<Node> disableNodes = new ArrayList<>();
 
     /**
      * 线程池
@@ -112,6 +110,11 @@ public class FileNameToExcelController extends CommonProperties {
      */
     private Task<Workbook> buildExcelTask;
 
+    /**
+     * 程序主场景
+     */
+    private Scene mainScene;
+
     @FXML
     private AnchorPane anchorPane_Name;
 
@@ -131,7 +134,8 @@ public class FileNameToExcelController extends CommonProperties {
     private TableColumn<FileBean, Integer> id_Name;
 
     @FXML
-    private TableColumn<FileBean, String> name_Name, path_Name, size_Name, fileType_Name, creatDate_Name, updateDate_Name, showStatus_Name;
+    private TableColumn<FileBean, String> name_Name, path_Name, size_Name, fileType_Name,
+            creatDate_Name, updateDate_Name, showStatus_Name;
 
     @FXML
     private ChoiceBox<String> excelType_Name, hideFileType_Name, directoryNameType_Name;
@@ -143,10 +147,12 @@ public class FileNameToExcelController extends CommonProperties {
     private Label outPath_Name, excelPath_Name, fileNumber_Name, inPath_Name, log_Name, tip_Name, excelTypeLabel_Name;
 
     @FXML
-    private CheckBox recursion_Name, openDirectory_Name, openFile_Name, showFileType_Name, exportTitle_Name, exportFullList_Name;
+    private CheckBox recursion_Name, openDirectory_Name, openFile_Name, showFileType_Name,
+            exportTitle_Name, exportFullList_Name;
 
     @FXML
-    private Button fileButton_Name, clearButton_Name, exportButton_Name, reselectButton_Name, removeExcelButton_Name, excelPathButton_Name, outPathButton_Name;
+    private Button fileButton_Name, clearButton_Name, exportButton_Name, reselectButton_Name,
+            removeExcelButton_Name, excelPathButton_Name, outPathButton_Name;
 
     /**
      * 组件自适应宽高
@@ -260,15 +266,14 @@ public class FileNameToExcelController extends CommonProperties {
             if (inFileList.isEmpty()) {
                 throw new Exception(text_selectNull);
             }
-            Scene scene = anchorPane_Name.getScene();
-            ChoiceBox<?> sort = (ChoiceBox<?>) scene.lookup("#sort_Set");
+            ChoiceBox<?> sort = (ChoiceBox<?>) mainScene.lookup("#sort_Set");
             String sortValue = (String) sort.getValue();
-            CheckBox reverseSort = (CheckBox) scene.lookup("#reverseSort_Set");
+            CheckBox reverseSort = (CheckBox) mainScene.lookup("#reverseSort_Set");
             TaskBean<FileBean> taskBean = new TaskBean<>();
             taskBean.setShowFileType(showFileType_Name.isSelected())
                     .setReverseSort(reverseSort.isSelected())
                     .setComparatorTableColumn(size_Name)
-                    .setDisableControls(disableControls)
+                    .setDisableNodes(disableNodes)
                     .setProgressBar(progressBar_Name)
                     .setMassageLabel(fileNumber_Name)
                     .setTableView(tableView_Name)
@@ -321,23 +326,23 @@ public class FileNameToExcelController extends CommonProperties {
         InputStream input = checkRunningInputStream(configFile_Name);
         prop.load(input);
         if (activation.equals(prop.getProperty(key_loadLastConfig))) {
-            setControlLastConfig(inPath_Name, prop, key_lastInPath, false, anchorPane_Name);
-            setControlLastConfig(outPath_Name, prop, key_lastOutPath, false, anchorPane_Name);
-            setControlLastConfig(openFile_Name, prop, key_lastOpenFile, false, null);
-            setControlLastConfig(startRow_Name, prop, key_lastStartRow, false, null);
-            setControlLastConfig(excelPath_Name, prop, key_lastExcelPath, false, anchorPane_Name);
-            setControlLastConfig(excelName_Name, prop, key_lastExcelName, false, null);
-            setControlLastConfig(sheetName_Name, prop, key_lastSheetName, false, null);
-            setControlLastConfig(excelType_Name, prop, key_lastExcelType, false, null);
-            setControlLastConfig(startCell_Name, prop, key_lastStartCell, false, null);
-            setControlLastConfig(recursion_Name, prop, key_lastRecursion, false, null);
-            setControlLastConfig(exportTitle_Name, prop, key_lastExportTitle, false, null);
-            setControlLastConfig(showFileType_Name, prop, key_lastShowFileType, false, null);
-            setControlLastConfig(hideFileType_Name, prop, key_lastHideFileType, false, null);
-            setControlLastConfig(openDirectory_Name, prop, key_lastOpenDirectory, false, null);
-            setControlLastConfig(exportFullList_Name, prop, key_lastExportFullList, false, null);
-            setControlLastConfig(filterFileType_Name, prop, key_lastFilterFileType, false, null);
-            setControlLastConfig(directoryNameType_Name, prop, key_lastDirectoryNameType, false, null);
+            setControlLastConfig(openFile_Name, prop, key_lastOpenFile);
+            setControlLastConfig(startRow_Name, prop, key_lastStartRow);
+            setControlLastConfig(excelName_Name, prop, key_lastExcelName);
+            setControlLastConfig(sheetName_Name, prop, key_lastSheetName);
+            setControlLastConfig(excelType_Name, prop, key_lastExcelType);
+            setControlLastConfig(startCell_Name, prop, key_lastStartCell);
+            setControlLastConfig(recursion_Name, prop, key_lastRecursion);
+            setControlLastConfig(exportTitle_Name, prop, key_lastExportTitle);
+            setControlLastConfig(showFileType_Name, prop, key_lastShowFileType);
+            setControlLastConfig(hideFileType_Name, prop, key_lastHideFileType);
+            setControlLastConfig(openDirectory_Name, prop, key_lastOpenDirectory);
+            setControlLastConfig(exportFullList_Name, prop, key_lastExportFullList);
+            setControlLastConfig(filterFileType_Name, prop, key_lastFilterFileType);
+            setControlLastConfig(inPath_Name, prop, key_lastInPath, anchorPane_Name);
+            setControlLastConfig(outPath_Name, prop, key_lastOutPath, anchorPane_Name);
+            setControlLastConfig(directoryNameType_Name, prop, key_lastDirectoryNameType);
+            setControlLastConfig(excelPath_Name, prop, key_lastExcelPath, anchorPane_Name);
             String excelPath = prop.getProperty(key_lastExcelPath);
             if (StringUtils.isNotBlank(excelPath)) {
                 removeExcelButton_Name.setVisible(true);
@@ -393,14 +398,16 @@ public class FileNameToExcelController extends CommonProperties {
     /**
      * 设置javafx单元格宽度
      */
-    private void setDisableControls() {
-        disableControls.add(fileButton_Name);
-        disableControls.add(clearButton_Name);
-        disableControls.add(exportButton_Name);
-        disableControls.add(showFileType_Name);
-        disableControls.add(outPathButton_Name);
-        disableControls.add(reselectButton_Name);
-        disableControls.add(excelPathButton_Name);
+    private void setDisableNodes() {
+        disableNodes.add(fileButton_Name);
+        disableNodes.add(clearButton_Name);
+        disableNodes.add(exportButton_Name);
+        disableNodes.add(showFileType_Name);
+        disableNodes.add(outPathButton_Name);
+        disableNodes.add(reselectButton_Name);
+        disableNodes.add(excelPathButton_Name);
+        Node autoClickTab = mainScene.lookup("#autoClickTab");
+        disableNodes.add(autoClickTab);
     }
 
     /**
@@ -428,8 +435,6 @@ public class FileNameToExcelController extends CommonProperties {
     private void initialize() throws IOException {
         // 读取全局变量配置
         getConfig();
-        // 设置要防重复点击的组件
-        setDisableControls();
         // 设置鼠标悬停提示
         setToolTip();
         // 设置javafx单元格宽度
@@ -438,6 +443,11 @@ public class FileNameToExcelController extends CommonProperties {
         textFieldChangeListener();
         // 设置初始配置值为上次配置值
         setLastConfig();
+        Platform.runLater(() -> {
+            mainScene = anchorPane_Name.getScene();
+            // 设置要防重复点击的组件
+            setDisableNodes();
+        });
     }
 
     /**
@@ -544,7 +554,7 @@ public class FileNameToExcelController extends CommonProperties {
                     .setOutPath(outFilePath);
             TaskBean<FileBean> taskBean = new TaskBean<>();
             taskBean.setShowFileType(showFileType_Name.isSelected())
-                    .setDisableControls(disableControls)
+                    .setDisableNodes(disableNodes)
                     .setProgressBar(progressBar_Name)
                     .setTableView(tableView_Name)
                     .setMassageLabel(log_Name)

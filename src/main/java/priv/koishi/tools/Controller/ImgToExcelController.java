@@ -1,5 +1,6 @@
 package priv.koishi.tools.Controller;
 
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -39,8 +40,6 @@ import java.util.concurrent.ExecutorService;
 import static priv.koishi.tools.Service.ImgToExcelService.buildImgGroupExcel;
 import static priv.koishi.tools.Service.ReadDataService.readExcel;
 import static priv.koishi.tools.Finals.CommonFinals.*;
-import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
-import static priv.koishi.tools.Utils.CommonUtils.checkRunningOutputStream;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
@@ -118,7 +117,7 @@ public class ImgToExcelController extends CommonProperties {
     /**
      * 要防重复点击的组件
      */
-    private static final List<Control> disableControls = new ArrayList<>();
+    private static final List<Node> disableNodes = new ArrayList<>();
 
     /**
      * 线程池
@@ -145,6 +144,11 @@ public class ImgToExcelController extends CommonProperties {
      */
     private Task<List<FileNumBean>> readExcelTask;
 
+    /**
+     * 程序主场景
+     */
+    private Scene mainScene;
+
     @FXML
     private AnchorPane anchorPane_Img;
 
@@ -164,19 +168,24 @@ public class ImgToExcelController extends CommonProperties {
     private TableView<FileNumBean> tableView_Img;
 
     @FXML
-    private TableColumn<FileNumBean, String> groupId_Img, groupName_Img, groupNumber_Img, fileName_Img, fileUnitSize_Img;
+    private TableColumn<FileNumBean, String> groupId_Img, groupName_Img, groupNumber_Img,
+            fileName_Img, fileUnitSize_Img;
 
     @FXML
-    private Label inPath_Img, outPath_Img, excelPath_Img, fileNumber_Img, log_Img, tip_Img, excelType_Img, excelTypeLabel_Img;
+    private Label inPath_Img, outPath_Img, excelPath_Img, fileNumber_Img, log_Img, tip_Img,
+            excelType_Img, excelTypeLabel_Img;
 
     @FXML
-    private Button fileButton_Img, reselectButton_Img, clearButton_Img, exportButton_Img, cancel_Img, outPathButton_Img, excelPathButton_Img;
+    private Button fileButton_Img, reselectButton_Img, clearButton_Img, exportButton_Img,
+            cancel_Img, outPathButton_Img, excelPathButton_Img;
 
     @FXML
-    private TextField imgWidth_Img, imgHeight_Img, excelName_Img, sheetName_Img, subCode_Img, startRow_Img, startCell_Img, readRow_Img, readCell_Img, maxRow_Img, maxImgNum_Img;
+    private TextField imgWidth_Img, imgHeight_Img, excelName_Img, sheetName_Img, subCode_Img,
+            startRow_Img, startCell_Img, readRow_Img, readCell_Img, maxRow_Img, maxImgNum_Img;
 
     @FXML
-    private CheckBox jpg_Img, png_Img, jpeg_Img, recursion_Img, showFileType_Img, openDirectory_Img, openFile_Img, noImg_Img, exportTitle_Img, exportFileNum_Img, exportFileSize_Img;
+    private CheckBox jpg_Img, png_Img, jpeg_Img, recursion_Img, showFileType_Img, openDirectory_Img,
+            openFile_Img, noImg_Img, exportTitle_Img, exportFileNum_Img, exportFileSize_Img;
 
     /**
      * 组件自适应宽高
@@ -381,7 +390,7 @@ public class ImgToExcelController extends CommonProperties {
             TaskBean<FileNumBean> taskBean = new TaskBean<>();
             taskBean.setShowFileType(showFileType_Img.isSelected())
                     .setComparatorTableColumn(fileUnitSize_Img)
-                    .setDisableControls(disableControls)
+                    .setDisableNodes(disableNodes)
                     .setSubCode(subCode_Img.getText())
                     .setMassageLabel(fileNumber_Img)
                     .setProgressBar(progressBar_Img)
@@ -436,29 +445,29 @@ public class ImgToExcelController extends CommonProperties {
         InputStream input = checkRunningInputStream(configFile_Img);
         prop.load(input);
         if (activation.equals(prop.getProperty(key_loadLastConfig))) {
-            setControlLastConfig(noImg_Img, prop, key_lastNoImg, false, null);
-            setControlLastConfig(inPath_Img, prop, key_lastInPath, false, anchorPane_Img);
-            setControlLastConfig(maxRow_Img, prop, key_lastMaxRow, false, null);
-            setControlLastConfig(subCode_Img, prop, key_lastSubCode, true, null);
-            setControlLastConfig(outPath_Img, prop, key_lastOutPath, false, anchorPane_Img);
-            setControlLastConfig(readRow_Img, prop, key_lastReadRow, false, null);
-            setControlLastConfig(readCell_Img, prop, key_lastReadCell, false, null);
-            setControlLastConfig(openFile_Img, prop, key_lastOpenFile, false, null);
-            setControlLastConfig(imgWidth_Img, prop, key_lastImgWidth, false, null);
-            setControlLastConfig(startRow_Img, prop, key_lastStartRow, false, null);
-            setControlLastConfig(excelPath_Img, prop, key_lastExcelPath, false, anchorPane_Img);
-            setControlLastConfig(startCell_Img, prop, key_lastStartCell, false, null);
-            setControlLastConfig(imgHeight_Img, prop, key_lastImgHeight, false, null);
-            setControlLastConfig(maxImgNum_Img, prop, key_lastMaxImgNum, false, null);
-            setControlLastConfig(recursion_Img, prop, key_lastRecursion, false, null);
-            setControlLastConfig(excelName_Img, prop, key_lastExcelName, false, null);
-            setControlLastConfig(sheetName_Img, prop, key_lastSheetName, false, null);
-            setControlLastConfig(exportTitle_Img, prop, key_lastExportTitle, false, null);
-            setControlLastConfig(hideFileType_Img, prop, key_lastHideFileType, false, null);
-            setControlLastConfig(showFileType_Img, prop, key_lastShowFileType, false, null);
-            setControlLastConfig(openDirectory_Img, prop, key_lastOpenDirectory, false, null);
-            setControlLastConfig(exportFileNum_Img, prop, key_lastExportFileNum, false, null);
-            setControlLastConfig(exportFileSize_Img, prop, key_lastExportFileSize, false, null);
+            setControlLastConfig(noImg_Img, prop, key_lastNoImg);
+            setControlLastConfig(maxRow_Img, prop, key_lastMaxRow);
+            setControlLastConfig(readRow_Img, prop, key_lastReadRow);
+            setControlLastConfig(readCell_Img, prop, key_lastReadCell);
+            setControlLastConfig(openFile_Img, prop, key_lastOpenFile);
+            setControlLastConfig(imgWidth_Img, prop, key_lastImgWidth);
+            setControlLastConfig(startRow_Img, prop, key_lastStartRow);
+            setControlLastConfig(startCell_Img, prop, key_lastStartCell);
+            setControlLastConfig(imgHeight_Img, prop, key_lastImgHeight);
+            setControlLastConfig(maxImgNum_Img, prop, key_lastMaxImgNum);
+            setControlLastConfig(recursion_Img, prop, key_lastRecursion);
+            setControlLastConfig(excelName_Img, prop, key_lastExcelName);
+            setControlLastConfig(sheetName_Img, prop, key_lastSheetName);
+            setControlLastConfig(exportTitle_Img, prop, key_lastExportTitle);
+            setControlLastConfig(hideFileType_Img, prop, key_lastHideFileType);
+            setControlLastConfig(showFileType_Img, prop, key_lastShowFileType);
+            setControlLastConfig(openDirectory_Img, prop, key_lastOpenDirectory);
+            setControlLastConfig(exportFileNum_Img, prop, key_lastExportFileNum);
+            setControlLastConfig(inPath_Img, prop, key_lastInPath, anchorPane_Img);
+            setControlLastConfig(exportFileSize_Img, prop, key_lastExportFileSize);
+            setControlLastConfig(subCode_Img, prop, key_lastSubCode, true);
+            setControlLastConfig(outPath_Img, prop, key_lastOutPath, anchorPane_Img);
+            setControlLastConfig(excelPath_Img, prop, key_lastExcelPath, anchorPane_Img);
             String lastFilterFileTypes = prop.getProperty(key_lastFilterFileType);
             if (StringUtils.isNotBlank(lastFilterFileTypes)) {
                 jpg_Img.setSelected(lastFilterFileTypes.contains(jpg));
@@ -511,14 +520,16 @@ public class ImgToExcelController extends CommonProperties {
     /**
      * 设置要防重复点击的组件
      */
-    private void setDisableControls() {
-        disableControls.add(fileButton_Img);
-        disableControls.add(clearButton_Img);
-        disableControls.add(exportButton_Img);
-        disableControls.add(showFileType_Img);
-        disableControls.add(outPathButton_Img);
-        disableControls.add(reselectButton_Img);
-        disableControls.add(excelPathButton_Img);
+    private void setDisableNodes() {
+        disableNodes.add(fileButton_Img);
+        disableNodes.add(clearButton_Img);
+        disableNodes.add(exportButton_Img);
+        disableNodes.add(showFileType_Img);
+        disableNodes.add(outPathButton_Img);
+        disableNodes.add(reselectButton_Img);
+        disableNodes.add(excelPathButton_Img);
+        Node autoClickTab = mainScene.lookup("#autoClickTab");
+        disableNodes.add(autoClickTab);
     }
 
     /**
@@ -558,8 +569,7 @@ public class ImgToExcelController extends CommonProperties {
         String fileNumberText = fileNumber_Img.getText();
         String totalFileSize = fileNumberText.substring(fileNumberText.lastIndexOf(text_totalFileSize) + text_totalFileSize.length());
         double totalFileSizeValue = fileSizeCompareValue(totalFileSize) * 2;
-        Scene scene = anchorPane_Img.getScene();
-        Label appMemory = (Label) scene.lookup("#runningMemory_Set");
+        Label appMemory = (Label) mainScene.lookup("#runningMemory_Set");
         String appMemoryText = appMemory.getText();
         double appMemoryValue = fileSizeCompareValue(appMemoryText);
         if (totalFileSizeValue >= appMemoryValue) {
@@ -584,8 +594,6 @@ public class ImgToExcelController extends CommonProperties {
     private void initialize() throws IOException {
         // 读取全局变量配置
         getConfig();
-        // 设置要防重复点击的组件
-        setDisableControls();
         // 设置鼠标悬停提示
         setToolTip();
         // 设置javafx单元格宽度
@@ -594,6 +602,11 @@ public class ImgToExcelController extends CommonProperties {
         textFieldChangeListener();
         // 设置初始配置值为上次配置值
         setLastConfig();
+        Platform.runLater(() -> {
+            mainScene = anchorPane_Img.getScene();
+            // 设置要防重复点击的组件
+            setDisableNodes();
+        });
     }
 
     /**
@@ -713,7 +726,7 @@ public class ImgToExcelController extends CommonProperties {
                     .setNoImg(noImg_Img.isSelected())
                     .setOutPath(outFilePath);
             TaskBean<FileNumBean> taskBean = new TaskBean<>();
-            taskBean.setDisableControls(disableControls)
+            taskBean.setDisableNodes(disableNodes)
                     .setProgressBar(progressBar_Img)
                     .setMassageLabel(log_Img);
             // 重新查询任务
@@ -881,7 +894,7 @@ public class ImgToExcelController extends CommonProperties {
         inFileList = null;
         ImgToExcelService.closeStream();
         TaskBean<FileNumBean> taskBean = new TaskBean<>();
-        taskBean.setDisableControls(disableControls)
+        taskBean.setDisableNodes(disableNodes)
                 .setProgressBar(progressBar_Img)
                 .setCancelButton(cancel_Img)
                 .setMassageLabel(log_Img);

@@ -1,5 +1,6 @@
 package priv.koishi.tools.Controller;
 
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -33,13 +34,10 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 
+import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.Service.FileNumToExcelService.buildNameGroupNumExcel;
 import static priv.koishi.tools.Service.ReadDataService.readExcel;
-import static priv.koishi.tools.Finals.CommonFinals.*;
-import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
-import static priv.koishi.tools.Utils.CommonUtils.checkRunningOutputStream;
-import static priv.koishi.tools.Utils.FileUtils.getFileType;
-import static priv.koishi.tools.Utils.FileUtils.readAllFiles;
+import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
@@ -105,7 +103,7 @@ public class FileNumToExcelController extends CommonProperties {
     /**
      * 要防重复点击的组件
      */
-    private static final List<Control> disableControls = new ArrayList<>();
+    private static final List<Node> disableNodes = new ArrayList<>();
 
     /**
      * 线程池
@@ -126,6 +124,11 @@ public class FileNumToExcelController extends CommonProperties {
      * 构建excel线程
      */
     private Task<Workbook> buildExcelTask;
+
+    /**
+     * 程序主场景
+     */
+    private Scene mainScene;
 
     @FXML
     private AnchorPane anchorPane_Num;
@@ -155,13 +158,16 @@ public class FileNumToExcelController extends CommonProperties {
     private Label outPath_Num, excelPath_Num, fileNumber_Num, inPath_Num, log_Num, excelType_Num, excelTypeLabel_Num;
 
     @FXML
-    private Button fileButton_Num, clearButton_Num, exportButton_Num, reselectButton_Num, excelPathButton_Num, outPathButton_Num;
+    private Button fileButton_Num, clearButton_Num, exportButton_Num, reselectButton_Num,
+            excelPathButton_Num, outPathButton_Num;
 
     @FXML
-    private CheckBox recursion_Num, openDirectory_Num, openFile_Num, showFileType_Num, exportTitle_Num, exportFileNum_Num, exportFileSize_Num;
+    private CheckBox recursion_Num, openDirectory_Num, openFile_Num, showFileType_Num,
+            exportTitle_Num, exportFileNum_Num, exportFileSize_Num;
 
     @FXML
-    private TextField excelName_Num, sheetName_Num, startRow_Num, startCell_Num, filterFileType_Num, subCode_Num, readRow_Num, readCell_Num, maxRow_Num;
+    private TextField excelName_Num, sheetName_Num, startRow_Num, startCell_Num, filterFileType_Num,
+            subCode_Num, readRow_Num, readCell_Num, maxRow_Num;
 
     /**
      * 组件自适应宽高
@@ -331,7 +337,7 @@ public class FileNumToExcelController extends CommonProperties {
             TaskBean<FileNumBean> taskBean = new TaskBean<>();
             taskBean.setShowFileType(showFileType_Num.isSelected())
                     .setComparatorTableColumn(fileUnitSize_Num)
-                    .setDisableControls(disableControls)
+                    .setDisableNodes(disableNodes)
                     .setSubCode(subCode_Num.getText())
                     .setProgressBar(progressBar_Num)
                     .setMassageLabel(fileNumber_Num)
@@ -384,27 +390,27 @@ public class FileNumToExcelController extends CommonProperties {
         InputStream input = checkRunningInputStream(configFile_Num);
         prop.load(input);
         if (activation.equals(prop.getProperty(key_loadLastConfig))) {
-            setControlLastConfig(inPath_Num, prop, key_lastInPath, false, anchorPane_Num);
-            setControlLastConfig(maxRow_Num, prop, key_lastMaxRow, false, null);
-            setControlLastConfig(subCode_Num, prop, key_lastSubCode, true, null);
-            setControlLastConfig(outPath_Num, prop, key_lastOutPath, false, anchorPane_Num);
-            setControlLastConfig(readRow_Num, prop, key_lastReadRow, false, null);
-            setControlLastConfig(readCell_Num, prop, key_lastReadCell, false, null);
-            setControlLastConfig(startRow_Num, prop, key_lastStartRow, false, null);
-            setControlLastConfig(openFile_Num, prop, key_lastOpenFile, false, null);
-            setControlLastConfig(excelPath_Num, prop, key_lastExcelPath, false, anchorPane_Num);
-            setControlLastConfig(excelName_Num, prop, key_lastExcelName, false, null);
-            setControlLastConfig(sheetName_Num, prop, key_lastSheetName, false, null);
-            setControlLastConfig(startCell_Num, prop, key_lastStartCell, false, null);
-            setControlLastConfig(recursion_Num, prop, key_lastRecursion, false, null);
-            setControlLastConfig(exportTitle_Num, prop, key_lastExportTitle, false, null);
-            setControlLastConfig(showFileType_Num, prop, key_lastShowFileType, false, null);
-            setControlLastConfig(hideFileType_Num, prop, key_lastHideFileType, false, null);
-            setControlLastConfig(openDirectory_Num, prop, key_lastOpenDirectory, false, null);
-            setControlLastConfig(exportFileNum_Num, prop, key_lastExportFileNum, false, null);
-            setControlLastConfig(exportFileSize_Num, prop, key_lastExportFileSize, false, null);
-            setControlLastConfig(filterFileType_Num, prop, key_lastFilterFileType, false, null);
-            setControlLastConfig(directoryNameType_Num, prop, key_lastDirectoryNameType, false, null);
+            setControlLastConfig(maxRow_Num, prop, key_lastMaxRow);
+            setControlLastConfig(readRow_Num, prop, key_lastReadRow);
+            setControlLastConfig(readCell_Num, prop, key_lastReadCell);
+            setControlLastConfig(startRow_Num, prop, key_lastStartRow);
+            setControlLastConfig(openFile_Num, prop, key_lastOpenFile);
+            setControlLastConfig(excelName_Num, prop, key_lastExcelName);
+            setControlLastConfig(sheetName_Num, prop, key_lastSheetName);
+            setControlLastConfig(startCell_Num, prop, key_lastStartCell);
+            setControlLastConfig(recursion_Num, prop, key_lastRecursion);
+            setControlLastConfig(exportTitle_Num, prop, key_lastExportTitle);
+            setControlLastConfig(showFileType_Num, prop, key_lastShowFileType);
+            setControlLastConfig(hideFileType_Num, prop, key_lastHideFileType);
+            setControlLastConfig(openDirectory_Num, prop, key_lastOpenDirectory);
+            setControlLastConfig(exportFileNum_Num, prop, key_lastExportFileNum);
+            setControlLastConfig(inPath_Num, prop, key_lastInPath, anchorPane_Num);
+            setControlLastConfig(exportFileSize_Num, prop, key_lastExportFileSize);
+            setControlLastConfig(filterFileType_Num, prop, key_lastFilterFileType);
+            setControlLastConfig(subCode_Num, prop, key_lastSubCode, true);
+            setControlLastConfig(outPath_Num, prop, key_lastOutPath, anchorPane_Num);
+            setControlLastConfig(excelPath_Num, prop, key_lastExcelPath, anchorPane_Num);
+            setControlLastConfig(directoryNameType_Num, prop, key_lastDirectoryNameType);
             String excelPath = prop.getProperty(key_lastExcelPath);
             if (StringUtils.isNotBlank(excelPath)) {
                 excelType_Num.setText(getFileType(new File(excelPath)));
@@ -416,14 +422,16 @@ public class FileNumToExcelController extends CommonProperties {
     /**
      * 设置要防重复点击的组件
      */
-    private void setDisableControls() {
-        disableControls.add(fileButton_Num);
-        disableControls.add(clearButton_Num);
-        disableControls.add(exportButton_Num);
-        disableControls.add(showFileType_Num);
-        disableControls.add(outPathButton_Num);
-        disableControls.add(reselectButton_Num);
-        disableControls.add(excelPathButton_Num);
+    private void setDisableNodes() {
+        disableNodes.add(fileButton_Num);
+        disableNodes.add(clearButton_Num);
+        disableNodes.add(exportButton_Num);
+        disableNodes.add(showFileType_Num);
+        disableNodes.add(outPathButton_Num);
+        disableNodes.add(reselectButton_Num);
+        disableNodes.add(excelPathButton_Num);
+        Node autoClickTab = mainScene.lookup("#autoClickTab");
+        disableNodes.add(autoClickTab);
     }
 
     /**
@@ -490,8 +498,6 @@ public class FileNumToExcelController extends CommonProperties {
     private void initialize() throws IOException {
         // 读取全局变量配置
         getConfig();
-        // 设置要防重复点击的组件
-        setDisableControls();
         // 设置鼠标悬停提示
         setToolTip();
         // 设置javafx单元格宽度
@@ -500,6 +506,11 @@ public class FileNumToExcelController extends CommonProperties {
         textFieldChangeListener();
         // 设置初始配置值为上次配置值
         setLastConfig();
+        Platform.runLater(() -> {
+            mainScene = anchorPane_Num.getScene();
+            // 设置要防重复点击的组件
+            setDisableNodes();
+        });
     }
 
     /**
@@ -596,7 +607,7 @@ public class FileNumToExcelController extends CommonProperties {
                 TaskBean<FileNumBean> taskBean = new TaskBean<>();
                 taskBean.setShowFileType(showFileType_Num.isSelected())
                         .setBeanList(readExcelTask.getValue())
-                        .setDisableControls(disableControls)
+                        .setDisableNodes(disableNodes)
                         .setSubCode(subCode_Num.getText())
                         .setProgressBar(progressBar_Num)
                         .setTableView(tableView_Num)

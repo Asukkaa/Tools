@@ -7,19 +7,27 @@ import javafx.beans.property.DoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Point2D;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
-import javafx.stage.PopupWindow;
-import javafx.stage.Stage;
+import javafx.stage.*;
 import javafx.util.Callback;
 import javafx.util.Duration;
 import org.apache.commons.collections4.CollectionUtils;
@@ -36,11 +44,12 @@ import priv.koishi.tools.MainApplication;
 import priv.koishi.tools.MessageBubble.MessageBubble;
 import priv.koishi.tools.Vo.FileNumVo;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.List;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.Service.ReadDataService.showReadExcelData;
@@ -73,16 +82,28 @@ public class UiUtils {
     }
 
     /**
-     * 设置鼠标停留提示框参数
+     * 设置永久显示的鼠标停留提示框参数
      *
      * @param tip 提示文案
      * @return 设置参数后的Tooltip对象
      */
     public static Tooltip creatTooltip(String tip) {
+        return creatTooltip(tip, Duration.INDEFINITE);
+    }
+
+    /**
+     * 设置鼠标停留提示框参数
+     *
+     * @param tip      提示文案
+     * @param duration 显示时长
+     * @return 设置参数后的Tooltip对象
+     */
+    public static Tooltip creatTooltip(String tip, Duration duration) {
         Tooltip tooltip = new Tooltip(tip);
         tooltip.setWrapText(true);
-        tooltip.setShowDuration(showDuration);
+        tooltip.setShowDuration(duration);
         tooltip.setShowDelay(Duration.ZERO);
+        tooltip.setHideDelay(Duration.ZERO);
         tooltip.setAnchorLocation(PopupWindow.AnchorLocation.WINDOW_BOTTOM_LEFT);
         tooltip.getStyleClass().add("tooltip-font-size");
         return tooltip;
@@ -559,6 +580,45 @@ public class UiUtils {
     }
 
     /**
+     * 为列表添加右键菜单并设置可选择多行
+     *
+     * @param contextMenu 右键菜单
+     * @param tableView   要处理的列表
+     */
+    public static <T> void setContextMenu(ContextMenu contextMenu, TableView<T> tableView) {
+        setContextMenu(contextMenu, tableView, SelectionMode.MULTIPLE);
+    }
+
+    /**
+     * 为列表添加右键菜单
+     *
+     * @param contextMenu   右键菜单
+     * @param tableView     要处理的列表
+     * @param selectionMode 选中模式
+     */
+    public static <T> void setContextMenu(ContextMenu contextMenu, TableView<T> tableView, SelectionMode selectionMode) {
+        // 设置是否可以选中多行
+        tableView.getSelectionModel().setSelectionMode(selectionMode);
+        tableView.setOnMousePressed(event -> {
+            // 点击位置判断
+            Node source = event.getPickResult().getIntersectedNode();
+            while (source != null && !(source instanceof TableRow)) {
+                source = source.getParent();
+            }
+            if (source == null || ((TableRow<?>) source).isEmpty()) {
+                tableView.getSelectionModel().clearSelection();
+                tableView.setContextMenu(null);
+            } else if (event.isSecondaryButtonDown()) {
+                if (CollectionUtils.isNotEmpty(tableView.getSelectionModel().getSelectedItems())) {
+                    tableView.setContextMenu(contextMenu);
+                } else {
+                    tableView.setContextMenu(null);
+                }
+            }
+        });
+    }
+
+    /**
      * 构建右键菜单
      *
      * @param tableView  要添加右键菜单的列表
@@ -566,8 +626,6 @@ public class UiUtils {
      * @param anchorPane 列表所在布局
      */
     public static void tableViewContextMenu(TableView<FileBean> tableView, Label label, AnchorPane anchorPane) {
-        // 设置可以选中多行
-        tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         // 添加右键菜单
         ContextMenu contextMenu = new ContextMenu();
         // 所选行上移一行选项
@@ -582,12 +640,8 @@ public class UiUtils {
         buildOpenCopyFilePathItem(tableView, contextMenu, anchorPane);
         // 删除所选数据选项
         buildDeleteDataMenuItem(tableView, label, contextMenu, text_file);
-        tableView.setContextMenu(contextMenu);
-        tableView.setOnMousePressed(event -> {
-            if (event.isSecondaryButtonDown()) {
-                contextMenu.show(tableView, event.getScreenX(), event.getScreenY());
-            }
-        });
+        // 为列表添加右键菜单并设置可选择多行
+        setContextMenu(contextMenu, tableView);
     }
 
     /**
@@ -776,34 +830,32 @@ public class UiUtils {
      * @param taskBean 包含防重复点击组件列表的taskBean
      * @param disable  可点击状态，true设置为不可点击，false设置为可点击
      */
-    public static void changeDisableControls(TaskBean<?> taskBean, boolean disable) {
-        List<Control> disableControls = taskBean.getDisableControls();
-        changeDisableControls(disableControls, disable);
+    public static void changeDisableNodes(TaskBean<?> taskBean, boolean disable) {
+        List<Node> disableNodes = taskBean.getDisableNodes();
+        changeDisableNodes(disableNodes, disable);
     }
 
     /**
      * 改变要防重复点击的组件状态
      *
-     * @param disableControls 防重复点击组件列表
-     * @param disable  可点击状态，true设置为不可点击，false设置为可点击
+     * @param disableNodes 防重复点击组件列表
+     * @param disable      可点击状态，true设置为不可点击，false设置为可点击
      */
-    public static void changeDisableControls(List<Control> disableControls, boolean disable) {
-        if (CollectionUtils.isNotEmpty(disableControls)) {
-            disableControls.forEach(dc -> dc.setDisable(disable));
+    public static void changeDisableNodes(List<Node> disableNodes, boolean disable) {
+        if (CollectionUtils.isNotEmpty(disableNodes)) {
+            disableNodes.forEach(dc -> dc.setDisable(disable));
         }
     }
 
     /**
      * 为配置组件设置上次配置值
      *
-     * @param control    需要处理的组件
-     * @param prop       配置文件
-     * @param key        要读取的key
-     * @param canBlank   组件所填文本是否可为空格，ture可填写空格，false不可填写空格
-     * @param anchorPane 组件所在布局
+     * @param control 需要处理的组件
+     * @param prop    配置文件
+     * @param key     要读取的key
      */
     @SuppressWarnings("unchecked")
-    public static void setControlLastConfig(Control control, Properties prop, String key, boolean canBlank, AnchorPane anchorPane) {
+    public static void setControlLastConfig(Control control, Properties prop, String key) {
         String lastValue = prop.getProperty(key);
         if (StringUtils.isNotBlank(lastValue)) {
             if (control instanceof ChoiceBox) {
@@ -812,18 +864,40 @@ public class UiUtils {
             } else if (control instanceof CheckBox checkBox) {
                 checkBox.setSelected(activation.equals(lastValue));
             } else if (control instanceof Label label) {
-                if (isValidPath(lastValue)) {
-                    setPathLabel(label, lastValue, false, anchorPane);
-                } else {
-                    label.setText(lastValue);
-                }
+                label.setText(lastValue);
             } else if (control instanceof TextField textField) {
                 textField.setText(lastValue);
             }
-        } else if (StringUtils.isNotEmpty(lastValue) && canBlank) {
-            if (control instanceof TextField textField) {
-                textField.setText(lastValue);
-            }
+        }
+    }
+
+    /**
+     * 为路径文本框设置上次配置值
+     *
+     * @param label      需要处理的文本框
+     * @param prop       配置文件
+     * @param key        要读取的key
+     * @param anchorPane 组件所在布局
+     */
+    public static void setControlLastConfig(Label label, Properties prop, String key, AnchorPane anchorPane) {
+        String lastValue = prop.getProperty(key);
+        if (isValidPath(lastValue)) {
+            setPathLabel(label, lastValue, false, anchorPane);
+        }
+    }
+
+    /**
+     * 为输入框设置上次配置值
+     *
+     * @param textField 需要处理的输入框
+     * @param prop      配置文件
+     * @param key       要读取的key
+     * @param canBlank  组件所填文本是否可为空格，ture可填写空格，false不可填写空格
+     */
+    public static void setControlLastConfig(TextField textField, Properties prop, String key, boolean canBlank) {
+        String lastValue = prop.getProperty(key);
+        if (StringUtils.isNotEmpty(lastValue) && canBlank) {
+            textField.setText(lastValue);
         }
     }
 
@@ -951,29 +1025,28 @@ public class UiUtils {
     /**
      * 创建消息弹窗
      *
-     * @param anchorPane 组件所在布局
-     * @param text       消息弹窗提示文案
-     * @param time       显示弹窗时间
+     * @param pane 组件所在布局
+     * @param text 消息弹窗提示文案
+     * @param time 显示弹窗时间
      */
-    public static void buildMessageBubble(AnchorPane anchorPane, String text, double time) {
+    public static void buildMessageBubble(Pane pane, String text, double time) {
         MessageBubble bubble = new MessageBubble(text);
-        anchorPane.getChildren().add(bubble);
-        // 列表中无法监控鼠标位置需要判断是否监控到鼠标移动
-        AtomicBoolean getMouseMoved = new AtomicBoolean(false);
-        anchorPane.addEventHandler(MouseEvent.MOUSE_MOVED, mouseEvent -> {
-            // 获取鼠标位置
-            getMouseMoved.set(true);
-            double mouseX = mouseEvent.getX();
-            double mouseY = mouseEvent.getY();
-            bubble.setLayoutX(mouseX + 30);
-            bubble.setLayoutY(mouseY);
+        pane.getChildren().add(bubble);
+        // 将事件处理器声明为变量
+        final EventHandler<MouseEvent> mouseMovedHandler = mouseEvent -> {
+            Point2D sceneCoords = new Point2D(mouseEvent.getSceneX(), mouseEvent.getSceneY());
+            Point2D localCoords = pane.sceneToLocal(sceneCoords);
+            bubble.setLayoutX(localCoords.getX() + 30);
+            bubble.setLayoutY(localCoords.getY() + 30);
+        };
+        // 使用变量添加监听
+        Scene scene = pane.getScene();
+        scene.addEventFilter(MouseEvent.MOUSE_MOVED, mouseMovedHandler);
+        KeyFrame keyFrame = new KeyFrame(Duration.seconds(time), ae -> {
+            pane.getChildren().remove(bubble);
+            // 使用保存的handler变量移除监听
+            scene.removeEventFilter(MouseEvent.MOUSE_MOVED, mouseMovedHandler);
         });
-        // 鼠标在列表时设置初位置
-        if (!getMouseMoved.get()) {
-            bubble.setLayoutX(anchorPane.getWidth() * 0.5);
-            bubble.setLayoutY(anchorPane.getHeight() * 0.5);
-        }
-        KeyFrame keyFrame = new KeyFrame(Duration.seconds(time), ae -> anchorPane.getChildren().remove(bubble));
         Timeline timeline = new Timeline(keyFrame);
         timeline.play();
     }
@@ -1032,6 +1105,80 @@ public class UiUtils {
         }
         tabs.sort(Comparator.comparingInt(tab -> orderMap.getOrDefault(tab.getId(), Integer.MAX_VALUE)));
         return tabs;
+    }
+
+    /**
+     * 保存多选框选择设置
+     *
+     * @param checkBox   更改配置的选项框
+     * @param configFile 要更新的配置文件相对路径
+     * @param key        要更新的配置
+     * @throws IOException io异常
+     */
+    public static void setLoadLastConfigCheckBox(CheckBox checkBox, String configFile, String key) throws IOException {
+        if (checkBox.isSelected()) {
+            updateProperties(configFile, key, activation);
+        } else {
+            updateProperties(configFile, key, unActivation);
+        }
+    }
+
+    /**
+     * 获取当前所在屏幕
+     *
+     * @return 当前所在屏幕
+     */
+    public static Screen getCurrentScreen(Stage floatingStage) {
+        for (Screen screen : Screen.getScreens()) {
+            Rectangle2D bounds = screen.getBounds();
+            if (bounds.contains(floatingStage.getX(), floatingStage.getY())) {
+                return screen;
+            }
+        }
+        // 默认返回主屏幕
+        return Screen.getPrimary();
+    }
+
+    /**
+     * 设置浮窗跟随鼠标移动
+     *
+     * @param floatingStage 浮窗
+     * @param mousePoint    鼠标位置
+     * @param offsetX       x轴偏移量
+     * @param offsetY       y轴偏移量
+     */
+    public static void floatingMove(Stage floatingStage, Point mousePoint, int offsetX, int offsetY) {
+        // 获取当前所在屏幕
+        Screen currentScreen = getCurrentScreen(floatingStage);
+        Rectangle2D screenBounds = currentScreen.getBounds();
+        double width = floatingStage.getWidth();
+        double height = floatingStage.getHeight();
+        double mousePointX = mousePoint.getX();
+        double mousePointY = mousePoint.getY();
+        double x = mousePointX + offsetX;
+        double borderX = x + width;
+        if (borderX > screenBounds.getMaxX()) {
+            x = mousePointX - offsetX - width;
+        }
+        if (offsetX < 0) {
+            x = mousePointX - offsetX - width;
+            if (x < screenBounds.getMinX()) {
+                x = mousePointX + offsetX;
+            }
+        }
+        double y = mousePointY + offsetY;
+        double borderY = y + height;
+        if (borderY > screenBounds.getMaxY()) {
+            y = mousePointY - offsetY - height;
+        }
+        if (offsetY < 0) {
+            y = mousePointY - offsetY - height;
+            if (y < screenBounds.getMinY()) {
+                y = mousePointY + offsetY + height;
+            }
+        }
+        floatingStage.setX(x);
+        floatingStage.setY(y);
     }
 
 }

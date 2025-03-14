@@ -23,7 +23,7 @@ import java.util.List;
 import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.Utils.ExcelUtils.*;
 import static priv.koishi.tools.Utils.FileUtils.*;
-import static priv.koishi.tools.Utils.UiUtils.changeDisableControls;
+import static priv.koishi.tools.Utils.UiUtils.changeDisableNodes;
 
 /**
  * 向excel插入匹配图片线程任务
@@ -66,7 +66,7 @@ public class ImgToExcelService {
             @Override
             protected SXSSFWorkbook call() throws Exception {
                 // 改变要防重复点击的组件状态
-                changeDisableControls(taskBean, true);
+                changeDisableNodes(taskBean, true);
                 // 校验excel输出路径是否与模板一致，若不一致则复制一份模板文件到输出路径
                 checkCopyDestination(excelConfig);
                 String excelInPath = excelConfig.getInPath();

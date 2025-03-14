@@ -22,9 +22,7 @@ import java.util.List;
 import java.util.Properties;
 
 import static priv.koishi.tools.Finals.CommonFinals.*;
-import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
-import static priv.koishi.tools.Utils.CommonUtils.checkRunningOutputStream;
-import static priv.koishi.tools.Utils.FileUtils.getFileType;
+import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
 /**
@@ -79,7 +77,7 @@ public class AboutController {
         InputStream input = checkRunningInputStream(configFile);
         prop.load(input);
         // 获取日志储存数量配置
-        setControlLastConfig(logsNum_Abt, prop, key_logsNum, false, null);
+        setControlLastConfig(logsNum_Abt, prop, key_logsNum);
         // 获取网盘地址配置
         baiduLink = prop.getProperty(key_baiduLink);
         quarkLink = prop.getProperty(key_quarkLink);

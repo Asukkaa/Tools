@@ -29,35 +29,37 @@
                       selected="true" text="获取文件夹下的文件信息 功能加载上次设置信息"/>
         </HBox>
 
-        <HBox spacing="10">
-            <Label prefHeight="25" text="文件查询默认排序设置:"/>
-            <ChoiceBox fx:id="sort_Set" onAction="#sortAction" prefHeight="25" prefWidth="150">
-                <items>
-                    <FXCollections fx:factory="observableArrayList">
-                        <String fx:value="不排序"/>
-                        <String fx:value="按文件名称排序"/>
-                        <String fx:value="按文件创建时间排序"/>
-                        <String fx:value="按文件修改时间排序"/>
-                        <String fx:value="按文件大小排序"/>
-                        <String fx:value="按文件类型排序"/>
-                    </FXCollections>
-                </items>
-                <value>
-                    <String fx:value="按文件修改时间排序"/>
-                </value>
-            </ChoiceBox>
+        <HBox spacing="50">
+            <CheckBox fx:id="lastTab_Set" onAction="#loadLastTabAction" styleClass="checkBox-setting-style"
+                      selected="true" text="记住关闭前打开的页面"/>
 
-            <Label prefWidth="65"/>
+            <CheckBox fx:id="fullWindow_Set" onAction="#loadFullWindowAction" styleClass="checkBox-setting-style"
+                      selected="true" text="记住程序关闭时窗口是否最大化"/>
+        </HBox>
+
+        <HBox spacing="10">
+            <HBox prefWidth="360">
+                <Label prefHeight="25" text="文件查询默认排序设置："/>
+                <ChoiceBox fx:id="sort_Set" onAction="#sortAction" prefHeight="25" prefWidth="150">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="不排序"/>
+                            <String fx:value="按文件名称排序"/>
+                            <String fx:value="按文件创建时间排序"/>
+                            <String fx:value="按文件修改时间排序"/>
+                            <String fx:value="按文件大小排序"/>
+                            <String fx:value="按文件类型排序"/>
+                        </FXCollections>
+                    </items>
+                    <value>
+                        <String fx:value="按文件修改时间排序"/>
+                    </value>
+                </ChoiceBox>
+            </HBox>
 
             <HBox spacing="30">
                 <CheckBox fx:id="reverseSort_Set" onAction="#reverseSorAction" prefHeight="25" style="-fx-cursor: hand"
                           text="文件查询默认倒序排序"/>
-
-                <CheckBox fx:id="lastTab_Set" onAction="#loadLastTabAction" prefHeight="25" style="-fx-cursor: hand"
-                          selected="true" text="记住关闭前打开的页面"/>
-
-                <CheckBox fx:id="fullWindow_Set" onAction="#loadFullWindowAction" prefHeight="25"
-                          style="-fx-cursor: hand" selected="true" text="记住程序关闭时窗口是否最大化"/>
             </HBox>
         </HBox>
 

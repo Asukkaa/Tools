@@ -28,7 +28,7 @@ import static priv.koishi.tools.Utils.CommonUtils.getPropertyName;
 import static priv.koishi.tools.Utils.CommonUtils.isGetterMethod;
 import static priv.koishi.tools.Utils.ExcelUtils.*;
 import static priv.koishi.tools.Utils.FileUtils.checkFileExists;
-import static priv.koishi.tools.Utils.UiUtils.changeDisableControls;
+import static priv.koishi.tools.Utils.UiUtils.changeDisableNodes;
 
 /**
  * 获取文件夹下的文件信息功能导出任务类
@@ -49,7 +49,7 @@ public class FileNameToExcelService {
      */
     public static Task<Workbook> buildFileNameExcel(ExcelConfig excelConfig, TaskBean<FileBean> taskBean) throws Exception {
         // 改变要防重复点击的组件状态
-        changeDisableControls(taskBean, true);
+        changeDisableNodes(taskBean, true);
         String excelType = excelConfig.getOutExcelType();
         Workbook workbook = null;
         if (xlsx.equals(excelType)) {

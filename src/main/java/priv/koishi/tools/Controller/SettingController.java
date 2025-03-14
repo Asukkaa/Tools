@@ -22,9 +22,7 @@ import java.util.List;
 import java.util.Properties;
 
 import static priv.koishi.tools.Finals.CommonFinals.*;
-import static priv.koishi.tools.Utils.CommonUtils.*;
-import static priv.koishi.tools.Utils.FileUtils.getUnitSize;
-import static priv.koishi.tools.Utils.FileUtils.updateProperties;
+import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
 /**
@@ -40,11 +38,6 @@ public class SettingController {
      * 启动脚本设置的最大内存值
      */
     private static String scriptMemory;
-
-    /**
-     * app.bat最大内存设置参数
-     */
-    private static final String Xmx = "-Xmx";
 
     /**
      * 启动脚本名称
@@ -79,7 +72,8 @@ public class SettingController {
     private Label runningMemory_Set, thisPath_Set, systemMemory_Set;
 
     @FXML
-    private CheckBox loadRename_Set, loadFileNum_Set, loadFileName_Set, loadImgToExcel_Set, lastTab_Set, fullWindow_Set, reverseSort_Set, loadAutoClick_Set;
+    private CheckBox loadRename_Set, loadFileNum_Set, loadFileName_Set, loadImgToExcel_Set, lastTab_Set,
+            fullWindow_Set, reverseSort_Set, loadAutoClick_Set;
 
     /**
      * 组件自适应宽高
@@ -91,7 +85,7 @@ public class SettingController {
         // 设置组件高度
         double stageHeight = stage.getHeight();
         TableView<?> table = (TableView<?>) scene.lookup("#tableView_Set");
-        table.setPrefHeight(stageHeight * 0.3);
+        table.setPrefHeight(stageHeight * 0.2);
         // 设置组件宽度
         double stageWidth = stage.getWidth();
         double tableWidth = stageWidth * 0.5;
@@ -136,7 +130,7 @@ public class SettingController {
             String tabStateId = tabId + "." + activationState;
             tabIds.add(tabStateId);
         }
-        prop.setProperty("tabIds", String.join(" ", tabIds));
+        prop.setProperty(key_tabIds, String.join(" ", tabIds));
         OutputStream output = checkRunningOutputStream(configFile);
         prop.store(output, null);
         input.close();
@@ -150,9 +144,9 @@ public class SettingController {
      */
     private static String getScriptName() {
         if (systemName.contains(macos)) {
-            return "Tools";
+            return appName;
         }
-        return "app.bat";
+        return appBat;
     }
 
     /**
@@ -200,22 +194,6 @@ public class SettingController {
     }
 
     /**
-     * 根据是否加载最后一次功能选项框选择值更新相关配置文件
-     *
-     * @param checkBox   更改配置的选项框
-     * @param configFile 要更新的配置文件相对路径
-     * @param key        要更新的配置
-     * @throws IOException io异常
-     */
-    private void setLoadLastConfigCheckBox(CheckBox checkBox, String configFile, String key) throws IOException {
-        if (checkBox.isSelected()) {
-            updateProperties(configFile, key, activation);
-        } else {
-            updateProperties(configFile, key, unActivation);
-        }
-    }
-
-    /**
      * 设置是否加载最后一次功能配置信息初始值
      *
      * @param prop       要读取的配置文件对象
@@ -226,7 +204,7 @@ public class SettingController {
     private void setLoadLastConfig(Properties prop, CheckBox checkBox, String configFile) throws IOException {
         InputStream input = checkRunningInputStream(configFile);
         prop.load(input);
-        setControlLastConfig(checkBox, prop, key_loadLastConfig, false, null);
+        setControlLastConfig(checkBox, prop, key_loadLastConfig);
         input.close();
     }
 
@@ -239,10 +217,10 @@ public class SettingController {
     private void getConfig(Properties prop) throws IOException {
         InputStream input = checkRunningInputStream(configFile);
         prop.load(input);
-        setControlLastConfig(fullWindow_Set, prop, key_loadLastFullWindow, false, null);
-        setControlLastConfig(lastTab_Set, prop, key_loadLastConfig, false, null);
-        setControlLastConfig(reverseSort_Set, prop, key_reverseSort, false, null);
-        setControlLastConfig(sort_Set, prop, key_sort, false, null);
+        setControlLastConfig(sort_Set, prop, key_sort);
+        setControlLastConfig(lastTab_Set, prop, key_loadLastConfig);
+        setControlLastConfig(reverseSort_Set, prop, key_reverseSort);
+        setControlLastConfig(fullWindow_Set, prop, key_loadLastFullWindow);
         input.close();
     }
 
@@ -253,9 +231,9 @@ public class SettingController {
      */
     private void setLoadLastConfigs() throws IOException {
         Properties prop = new Properties();
-        setLoadLastConfig(prop, loadRename_Set, configFile_Rename);
         setLoadLastConfig(prop, loadFileNum_Set, configFile_Num);
         setLoadLastConfig(prop, loadFileName_Set, configFile_Name);
+        setLoadLastConfig(prop, loadRename_Set, configFile_Rename);
         setLoadLastConfig(prop, loadImgToExcel_Set, configFile_Img);
         setLoadLastConfig(prop, loadAutoClick_Set, configFile_Click);
         getConfig(prop);
@@ -432,12 +410,12 @@ public class SettingController {
         if (!isRunningFromJar()) {
             ProcessBuilder processBuilder = null;
             if (systemName.contains(win)) {
-                String path = currentDir.substring(0, currentDir.lastIndexOf(Tools) + Tools.length());
-                String appPath = path + File.separator + "Tools.exe";
+                String path = currentDir.substring(0, currentDir.lastIndexOf(appNameSeparator) + appNameSeparator.length());
+                String appPath = path + File.separator + appName + exe;
                 processBuilder = new ProcessBuilder(appPath);
             } else if (systemName.contains(macos)) {
-                String appName = File.separator + "Tools.app";
-                String appPath = currentDir.substring(0, currentDir.lastIndexOf(appName)) + appName;
+                String macApp = File.separator + appName + app;
+                String appPath = currentDir.substring(0, currentDir.lastIndexOf(macApp)) + macApp;
                 processBuilder = new ProcessBuilder("open", "-n", appPath);
             }
             if (processBuilder != null) {

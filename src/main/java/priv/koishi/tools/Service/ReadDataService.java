@@ -51,7 +51,7 @@ public class ReadDataService {
             @Override
             protected List<FileNumBean> call() throws Exception {
                 // 改变要防重复点击的组件状态
-                changeDisableControls(taskBean, true);
+                changeDisableNodes(taskBean, true);
                 updateMessage(text_readData);
                 List<FileNumBean> fileNumBeanList = new ArrayList<>();
                 String excelInPath = excelConfig.getInPath();
@@ -181,7 +181,7 @@ public class ReadDataService {
             @Override
             protected Void call() throws IOException {
                 // 改变要防重复点击的组件状态
-                changeDisableControls(taskBean, true);
+                changeDisableNodes(taskBean, true);
                 updateMessage(text_readData);
                 // 判断是否为重命名功能的查询文件
                 Configuration configuration = taskBean.getConfiguration();

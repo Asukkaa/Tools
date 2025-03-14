@@ -17,7 +17,7 @@ import static priv.koishi.tools.Finals.CommonFinals.text_saveSuccess;
 import static priv.koishi.tools.Finals.CommonFinals.text_taskFailed;
 import static priv.koishi.tools.Utils.ExcelUtils.saveExcel;
 import static priv.koishi.tools.Utils.FileUtils.*;
-import static priv.koishi.tools.Utils.UiUtils.changeDisableControls;
+import static priv.koishi.tools.Utils.UiUtils.changeDisableNodes;
 
 /**
  * 多线程任务工具的方法
@@ -129,7 +129,7 @@ public class TaskUtils {
             cancelButton.setVisible(false);
         }
         // 解除防重复点击按钮不可点击限制
-        changeDisableControls(taskBean, false);
+        changeDisableNodes(taskBean, false);
         // 隐藏和解绑消息通知组件
         Label massageLabel = taskBean.getMassageLabel();
         if (massageLabel != null) {

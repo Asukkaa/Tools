@@ -1,5 +1,6 @@
 package priv.koishi.tools.Controller;
 
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -38,8 +39,6 @@ import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.Service.FileRenameService.*;
 import static priv.koishi.tools.Service.ReadDataService.readExcel;
 import static priv.koishi.tools.Service.ReadDataService.readFile;
-import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
-import static priv.koishi.tools.Utils.CommonUtils.checkRunningOutputStream;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
@@ -86,7 +85,7 @@ public class FileRenameController extends CommonProperties {
     /**
      * 要防重复点击的组件
      */
-    private static final List<Control> disableControls = new ArrayList<>();
+    private static final List<Node> disableNodes = new ArrayList<>();
 
     /**
      * 线程池
@@ -113,6 +112,11 @@ public class FileRenameController extends CommonProperties {
      */
     private Task<String> renameTask;
 
+    /**
+     * 程序主场景
+     */
+    private Scene mainScene;
+
     @FXML
     private AnchorPane anchorPane_Re;
 
@@ -126,7 +130,8 @@ public class FileRenameController extends CommonProperties {
     private TableColumn<FileBean, Integer> id_Re;
 
     @FXML
-    private TableColumn<FileBean, String> name_Re, rename_Re, path_Re, size_Re, fileType_Re, creatDate_Re, updateDate_Re, showStatus_Re;
+    private TableColumn<FileBean, String> name_Re, rename_Re, path_Re, size_Re, fileType_Re,
+            creatDate_Re, updateDate_Re, showStatus_Re;
 
     @FXML
     private CheckBox openDirectory_Re, addSpace_Re;
@@ -141,13 +146,16 @@ public class FileRenameController extends CommonProperties {
     private HBox renameTypeHBox_Re, behaviorHBox_Re, targetStrHBox_Re, warnHBox_Re, tipHBox_Re, fileNumberHBox_Re;
 
     @FXML
-    private Button fileButton_Re, clearButton_Re, renameButton_Re, reselectButton_Re, updateRenameButton_Re, excelPathButton_Re, updateSameCode_Re;
+    private Button fileButton_Re, clearButton_Re, renameButton_Re, reselectButton_Re, updateRenameButton_Re,
+            excelPathButton_Re, updateSameCode_Re;
 
     @FXML
-    private ChoiceBox<String> hideFileType_Re, directoryNameType_Re, renameType_Re, subCode_Re, differenceCode_Re, targetStr_Re, leftBehavior_Re, rightBehavior_Re, renameBehavior_Re;
+    private ChoiceBox<String> hideFileType_Re, directoryNameType_Re, renameType_Re, subCode_Re, differenceCode_Re,
+            targetStr_Re, leftBehavior_Re, rightBehavior_Re, renameBehavior_Re;
 
     @FXML
-    private TextField sheetName_Re, filterFileType_Re, readRow_Re, readCell_Re, maxRow_Re, startName_Re, nameNum_Re, startSize_Re, left_Re, right_Re, renameStr_Re, leftValue_Re, rightValue_Re, renameValue_Re, tag_Re;
+    private TextField sheetName_Re, filterFileType_Re, readRow_Re, readCell_Re, maxRow_Re, startName_Re, nameNum_Re,
+            startSize_Re, left_Re, right_Re, renameStr_Re, leftValue_Re, rightValue_Re, renameValue_Re, tag_Re;
 
     /**
      * 组件自适应宽高
@@ -354,13 +362,12 @@ public class FileRenameController extends CommonProperties {
             if (inFileList.isEmpty()) {
                 throw new Exception(text_selectNull);
             }
-            Scene scene = anchorPane_Re.getScene();
-            ChoiceBox<?> sort = (ChoiceBox<?>) scene.lookup("#sort_Set");
-            CheckBox reverseSort = (CheckBox) scene.lookup("#reverseSort_Set");
+            ChoiceBox<?> sort = (ChoiceBox<?>) mainScene.lookup("#sort_Set");
+            CheckBox reverseSort = (CheckBox) mainScene.lookup("#reverseSort_Set");
             String sortValue = (String) sort.getValue();
             TaskBean<FileBean> taskBean = new TaskBean<>();
             taskBean.setReverseSort(reverseSort.isSelected())
-                    .setDisableControls(disableControls)
+                    .setDisableNodes(disableNodes)
                     .setComparatorTableColumn(size_Re)
                     .setProgressBar(progressBar_Re)
                     .setMassageLabel(fileNumber_Re)
@@ -408,7 +415,7 @@ public class FileRenameController extends CommonProperties {
                     .setSheetName(sheetName_Re.getText())
                     .setInPath(excelPath_Re.getText());
             TaskBean<FileNumBean> taskBean = new TaskBean<>();
-            taskBean.setDisableControls(disableControls)
+            taskBean.setDisableNodes(disableNodes)
                     .setProgressBar(progressBar_Re)
                     .setReturnRenameList(true)
                     .setMassageLabel(log_Re)
@@ -572,12 +579,12 @@ public class FileRenameController extends CommonProperties {
         InputStream input = checkRunningInputStream(configFile_Rename);
         prop.load(input);
         if (activation.equals(prop.getProperty(key_loadLastConfig))) {
-            setControlLastConfig(inPath_Re, prop, key_lastInPath, false, anchorPane_Re);
-            setControlLastConfig(renameType_Re, prop, key_lastRenameType, false, null);
-            setControlLastConfig(hideFileType_Re, prop, key_lastHideFileType, false, null);
-            setControlLastConfig(openDirectory_Re, prop, key_lastOpenDirectory, false, null);
-            setControlLastConfig(filterFileType_Re, prop, key_lastFilterFileType, false, null);
-            setControlLastConfig(directoryNameType_Re, prop, key_lastDirectoryNameType, false, null);
+            setControlLastConfig(renameType_Re, prop, key_lastRenameType);
+            setControlLastConfig(hideFileType_Re, prop, key_lastHideFileType);
+            setControlLastConfig(openDirectory_Re, prop, key_lastOpenDirectory);
+            setControlLastConfig(inPath_Re, prop, key_lastInPath, anchorPane_Re);
+            setControlLastConfig(filterFileType_Re, prop, key_lastFilterFileType);
+            setControlLastConfig(directoryNameType_Re, prop, key_lastDirectoryNameType);
             // 根据重命名类型设置上次配置值
             setLastConfigByRenameType(prop);
         }
@@ -615,13 +622,13 @@ public class FileRenameController extends CommonProperties {
      * @param prop 配置文件
      */
     private void setLastConfigByCodeRename(Properties prop) {
-        setControlLastConfig(tag_Re, prop, key_lastTag, false, null);
-        setControlLastConfig(subCode_Re, prop, key_lastSubCode, false, null);
-        setControlLastConfig(nameNum_Re, prop, key_lastNameNum, false, null);
-        setControlLastConfig(addSpace_Re, prop, key_lastAddSpace, false, null);
-        setControlLastConfig(startName_Re, prop, key_lastStartName, false, null);
-        setControlLastConfig(startSize_Re, prop, key_lastStartSize, false, null);
-        setControlLastConfig(differenceCode_Re, prop, key_lastDifferenceCode, false, null);
+        setControlLastConfig(tag_Re, prop, key_lastTag);
+        setControlLastConfig(subCode_Re, prop, key_lastSubCode);
+        setControlLastConfig(nameNum_Re, prop, key_lastNameNum);
+        setControlLastConfig(addSpace_Re, prop, key_lastAddSpace);
+        setControlLastConfig(startName_Re, prop, key_lastStartName);
+        setControlLastConfig(startSize_Re, prop, key_lastStartSize);
+        setControlLastConfig(differenceCode_Re, prop, key_lastDifferenceCode);
     }
 
     /**
@@ -630,7 +637,7 @@ public class FileRenameController extends CommonProperties {
      * @param prop 配置文件
      */
     private void setLastConfigByStrRename(Properties prop) {
-        setControlLastConfig(targetStr_Re, prop, key_lastTargetStr, false, null);
+        setControlLastConfig(targetStr_Re, prop, key_lastTargetStr);
         String lastTargetStr = prop.getProperty(key_lastTargetStr);
         if (text_specifyString.equals(lastTargetStr)) {
             // 指定字符串设置上次配置值
@@ -647,11 +654,11 @@ public class FileRenameController extends CommonProperties {
      * @param prop 配置文件
      */
     private void setLastConfigBySpecifyString(Properties prop) {
-        setControlLastConfig(renameValue_Re, prop, key_lastRenameValue, false, null);
-        setControlLastConfig(renameBehavior_Re, prop, key_lastRenameBehavior, false, null);
+        setControlLastConfig(renameValue_Re, prop, key_lastRenameValue);
+        setControlLastConfig(renameBehavior_Re, prop, key_lastRenameBehavior);
         String lastRenameBehavior = prop.getProperty(key_lastRenameBehavior);
         if (text_replace.equals(lastRenameBehavior)) {
-            setControlLastConfig(renameStr_Re, prop, key_lastRenameStr, false, null);
+            setControlLastConfig(renameStr_Re, prop, key_lastRenameStr);
         } else if (text_bothSides.equals(lastRenameBehavior)) {
             // 处理左侧字符设置上次配置值
             setLastConfigByOneSide(prop, left_Re, key_lastLeft, leftBehavior_Re, key_lastLeftBehavior, leftValue_Re, key_lastLeftValue);
@@ -672,11 +679,11 @@ public class FileRenameController extends CommonProperties {
      * @param valueKey        当前侧替换或插入字符文本输入框上次填写值对应的key
      */
     private void setLastConfigByOneSide(Properties prop, TextField side, String sideKey, ChoiceBox<String> sideBehavior, String sideBehaviorKey, TextField sideValue, String valueKey) {
-        setControlLastConfig(side, prop, sideKey, false, null);
-        setControlLastConfig(sideBehavior, prop, sideBehaviorKey, false, null);
+        setControlLastConfig(side, prop, sideKey);
+        setControlLastConfig(sideBehavior, prop, sideBehaviorKey);
         String lastLeftBehavior = prop.getProperty(sideBehaviorKey);
         if (text_insert.equals(lastLeftBehavior) || text_replace.equals(lastLeftBehavior)) {
-            setControlLastConfig(sideValue, prop, valueKey, false, null);
+            setControlLastConfig(sideValue, prop, valueKey);
         }
     }
 
@@ -686,10 +693,10 @@ public class FileRenameController extends CommonProperties {
      * @param prop 配置文件
      */
     private void setLastConfigBySpecifyIndex(Properties prop) {
-        setControlLastConfig(renameValue_Re, prop, key_lastRenameValue, false, null);
-        setControlLastConfig(renameBehavior_Re, prop, key_lastRenameBehavior, false, null);
+        setControlLastConfig(renameValue_Re, prop, key_lastRenameValue);
+        setControlLastConfig(renameBehavior_Re, prop, key_lastRenameBehavior);
         if (text_replace.equals(prop.getProperty(key_lastRenameBehavior))) {
-            setControlLastConfig(renameStr_Re, prop, key_lastRenameStr, false, null);
+            setControlLastConfig(renameStr_Re, prop, key_lastRenameStr);
         }
     }
 
@@ -699,11 +706,11 @@ public class FileRenameController extends CommonProperties {
      * @param prop 配置文件
      */
     private void setLastConfigByExcelRename(Properties prop) {
-        setControlLastConfig(maxRow_Re, prop, key_lastMaxRow, false, null);
-        setControlLastConfig(readRow_Re, prop, key_lastReadRow, false, null);
-        setControlLastConfig(readCell_Re, prop, key_lastReadCell, false, null);
-        setControlLastConfig(excelPath_Re, prop, key_lastExcelPath, false, anchorPane_Re);
-        setControlLastConfig(sheetName_Re, prop, key_lastSheetName, false, null);
+        setControlLastConfig(maxRow_Re, prop, key_lastMaxRow);
+        setControlLastConfig(readRow_Re, prop, key_lastReadRow);
+        setControlLastConfig(readCell_Re, prop, key_lastReadCell);
+        setControlLastConfig(sheetName_Re, prop, key_lastSheetName);
+        setControlLastConfig(excelPath_Re, prop, key_lastExcelPath, anchorPane_Re);
     }
 
     /**
@@ -763,13 +770,15 @@ public class FileRenameController extends CommonProperties {
     /**
      * 设置要防重复点击的组件
      */
-    private void setDisableControls() {
-        disableControls.add(fileButton_Re);
-        disableControls.add(clearButton_Re);
-        disableControls.add(renameButton_Re);
-        disableControls.add(reselectButton_Re);
-        disableControls.add(excelPathButton_Re);
-        disableControls.add(updateRenameButton_Re);
+    private void setDisableNodes() {
+        disableNodes.add(fileButton_Re);
+        disableNodes.add(clearButton_Re);
+        disableNodes.add(renameButton_Re);
+        disableNodes.add(reselectButton_Re);
+        disableNodes.add(excelPathButton_Re);
+        disableNodes.add(updateRenameButton_Re);
+        Node autoClickTab = mainScene.lookup("#autoClickTab");
+        disableNodes.add(autoClickTab);
     }
 
     /**
@@ -821,8 +830,6 @@ public class FileRenameController extends CommonProperties {
         getConfig();
         // 设置要暂时移除的组件
         removeChildren(vbox_Re, strRenameVBox_Re, excelRenameVBox_Re);
-        // 设置要防重复点击的组件
-        setDisableControls();
         // 设置鼠标悬停提示
         setToolTip();
         // 设置javafx单元格宽度
@@ -831,6 +838,11 @@ public class FileRenameController extends CommonProperties {
         textFieldChangeListener();
         // 设置初始配置值为上次配置值
         setLastConfig();
+        Platform.runLater(() -> {
+            mainScene = anchorPane_Re.getScene();
+            // 设置要防重复点击的组件
+            setDisableNodes();
+        });
     }
 
     /**
@@ -955,7 +967,7 @@ public class FileRenameController extends CommonProperties {
                 alert.showAndWait();
             } else {
                 TaskBean<FileBean> taskBean = new TaskBean<>();
-                taskBean.setDisableControls(disableControls)
+                taskBean.setDisableNodes(disableNodes)
                         .setProgressBar(progressBar_Re)
                         .setMassageLabel(log_Re)
                         .setBeanList(fileBeans)

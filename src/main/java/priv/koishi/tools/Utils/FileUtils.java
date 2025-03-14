@@ -5,10 +5,8 @@ import org.apache.commons.lang3.StringUtils;
 import priv.koishi.tools.Configuration.FileConfig;
 
 import java.awt.*;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -21,8 +19,6 @@ import java.util.List;
 import java.util.Properties;
 
 import static priv.koishi.tools.Finals.CommonFinals.*;
-import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
-import static priv.koishi.tools.Utils.CommonUtils.checkRunningOutputStream;
 
 /**
  * 文件操作工具类
@@ -32,6 +28,11 @@ import static priv.koishi.tools.Utils.CommonUtils.checkRunningOutputStream;
  * Time 下午3:16
  */
 public class FileUtils {
+
+    /**
+     * 资源文件夹地址前缀
+     */
+    static String resourcesPath = "src/main/resources/priv/koishi/tools/";
 
     /**
      * 获取文件类型
@@ -390,6 +391,58 @@ public class FileUtils {
         if (!file.exists() || !file.isFile()) {
             throw new IOException(errTex);
         }
+    }
+
+    /**
+     * 判断程序是否打包运行
+     *
+     * @return 在jar环境运为true，其他环境为false
+     */
+    public static boolean isRunningFromJar() {
+        // 获取当前运行的JVM的类加载器
+        ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+        // 获取URL资源
+        URL resource = classLoader.getResource("");
+        // 检查URL的协议是否是jar或者file协议，file协议表示不是从JAR中加载
+        String protocol = null;
+        if (resource != null) {
+            protocol = resource.getProtocol();
+        }
+        return "jar".equals(protocol);
+    }
+
+    /**
+     * 根据不同运行环境来创建输入流
+     *
+     * @param path 输入流路径
+     * @return 根据不同运行环境创建的输入流
+     * @throws IOException io异常
+     */
+    public static InputStream checkRunningInputStream(String path) throws IOException {
+        InputStream input;
+        if (isRunningFromJar()) {
+            input = new FileInputStream(resourcesPath + path);
+        } else {
+            input = new FileInputStream(path);
+        }
+        return input;
+    }
+
+    /**
+     * 根据不同运行环境来创建输出流
+     *
+     * @param path 输出流路径
+     * @return 根据不同运行环境创建的输出流
+     * @throws IOException io异常
+     */
+    public static OutputStream checkRunningOutputStream(String path) throws IOException {
+        OutputStream output;
+        if (isRunningFromJar()) {
+            output = new FileOutputStream(resourcesPath + path);
+        } else {
+            output = new FileOutputStream(path);
+        }
+        return output;
     }
 
 }

@@ -26,8 +26,8 @@ import java.util.concurrent.TimeUnit;
 import static priv.koishi.tools.Controller.MainController.mainAdaption;
 import static priv.koishi.tools.Controller.MainController.saveLastConfig;
 import static priv.koishi.tools.Finals.CommonFinals.*;
-import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
-import static priv.koishi.tools.Utils.CommonUtils.isRunningFromJar;
+import static priv.koishi.tools.Utils.FileUtils.checkRunningInputStream;
+import static priv.koishi.tools.Utils.FileUtils.isRunningFromJar;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
 /**
@@ -52,7 +52,7 @@ public class MainApplication extends Application {
     /**
      * 线程池实例
      */
-    ExecutorService executorService = commonThreadPoolExecutor.createNewThreadPool();
+    private final ExecutorService executorService = commonThreadPoolExecutor.createNewThreadPool();
 
     /**
      * 加载fxml页面
@@ -97,6 +97,13 @@ public class MainApplication extends Application {
         stage.widthProperty().addListener((v1, v2, v3) -> Platform.runLater(() -> mainAdaption(stage, tabBeanList)));
         // 监听窗口面板高度变化
         stage.heightProperty().addListener((v1, v2, v3) -> Platform.runLater(() -> mainAdaption(stage, tabBeanList)));
+        stage.setOnCloseRequest(event -> {
+            try {
+                stop();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
         stage.show();
     }
 
@@ -110,7 +117,6 @@ public class MainApplication extends Application {
      */
     @SuppressWarnings("unchecked")
     private static List<TabBean> buildTabsData(Scene scene, TabPane tabPane, List<String> tabStateIds) {
-        TableView<TabBean> tableView = (TableView<TabBean>) scene.lookup("#tableView_Set");
         List<TabBean> tabBeanList = new ArrayList<>();
         ObservableList<Tab> tabs = tabPane.getTabs();
         List<String> tabIds = new ArrayList<>();
@@ -147,10 +153,13 @@ public class MainApplication extends Application {
         List<Tab> sortTabs = new ArrayList<>(sortTabsByIds(tabs, tabIds));
         tabs.clear();
         tabs.addAll(sortTabs);
-        // 构建tab信息列表
-        buildTableView(tableView, tabBeanList);
-        // 为tab信息列表添加右键菜单
-        tableViewContextMenu(tableView);
+        Platform.runLater(() -> {
+            TableView<TabBean> tableView = (TableView<TabBean>) scene.lookup("#tableView_Set");
+            // 构建tab信息列表
+            buildTableView(tableView, tabBeanList);
+            // 为tab信息列表添加右键菜单
+            tableViewContextMenu(tableView);
+        });
         return tabBeanList;
     }
 

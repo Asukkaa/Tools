@@ -13,7 +13,7 @@ import java.util.UUID;
 
 import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.Utils.CommonUtils.*;
-import static priv.koishi.tools.Utils.UiUtils.changeDisableControls;
+import static priv.koishi.tools.Utils.UiUtils.changeDisableNodes;
 
 /**
  * 文件批量重命名线程任务类
@@ -35,7 +35,7 @@ public class FileRenameService {
             @Override
             protected String call() throws Exception {
                 // 改变要防重复点击的组件状态
-                changeDisableControls(taskBean, true);
+                changeDisableNodes(taskBean, true);
                 // 防止命名重复先将所有慰文件重命名为uuid生成的临时名称
                 updateMessage("正在将文件重命名为临时名称");
                 List<FileBean> fileBeanList = taskBean.getBeanList();

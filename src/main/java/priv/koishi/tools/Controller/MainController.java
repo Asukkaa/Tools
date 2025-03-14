@@ -28,8 +28,8 @@ import static priv.koishi.tools.Controller.ImgToExcelController.imgToExcelSaveLa
 import static priv.koishi.tools.Controller.SettingController.saveSetting;
 import static priv.koishi.tools.Controller.SettingController.settingAdaption;
 import static priv.koishi.tools.Finals.CommonFinals.*;
-import static priv.koishi.tools.Utils.CommonUtils.checkRunningInputStream;
-import static priv.koishi.tools.Utils.CommonUtils.checkRunningOutputStream;
+import static priv.koishi.tools.Utils.FileUtils.checkRunningInputStream;
+import static priv.koishi.tools.Utils.FileUtils.checkRunningOutputStream;
 
 /**
  * 全局页面控制器

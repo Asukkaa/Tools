@@ -1,13 +1,18 @@
 package priv.koishi.tools.Utils;
 
+import com.github.kwhat.jnativehook.GlobalScreen;
+import com.github.kwhat.jnativehook.keyboard.NativeKeyListener;
+import com.github.kwhat.jnativehook.mouse.NativeMouseListener;
 import org.apache.commons.lang3.StringUtils;
 import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Configuration.FileConfig;
 import priv.koishi.tools.Vo.FileNumVo;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.Method;
-import java.net.URL;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -26,11 +31,6 @@ import static priv.koishi.tools.Utils.FileUtils.getUnitSize;
 public class CommonUtils {
 
     /**
-     * 资源文件夹地址前缀
-     */
-    static String resourcesPath = "src/main/resources/priv/koishi/tools/";
-
-    /**
      * 正则表达式用于匹配指定范围的整数
      *
      * @param str 要校验的字符串
@@ -44,6 +44,10 @@ public class CommonUtils {
         }
         // 禁止出现0开头的非0数字
         if (str.indexOf("0") == 0 && str.length() > 1) {
+            return false;
+        }
+        // 禁止出现负数开头的0
+        if (str.indexOf("-0") == 0) {
             return false;
         }
         Pattern integerPattern = Pattern.compile("^-?\\d{1,10}$");
@@ -90,8 +94,9 @@ public class CommonUtils {
             intNum = intNum / 10;
             count++;
         }
-        if (isNegative)
+        if (isNegative) {
             sb.insert(0, cnNegative);
+        }
         String chineseNum = sb.toString().replaceAll("零[千百十]", "零").replaceAll("零+万", "万")
                 .replaceAll("零+亿", "亿").replaceAll("亿万", "亿零")
                 .replaceAll("零+", "零").replaceAll("零$", "");
@@ -293,58 +298,6 @@ public class CommonUtils {
     }
 
     /**
-     * 判断程序是否打包运行
-     *
-     * @return 在jar环境运为true，其他环境为false
-     */
-    public static boolean isRunningFromJar() {
-        // 获取当前运行的JVM的类加载器
-        ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-        // 获取URL资源
-        URL resource = classLoader.getResource("");
-        // 检查URL的协议是否是jar或者file协议，file协议表示不是从JAR中加载
-        String protocol = null;
-        if (resource != null) {
-            protocol = resource.getProtocol();
-        }
-        return "jar".equals(protocol);
-    }
-
-    /**
-     * 根据不同运行环境来创建输入流
-     *
-     * @param path 输入流路径
-     * @return 根据不同运行环境创建的输入流
-     * @throws IOException io异常
-     */
-    public static InputStream checkRunningInputStream(String path) throws IOException {
-        InputStream input;
-        if (isRunningFromJar()) {
-            input = new FileInputStream(resourcesPath + path);
-        } else {
-            input = new FileInputStream(path);
-        }
-        return input;
-    }
-
-    /**
-     * 根据不同运行环境来创建输出流
-     *
-     * @param path 输出流路径
-     * @return 根据不同运行环境创建的输出流
-     * @throws IOException io异常
-     */
-    public static OutputStream checkRunningOutputStream(String path) throws IOException {
-        OutputStream output;
-        if (isRunningFromJar()) {
-            output = new FileOutputStream(resourcesPath + path);
-        } else {
-            output = new FileOutputStream(path);
-        }
-        return output;
-    }
-
-    /**
      * 字符串大小写互换
      *
      * @param s 要转换的字符串
@@ -403,6 +356,21 @@ public class CommonUtils {
      */
     public static String getPropertyName(String getterName) {
         return Character.toLowerCase(getterName.charAt(3)) + getterName.substring(4);
+    }
+
+    /**
+     * 移除全局输入监听
+     *
+     * @param listener 要移除的监听器
+     */
+    public static void removeNativeListener(EventListener listener) {
+        if (listener != null) {
+            if (listener instanceof NativeMouseListener) {
+                GlobalScreen.removeNativeMouseListener((NativeMouseListener) listener);
+            } else if (listener instanceof NativeKeyListener) {
+                GlobalScreen.removeNativeKeyListener((NativeKeyListener) listener);
+            }
+        }
     }
 
 }
