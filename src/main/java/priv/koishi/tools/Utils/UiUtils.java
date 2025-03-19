@@ -70,12 +70,12 @@ public class UiUtils {
     /**
      * 鼠标停留提示框
      *
-     * @param controls 需要显示提示框的组件
-     * @param tip      提示卡信息
+     * @param nodes 需要显示提示框的组件
+     * @param tip   提示卡信息
      */
-    public static void addToolTip(String tip, Control... controls) {
-        for (Control control : controls) {
-            control.setTooltip(creatTooltip(tip));
+    public static void addToolTip(String tip, Node... nodes) {
+        for (Node node : nodes) {
+            Tooltip.install(node, creatTooltip(tip));
         }
     }
 
@@ -108,7 +108,7 @@ public class UiUtils {
     }
 
     /**
-     * 输入框鼠标停留提示输入值
+     * 文本输入框鼠标停留提示输入值
      *
      * @param textField 要添加提示的文本输入框
      * @param text      要展示的提示文案
@@ -116,17 +116,29 @@ public class UiUtils {
      */
     public static void addValueToolTip(TextField textField, String text, String valueText) {
         String value = textField.getText();
+        addValueToolTip(textField, text, valueText, value);
+    }
+
+    /**
+     * 为组件添加鼠标悬停提示框
+     *
+     * @param node      要添加提示的组件
+     * @param text      提示文案
+     * @param valueText 当前所填值提示文案
+     * @param value     当前所填值
+     */
+    public static void addValueToolTip(Node node, String text, String valueText, String value) {
         if (StringUtils.isNotEmpty(text)) {
             if (StringUtils.isNotEmpty(value)) {
-                addToolTip(text + "\n" + valueText + value, textField);
+                addToolTip(text + "\n" + valueText + value, node);
             } else {
-                addToolTip(text, textField);
+                addToolTip(text, node);
             }
         } else {
             if (StringUtils.isNotEmpty(value)) {
-                addToolTip(value, textField);
+                addToolTip(value, node);
             } else {
-                textField.setTooltip(null);
+                addToolTip(null, node);
             }
         }
     }
