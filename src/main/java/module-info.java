@@ -12,6 +12,7 @@ module priv.koishi.tools {
     requires nsmenufx;
     requires javafx.controls;
     requires javafx.fxml;
+    requires org.apache.commons.io;
 
     opens priv.koishi.tools to javafx.fxml;
     exports priv.koishi.tools;

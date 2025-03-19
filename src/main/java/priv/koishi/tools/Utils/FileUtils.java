@@ -365,21 +365,6 @@ public class FileUtils {
     }
 
     /**
-     * 判断字符串是否为文件路径
-     *
-     * @param path 要校验的文件路径
-     * @return 如果是文件路径返回true，否则返回false
-     */
-    public static boolean isValidPath(String path) {
-        try {
-            Paths.get(path);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    /**
      * 校验文件是否存在
      *
      * @param filePath 要校验的非文件夹文件路径

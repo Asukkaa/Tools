@@ -23,6 +23,7 @@
                     <String fx:value="只查询文件"/>
                 </value>
             </ChoiceBox>
+
             <Label prefHeight="25" text="隐藏文件查询设置:"/>
             <ChoiceBox fx:id="hideFileType_Name" prefHeight="20" prefWidth="120">
                 <items>
@@ -36,19 +37,20 @@
                     <String fx:value="不查询隐藏文件"/>
                 </value>
             </ChoiceBox>
+
             <CheckBox fx:id="recursion_Name" prefHeight="25" style="-fx-cursor: hand" text="递归查询"/>
-            <CheckBox fx:id="showFileType_Name" onAction="#handleCheckBoxAction" prefHeight="25"
-                      style="-fx-cursor: hand" text="显示文件拓展名"/>
+            <CheckBox fx:id="showFileType_Name" onAction="#handleCheckBoxAction" prefHeight="25" style="-fx-cursor: hand" text="显示文件拓展名"/>
             <CheckBox fx:id="exportTitle_Name" prefHeight="25" selected="true" style="-fx-cursor: hand" text="导出表头"/>
-            <CheckBox fx:id="exportFullList_Name" prefHeight="25" selected="true" style="-fx-cursor: hand"
-                      text="导出完整数据"/>
+            <CheckBox fx:id="exportFullList_Name" prefHeight="25" selected="true" style="-fx-cursor: hand" text="导出完整数据"/>
         </HBox>
 
         <HBox spacing="10">
             <Label prefHeight="25" text="导出excel文件名称:"/>
             <TextField fx:id="excelName_Name" prefHeight="20" prefWidth="100"/>
+
             <Label prefHeight="25" text="excel表名称:"/>
             <TextField fx:id="sheetName_Name" prefHeight="20" prefWidth="100"/>
+
             <Label fx:id="excelTypeLabel_Name" prefHeight="25" text="导出excel文件类型:"/>
             <ChoiceBox fx:id="excelType_Name" prefHeight="20" prefWidth="80">
                 <items>
@@ -61,32 +63,34 @@
                     <String fx:value=".xlsx"/>
                 </value>
             </ChoiceBox>
-            <CheckBox fx:id="openDirectory_Name" prefHeight="25" selected="true" style="-fx-cursor: hand"
-                      text="导出后打开文件夹"/>
+
+            <CheckBox fx:id="openDirectory_Name" prefHeight="25" selected="true" style="-fx-cursor: hand" text="导出后打开文件夹"/>
             <CheckBox fx:id="openFile_Name" prefHeight="25" style="-fx-cursor: hand" text="导出后打开excel文件"/>
         </HBox>
 
         <HBox spacing="10">
             <Label prefHeight="25" text="导出预留行:"/>
             <TextField fx:id="startRow_Name" prefHeight="20" prefWidth="50"/>
+
             <Label prefHeight="25" text="导出预留列:"/>
             <TextField fx:id="startCell_Name" prefHeight="20" prefWidth="50"/>
+
             <Label prefHeight="25" text="需要识别的文件后缀名:"/>
             <TextField fx:id="filterFileType_Name" prefHeight="20" prefWidth="300"/>
         </HBox>
 
         <HBox spacing="10">
-            <Button fx:id="fileButton_Name" onAction="#inDirectoryButton" style="-fx-cursor: hand"
-                    text="选择要读取的文件夹"/>
+            <Button fx:id="fileButton_Name" onAction="#inDirectoryButton" style="-fx-cursor: hand" text="选择要读取的文件夹"/>
             <Label fx:id="inPath_Name" prefHeight="25" prefWidth="300" style="-fx-font-size: 15px;"/>
+
             <Button fx:id="outPathButton_Name" onAction="#exportPath" style="-fx-cursor: hand" text="选择导出文件夹位置"/>
             <Label fx:id="outPath_Name" prefHeight="25" style="-fx-font-size: 15px;"/>
         </HBox>
 
         <HBox spacing="10">
-            <Button fx:id="excelPathButton_Name" onAction="#getExcelPath" style="-fx-cursor: hand"
-                    text="选择excel模板位置"/>
+            <Button fx:id="excelPathButton_Name" onAction="#getExcelPath" style="-fx-cursor: hand" text="选择excel模板位置"/>
             <Label fx:id="excelPath_Name" prefHeight="25" style="-fx-font-size: 15px;"/>
+
             <Button fx:id="removeExcelButton_Name" onAction="#removeExcelPath" prefHeight="20"
                     styleClass="delete-button-style" visible="false">
                 <graphic>
@@ -101,6 +105,7 @@
             <Button fx:id="reselectButton_Name" onAction="#reselect" style="-fx-cursor: hand" text="重新查询"/>
             <Button fx:id="clearButton_Name" onAction="#removeAll" style="-fx-cursor: hand" text="清空列表"/>
             <Button fx:id="exportButton_Name" onAction="#exportAll" style="-fx-cursor: hand" text="开始导出"/>
+
             <Label fx:id="fileNumber_Name" alignment="CENTER_RIGHT" prefHeight="20" text="列表为空"/>
         </HBox>
 
