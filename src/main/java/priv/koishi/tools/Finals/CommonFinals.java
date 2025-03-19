@@ -182,7 +182,7 @@ public class CommonFinals {
             设置为空或者不合法将会以默认名称命名，默认名称为：""";
 
     public static final String tip_autoClickFileName = """
-            不用填写文件拓展名，导出文件为 .pmc 格式，如果导出文件夹已经存在同名文件将会覆盖
+            不用填写文件拓展名，导出文件为 .pmc 格式，如果导出文件夹已经存在同名文件不会覆盖
             文件名不能包含  <>:"/\\|?*
             设置为空或者不合法将会以默认名称命名，默认名称为：""";
 
@@ -633,6 +633,10 @@ public class CommonFinals {
     public static final String menuItem_appendCopy = "复制所选数据到列表最后一行";
 
     public static final String menuItem_topCopy = "复制所选数据到列表顶部";
+
+    public static String extension_file = "文件";
+
+    public static final String extension_folder = "文件夹";
 
     /**
      * excel插入图片功能配置文件路径
