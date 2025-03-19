@@ -181,12 +181,10 @@ public class MainApplication extends Application {
         buildUpMoveDataMenuItem(tableView, contextMenu);
         // 所选行下移一行选项
         buildDownMoveDataMenuItem(tableView, contextMenu);
-        tableView.setContextMenu(contextMenu);
-        tableView.setOnMousePressed(event -> {
-            if (event.isSecondaryButtonDown()) {
-                contextMenu.show(tableView, event.getScreenX(), event.getScreenY());
-            }
-        });
+        // 取消选中选项
+        buildClearSelectedData(tableView, contextMenu);
+        // 为列表添加右键菜单并设置可选择多行
+        setContextMenu(contextMenu, tableView);
     }
 
     /**

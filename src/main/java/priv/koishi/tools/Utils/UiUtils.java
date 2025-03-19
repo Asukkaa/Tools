@@ -20,7 +20,6 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.input.*;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -501,18 +500,80 @@ public class UiUtils {
      * @param pathKey          配置文件中路径的key
      * @param pathLabel        要展示路径的文本框
      * @param configFile       要更新的配置文件
-     * @param anchorPane       组件所在布局
+     * @param pane             组件所在布局
      * @return 所选文件路径
      * @throws IOException io异常
      */
-    public static String updatePathLabel(String selectedFilePath, String filePath, String pathKey, Label pathLabel, String configFile, AnchorPane anchorPane) throws IOException {
+    public static String updatePathLabel(String selectedFilePath, String filePath, String pathKey, Label pathLabel, String configFile, Pane pane) throws IOException {
         // 只有跟上次选的路径不一样才更新
         if (StringUtils.isBlank(filePath) || !filePath.equals(selectedFilePath)) {
             updateProperties(configFile, pathKey, selectedFilePath);
             filePath = selectedFilePath;
         }
-        setPathLabel(pathLabel, selectedFilePath, false, anchorPane);
+        setPathLabel(pathLabel, selectedFilePath, false, pane);
         return filePath;
+    }
+
+    /**
+     * 向列表指定位置添加数据
+     *
+     * @param data           要添加的数据
+     * @param addType        添加位置类型
+     * @param tableView      要添加数据的列表
+     * @param dataNumber     用于展示列表数据数量的文本框
+     * @param dataNumberUnit 数据数量单位
+     */
+    public static <T> void addData(List<T> data, int addType, TableView<T> tableView, Label dataNumber, String dataNumberUnit) {
+        ObservableList<T> tableViewItems = tableView.getItems();
+        List<T> selectedItem = tableView.getSelectionModel().getSelectedItems();
+        switch (addType) {
+            // 在列表所选行第一行上方插入
+            case upAdd: {
+                // 获取首个选中行的索引
+                int selectedIndex = tableViewItems.indexOf(selectedItem.getFirst());
+                // 在选中行上方插入数据
+                tableView.getItems().addAll(selectedIndex, data);
+                // 滚动到插入位置
+                tableView.scrollTo(selectedIndex);
+                // 选中新插入的数据
+                tableView.getSelectionModel().selectRange(selectedIndex, selectedIndex + data.size());
+                // 插入后重新选中
+                tableView.getSelectionModel().selectIndices(selectedIndex, selectedIndex + data.size());
+                break;
+            }
+            // 在列表所选行最后一行下方插入
+            case downAdd: {
+                // 获取最后一个选中行的索引
+                int selectedIndex = tableViewItems.indexOf(selectedItem.getLast()) + 1;
+                // 在选中行下方插入数据
+                tableView.getItems().addAll(selectedIndex, data);
+                // 滚动到插入位置
+                tableView.scrollTo(selectedIndex);
+                // 选中新插入的数据
+                tableView.getSelectionModel().selectRange(selectedIndex, selectedIndex + data.size());
+                // 插入后重新选中
+                tableView.getSelectionModel().selectIndices(selectedIndex, selectedIndex + data.size() - 1);
+                break;
+            }
+            // 向列表第一行上方插入
+            case topAdd: {
+                // 向列表第一行追加数据
+                tableView.getItems().addAll(0, data);
+                // 滚动到插入位置
+                tableView.scrollTo(0);
+                break;
+            }
+            // 向列表最后一行追加
+            case append: {
+                // 向列表最后一行追加数据
+                tableViewItems.addAll(data);
+                // 滚动到插入位置
+                tableView.scrollTo(tableViewItems.size());
+                break;
+            }
+        }
+        // 同步表格数据量
+        dataNumber.setText(text_allHave + tableViewItems.size() + dataNumberUnit);
     }
 
     /**
@@ -608,23 +669,21 @@ public class UiUtils {
     /**
      * 构建右键菜单
      *
-     * @param tableView  要添加右键菜单的列表
-     * @param label      列表对应的统计信息展示栏
-     * @param anchorPane 列表所在布局
+     * @param tableView 要添加右键菜单的列表
+     * @param label     列表对应的统计信息展示栏
+     * @param pane      列表所在布局
      */
-    public static void tableViewContextMenu(TableView<FileBean> tableView, Label label, AnchorPane anchorPane) {
+    public static void tableViewContextMenu(TableView<FileBean> tableView, Label label, Pane pane) {
         // 添加右键菜单
         ContextMenu contextMenu = new ContextMenu();
-        // 所选行上移一行选项
-        buildUpMoveDataMenuItem(tableView, contextMenu);
+        // 移动所选行选项
+        buildMoveDataMenu(tableView, contextMenu);
         // 所选行下移一行选项
         buildDownMoveDataMenuItem(tableView, contextMenu);
-        // 打开所选文件选项
-        buildOpenFileMenuItem(tableView, contextMenu);
-        // 打开所选文件所在文件夹选项
-        buildOpenDirectorMenuItem(tableView, contextMenu);
-        // 复制文件路径选项
-        buildOpenCopyFilePathItem(tableView, contextMenu, anchorPane);
+        // 查看文件选项
+        buildFilePathItem(tableView, contextMenu, pane);
+        // 取消选中选项
+        buildClearSelectedData(tableView, contextMenu);
         // 删除所选数据选项
         buildDeleteDataMenuItem(tableView, label, contextMenu, text_file);
         // 为列表添加右键菜单并设置可选择多行
@@ -632,19 +691,83 @@ public class UiUtils {
     }
 
     /**
-     * 复制文件路径选项
+     * 取消选中选项
      *
      * @param tableView   要添加右键菜单的列表
      * @param contextMenu 右键菜单集合
-     * @param anchorPane  列表所在布局
      */
-    private static void buildOpenCopyFilePathItem(TableView<FileBean> tableView, ContextMenu contextMenu, AnchorPane anchorPane) {
-        MenuItem menuItem = new MenuItem("复制文件路径");
-        menuItem.setOnAction(event -> {
-            FileBean fileBean = tableView.getSelectionModel().getSelectedItem();
-            copyText(fileBean.getPath(), anchorPane);
+    public static <T> void buildClearSelectedData(TableView<T> tableView, ContextMenu contextMenu) {
+        MenuItem clearSelectedDataMenuItem = new MenuItem("取消选中");
+        clearSelectedDataMenuItem.setOnAction(event -> tableView.getSelectionModel().clearSelection());
+        contextMenu.getItems().add(clearSelectedDataMenuItem);
+    }
+
+    /**
+     * 查看文件选项
+     *
+     * @param tableView   要添加右键菜单的列表
+     * @param contextMenu 右键菜单集合
+     * @param pane        列表所在布局
+     */
+    private static void buildFilePathItem(TableView<FileBean> tableView, ContextMenu contextMenu, Pane pane) {
+        Menu menu = new Menu("查看文件");
+        // 创建二级菜单项
+        MenuItem openFile = new MenuItem("打开所选文件");
+        MenuItem openDirector = new MenuItem("打开所选文件所在文件夹");
+        MenuItem copyFilePath = new MenuItem("复制文件路径");
+        // 为每个菜单项添加事件处理
+        openFile.setOnAction(event -> openFileMenuItem(tableView));
+        openDirector.setOnAction(event -> openDirectorMenuItem(tableView));
+        copyFilePath.setOnAction(event -> copyFilePathItem(tableView, pane));
+        // 将菜单添加到菜单列表
+        menu.getItems().addAll(openFile, openDirector, copyFilePath);
+        contextMenu.getItems().add(menu);
+    }
+
+    /**
+     * 打开所选文件选项
+     *
+     * @param tableView 文件列表
+     * @throws RuntimeException io异常
+     */
+    private static void openFileMenuItem(TableView<FileBean> tableView) {
+        List<FileBean> fileBeans = tableView.getSelectionModel().getSelectedItems();
+        fileBeans.forEach(fileBean -> {
+            try {
+                openFile(fileBean.getPath());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         });
-        contextMenu.getItems().add(menuItem);
+    }
+
+    /**
+     * 打开所选文件所在文件夹选项
+     *
+     * @param tableView 要添加右键菜单的列表
+     * @throws RuntimeException io异常
+     */
+    private static void openDirectorMenuItem(TableView<FileBean> tableView) {
+        List<FileBean> fileBeans = tableView.getSelectionModel().getSelectedItems();
+        List<String> pathList = fileBeans.stream().map(FileBean::getPath).distinct().toList();
+        pathList.forEach(path -> {
+            try {
+                openDirectory(path);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    /**
+     * 复制文件路径选项
+     *
+     * @param tableView 要添加右键菜单的列表
+     * @param pane      列表所在布局
+     */
+    private static void copyFilePathItem(TableView<FileBean> tableView, Pane pane) {
+        FileBean fileBean = tableView.getSelectionModel().getSelectedItem();
+        copyText(fileBean.getPath(), pane);
     }
 
     /**
@@ -655,31 +778,7 @@ public class UiUtils {
      */
     public static <T> void buildUpMoveDataMenuItem(TableView<T> tableView, ContextMenu contextMenu) {
         MenuItem menuItem = new MenuItem("所选行上移一行");
-        menuItem.setOnAction(event -> {
-            // getSelectedCells处理上移操作有bug，通过getSelectedItems拿到的数据是实时变化的，需要一个新的list来存
-            List<T> selectionList = tableView.getSelectionModel().getSelectedItems();
-            List<T> selections = new ArrayList<>(selectionList);
-            List<T> fileList = tableView.getItems();
-            List<T> tempList = new ArrayList<>(fileList);
-            // 上移所选数据位置
-            for (int i = 0; i < selectionList.size(); i++) {
-                T t = selectionList.get(i);
-                int index = fileList.indexOf(t);
-                if (index - i > 0) {
-                    tempList.set(index, tempList.get(index - 1));
-                    tempList.set(index - 1, t);
-                }
-            }
-            fileList.clear();
-            fileList.addAll(tempList);
-            // 重新选中移动后的数据
-            for (T t : selections) {
-                int index = fileList.indexOf(t);
-                if (index != -1) {
-                    tableView.getSelectionModel().select(index);
-                }
-            }
-        });
+        menuItem.setOnAction(event -> upMoveDataMenuItem(tableView));
         contextMenu.getItems().add(menuItem);
     }
 
@@ -691,19 +790,154 @@ public class UiUtils {
      */
     public static <T> void buildDownMoveDataMenuItem(TableView<T> tableView, ContextMenu contextMenu) {
         MenuItem menuItem = new MenuItem("所选行下移一行");
-        menuItem.setOnAction(event -> {
-            var selectedCells = tableView.getSelectionModel().getSelectedCells();
-            int loopTime = 0;
-            for (int i = selectedCells.size(); i > 0; i--) {
-                int row = selectedCells.get(i - 1).getRow();
-                List<T> fileList = tableView.getItems();
-                loopTime++;
-                if (row + loopTime < fileList.size()) {
-                    fileList.add(row, fileList.remove(row + 1));
-                }
-            }
-        });
+        menuItem.setOnAction(event -> downMoveDataMenuItem(tableView));
         contextMenu.getItems().add(menuItem);
+    }
+
+    /**
+     * 移动所选行选项
+     *
+     * @param tableView   要添加右键菜单的列表
+     * @param contextMenu 右键菜单集合
+     */
+    public static <T> void buildMoveDataMenu(TableView<T> tableView, ContextMenu contextMenu) {
+        Menu menu = new Menu("移动所选数据");
+        // 创建二级菜单项
+        MenuItem up = new MenuItem("所选行上移一行");
+        MenuItem down = new MenuItem("所选行下移一行");
+        // 为每个菜单项添加事件处理
+        up.setOnAction(event -> upMoveDataMenuItem(tableView));
+        down.setOnAction(event -> downMoveDataMenuItem(tableView));
+        // 将菜单添加到菜单列表
+        menu.getItems().addAll(up, down);
+        contextMenu.getItems().add(menu);
+    }
+
+    /**
+     * 所选行上移一行选项
+     *
+     * @param tableView 要处理的数据列表
+     */
+    private static <T> void upMoveDataMenuItem(TableView<T> tableView) {
+        // getSelectedCells处理上移操作有bug，通过getSelectedItems拿到的数据是实时变化的，需要一个新的list来存
+        List<T> selectionList = tableView.getSelectionModel().getSelectedItems();
+        List<T> selections = new ArrayList<>(selectionList);
+        List<T> fileList = tableView.getItems();
+        List<T> tempList = new ArrayList<>(fileList);
+        // 上移所选数据位置
+        for (int i = 0; i < selectionList.size(); i++) {
+            T t = selectionList.get(i);
+            int index = fileList.indexOf(t);
+            if (index - i > 0) {
+                tempList.set(index, tempList.get(index - 1));
+                tempList.set(index - 1, t);
+            }
+        }
+        fileList.clear();
+        fileList.addAll(tempList);
+        // 重新选中移动后的数据
+        for (T t : selections) {
+            int index = fileList.indexOf(t);
+            if (index != -1) {
+                tableView.getSelectionModel().select(index);
+            }
+        }
+    }
+
+    /**
+     * 所选行下移一行选项
+     *
+     * @param tableView 要处理的数据列表
+     */
+    private static <T> void downMoveDataMenuItem(TableView<T> tableView) {
+        var selectedCells = tableView.getSelectionModel().getSelectedCells();
+        int loopTime = 0;
+        for (int i = selectedCells.size(); i > 0; i--) {
+            int row = selectedCells.get(i - 1).getRow();
+            List<T> fileList = tableView.getItems();
+            loopTime++;
+            if (row + loopTime < fileList.size()) {
+                fileList.add(row, fileList.remove(row + 1));
+            }
+        }
+    }
+
+    /**
+     * 复制所选数据选项
+     *
+     * @param tableView   要添加右键菜单的列表
+     * @param contextMenu 右键菜单集合
+     * @param dataNumber  列表数据数量文本框
+     */
+    public static void buildCopyDataMenu(TableView<ClickPositionBean> tableView, ContextMenu contextMenu, Label dataNumber) {
+        Menu menu = new Menu("复制所选数据");
+        // 创建二级菜单项
+        MenuItem upCopy = new MenuItem(menuItem_upCopy);
+        MenuItem downCopy = new MenuItem(menuItem_downCopy);
+        MenuItem appendCopy = new MenuItem(menuItem_appendCopy);
+        MenuItem topCopy = new MenuItem(menuItem_topCopy);
+        // 为每个菜单项添加事件处理
+        upCopy.setOnAction(event -> copyDataMenuItem(tableView, menuItem_upCopy, dataNumber));
+        downCopy.setOnAction(event -> copyDataMenuItem(tableView, menuItem_downCopy, dataNumber));
+        appendCopy.setOnAction(event -> copyDataMenuItem(tableView, menuItem_appendCopy, dataNumber));
+        topCopy.setOnAction(event -> copyDataMenuItem(tableView, menuItem_topCopy, dataNumber));
+        // 将菜单添加到菜单列表
+        menu.getItems().addAll(upCopy, downCopy, appendCopy, topCopy);
+        contextMenu.getItems().add(menu);
+    }
+
+    /**
+     * 复制所选数据二级菜单选项
+     *
+     * @param tableView  要处理的数据列表
+     * @param copyType   复制类型
+     * @param dataNumber 列表数据数量文本框
+     */
+    private static void copyDataMenuItem(TableView<ClickPositionBean> tableView, String copyType, Label dataNumber) {
+        List<ClickPositionBean> copiedList = getCopyList(tableView.getSelectionModel().getSelectedItems());
+        switch (copyType) {
+            case menuItem_upCopy: {
+                addData(copiedList, upAdd, tableView, dataNumber, text_process);
+                break;
+            }
+            case menuItem_downCopy: {
+                addData(copiedList, downAdd, tableView, dataNumber, text_process);
+                break;
+            }
+            case menuItem_appendCopy: {
+                addData(copiedList, append, tableView, dataNumber, text_process);
+                break;
+            }
+            case menuItem_topCopy: {
+                addData(copiedList, topAdd, tableView, dataNumber, text_process);
+                break;
+            }
+        }
+    }
+
+    /**
+     * 获取复制的数据
+     *
+     * @param selectedItem 选中的数据
+     * @return 复制的数据
+     */
+    private static List<ClickPositionBean> getCopyList(List<ClickPositionBean> selectedItem) {
+        List<ClickPositionBean> copiedList = new ArrayList<>();
+        selectedItem.forEach(clickPositionBean -> {
+            ClickPositionBean copyClickPositionBean = new ClickPositionBean();
+            copyClickPositionBean.setName(clickPositionBean.getName())
+                    .setStartX(clickPositionBean.getStartX())
+                    .setStartY(clickPositionBean.getStartY())
+                    .setEndX(clickPositionBean.getEndX())
+                    .setEndY(clickPositionBean.getEndY())
+                    .setClickTime(clickPositionBean.getClickTime())
+                    .setClickNum(clickPositionBean.getClickNum())
+                    .setClickInterval(clickPositionBean.getClickInterval())
+                    .setWaitTime(clickPositionBean.getWaitTime())
+                    .setType(clickPositionBean.getType());
+            copiedList.add(copyClickPositionBean);
+        });
+        return copiedList;
     }
 
     /**
@@ -712,24 +946,25 @@ public class UiUtils {
      * @param tableView   要添加右键菜单的列表
      * @param contextMenu 右键菜单集合
      */
-    public static void buildEditClickType(TableView<ClickPositionBean> tableView, ContextMenu contextMenu) {
-        Menu menuItem = new Menu("更改操作类型");
+    public static void buildEditClickTypeMenu(TableView<ClickPositionBean> tableView, ContextMenu contextMenu) {
+        Menu menu = new Menu("更改操作类型");
         // 创建二级菜单项
-        MenuItem primary = new MenuItem("鼠标左键点击");
-        MenuItem secondary = new MenuItem("鼠标右键点击");
-        MenuItem middle = new MenuItem("鼠标中键点击");
-        MenuItem forward = new MenuItem("鼠标前侧键点击");
-        MenuItem back = new MenuItem("鼠标后侧键点击");
-        MenuItem none = new MenuItem("鼠标仅移动");
+        MenuItem primary = new MenuItem(mouseButton_primary);
+        MenuItem secondary = new MenuItem(mouseButton_secondary);
+        MenuItem middle = new MenuItem(mouseButton_middle);
+        MenuItem forward = new MenuItem(mouseButton_forward);
+        MenuItem back = new MenuItem(mouseButton_back);
+        MenuItem none = new MenuItem(mouseButton_none);
         // 为每个菜单项添加事件处理
-        primary.setOnAction(event -> updateClickType(tableView, "鼠标左键点击"));
-        secondary.setOnAction(event -> updateClickType(tableView, "鼠标右键点击"));
-        middle.setOnAction(event -> updateClickType(tableView, "鼠标中键点击"));
-        forward.setOnAction(event -> updateClickType(tableView, "鼠标前侧键点击"));
-        back.setOnAction(event -> updateClickType(tableView, "鼠标后侧键点击"));
-        none.setOnAction(event -> updateClickType(tableView, "鼠标仅移动"));
-        menuItem.getItems().addAll(primary, secondary, middle, forward, back, none);
-        contextMenu.getItems().add(menuItem);
+        primary.setOnAction(event -> updateClickTypeMenuItem(tableView, mouseButton_primary));
+        secondary.setOnAction(event -> updateClickTypeMenuItem(tableView, mouseButton_secondary));
+        middle.setOnAction(event -> updateClickTypeMenuItem(tableView, mouseButton_middle));
+        forward.setOnAction(event -> updateClickTypeMenuItem(tableView, mouseButton_forward));
+        back.setOnAction(event -> updateClickTypeMenuItem(tableView, mouseButton_back));
+        none.setOnAction(event -> updateClickTypeMenuItem(tableView, mouseButton_none));
+        // 将菜单添加到菜单列表
+        menu.getItems().addAll(primary, secondary, middle, forward, back, none);
+        contextMenu.getItems().add(menu);
     }
 
     /**
@@ -738,7 +973,7 @@ public class UiUtils {
      * @param tableView 要添加右键菜单的列表
      * @param clickType 操作类型
      */
-    private static void updateClickType(TableView<ClickPositionBean> tableView, String clickType) {
+    private static void updateClickTypeMenuItem(TableView<ClickPositionBean> tableView, String clickType) {
         List<ClickPositionBean> selectedItem = tableView.getSelectionModel().getSelectedItems();
         if (CollectionUtils.isNotEmpty(selectedItem)) {
             selectedItem.forEach(bean -> {
@@ -746,51 +981,6 @@ public class UiUtils {
                 tableView.refresh();
             });
         }
-    }
-
-    /**
-     * 打开所选文件所在文件夹选项
-     *
-     * @param tableView   要添加右键菜单的列表
-     * @param contextMenu 右键菜单集合
-     * @throws RuntimeException io异常
-     */
-    private static void buildOpenDirectorMenuItem(TableView<FileBean> tableView, ContextMenu contextMenu) {
-        MenuItem menuItem = new MenuItem("打开所选文件所在文件夹");
-        menuItem.setOnAction(event -> {
-            List<FileBean> fileBeans = tableView.getSelectionModel().getSelectedItems();
-            List<String> pathList = fileBeans.stream().map(FileBean::getPath).distinct().toList();
-            pathList.forEach(path -> {
-                try {
-                    openDirectory(path);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            });
-        });
-        contextMenu.getItems().add(menuItem);
-    }
-
-    /**
-     * 打开所选文件选项
-     *
-     * @param tableView   要添加右键菜单的列表
-     * @param contextMenu 右键菜单集合
-     * @throws RuntimeException io异常
-     */
-    private static void buildOpenFileMenuItem(TableView<FileBean> tableView, ContextMenu contextMenu) {
-        MenuItem menuItem = new MenuItem("打开所选文件");
-        menuItem.setOnAction(event -> {
-            List<FileBean> fileBeans = tableView.getSelectionModel().getSelectedItems();
-            fileBeans.forEach(fileBean -> {
-                try {
-                    openFile(fileBean.getPath());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            });
-        });
-        contextMenu.getItems().add(menuItem);
     }
 
     /**
@@ -861,15 +1051,15 @@ public class UiUtils {
     /**
      * 为路径文本框设置上次配置值
      *
-     * @param label      需要处理的文本框
-     * @param prop       配置文件
-     * @param key        要读取的key
-     * @param anchorPane 组件所在布局
+     * @param label 需要处理的文本框
+     * @param prop  配置文件
+     * @param key   要读取的key
+     * @param pane  组件所在布局
      */
-    public static void setControlLastConfig(Label label, Properties prop, String key, AnchorPane anchorPane) {
+    public static void setControlLastConfig(Label label, Properties prop, String key, Pane pane) {
         String lastValue = prop.getProperty(key);
         if (isValidPath(lastValue)) {
-            setPathLabel(label, lastValue, false, anchorPane);
+            setPathLabel(label, lastValue, false, pane);
         }
     }
 
@@ -891,13 +1081,13 @@ public class UiUtils {
     /**
      * 显示可打开的文件类路径
      *
-     * @param pathLabel  文件路径文本栏
-     * @param path       文件路径
-     * @param openFile   点击是否打开文件，true打开文件，false打开文件所在文件夹
-     * @param anchorPane 组件所在布局
+     * @param pathLabel 文件路径文本栏
+     * @param path      文件路径
+     * @param openFile  点击是否打开文件，true打开文件，false打开文件所在文件夹
+     * @param pane      组件所在布局
      * @throws RuntimeException io异常
      */
-    public static void setPathLabel(Label pathLabel, String path, boolean openFile, AnchorPane anchorPane) {
+    public static void setPathLabel(Label pathLabel, String path, boolean openFile, Pane pane) {
         pathLabel.setText(path);
         pathLabel.getStyleClass().add("label-button-style");
         File file = new File(path);
@@ -925,17 +1115,17 @@ public class UiUtils {
         });
         addToolTip(path + "\n鼠标左键点击打开 " + openPath, pathLabel);
         // 设置右键菜单
-        setPathLabelContextMenu(pathLabel, anchorPane);
+        setPathLabelContextMenu(pathLabel, pane);
     }
 
     /**
      * 给路径Label设置右键菜单
      *
      * @param valueLabel 要处理的文本栏
-     * @param anchorPane 组件所在布局
+     * @param pane       组件所在布局
      * @throws RuntimeException io异常
      */
-    public static void setPathLabelContextMenu(Label valueLabel, AnchorPane anchorPane) {
+    public static void setPathLabelContextMenu(Label valueLabel, Pane pane) {
         String path = valueLabel.getText();
         ContextMenu contextMenu = new ContextMenu();
         MenuItem openDirectoryMenuItem = new MenuItem("打开文件夹");
@@ -961,7 +1151,7 @@ public class UiUtils {
         MenuItem copyValueMenuItem = new MenuItem("复制路径");
         contextMenu.getItems().add(copyValueMenuItem);
         valueLabel.setContextMenu(contextMenu);
-        copyValueMenuItem.setOnAction(event -> copyText(valueLabel.getText(), anchorPane));
+        copyValueMenuItem.setOnAction(event -> copyText(valueLabel.getText(), pane));
         valueLabel.setOnMousePressed(event -> {
             if (event.isSecondaryButtonDown()) {
                 contextMenu.show(valueLabel, event.getScreenX(), event.getScreenY());
@@ -974,9 +1164,9 @@ public class UiUtils {
      *
      * @param valueLabel 要处理的文本栏
      * @param text       右键菜单文本
-     * @param anchorPane 组件所在布局
+     * @param pane       组件所在布局
      */
-    public static void setCopyValueContextMenu(Label valueLabel, String text, AnchorPane anchorPane) {
+    public static void setCopyValueContextMenu(Label valueLabel, String text, Pane pane) {
         ContextMenu contextMenu = new ContextMenu();
         MenuItem copyValueMenuItem = new MenuItem(text);
         contextMenu.getItems().add(copyValueMenuItem);
@@ -987,16 +1177,16 @@ public class UiUtils {
             }
         });
         // 设置右键菜单行为
-        copyValueMenuItem.setOnAction(event -> copyText(valueLabel.getText(), anchorPane));
+        copyValueMenuItem.setOnAction(event -> copyText(valueLabel.getText(), pane));
     }
 
     /**
      * 复制文本
      *
-     * @param value      要复制的文本
-     * @param anchorPane 组件所在布局
+     * @param value 要复制的文本
+     * @param pane  组件所在布局
      */
-    public static void copyText(String value, AnchorPane anchorPane) {
+    public static void copyText(String value, Pane pane) {
         // 获取当前系统剪贴板
         Clipboard clipboard = Clipboard.getSystemClipboard();
         // 创建剪贴板内容对象
@@ -1006,7 +1196,7 @@ public class UiUtils {
         // 设置剪贴板内容
         clipboard.setContent(content);
         // 复制成功消息气泡
-        buildMessageBubble(anchorPane, text_copySuccess, 1);
+        buildMessageBubble(pane, text_copySuccess, 1);
     }
 
     /**
