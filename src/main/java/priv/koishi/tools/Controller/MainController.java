@@ -13,7 +13,6 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.Properties;
 
-import static priv.koishi.tools.Controller.AboutController.aboutAdaption;
 import static priv.koishi.tools.Controller.AboutController.saveLogsNumSetting;
 import static priv.koishi.tools.Controller.AutoClickController.autoClickAdaption;
 import static priv.koishi.tools.Controller.AutoClickController.autoClickSaveLastConfig;
@@ -85,9 +84,6 @@ public class MainController {
                     }
                     break;
                 case id_aboutTab:
-                    if (isActivation) {
-                        aboutAdaption(stage);
-                    }
                     break;
                 case id_autoClickTab:
                     if (isActivation) {

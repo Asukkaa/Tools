@@ -6,7 +6,6 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 import priv.koishi.tools.Bean.TabBean;
@@ -57,9 +56,6 @@ public class SettingController {
     private AnchorPane anchorPane_Set;
 
     @FXML
-    private VBox vBox_Set;
-
-    @FXML
     private Button reLaunch_Set;
 
     @FXML
@@ -90,8 +86,6 @@ public class SettingController {
         double stageWidth = stage.getWidth();
         double tableWidth = stageWidth * 0.5;
         table.setMaxWidth(tableWidth);
-        Node settingVBox = scene.lookup("#vBox_Set");
-        settingVBox.setLayoutX(stageWidth * 0.03);
         Node tabName = scene.lookup("#tabName_Set");
         tabName.setStyle("-fx-pref-width: " + tableWidth * 0.7 + "px;");
         Node tabState = scene.lookup("#activationCheckBox_Set");

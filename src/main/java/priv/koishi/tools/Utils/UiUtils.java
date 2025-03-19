@@ -3,8 +3,6 @@ package priv.koishi.tools.Utils;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.beans.property.DoubleProperty;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -369,11 +367,10 @@ public class UiUtils {
      * 根据bean属性名自动填充javafx表格
      *
      * @param tableView 要处理的javafx表格
-     * @param dataList  javafx表格要展示的数据
+     * @param beanClass 要处理的javafx表格的数据bean类
      * @param tabId     用于区分不同列表的id，要展示的数据bean属性名加上tabId即为javafx列表的列对应的id
      */
-    public static <T> void autoBuildTableViewData(TableView<T> tableView, List<T> dataList, String tabId) {
-        Class<?> beanClass = dataList.getFirst().getClass();
+    public static <T> void autoBuildTableViewData(TableView<T> tableView, Class<?> beanClass, String tabId) {
         // 获取对象的所有字段
         List<Field> fields = List.of(beanClass.getDeclaredFields());
         ObservableList<? extends TableColumn<?, ?>> columns = tableView.getColumns();
@@ -388,8 +385,6 @@ public class UiUtils {
             Optional<? extends TableColumn<?, ?>> matched = columns.stream().filter(c -> c.getId().equals(finalFieldName)).findFirst();
             matched.ifPresent(m -> buildCellValue(m, fieldName));
         });
-        ObservableList<T> data = FXCollections.observableArrayList(dataList);
-        tableView.setItems(data);
     }
 
     /**
@@ -404,26 +399,6 @@ public class UiUtils {
         updateLabel(fileNumber, text_dataListNull);
         updateLabel(log, "");
         System.gc();
-    }
-
-    /**
-     * 为统计文件名和插入图片页面列表设置字段宽度
-     *
-     * @param groupId     列表序号列
-     * @param tableView   要处理的列表
-     * @param groupName   列表分组名称列
-     * @param groupNumber 文件数量列
-     * @param fileName    列表文件名称列
-     * @param fileSize    列表文件总大小列
-     */
-    public static void tableViewNumImgAdaption(TableColumn<FileNumBean, String> groupId, TableView<FileNumBean> tableView,
-                                               DoubleProperty groupName, DoubleProperty groupNumber,
-                                               TableColumn<FileNumBean, String> fileName, TableColumn<FileNumBean, String> fileSize) {
-        groupId.prefWidthProperty().bind(tableView.widthProperty().multiply(0.1));
-        groupName.bind(tableView.widthProperty().multiply(0.1));
-        groupNumber.bind(tableView.widthProperty().multiply(0.1));
-        fileName.prefWidthProperty().bind(tableView.widthProperty().multiply(0.6));
-        fileSize.prefWidthProperty().bind(tableView.widthProperty().multiply(0.1));
     }
 
     /**
@@ -1059,17 +1034,6 @@ public class UiUtils {
      */
     public static void removeChildren(VBox parentVBox, VBox... childrenVBoxes) {
         parentVBox.getChildren().removeAll(childrenVBoxes);
-    }
-
-    /**
-     * 渲染带文件大小排序的数据
-     *
-     * @param fileBeans 文件列表
-     * @param taskBean  要渲染到列表的数据
-     */
-    public static <T> void showFileSizeColumData(List<T> fileBeans, TaskBean<T> taskBean) {
-        autoBuildTableViewData(taskBean.getTableView(), fileBeans, taskBean.getTabId());
-        fileSizeColum(taskBean.getComparatorTableColumn());
     }
 
     /**

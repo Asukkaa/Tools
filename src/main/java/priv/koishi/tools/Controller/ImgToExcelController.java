@@ -12,7 +12,6 @@ import javafx.scene.input.DragEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -37,13 +36,12 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 
+import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.Service.ImgToExcelService.buildImgGroupExcel;
 import static priv.koishi.tools.Service.ReadDataService.readExcel;
-import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
-import static priv.koishi.tools.Utils.UiUtils.nodeRightAlignment;
 
 /**
  * 将图片与excel匹配并插入页面控制器
@@ -153,9 +151,6 @@ public class ImgToExcelController extends CommonProperties {
     private AnchorPane anchorPane_Img;
 
     @FXML
-    private VBox vbox_Img;
-
-    @FXML
     private ProgressBar progressBar_Img;
 
     @FXML
@@ -202,8 +197,6 @@ public class ImgToExcelController extends CommonProperties {
         double stageWidth = stage.getWidth();
         double tableWidth = stageWidth * 0.94;
         table.setMaxWidth(tableWidth);
-        Node fileNumVbox = scene.lookup("#vbox_Img");
-        fileNumVbox.setLayoutX(stageWidth * 0.03);
         Node groupId = scene.lookup("#groupId_Img");
         groupId.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
         Node groupNameNum = scene.lookup("#groupName_Img");
@@ -586,6 +579,17 @@ public class ImgToExcelController extends CommonProperties {
     }
 
     /**
+     * 设置javafx单元格宽度
+     */
+    private void tableViewAdaption() {
+        groupId_Img.prefWidthProperty().bind(tableView_Img.widthProperty().multiply(0.1));
+        groupName_Img.prefWidthProperty().bind(tableView_Img.widthProperty().multiply(0.1));
+        groupNumber_Img.prefWidthProperty().bind(tableView_Img.widthProperty().multiply(0.1));
+        fileName_Img.prefWidthProperty().bind(tableView_Img.widthProperty().multiply(0.6));
+        fileUnitSize_Img.prefWidthProperty().bind(tableView_Img.widthProperty().multiply(0.1));
+    }
+
+    /**
      * 界面初始化
      *
      * @throws IOException io异常
@@ -597,7 +601,7 @@ public class ImgToExcelController extends CommonProperties {
         // 设置鼠标悬停提示
         setToolTip();
         // 设置javafx单元格宽度
-        tableViewNumImgAdaption(groupId_Img, tableView_Img, groupName_Img.prefWidthProperty(), groupNumber_Img.prefWidthProperty(), fileName_Img, fileUnitSize_Img);
+        tableViewAdaption();
         // 给输入框添加内容变化监听
         textFieldChangeListener();
         // 设置初始配置值为上次配置值
@@ -606,6 +610,8 @@ public class ImgToExcelController extends CommonProperties {
             mainScene = anchorPane_Img.getScene();
             // 设置要防重复点击的组件
             setDisableNodes();
+            // 绑定表格数据
+            autoBuildTableViewData(tableView_Img, FileNumBean.class, tabId);
         });
     }
 

@@ -210,9 +210,6 @@ public class AutoClickController extends CommonProperties {
     private AnchorPane anchorPane_Click;
 
     @FXML
-    private VBox vbox_Click;
-
-    @FXML
     private HBox fileNumberHBox_Click, tipHBox_Click, cancelTipHBox_Click;
 
     @FXML
@@ -259,8 +256,6 @@ public class AutoClickController extends CommonProperties {
         double stageWidth = stage.getWidth();
         double tableWidth = stageWidth * 0.95;
         table.setMaxWidth(tableWidth);
-        Node settingVBox = scene.lookup("#vbox_Click");
-        settingVBox.setLayoutX(stageWidth * 0.03);
         Node name = scene.lookup("#name_Click");
         name.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
         Node startX = scene.lookup("#startX_Click");
@@ -767,16 +762,8 @@ public class AutoClickController extends CommonProperties {
     private void addData(List<ClickPositionBean> clickPositionBeans) {
         ObservableList<ClickPositionBean> tableViewItems = tableView_Click.getItems();
         tableViewItems.addAll(clickPositionBeans);
-        // 自动填充javafx表格
-        autoBuildTableViewData(tableView_Click, tableViewItems, tabId);
         // 同步表格数据量
         dataNumber_Click.setText(text_allHave + tableViewItems.size() + text_process);
-        // 表格设置为可编辑
-        makeCellCanEdit();
-        // 设置列表通过拖拽排序行
-        tableViewDragRow(tableView_Click);
-        // 构建右键菜单
-        buildContextMenu();
     }
 
     /**
@@ -1028,6 +1015,14 @@ public class AutoClickController extends CommonProperties {
             new MousePositionListener(this::onMousePositionUpdate);
             // 设置要防重复点击的组件
             setDisableNodes();
+            // 自动填充javafx表格
+            autoBuildTableViewData(tableView_Click, ClickPositionBean.class, tabId);
+            // 表格设置为可编辑
+            makeCellCanEdit();
+            // 设置列表通过拖拽排序行
+            tableViewDragRow(tableView_Click);
+            // 构建右键菜单
+            buildContextMenu();
         });
     }
 

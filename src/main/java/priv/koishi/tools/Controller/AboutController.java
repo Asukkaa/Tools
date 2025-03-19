@@ -1,15 +1,12 @@
 package priv.koishi.tools.Controller;
 
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.stage.Stage;
 
 import java.awt.*;
 import java.io.File;
@@ -43,9 +40,6 @@ public class AboutController {
     private AnchorPane anchorPane_Abt;
 
     @FXML
-    private VBox vBox_Abt;
-
-    @FXML
     private TextField logsNum_Abt;
 
     @FXML
@@ -53,19 +47,6 @@ public class AboutController {
 
     @FXML
     private Button openBaiduLinkBtn_Abt, openQuarkLinkBtn_Abt, openXunleiLinkBtn_Abt;
-
-    /**
-     * 组件自适应宽高
-     *
-     * @param stage 程序主舞台
-     */
-    public static void aboutAdaption(Stage stage) {
-        Scene scene = stage.getScene();
-        // 设置组件宽度
-        double stageWidth = stage.getWidth();
-        Node settingVBox = scene.lookup("#vBox_Abt");
-        settingVBox.setLayoutX(stageWidth * 0.03);
-    }
 
     /**
      * 读取配置文件

@@ -1,5 +1,6 @@
 package priv.koishi.tools.Service;
 
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -166,7 +167,8 @@ public class ReadDataService {
         if (CollectionUtils.isEmpty(fileBeans)) {
             throw new Exception(text_selectNull);
         }
-        showFileSizeColumData(fileBeans, taskBean);
+        // 渲染数据
+        Platform.runLater(() -> taskBean.getTableView().getItems().addAll(fileBeans));
         return fileBeans;
     }
 
@@ -240,7 +242,7 @@ public class ReadDataService {
                 }
                 updateMessage(text_allHave + inFileSize + text_file);
                 // 渲染数据
-                showFileSizeColumData(fileBeans, taskBean);
+                Platform.runLater(() -> taskBean.getTableView().getItems().addAll(fileBeans));
                 return null;
             }
         };

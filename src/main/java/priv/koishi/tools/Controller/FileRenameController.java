@@ -172,8 +172,6 @@ public class FileRenameController extends CommonProperties {
         double stageWidth = stage.getWidth();
         double tableWidth = stageWidth * 0.94;
         table.setMaxWidth(tableWidth);
-        Node vbox = scene.lookup("#vbox_Re");
-        vbox.setLayoutX(stageWidth * 0.03);
         Node id = scene.lookup("#id_Re");
         id.setStyle("-fx-pref-width: " + tableWidth * 0.04 + "px;");
         Node name = scene.lookup("#name_Re");
@@ -386,15 +384,8 @@ public class FileRenameController extends CommonProperties {
                 if (text_excelRename.equals(renameType_Re.getValue()) && StringUtils.isNotBlank(excelPath_Re.getText())) {
                     readExcelRename();
                 } else {
-                    // 表格设置为可编辑
-                    tableView_Re.setEditable(true);
-                    rename_Re.setCellFactory((tableColumn) -> new EditingCell<>(FileBean::setRename));
                     taskUnbind(taskBean);
                 }
-                // 设置列表通过拖拽排序行
-                tableViewDragRow(tableView_Re);
-                // 构建右键菜单
-                tableViewContextMenu(tableView_Re, fileNumber_Re, anchorPane_Re);
                 readFileTask = null;
             });
             if (!readFileTask.isRunning()) {
@@ -480,7 +471,6 @@ public class FileRenameController extends CommonProperties {
                 fileBean.setRename(fileBean.getName());
             }
         }
-        autoBuildTableViewData(tableView_Re, fileBeanList, tabId);
     }
 
     /**
@@ -842,6 +832,17 @@ public class FileRenameController extends CommonProperties {
             mainScene = anchorPane_Re.getScene();
             // 设置要防重复点击的组件
             setDisableNodes();
+            // 绑定表格数据
+            autoBuildTableViewData(tableView_Re, FileBean.class, tabId);
+            // 设置文件大小排序
+            fileSizeColum(size_Re);
+            // 表格设置为可编辑
+            tableView_Re.setEditable(true);
+            rename_Re.setCellFactory((tableColumn) -> new EditingCell<>(FileBean::setRename));
+            // 设置列表通过拖拽排序行
+            tableViewDragRow(tableView_Re);
+            // 构建右键菜单
+            tableViewContextMenu(tableView_Re, fileNumber_Re, anchorPane_Re);
         });
     }
 
@@ -1222,7 +1223,6 @@ public class FileRenameController extends CommonProperties {
                     }
                 }
             }
-            autoBuildTableViewData(tableView_Re, fileBeans, tabId);
             // 表格设置为可编辑
             tableView_Re.setEditable(true);
             rename_Re.setCellFactory((tableColumn) -> new EditingCell<>(FileBean::setRename));
@@ -1285,10 +1285,6 @@ public class FileRenameController extends CommonProperties {
                 nameNum = 1;
             }
         }
-        autoBuildTableViewData(tableView_Re, tableViewItems, tabId);
-        // 表格设置为可编辑
-        tableView_Re.setEditable(true);
-        rename_Re.setCellFactory((tableColumn) -> new EditingCell<>(FileBean::setRename));
         updateLabel(log_Re, "");
     }
 

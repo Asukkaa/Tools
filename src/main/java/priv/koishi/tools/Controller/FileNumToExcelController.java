@@ -12,7 +12,6 @@ import javafx.scene.input.DragEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.commons.collections4.CollectionUtils;
@@ -134,9 +133,6 @@ public class FileNumToExcelController extends CommonProperties {
     private AnchorPane anchorPane_Num;
 
     @FXML
-    private VBox vbox_Num;
-
-    @FXML
     private HBox fileNumberHBox_Num;
 
     @FXML
@@ -184,8 +180,6 @@ public class FileNumToExcelController extends CommonProperties {
         double stageWidth = stage.getWidth();
         double tableWidth = stageWidth * 0.94;
         table.setMaxWidth(tableWidth);
-        Node fileNumVbox = scene.lookup("#vbox_Num");
-        fileNumVbox.setLayoutX(stageWidth * 0.03);
         Node groupId = scene.lookup("#groupId_Num");
         groupId.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
         Node groupNameNum = scene.lookup("#groupName_Num");
@@ -490,6 +484,17 @@ public class FileNumToExcelController extends CommonProperties {
     }
 
     /**
+     * 设置javafx单元格宽度
+     */
+    private void tableViewAdaption() {
+        groupId_Num.prefWidthProperty().bind(tableView_Num.widthProperty().multiply(0.1));
+        groupName_Num.prefWidthProperty().bind(tableView_Num.widthProperty().multiply(0.1));
+        groupNumber_Num.prefWidthProperty().bind(tableView_Num.widthProperty().multiply(0.1));
+        fileName_Num.prefWidthProperty().bind(tableView_Num.widthProperty().multiply(0.6));
+        fileUnitSize_Num.prefWidthProperty().bind(tableView_Num.widthProperty().multiply(0.1));
+    }
+
+    /**
      * 界面初始化
      *
      * @throws IOException io异常
@@ -501,7 +506,7 @@ public class FileNumToExcelController extends CommonProperties {
         // 设置鼠标悬停提示
         setToolTip();
         // 设置javafx单元格宽度
-        tableViewNumImgAdaption(groupId_Num, tableView_Num, groupName_Num.prefWidthProperty(), groupNumber_Num.prefWidthProperty(), fileName_Num, fileUnitSize_Num);
+        tableViewAdaption();
         // 给输入框添加内容变化监听
         textFieldChangeListener();
         // 设置初始配置值为上次配置值
@@ -510,6 +515,8 @@ public class FileNumToExcelController extends CommonProperties {
             mainScene = anchorPane_Num.getScene();
             // 设置要防重复点击的组件
             setDisableNodes();
+            // 绑定表格数据
+            autoBuildTableViewData(tableView_Num, FileNumBean.class, tabId);
         });
     }
 
