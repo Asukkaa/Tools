@@ -1,6 +1,4 @@
 module priv.koishi.tools {
-    requires javafx.controls;
-    requires javafx.fxml;
 
     requires static lombok;
     requires org.apache.poi.ooxml;
@@ -11,6 +9,9 @@ module priv.koishi.tools {
     requires jdk.management;
     requires com.github.kwhat.jnativehook;
     requires com.fasterxml.jackson.databind;
+    requires nsmenufx;
+    requires javafx.controls;
+    requires javafx.fxml;
 
     opens priv.koishi.tools to javafx.fxml;
     exports priv.koishi.tools;

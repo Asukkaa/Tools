@@ -194,7 +194,7 @@ public class CommonFinals {
             Windows 会直接点击对应窗口的对应坐标，macOS 需要先点击对应窗口将焦点切换过去才能点中对应窗口的对应坐标""";
 
     public static final String tip_version = """
-            version：2.0.0.0
+            version：2.1.0
             2025年3月构建""";
 
     public static final String tip_updateSameCode = """

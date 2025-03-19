@@ -1,6 +1,7 @@
 package priv.koishi.tools;
 
 import com.github.kwhat.jnativehook.GlobalScreen;
+import de.jangassen.MenuToolkit;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -10,6 +11,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.Configurator;
@@ -22,6 +26,7 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
+
 
 import static priv.koishi.tools.Controller.MainController.mainAdaption;
 import static priv.koishi.tools.Controller.MainController.saveLastConfig;
@@ -93,6 +98,8 @@ public class MainApplication extends Application {
             });
         }
         input.close();
+        // 初始化macOS系统应用菜单
+        initMenu(tabPane);
         // 监听窗口面板宽度变化
         stage.widthProperty().addListener((v1, v2, v3) -> Platform.runLater(() -> mainAdaption(stage, tabBeanList)));
         // 监听窗口面板高度变化
@@ -230,6 +237,39 @@ public class MainApplication extends Application {
         saveLastConfig(primaryStage);
         GlobalScreen.unregisterNativeHook();
         System.exit(0);
+    }
+
+    /**
+     * 初始化macOS系统应用菜单
+     *
+     * @param tabPane 程序页面基础布局
+     */
+    private void initMenu(TabPane tabPane) {
+        MenuItem about = new MenuItem("关于 " + appName);
+        about.setOnAction(e -> tabPane.getTabs().forEach(tab -> {
+            if ("aboutTab".equals(tab.getId())) {
+                tabPane.getSelectionModel().select(tab);
+            }
+            showStage(primaryStage);
+        }));
+        MenuItem setting = new MenuItem("设置...");
+        setting.setAccelerator(new KeyCodeCombination(KeyCode.COMMA, KeyCombination.META_DOWN));
+        setting.setOnAction(e -> tabPane.getTabs().forEach(tab -> {
+            if ("settingTab".equals(tab.getId())) {
+                tabPane.getSelectionModel().select(tab);
+            }
+            showStage(primaryStage);
+        }));
+        MenuToolkit.toolkit(Locale.getDefault()).createAboutMenuItem(appName);
+        MenuItem hide = MenuToolkit.toolkit(Locale.getDefault()).createHideMenuItem(appName);
+        hide.setText("隐藏 " + appName);
+        MenuItem hideOthers = MenuToolkit.toolkit(Locale.getDefault()).createHideOthersMenuItem();
+        hideOthers.setText("隐藏其他");
+        MenuItem quit = MenuToolkit.toolkit(Locale.getDefault()).createQuitMenuItem(appName);
+        quit.setText("退出 " + appName);
+        Menu menu = new Menu();
+        menu.getItems().addAll(about, new SeparatorMenuItem(), setting, new SeparatorMenuItem(), hide, hideOthers, new SeparatorMenuItem(), quit);
+        MenuToolkit.toolkit(Locale.getDefault()).setApplicationMenu(menu);
     }
 
     /**
