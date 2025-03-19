@@ -64,6 +64,7 @@ import static priv.koishi.tools.Utils.CommonUtils.removeNativeListener;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
+import static priv.koishi.tools.Utils.UiUtils.setControlLastConfig;
 
 /**
  * 自动点击工具页面控制器
@@ -352,6 +353,7 @@ public class AutoClickController extends CommonProperties {
         prop.load(input);
         if (activation.equals(prop.getProperty(key_loadLastConfig))) {
             setControlLastConfig(loopTime_Click, prop, key_lastLoopTime);
+            setControlLastConfig(firstClick_Click, prop, key_lastFirstClick);
             setControlLastConfig(outFileName_Click, prop, key_lastOutFileName);
             setControlLastConfig(openDirectory_Click, prop, key_lastOpenDirectory);
             setControlLastConfig(hideWindowRun_Click, prop, key_lastHideWindowRun);
