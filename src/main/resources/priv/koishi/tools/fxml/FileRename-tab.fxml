@@ -6,7 +6,7 @@
 <?import java.lang.*?>
 
 <AnchorPane fx:id="anchorPane_Re" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" stylesheets="@../css/Styles.css"
-            fx:controller="priv.koishi.tools.Controller.FileRenameController">
+            fx:controller="priv.koishi.tools.Controller.FileRenameController" AnchorPane.leftAnchor="30">
     <VBox fx:id="vbox_Re" spacing="10" AnchorPane.topAnchor="10">
         <HBox fx:id="warnHBox_Re" spacing="10">
             <Label prefHeight="25" text="文件夹查询设置:"/>

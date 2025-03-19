@@ -13,7 +13,6 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.Properties;
 
-import static priv.koishi.tools.Controller.AboutController.aboutAdaption;
 import static priv.koishi.tools.Controller.AboutController.saveLogsNumSetting;
 import static priv.koishi.tools.Controller.AutoClickController.autoClickAdaption;
 import static priv.koishi.tools.Controller.AutoClickController.autoClickSaveLastConfig;
@@ -85,9 +84,6 @@ public class MainController {
                     }
                     break;
                 case id_aboutTab:
-                    if (isActivation) {
-                        aboutAdaption(stage);
-                    }
                     break;
                 case id_autoClickTab:
                     if (isActivation) {
@@ -136,8 +132,10 @@ public class MainController {
         TabPane tabPane = (TabPane) scene.lookup("#tabPane");
         Tab selectedTab = tabPane.getSelectionModel().getSelectedItem();
         prop.put(key_lastTab, selectedTab.getId());
-        String fullWindow = stage.isMaximized() ? activation : unActivation;
+        String fullWindow = stage.isFullScreen() ? activation : unActivation;
         prop.put(key_lastFullWindow, fullWindow);
+        String maximize = stage.isMaximized() ? activation : unActivation;
+        prop.put(key_lastMaxWindow, maximize);
         OutputStream output = checkRunningOutputStream(configFile);
         prop.store(output, null);
         input.close();

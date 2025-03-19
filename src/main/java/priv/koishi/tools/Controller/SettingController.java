@@ -6,7 +6,6 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 import priv.koishi.tools.Bean.TabBean;
@@ -57,9 +56,6 @@ public class SettingController {
     private AnchorPane anchorPane_Set;
 
     @FXML
-    private VBox vBox_Set;
-
-    @FXML
     private Button reLaunch_Set;
 
     @FXML
@@ -73,7 +69,7 @@ public class SettingController {
 
     @FXML
     private CheckBox loadRename_Set, loadFileNum_Set, loadFileName_Set, loadImgToExcel_Set, lastTab_Set,
-            fullWindow_Set, reverseSort_Set, loadAutoClick_Set;
+            fullWindow_Set, reverseSort_Set, loadAutoClick_Set, maxWindow_Set;
 
     /**
      * 组件自适应宽高
@@ -90,8 +86,6 @@ public class SettingController {
         double stageWidth = stage.getWidth();
         double tableWidth = stageWidth * 0.5;
         table.setMaxWidth(tableWidth);
-        Node settingVBox = scene.lookup("#vBox_Set");
-        settingVBox.setLayoutX(stageWidth * 0.03);
         Node tabName = scene.lookup("#tabName_Set");
         tabName.setStyle("-fx-pref-width: " + tableWidth * 0.7 + "px;");
         Node tabState = scene.lookup("#activationCheckBox_Set");
@@ -220,6 +214,7 @@ public class SettingController {
         setControlLastConfig(sort_Set, prop, key_sort);
         setControlLastConfig(lastTab_Set, prop, key_loadLastConfig);
         setControlLastConfig(reverseSort_Set, prop, key_reverseSort);
+        setControlLastConfig(maxWindow_Set, prop, key_loadLastMaxWindow);
         setControlLastConfig(fullWindow_Set, prop, key_loadLastFullWindow);
         input.close();
     }
@@ -259,8 +254,8 @@ public class SettingController {
             systemMemoryValue = 1;
         }
         systemMemory_Set.setText(systemUnitSizeMemory);
-        setPathLabel(thisPath_Set, currentDir, false, anchorPane_Set);
-        String scriptPath = currentDir + File.separator + scriptName;
+        setPathLabel(thisPath_Set, userDir, false, anchorPane_Set);
+        String scriptPath = userDir + File.separator + scriptName;
         addValueToolTip(nextRunMemory_Set, tip_defaultNextRunMemory, text_nowValue);
         // 下次运行的最大内存输入监听
         integerRangeTextField(nextRunMemory_Set, 1, systemMemoryValue, tip_defaultNextRunMemory);
@@ -379,14 +374,25 @@ public class SettingController {
         setLoadLastConfigCheckBox(lastTab_Set, configFile, key_loadLastConfig);
     }
 
+
     /**
-     * 记住窗口是否最大化设置
+     * 记住窗口是否全屏设置
      *
      * @throws IOException io异常
      */
     @FXML
     private void loadFullWindowAction() throws IOException {
         setLoadLastConfigCheckBox(fullWindow_Set, configFile, key_loadLastFullWindow);
+    }
+
+    /**
+     * 记住窗口是否最大化设置
+     *
+     * @throws IOException io异常
+     */
+    @FXML
+    private void loadMaxWindowAction() throws IOException {
+        setLoadLastConfigCheckBox(maxWindow_Set, configFile, key_loadLastMaxWindow);
     }
 
     /**
@@ -410,12 +416,12 @@ public class SettingController {
         if (!isRunningFromJar()) {
             ProcessBuilder processBuilder = null;
             if (systemName.contains(win)) {
-                String path = currentDir.substring(0, currentDir.lastIndexOf(appNameSeparator) + appNameSeparator.length());
+                String path = userDir.substring(0, userDir.lastIndexOf(appNameSeparator) + appNameSeparator.length());
                 String appPath = path + File.separator + appName + exe;
                 processBuilder = new ProcessBuilder(appPath);
             } else if (systemName.contains(macos)) {
                 String macApp = File.separator + appName + app;
-                String appPath = currentDir.substring(0, currentDir.lastIndexOf(macApp)) + macApp;
+                String appPath = userDir.substring(0, userDir.lastIndexOf(macApp)) + macApp;
                 processBuilder = new ProcessBuilder("open", "-n", appPath);
             }
             if (processBuilder != null) {

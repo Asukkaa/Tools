@@ -6,8 +6,8 @@
 <?import java.lang.*?>
 
 <AnchorPane fx:id="anchorPane_Img" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" stylesheets="@../css/Styles.css"
-            fx:controller="priv.koishi.tools.Controller.ImgToExcelController">
-    <VBox fx:id="vbox_Img" spacing="10" AnchorPane.topAnchor="10">
+            fx:controller="priv.koishi.tools.Controller.ImgToExcelController" AnchorPane.leftAnchor="30">
+    <VBox spacing="10" AnchorPane.topAnchor="10">
         <HBox spacing="10">
             <Label prefHeight="25" text="隐藏文件查询设置:"/>
             <ChoiceBox fx:id="hideFileType_Img" prefHeight="25" prefWidth="120">

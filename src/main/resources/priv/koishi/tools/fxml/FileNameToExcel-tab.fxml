@@ -8,7 +8,7 @@
 
 <AnchorPane fx:id="anchorPane_Name" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" stylesheets="@../css/Styles.css"
             fx:controller="priv.koishi.tools.Controller.FileNameToExcelController">
-    <VBox fx:id="vbox_Name" spacing="10" AnchorPane.topAnchor="10">
+    <VBox spacing="10" AnchorPane.topAnchor="10" AnchorPane.leftAnchor="30">
         <HBox spacing="10">
             <Label prefHeight="25" text="文件夹查询设置:"/>
             <ChoiceBox fx:id="directoryNameType_Name" prefHeight="25" prefWidth="140">

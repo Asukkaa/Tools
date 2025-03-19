@@ -6,7 +6,7 @@
 <?import java.lang.String?>
 <AnchorPane fx:id="anchorPane_Set" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
             stylesheets="@../css/Styles.css" fx:controller="priv.koishi.tools.Controller.SettingController">
-    <VBox fx:id="vBox_Set" spacing="10" AnchorPane.topAnchor="10">
+    <VBox spacing="10" AnchorPane.topAnchor="10" AnchorPane.leftAnchor="30">
 
         <Label prefHeight="25" text="功能设置："/>
 
@@ -33,8 +33,11 @@
             <CheckBox fx:id="lastTab_Set" onAction="#loadLastTabAction" styleClass="checkBox-setting-style"
                       selected="true" text="记住关闭前打开的页面"/>
 
-            <CheckBox fx:id="fullWindow_Set" onAction="#loadFullWindowAction" styleClass="checkBox-setting-style"
-                      selected="true" text="记住程序关闭时窗口是否最大化"/>
+            <CheckBox fx:id="fullWindow_Set" onAction="#loadFullWindowAction"
+                      styleClass="checkBox-setting-style" selected="true" text="记住程序关闭时窗口是否全屏"/>
+
+            <CheckBox fx:id="maxWindow_Set" onAction="#loadMaxWindowAction"
+                      styleClass="checkBox-setting-style" selected="true" text="记住程序关闭时窗口是否最大化"/>
         </HBox>
 
         <HBox spacing="10">

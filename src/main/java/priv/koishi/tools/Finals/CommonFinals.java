@@ -64,7 +64,7 @@ public class CommonFinals {
 
     public static final String tip_imgHeight = " 个像素";
 
-    public static final String tip_reLaunch = "保存所有改动并重启程序";
+    public static final String tip_reLaunch = "保存所有改动并重启程序，如果重启后修改内存设置不生效可能需要再次重启";
 
     public static final String tip_noImg = "勾选后导出文件时没有图片的数据将会在单元格中标记为 无图片";
 
@@ -182,7 +182,7 @@ public class CommonFinals {
             设置为空或者不合法将会以默认名称命名，默认名称为：""";
 
     public static final String tip_autoClickFileName = """
-            不用填写文件拓展名，导出文件为 .pmc 格式，如果导出文件夹已经存在同名文件将会覆盖
+            不用填写文件拓展名，导出文件为 .pmc 格式，如果导出文件夹已经存在同名文件不会覆盖
             文件名不能包含  <>:"/\\|?*
             设置为空或者不合法将会以默认名称命名，默认名称为：""";
 
@@ -194,8 +194,8 @@ public class CommonFinals {
             Windows 会直接点击对应窗口的对应坐标，macOS 需要先点击对应窗口将焦点切换过去才能点中对应窗口的对应坐标""";
 
     public static final String tip_version = """
-            version：2.0.0.0
-            2025年3月14日构建""";
+            version：2.1.0
+            2025年3月构建""";
 
     public static final String tip_updateSameCode = """
             选中列表中的数据后点击这个按钮，会将选中数据的第一行到最后一行，
@@ -448,21 +448,17 @@ public class CommonFinals {
 
     public static final String key_appHeight = "appHeight";
 
-    public static final String key_appTitle = "appTitle";
-
     public static final String key_tabIds = "tabIds";
-
-    public static final String key_baiduLink = "baiduLink";
-
-    public static final String key_quarkLink = "quarkLink";
-
-    public static final String key_xunleiLink = "xunleiLink";
 
     public static final String key_margin = "margin";
 
     public static final String key_floatingX = "floatingX";
 
     public static final String key_floatingY = "floatingY";
+
+    public static final String key_detailWidth = "detailWidth";
+
+    public static final String key_detailHeight = "detailHeight";
 
     public static final String key_floatingWidth = "floatingWidth";
 
@@ -471,6 +467,8 @@ public class CommonFinals {
     public static final String key_loadLastConfig = "loadLastConfig";
 
     public static final String key_loadLastFullWindow = "loadLastFullWindow";
+
+    public static final String key_loadLastMaxWindow = "loadLastMaxWindow";
 
     public static final String key_lastDirectoryNameType = "lastDirectoryNameType";
 
@@ -556,6 +554,8 @@ public class CommonFinals {
 
     public static final String key_lastFullWindow = "lastFullWindow";
 
+    public static final String key_lastMaxWindow = "lastMaxWindow";
+
     public static final String key_lastExportTitle = "lastExportTitle";
 
     public static final String key_lastExportFileNum = "lastExportFileNum";
@@ -563,26 +563,6 @@ public class CommonFinals {
     public static final String key_lastExportFileSize = "lastExportFileSize";
 
     public static final String key_lastExportFullList = "lastExportFullList";
-
-    public static final String key_lastMouseStartX = "lastMouseStartX";
-
-    public static final String key_lastMouseStartY = "lastMouseStartY";
-
-    public static final String key_lastMouseEndX = "lastMouseEndX";
-
-    public static final String key_lastMouseEndY = "lastMouseEndY";
-
-    public static final String key_lastWait = "lastWait";
-
-    public static final String key_lastClickNumBer = "lastClickNumBer";
-
-    public static final String key_lastTimeClick = "lastTimeClick";
-
-    public static final String key_lastInterval = "lastInterval";
-
-    public static final String key_lastClickName = "lastClickName";
-
-    public static final String key_lastClickType = "lastClickType";
 
     public static final String key_lastLoopTime = "lastLoopTime";
 
@@ -622,6 +602,42 @@ public class CommonFinals {
 
     public static final String key_defaultPreparationRunTime = "defaultPreparationRunTime";
 
+    public static final String mouseButton_primary = "鼠标左键点击";
+
+    public static final String mouseButton_secondary = "鼠标右键点击";
+
+    public static final String mouseButton_middle = "鼠标中键点击";
+
+    public static final String mouseButton_forward = "鼠标前侧键点击";
+
+    public static final String mouseButton_back = "鼠标后侧键点击";
+
+    public static final String mouseButton_none = "鼠标仅移动";
+
+    public static final String menuItem_insertUp = "插入设置步骤到所选行第一行上一行";
+
+    public static final String menuItem_insertDown = "插入设置步骤到所选行最后一行下一行";
+
+    public static final String menuItem_recordUp = "插入录制步骤到所选行第一行上一行";
+
+    public static final String menuItem_recordDown = "插入录制步骤到所选行最后一行下一行";
+
+    public static final String menuItem_insertTop = "插入设置步骤到列表顶部";
+
+    public static final String menuItem_recordTop = "插入录制步骤到列表顶部";
+
+    public static final String menuItem_upCopy = "复制所选数据到所选行第一行上方";
+
+    public static final String menuItem_downCopy = "复制所选数据到所选行最后一行下方";
+
+    public static final String menuItem_appendCopy = "复制所选数据到列表最后一行";
+
+    public static final String menuItem_topCopy = "复制所选数据到列表顶部";
+
+    public static String extension_file = "文件";
+
+    public static final String extension_folder = "文件夹";
+
     /**
      * excel插入图片功能配置文件路径
      */
@@ -655,7 +671,7 @@ public class CommonFinals {
     /**
      * 当前程序运行位置
      */
-    public static final String currentDir = System.getProperty("user.dir");
+    public static final String userDir = System.getProperty("user.dir");
 
     /**
      * 当前程序运行操作系统
@@ -668,9 +684,29 @@ public class CommonFinals {
     public static final String userHome = System.getProperty("user.home");
 
     /**
+     * 百度网盘地址
+     */
+    public static final String baiduLink = "https://pan.baidu.com/s/1q4nwoz-ABjZLIwuBep09ZA?pwd=ju2b";
+
+    /**
+     * 夸克网盘地址
+     */
+    public static final String quarkLink = "https://pan.quark.cn/s/962190eadcb1";
+
+    /**
+     * 迅雷网盘地址
+     */
+    public static final String xunleiLink = "https://pan.xunlei.com/s/VOGTX2MnWwCrqIwhUV6GEVOyA1?pwd=7pau#";
+
+    /**
      * 程序名称
      */
     public static final String appName = "Tools";
+
+    /**
+     * 资源文件夹地址前缀
+     */
+    public static String resourcePath = "/priv/koishi/tools/";
 
     /**
      * 程序根目录
@@ -688,6 +724,11 @@ public class CommonFinals {
     public static final String Xmx = "-Xmx";
 
     /**
+     * log4j配置文件名称
+     */
+    public static String log4j2 = "log4j2.xml";
+
+    /**
      * 默认浮窗横轴偏移量
      */
     public static final int defaultOffsetX = 30;
@@ -698,17 +739,37 @@ public class CommonFinals {
     public static final int defaultOffsetY = 30;
 
     /**
+     * 在列表所选行第一行上方插入
+     */
+    public static final int upAdd = 1;
+
+    /**
+     * 在列表所选行最后一行下方插入
+     */
+    public static final int downAdd = 2;
+
+    /**
+     * 向列表最后一行追加
+     */
+    public static final int append = -1;
+
+    /**
+     * 向列表第一行上方插入
+     */
+    public static final int topAdd = 0;
+
+    /**
      * 自动操作的操作类型选项对应的鼠标行为（操作用）
      */
     public static final Map<String, MouseButton> runClickTypeMap = new HashMap<>();
 
     static {
-        runClickTypeMap.put("鼠标左键点击", MouseButton.PRIMARY);
-        runClickTypeMap.put("鼠标右键点击", MouseButton.SECONDARY);
-        runClickTypeMap.put("鼠标中键点击", MouseButton.MIDDLE);
-        runClickTypeMap.put("鼠标前侧键点击", MouseButton.FORWARD);
-        runClickTypeMap.put("鼠标后侧键点击", MouseButton.BACK);
-        runClickTypeMap.put("鼠标仅移动", MouseButton.NONE);
+        runClickTypeMap.put(mouseButton_primary, MouseButton.PRIMARY);
+        runClickTypeMap.put(mouseButton_secondary, MouseButton.SECONDARY);
+        runClickTypeMap.put(mouseButton_middle, MouseButton.MIDDLE);
+        runClickTypeMap.put(mouseButton_forward, MouseButton.FORWARD);
+        runClickTypeMap.put(mouseButton_back, MouseButton.BACK);
+        runClickTypeMap.put(mouseButton_none, MouseButton.NONE);
     }
 
     /**
@@ -717,11 +778,11 @@ public class CommonFinals {
     public static final Map<Integer, String> recordClickTypeMap = new HashMap<>();
 
     static {
-        recordClickTypeMap.put(NativeMouseEvent.BUTTON1, "鼠标左键点击");
-        recordClickTypeMap.put(NativeMouseEvent.BUTTON2, "鼠标右键点击");
-        recordClickTypeMap.put(NativeMouseEvent.BUTTON3, "鼠标中键点击");
-        recordClickTypeMap.put(NativeMouseEvent.BUTTON4, "鼠标后侧键点击");
-        recordClickTypeMap.put(NativeMouseEvent.BUTTON5, "鼠标前侧键点击");
+        recordClickTypeMap.put(NativeMouseEvent.BUTTON1, mouseButton_primary);
+        recordClickTypeMap.put(NativeMouseEvent.BUTTON2, mouseButton_secondary);
+        recordClickTypeMap.put(NativeMouseEvent.BUTTON3, mouseButton_middle);
+        recordClickTypeMap.put(NativeMouseEvent.BUTTON4, mouseButton_back);
+        recordClickTypeMap.put(NativeMouseEvent.BUTTON5, mouseButton_forward);
     }
 
 }

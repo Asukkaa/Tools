@@ -12,7 +12,6 @@ import javafx.scene.input.DragEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.commons.collections4.CollectionUtils;
@@ -119,9 +118,6 @@ public class FileNameToExcelController extends CommonProperties {
     private AnchorPane anchorPane_Name;
 
     @FXML
-    private VBox vbox_Name;
-
-    @FXML
     private ProgressBar progressBar_Name;
 
     @FXML
@@ -169,8 +165,6 @@ public class FileNameToExcelController extends CommonProperties {
         double stageWidth = stage.getWidth();
         double tableWidth = stageWidth * 0.94;
         table.setMaxWidth(tableWidth);
-        Node vbox = scene.lookup("#vbox_Name");
-        vbox.setLayoutX(stageWidth * 0.03);
         Node id = scene.lookup("#id_Name");
         id.setStyle("-fx-pref-width: " + tableWidth * 0.04 + "px;");
         Node name = scene.lookup("#name_Name");
@@ -286,10 +280,6 @@ public class FileNameToExcelController extends CommonProperties {
             bindingProgressBarTask(readFileTask, taskBean);
             readFileTask.setOnSucceeded(event -> {
                 taskUnbind(taskBean);
-                // 设置列表通过拖拽排序行
-                tableViewDragRow(tableView_Name);
-                // 构建右键菜单
-                tableViewContextMenu(tableView_Name, fileNumber_Name, anchorPane_Name);
                 readFileTask = null;
             });
             if (!readFileTask.isRunning()) {
@@ -447,6 +437,14 @@ public class FileNameToExcelController extends CommonProperties {
             mainScene = anchorPane_Name.getScene();
             // 设置要防重复点击的组件
             setDisableNodes();
+            // 绑定表格数据
+            autoBuildTableViewData(tableView_Name, FileBean.class, tabId);
+            // 设置文件大小排序
+            fileSizeColum(size_Name);
+            // 设置列表通过拖拽排序行
+            tableViewDragRow(tableView_Name);
+            // 构建右键菜单
+            tableViewContextMenu(tableView_Name, fileNumber_Name, anchorPane_Name);
         });
     }
 

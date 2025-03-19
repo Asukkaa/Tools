@@ -1,6 +1,7 @@
 package priv.koishi.tools;
 
 import com.github.kwhat.jnativehook.GlobalScreen;
+import de.jangassen.MenuToolkit;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -10,6 +11,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.Configurator;
@@ -71,11 +75,13 @@ public class MainApplication extends Application {
         prop.load(input);
         double appWidth = Double.parseDouble(prop.getProperty(key_appWidth));
         double appHeight = Double.parseDouble(prop.getProperty(key_appHeight));
-        if (activation.equals(prop.getProperty(key_lastFullWindow)) && activation.equals(prop.getProperty(key_loadLastFullWindow))) {
+        if (activation.equals(prop.getProperty(key_lastMaxWindow)) && activation.equals(prop.getProperty(key_loadLastMaxWindow))) {
             stage.setMaximized(true);
+        } else if (activation.equals(prop.getProperty(key_lastFullWindow)) && activation.equals(prop.getProperty(key_loadLastFullWindow))) {
+            stage.setFullScreen(true);
         }
         Scene scene = new Scene(fxmlLoader.load(), appWidth, appHeight);
-        stage.setTitle(prop.getProperty(key_appTitle));
+        stage.setTitle(prop.getProperty(appName));
         stage.setScene(scene);
         stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResource("icon/Tools.png")).toExternalForm()));
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("css/Styles.css")).toExternalForm());
@@ -93,6 +99,8 @@ public class MainApplication extends Application {
             });
         }
         input.close();
+        // 初始化macOS系统应用菜单
+        initMenu(tabPane);
         // 监听窗口面板宽度变化
         stage.widthProperty().addListener((v1, v2, v3) -> Platform.runLater(() -> mainAdaption(stage, tabBeanList)));
         // 监听窗口面板高度变化
@@ -175,12 +183,10 @@ public class MainApplication extends Application {
         buildUpMoveDataMenuItem(tableView, contextMenu);
         // 所选行下移一行选项
         buildDownMoveDataMenuItem(tableView, contextMenu);
-        tableView.setContextMenu(contextMenu);
-        tableView.setOnMousePressed(event -> {
-            if (event.isSecondaryButtonDown()) {
-                contextMenu.show(tableView, event.getScreenX(), event.getScreenY());
-            }
-        });
+        // 取消选中选项
+        buildClearSelectedData(tableView, contextMenu);
+        // 为列表添加右键菜单并设置可选择多行
+        setContextMenu(contextMenu, tableView);
     }
 
     /**
@@ -233,6 +239,39 @@ public class MainApplication extends Application {
     }
 
     /**
+     * 初始化macOS系统应用菜单
+     *
+     * @param tabPane 程序页面基础布局
+     */
+    private void initMenu(TabPane tabPane) {
+        MenuItem about = new MenuItem("关于 " + appName);
+        about.setOnAction(e -> tabPane.getTabs().forEach(tab -> {
+            if ("aboutTab".equals(tab.getId())) {
+                tabPane.getSelectionModel().select(tab);
+            }
+            showStage(primaryStage);
+        }));
+        MenuItem setting = new MenuItem("设置...");
+        setting.setAccelerator(new KeyCodeCombination(KeyCode.COMMA, KeyCombination.META_DOWN));
+        setting.setOnAction(e -> tabPane.getTabs().forEach(tab -> {
+            if ("settingTab".equals(tab.getId())) {
+                tabPane.getSelectionModel().select(tab);
+            }
+            showStage(primaryStage);
+        }));
+        MenuToolkit.toolkit(Locale.getDefault()).createAboutMenuItem(appName);
+        MenuItem hide = MenuToolkit.toolkit(Locale.getDefault()).createHideMenuItem(appName);
+        hide.setText("隐藏 " + appName);
+        MenuItem hideOthers = MenuToolkit.toolkit(Locale.getDefault()).createHideOthersMenuItem();
+        hideOthers.setText("隐藏其他");
+        MenuItem quit = MenuToolkit.toolkit(Locale.getDefault()).createQuitMenuItem(appName);
+        quit.setText("退出 " + appName);
+        Menu menu = new Menu();
+        menu.getItems().addAll(about, new SeparatorMenuItem(), setting, new SeparatorMenuItem(), hide, hideOthers, new SeparatorMenuItem(), quit);
+        MenuToolkit.toolkit(Locale.getDefault()).setApplicationMenu(menu);
+    }
+
+    /**
      * 启动程序
      *
      * @param args 启动参数
@@ -241,7 +280,7 @@ public class MainApplication extends Application {
     public static void main(String[] args) throws IOException {
         // 打包后需要手动指定日志配置文件位置
         if (!isRunningFromJar()) {
-            ConfigurationSource source = new ConfigurationSource(new FileInputStream("log4j2.xml"));
+            ConfigurationSource source = new ConfigurationSource(new FileInputStream(log4j2));
             Configurator.initialize(null, source);
         }
         launch();
