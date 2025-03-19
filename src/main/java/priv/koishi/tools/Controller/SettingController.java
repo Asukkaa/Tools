@@ -253,8 +253,8 @@ public class SettingController {
             systemMemoryValue = 1;
         }
         systemMemory_Set.setText(systemUnitSizeMemory);
-        setPathLabel(thisPath_Set, currentDir, false, anchorPane_Set);
-        String scriptPath = currentDir + File.separator + scriptName;
+        setPathLabel(thisPath_Set, userDir, false, anchorPane_Set);
+        String scriptPath = userDir + File.separator + scriptName;
         addValueToolTip(nextRunMemory_Set, tip_defaultNextRunMemory, text_nowValue);
         // 下次运行的最大内存输入监听
         integerRangeTextField(nextRunMemory_Set, 1, systemMemoryValue, tip_defaultNextRunMemory);
@@ -404,12 +404,12 @@ public class SettingController {
         if (!isRunningFromJar()) {
             ProcessBuilder processBuilder = null;
             if (systemName.contains(win)) {
-                String path = currentDir.substring(0, currentDir.lastIndexOf(appNameSeparator) + appNameSeparator.length());
+                String path = userDir.substring(0, userDir.lastIndexOf(appNameSeparator) + appNameSeparator.length());
                 String appPath = path + File.separator + appName + exe;
                 processBuilder = new ProcessBuilder(appPath);
             } else if (systemName.contains(macos)) {
                 String macApp = File.separator + appName + app;
-                String appPath = currentDir.substring(0, currentDir.lastIndexOf(macApp)) + macApp;
+                String appPath = userDir.substring(0, userDir.lastIndexOf(macApp)) + macApp;
                 processBuilder = new ProcessBuilder("open", "-n", appPath);
             }
             if (processBuilder != null) {

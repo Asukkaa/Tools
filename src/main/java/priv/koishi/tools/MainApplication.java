@@ -27,7 +27,6 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
-
 import static priv.koishi.tools.Controller.MainController.mainAdaption;
 import static priv.koishi.tools.Controller.MainController.saveLastConfig;
 import static priv.koishi.tools.Finals.CommonFinals.*;
@@ -80,7 +79,7 @@ public class MainApplication extends Application {
             stage.setMaximized(true);
         }
         Scene scene = new Scene(fxmlLoader.load(), appWidth, appHeight);
-        stage.setTitle(prop.getProperty(key_appTitle));
+        stage.setTitle(prop.getProperty(appName));
         stage.setScene(scene);
         stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResource("icon/Tools.png")).toExternalForm()));
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("css/Styles.css")).toExternalForm());
@@ -281,7 +280,7 @@ public class MainApplication extends Application {
     public static void main(String[] args) throws IOException {
         // 打包后需要手动指定日志配置文件位置
         if (!isRunningFromJar()) {
-            ConfigurationSource source = new ConfigurationSource(new FileInputStream("log4j2.xml"));
+            ConfigurationSource source = new ConfigurationSource(new FileInputStream(log4j2));
             Configurator.initialize(null, source);
         }
         launch();

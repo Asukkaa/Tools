@@ -448,15 +448,7 @@ public class CommonFinals {
 
     public static final String key_appHeight = "appHeight";
 
-    public static final String key_appTitle = "appTitle";
-
     public static final String key_tabIds = "tabIds";
-
-    public static final String key_baiduLink = "baiduLink";
-
-    public static final String key_quarkLink = "quarkLink";
-
-    public static final String key_xunleiLink = "xunleiLink";
 
     public static final String key_margin = "margin";
 
@@ -655,7 +647,7 @@ public class CommonFinals {
     /**
      * 当前程序运行位置
      */
-    public static final String currentDir = System.getProperty("user.dir");
+    public static final String userDir = System.getProperty("user.dir");
 
     /**
      * 当前程序运行操作系统
@@ -666,6 +658,21 @@ public class CommonFinals {
      * 用户目录
      */
     public static final String userHome = System.getProperty("user.home");
+
+    /**
+     * 百度网盘地址
+     */
+    public static final String baiduLink = "https://pan.baidu.com/s/1q4nwoz-ABjZLIwuBep09ZA?pwd=ju2b";
+
+    /**
+     * 夸克网盘地址
+     */
+    public static final String quarkLink = "https://pan.quark.cn/s/962190eadcb1";
+
+    /**
+     * 迅雷网盘地址
+     */
+    public static final String xunleiLink = "https://pan.xunlei.com/s/VOGTX2MnWwCrqIwhUV6GEVOyA1?pwd=7pau#";
 
     /**
      * 程序名称
@@ -686,6 +693,11 @@ public class CommonFinals {
      * 启动脚本最大内存设置参数
      */
     public static final String Xmx = "-Xmx";
+
+    /**
+     * log4j配置文件名称
+     */
+    public static String log4j2 = "log4j2.xml";
 
     /**
      * 默认浮窗横轴偏移量

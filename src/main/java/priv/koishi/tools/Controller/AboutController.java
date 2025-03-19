@@ -31,11 +31,6 @@ import static priv.koishi.tools.Utils.UiUtils.*;
  */
 public class AboutController {
 
-    /**
-     * 百度、夸克、迅雷、阿里网盘地址
-     */
-    private String baiduLink, quarkLink, xunleiLink;
-
     @FXML
     private AnchorPane anchorPane_Abt;
 
@@ -59,12 +54,8 @@ public class AboutController {
         prop.load(input);
         // 获取日志储存数量配置
         setControlLastConfig(logsNum_Abt, prop, key_logsNum);
-        // 获取网盘地址配置
-        baiduLink = prop.getProperty(key_baiduLink);
-        quarkLink = prop.getProperty(key_quarkLink);
-        xunleiLink = prop.getProperty(key_xunleiLink);
         title_Abt.setTextFill(Color.DEEPSKYBLUE);
-        title_Abt.setText(prop.getProperty(key_appTitle));
+        title_Abt.setText(appName);
         input.close();
     }
 
@@ -72,7 +63,7 @@ public class AboutController {
      * 获取logs文件夹路径并展示
      */
     private void setLogsPath() {
-        String logsPath = currentDir + File.separator + "logs";
+        String logsPath = userDir + File.separator + "logs";
         setPathLabel(logsPath_Abt, logsPath, false, anchorPane_Abt);
     }
 
