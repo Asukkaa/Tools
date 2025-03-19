@@ -195,7 +195,7 @@ public class CommonFinals {
 
     public static final String tip_version = """
             version：2.1.0
-            2025年3月构建""";
+            2025年3月19日构建""";
 
     public static final String tip_updateSameCode = """
             选中列表中的数据后点击这个按钮，会将选中数据的第一行到最后一行，
