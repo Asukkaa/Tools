@@ -75,8 +75,10 @@ public class MainApplication extends Application {
         prop.load(input);
         double appWidth = Double.parseDouble(prop.getProperty(key_appWidth));
         double appHeight = Double.parseDouble(prop.getProperty(key_appHeight));
-        if (activation.equals(prop.getProperty(key_lastFullWindow)) && activation.equals(prop.getProperty(key_loadLastFullWindow))) {
+        if (activation.equals(prop.getProperty(key_lastMaxWindow)) && activation.equals(prop.getProperty(key_loadLastMaxWindow))) {
             stage.setMaximized(true);
+        } else if (activation.equals(prop.getProperty(key_lastFullWindow)) && activation.equals(prop.getProperty(key_loadLastFullWindow))) {
+            stage.setFullScreen(true);
         }
         Scene scene = new Scene(fxmlLoader.load(), appWidth, appHeight);
         stage.setTitle(prop.getProperty(appName));

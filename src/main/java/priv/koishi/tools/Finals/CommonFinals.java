@@ -64,7 +64,7 @@ public class CommonFinals {
 
     public static final String tip_imgHeight = " 个像素";
 
-    public static final String tip_reLaunch = "保存所有改动并重启程序";
+    public static final String tip_reLaunch = "保存所有改动并重启程序，如果重启后修改内存设置不生效可能需要再次重启";
 
     public static final String tip_noImg = "勾选后导出文件时没有图片的数据将会在单元格中标记为 无图片";
 
@@ -468,6 +468,8 @@ public class CommonFinals {
 
     public static final String key_loadLastFullWindow = "loadLastFullWindow";
 
+    public static final String key_loadLastMaxWindow = "loadLastMaxWindow";
+
     public static final String key_lastDirectoryNameType = "lastDirectoryNameType";
 
     public static final String key_lastHideFileType = "lastHideFileType";
@@ -551,6 +553,8 @@ public class CommonFinals {
     public static final String key_lastTab = "lastTab";
 
     public static final String key_lastFullWindow = "lastFullWindow";
+
+    public static final String key_lastMaxWindow = "lastMaxWindow";
 
     public static final String key_lastExportTitle = "lastExportTitle";
 

@@ -69,7 +69,7 @@ public class SettingController {
 
     @FXML
     private CheckBox loadRename_Set, loadFileNum_Set, loadFileName_Set, loadImgToExcel_Set, lastTab_Set,
-            fullWindow_Set, reverseSort_Set, loadAutoClick_Set;
+            fullWindow_Set, reverseSort_Set, loadAutoClick_Set, maxWindow_Set;
 
     /**
      * 组件自适应宽高
@@ -214,6 +214,7 @@ public class SettingController {
         setControlLastConfig(sort_Set, prop, key_sort);
         setControlLastConfig(lastTab_Set, prop, key_loadLastConfig);
         setControlLastConfig(reverseSort_Set, prop, key_reverseSort);
+        setControlLastConfig(maxWindow_Set, prop, key_loadLastMaxWindow);
         setControlLastConfig(fullWindow_Set, prop, key_loadLastFullWindow);
         input.close();
     }
@@ -373,14 +374,25 @@ public class SettingController {
         setLoadLastConfigCheckBox(lastTab_Set, configFile, key_loadLastConfig);
     }
 
+
     /**
-     * 记住窗口是否最大化设置
+     * 记住窗口是否全屏设置
      *
      * @throws IOException io异常
      */
     @FXML
     private void loadFullWindowAction() throws IOException {
         setLoadLastConfigCheckBox(fullWindow_Set, configFile, key_loadLastFullWindow);
+    }
+
+    /**
+     * 记住窗口是否最大化设置
+     *
+     * @throws IOException io异常
+     */
+    @FXML
+    private void loadMaxWindowAction() throws IOException {
+        setLoadLastConfigCheckBox(maxWindow_Set, configFile, key_loadLastMaxWindow);
     }
 
     /**
