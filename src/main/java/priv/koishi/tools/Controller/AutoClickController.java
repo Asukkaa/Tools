@@ -229,9 +229,6 @@ public class AutoClickController extends CommonProperties {
     private ProgressBar progressBar_Click;
 
     @FXML
-    private ChoiceBox<String> clickType_Click;
-
-    @FXML
     private Label mousePosition_Click, dataNumber_Click, log_Click, tip_Click, cancelTip_Click, outPath_Click;
 
     @FXML
@@ -243,9 +240,7 @@ public class AutoClickController extends CommonProperties {
             exportAutoClick_Click, addOutPath_Click, recordClick_Click;
 
     @FXML
-    private TextField mouseStartX_Click, mouseStartY_Click, mouseEndX_Click, mouseEndY_Click, wait_Click,
-            loopTime_Click, clickNumBer_Click, timeClick_Click, clickName_Click, interval_Click, outFileName_Click,
-            preparationRecordTime_Click, preparationRunTime_Click;
+    private TextField loopTime_Click, outFileName_Click, preparationRecordTime_Click, preparationRunTime_Click;
 
     @FXML
     private TableView<ClickPositionBean> tableView_Click;
@@ -264,7 +259,7 @@ public class AutoClickController extends CommonProperties {
         // 设置组件高度
         double stageHeight = stage.getHeight();
         TableView<?> table = (TableView<?>) scene.lookup("#tableView_Click");
-        table.setPrefHeight(stageHeight * 0.3);
+        table.setPrefHeight(stageHeight * 0.45);
         // 设置组件宽度
         double stageWidth = stage.getWidth();
         double tableWidth = stageWidth * 0.95;
@@ -313,31 +308,9 @@ public class AutoClickController extends CommonProperties {
             InputStream input = checkRunningInputStream(configFile_Click);
             Properties prop = new Properties();
             prop.load(input);
-            TextField mouseStartX = (TextField) scene.lookup("#mouseStartX_Click");
-            prop.put(key_lastMouseStartX, mouseStartX.getText());
-            TextField mouseStartY = (TextField) scene.lookup("#mouseStartY_Click");
-            prop.put(key_lastMouseStartY, mouseStartY.getText());
-            TextField mouseEndX = (TextField) scene.lookup("#mouseEndX_Click");
-            prop.put(key_lastMouseEndX, mouseEndX.getText());
-            TextField mouseEndY = (TextField) scene.lookup("#mouseEndY_Click");
-            prop.put(key_lastMouseEndY, mouseEndY.getText());
-            TextField wait = (TextField) scene.lookup("#wait_Click");
-            prop.put(key_lastWait, wait.getText());
-            TextField loopTime = (TextField) scene.lookup("#loopTime_Click");
-            prop.put(key_lastLoopTime, loopTime.getText());
-            TextField clickNumBer = (TextField) scene.lookup("#clickNumBer_Click");
-            prop.put(key_lastClickNumBer, clickNumBer.getText());
-            TextField timeClick = (TextField) scene.lookup("#timeClick_Click");
-            prop.put(key_lastTimeClick, timeClick.getText());
-            TextField interval = (TextField) scene.lookup("#interval_Click");
-            prop.put(key_lastInterval, interval.getText());
             CheckBox firstClick = (CheckBox) scene.lookup("#firstClick_Click");
             String lastFirstClickValue = firstClick.isSelected() ? activation : unActivation;
             prop.put(key_lastFirstClick, lastFirstClickValue);
-            TextField clickName = (TextField) scene.lookup("#clickName_Click");
-            prop.put(key_lastClickName, clickName.getText());
-            ChoiceBox<?> clickType = (ChoiceBox<?>) scene.lookup("#clickType_Click");
-            prop.put(key_lastClickType, clickType.getValue());
             TextField outFileName = (TextField) scene.lookup("#outFileName_Click");
             prop.put(key_lastOutFileName, outFileName.getText());
             CheckBox openDirectory = (CheckBox) scene.lookup("#openDirectory_Click");
@@ -378,16 +351,7 @@ public class AutoClickController extends CommonProperties {
         InputStream input = checkRunningInputStream(configFile_Click);
         prop.load(input);
         if (activation.equals(prop.getProperty(key_loadLastConfig))) {
-            setControlLastConfig(wait_Click, prop, key_lastWait);
-            setControlLastConfig(interval_Click, prop, key_lastInterval);
             setControlLastConfig(loopTime_Click, prop, key_lastLoopTime);
-            setControlLastConfig(mouseEndX_Click, prop, key_lastMouseEndX);
-            setControlLastConfig(mouseEndY_Click, prop, key_lastMouseEndY);
-            setControlLastConfig(timeClick_Click, prop, key_lastTimeClick);
-            setControlLastConfig(clickType_Click, prop, key_lastClickType);
-            setControlLastConfig(mouseStartX_Click, prop, key_lastMouseStartX);
-            setControlLastConfig(mouseStartY_Click, prop, key_lastMouseStartY);
-            setControlLastConfig(clickNumBer_Click, prop, key_lastClickNumBer);
             setControlLastConfig(outFileName_Click, prop, key_lastOutFileName);
             setControlLastConfig(openDirectory_Click, prop, key_lastOpenDirectory);
             setControlLastConfig(hideWindowRun_Click, prop, key_lastHideWindowRun);
@@ -395,7 +359,6 @@ public class AutoClickController extends CommonProperties {
             setControlLastConfig(hideWindowRecord_Click, prop, key_lastHideWindowRecord);
             setControlLastConfig(showWindowRecord_Click, prop, key_lastShowWindowRecord);
             setControlLastConfig(outPath_Click, prop, key_outFilePath, anchorPane_Click);
-            setControlLastConfig(clickName_Click, prop, key_lastClickName, true);
             setControlLastConfig(preparationRunTime_Click, prop, key_lastPreparationRunTime);
             setControlLastConfig(preparationRecordTime_Click, prop, key_lastPreparationRecordTime);
         }
@@ -893,18 +856,19 @@ public class AutoClickController extends CommonProperties {
      */
     private ClickPositionBean getClickSetting(int tableViewItemSize) {
         ClickPositionBean clickPositionBean = new ClickPositionBean();
-        int startX = setDefaultIntValue(mouseStartX_Click, 0, 0, null);
-        int startY = setDefaultIntValue(mouseStartY_Click, 0, 0, null);
-        clickPositionBean.setName(setDefaultStrValue(clickName_Click, text_step + (tableViewItemSize + 1) + text_isAdd))
-                .setClickInterval(String.valueOf(setDefaultIntValue(interval_Click, 0, 0, null)))
-                .setClickNum(String.valueOf(setDefaultIntValue(clickNumBer_Click, 1, 0, null)))
-                .setClickTime(String.valueOf(setDefaultIntValue(timeClick_Click, 0, 0, null)))
-                .setWaitTime(String.valueOf(setDefaultIntValue(wait_Click, 0, 0, null)))
-                .setEndX(String.valueOf(setDefaultIntValue(mouseEndX_Click, startX, 0, null)))
-                .setEndY(String.valueOf(setDefaultIntValue(mouseEndY_Click, startY, 0, null)))
-                .setType(clickType_Click.getValue())
-                .setStartX(String.valueOf(startX))
-                .setStartY(String.valueOf(startY));
+        clickPositionBean.setName(text_step + (tableViewItemSize + 1) + text_isAdd)
+                .setType(mouseButton_primary)
+                .setClickInterval("0")
+                .setClickTime("0")
+                .setClickNum("1")
+                .setWaitTime("0")
+                .setStartX("0")
+                .setStartY("0")
+                .setEndX("0")
+                .setEndY("0");
+        if (tableViewItemSize == -1) {
+            clickPositionBean.setName("测试步骤");
+        }
         return clickPositionBean;
     }
 
@@ -912,26 +876,10 @@ public class AutoClickController extends CommonProperties {
      * 给输入框添加内容变化监听
      */
     private void textFieldChangeListener() {
-        // 操作名称文本输入框鼠标悬停提示
-        textFieldValueListener(clickName_Click, tip_clickName);
         // 导出自动流程文件名称文本输入框鼠标悬停提示
         textFieldValueListener(outFileName_Click, tip_autoClickFileName + defaultOutFileName);
-        // 限制单次操作点击间隔文本输入框内容
-        integerRangeTextField(wait_Click, 0, null, tip_wait);
         // 限制循环次数文本输入框内容
         integerRangeTextField(loopTime_Click, 0, null, tip_loopTime);
-        // 限制操作时长文本输入内容
-        integerRangeTextField(timeClick_Click, 0, null, tip_clickTime);
-        // 限制鼠标结束位置横(X)坐标文本输入框内容
-        integerRangeTextField(mouseEndX_Click, 0, null, tip_mouseEndX);
-        // 限制鼠标结束位置纵(Y)坐标文本输入框内容
-        integerRangeTextField(mouseEndY_Click, 0, null, tip_mouseEndY);
-        // 限制鼠标起始位置横(X)坐标文本输入框内容
-        integerRangeTextField(mouseStartX_Click, 0, null, tip_mouseStartX);
-        // 限制鼠标起始位置纵(Y)坐标文本输入框内容
-        integerRangeTextField(mouseStartY_Click, 0, null, tip_mouseStartY);
-        // 限制点击次数文本输入框内容
-        integerRangeTextField(clickNumBer_Click, 0, null, tip_clickNumBer);
         // 限制运行准备时间文本输入框内容
         integerRangeTextField(preparationRunTime_Click, 0, null, tip_preparationRunTime + defaultPreparationRunTime);
         // 限制录制准备时间文本输入框内容
@@ -942,22 +890,12 @@ public class AutoClickController extends CommonProperties {
      * 设置鼠标悬停提示
      */
     private void setToolTip() {
-        addToolTip(tip_wait, wait_Click);
         addToolTip(tip_runClick, runClick_Click);
         addToolTip(tip_loopTime, loopTime_Click);
-        addToolTip(tip_mouseEndX, mouseEndX_Click);
-        addToolTip(tip_mouseEndY, mouseEndY_Click);
-        addToolTip(tip_clickType, clickType_Click);
-        addToolTip(tip_clickTime, timeClick_Click);
-        addToolTip(tip_clickName, clickName_Click);
         addToolTip(tip_clickTest, clickTest_Click);
         addToolTip(tip_firstClick, firstClick_Click);
-        addToolTip(tip_clickInterval, interval_Click);
         addToolTip(tip_learButton, clearButton_Click);
         addToolTip(tip_addPosition, addPosition_Click);
-        addToolTip(tip_clickNumBer, clickNumBer_Click);
-        addToolTip(tip_mouseStartX, mouseStartX_Click);
-        addToolTip(tip_mouseStartY, mouseStartY_Click);
         addToolTip(tip_recordClick, recordClick_Click);
         addToolTip(tip_hideWindowRun, hideWindowRun_Click);
         addToolTip(tip_showWindowRun, showWindowRun_Click);
@@ -1183,7 +1121,7 @@ public class AutoClickController extends CommonProperties {
     /**
      * 页面初始化
      *
-     * @throws IOException 配置文件读取失败
+     * @throws IOException         配置文件读取失败
      * @throws NativeHookException 注册全局输入监听失败
      */
     @FXML
