@@ -329,10 +329,10 @@ public class FileNameToExcelController extends CommonProperties {
             setControlLastConfig(openDirectory_Name, prop, key_lastOpenDirectory);
             setControlLastConfig(exportFullList_Name, prop, key_lastExportFullList);
             setControlLastConfig(filterFileType_Name, prop, key_lastFilterFileType);
-            setControlLastConfig(inPath_Name, prop, key_lastInPath, anchorPane_Name);
-            setControlLastConfig(outPath_Name, prop, key_lastOutPath, anchorPane_Name);
+            setControlLastConfig(inPath_Name, prop, key_lastInPath);
+            setControlLastConfig(outPath_Name, prop, key_lastOutPath);
             setControlLastConfig(directoryNameType_Name, prop, key_lastDirectoryNameType);
-            setControlLastConfig(excelPath_Name, prop, key_lastExcelPath, anchorPane_Name);
+            setControlLastConfig(excelPath_Name, prop, key_lastExcelPath);
             String excelPath = prop.getProperty(key_lastExcelPath);
             if (StringUtils.isNotBlank(excelPath)) {
                 removeExcelButton_Name.setVisible(true);
@@ -444,7 +444,7 @@ public class FileNameToExcelController extends CommonProperties {
             // 设置列表通过拖拽排序行
             tableViewDragRow(tableView_Name);
             // 构建右键菜单
-            tableViewContextMenu(tableView_Name, fileNumber_Name, anchorPane_Name);
+            tableViewContextMenu(tableView_Name, fileNumber_Name);
         });
     }
 
@@ -467,7 +467,7 @@ public class FileNameToExcelController extends CommonProperties {
                 .setInFile(selectedFile);
         if (selectedFile != null) {
             // 更新所选文件路径显示
-            inFilePath = updatePathLabel(selectedFile.getPath(), inFilePath, key_inFilePath, inPath_Name, configFile_Name, anchorPane_Name);
+            inFilePath = updatePathLabel(selectedFile.getPath(), inFilePath, key_inFilePath, inPath_Name, configFile_Name);
             // 读取数据
             addInData(readAllFiles(fileConfig));
         }
@@ -581,7 +581,7 @@ public class FileNameToExcelController extends CommonProperties {
         File selectedFile = creatDirectoryChooser(actionEvent, outFilePath, text_selectDirectory);
         if (selectedFile != null) {
             // 更新所选文件路径显示
-            outFilePath = updatePathLabel(selectedFile.getPath(), outFilePath, key_outFilePath, outPath_Name, configFile_Name, anchorPane_Name);
+            outFilePath = updatePathLabel(selectedFile.getPath(), outFilePath, key_outFilePath, outPath_Name, configFile_Name);
         }
     }
 
@@ -600,7 +600,7 @@ public class FileNameToExcelController extends CommonProperties {
         File selectedFile = creatFileChooser(actionEvent, excelInPath, extensionFilters, text_selectExcel);
         if (selectedFile != null) {
             // 更新所选文件路径显示
-            excelInPath = updatePathLabel(selectedFile.getPath(), excelInPath, key_excelInPath, excelPath_Name, configFile_Name, anchorPane_Name);
+            excelInPath = updatePathLabel(selectedFile.getPath(), excelInPath, key_excelInPath, excelPath_Name, configFile_Name);
             removeExcelButton_Name.setVisible(true);
             String excelType = getFileType(selectedFile);
             excelType_Name.setValue(excelType);

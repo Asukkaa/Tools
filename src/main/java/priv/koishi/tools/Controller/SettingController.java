@@ -254,7 +254,7 @@ public class SettingController {
             systemMemoryValue = 1;
         }
         systemMemory_Set.setText(systemUnitSizeMemory);
-        setPathLabel(thisPath_Set, userDir, false, anchorPane_Set);
+        setPathLabel(thisPath_Set, userDir, false);
         String scriptPath = userDir + File.separator + scriptName;
         addValueToolTip(nextRunMemory_Set, tip_defaultNextRunMemory, text_nowValue);
         // 下次运行的最大内存输入监听

@@ -360,7 +360,7 @@ public class AutoClickController extends CommonProperties {
             setControlLastConfig(showWindowRun_Click, prop, key_lastShowWindowRun);
             setControlLastConfig(hideWindowRecord_Click, prop, key_lastHideWindowRecord);
             setControlLastConfig(showWindowRecord_Click, prop, key_lastShowWindowRecord);
-            setControlLastConfig(outPath_Click, prop, key_outFilePath, anchorPane_Click);
+            setControlLastConfig(outPath_Click, prop, key_outFilePath);
             setControlLastConfig(preparationRunTime_Click, prop, key_lastPreparationRunTime);
             setControlLastConfig(preparationRecordTime_Click, prop, key_lastPreparationRecordTime);
         }
@@ -1273,7 +1273,7 @@ public class AutoClickController extends CommonProperties {
         File selectedFile = creatDirectoryChooser(actionEvent, outFilePath, text_selectDirectory);
         if (selectedFile != null) {
             // 更新所选文件路径显示
-            outFilePath = updatePathLabel(selectedFile.getPath(), outFilePath, key_outFilePath, outPath_Click, configFile_Click, anchorPane_Click);
+            outFilePath = updatePathLabel(selectedFile.getPath(), outFilePath, key_outFilePath, outPath_Click, configFile_Click);
         }
     }
 

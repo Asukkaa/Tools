@@ -64,7 +64,7 @@ public class AboutController {
      */
     private void setLogsPath() {
         String logsPath = userDir + File.separator + "logs";
-        setPathLabel(logsPath_Abt, logsPath, false, anchorPane_Abt);
+        setPathLabel(logsPath_Abt, logsPath, false);
     }
 
     /**
@@ -133,7 +133,7 @@ public class AboutController {
     @FXML
     private void initialize() throws IOException {
         // 添加右键菜单
-        setCopyValueContextMenu(mail_Abt, "复制反馈邮件", anchorPane_Abt);
+        setCopyValueContextMenu(mail_Abt, "复制反馈邮件");
         // log 文件保留数量输入监听
         integerRangeTextField(logsNum_Abt, 0, null, tip_logsNum);
         // 读取配置文件

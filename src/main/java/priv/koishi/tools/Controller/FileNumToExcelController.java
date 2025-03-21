@@ -398,12 +398,12 @@ public class FileNumToExcelController extends CommonProperties {
             setControlLastConfig(hideFileType_Num, prop, key_lastHideFileType);
             setControlLastConfig(openDirectory_Num, prop, key_lastOpenDirectory);
             setControlLastConfig(exportFileNum_Num, prop, key_lastExportFileNum);
-            setControlLastConfig(inPath_Num, prop, key_lastInPath, anchorPane_Num);
+            setControlLastConfig(inPath_Num, prop, key_lastInPath);
             setControlLastConfig(exportFileSize_Num, prop, key_lastExportFileSize);
             setControlLastConfig(filterFileType_Num, prop, key_lastFilterFileType);
             setControlLastConfig(subCode_Num, prop, key_lastSubCode, true);
-            setControlLastConfig(outPath_Num, prop, key_lastOutPath, anchorPane_Num);
-            setControlLastConfig(excelPath_Num, prop, key_lastExcelPath, anchorPane_Num);
+            setControlLastConfig(outPath_Num, prop, key_lastOutPath);
+            setControlLastConfig(excelPath_Num, prop, key_lastExcelPath);
             setControlLastConfig(directoryNameType_Num, prop, key_lastDirectoryNameType);
             String excelPath = prop.getProperty(key_lastExcelPath);
             if (StringUtils.isNotBlank(excelPath)) {
@@ -533,7 +533,7 @@ public class FileNumToExcelController extends CommonProperties {
         File selectedFile = creatDirectoryChooser(actionEvent, inFilePath, text_selectDirectory);
         if (selectedFile != null) {
             // 更新所选文件路径显示
-            inFilePath = updatePathLabel(selectedFile.getPath(), inFilePath, key_inFilePath, inPath_Num, configFile_Num, anchorPane_Num);
+            inFilePath = updatePathLabel(selectedFile.getPath(), inFilePath, key_inFilePath, inPath_Num, configFile_Num);
             // 读取文件数据
             addInFile(selectedFile, getFilterExtensionList(filterFileType_Num));
         }
@@ -646,7 +646,7 @@ public class FileNumToExcelController extends CommonProperties {
         File selectedFile = creatDirectoryChooser(actionEvent, outFilePath, text_selectDirectory);
         if (selectedFile != null) {
             // 更新所选文件路径显示
-            outFilePath = updatePathLabel(selectedFile.getPath(), outFilePath, key_outFilePath, outPath_Num, configFile_Num, anchorPane_Num);
+            outFilePath = updatePathLabel(selectedFile.getPath(), outFilePath, key_outFilePath, outPath_Num, configFile_Num);
             if (StringUtils.isNotEmpty(excelPath_Num.getText())) {
                 reselect();
             }
@@ -669,7 +669,7 @@ public class FileNumToExcelController extends CommonProperties {
         File selectedFile = creatFileChooser(actionEvent, excelInPath, extensionFilters, text_selectExcel);
         if (selectedFile != null) {
             // 更新所选文件路径显示
-            excelInPath = updatePathLabel(selectedFile.getPath(), excelInPath, key_excelInPath, excelPath_Num, configFile_Num, anchorPane_Num);
+            excelInPath = updatePathLabel(selectedFile.getPath(), excelInPath, key_excelInPath, excelPath_Num, configFile_Num);
             addInData();
         }
     }

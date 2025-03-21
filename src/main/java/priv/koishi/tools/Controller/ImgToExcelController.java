@@ -456,11 +456,11 @@ public class ImgToExcelController extends CommonProperties {
             setControlLastConfig(showFileType_Img, prop, key_lastShowFileType);
             setControlLastConfig(openDirectory_Img, prop, key_lastOpenDirectory);
             setControlLastConfig(exportFileNum_Img, prop, key_lastExportFileNum);
-            setControlLastConfig(inPath_Img, prop, key_lastInPath, anchorPane_Img);
+            setControlLastConfig(inPath_Img, prop, key_lastInPath);
             setControlLastConfig(exportFileSize_Img, prop, key_lastExportFileSize);
             setControlLastConfig(subCode_Img, prop, key_lastSubCode, true);
-            setControlLastConfig(outPath_Img, prop, key_lastOutPath, anchorPane_Img);
-            setControlLastConfig(excelPath_Img, prop, key_lastExcelPath, anchorPane_Img);
+            setControlLastConfig(outPath_Img, prop, key_lastOutPath);
+            setControlLastConfig(excelPath_Img, prop, key_lastExcelPath);
             String lastFilterFileTypes = prop.getProperty(key_lastFilterFileType);
             if (StringUtils.isNotBlank(lastFilterFileTypes)) {
                 jpg_Img.setSelected(lastFilterFileTypes.contains(jpg));
@@ -628,7 +628,7 @@ public class ImgToExcelController extends CommonProperties {
         File selectedFile = creatDirectoryChooser(actionEvent, inFilePath, text_selectDirectory);
         if (selectedFile != null) {
             // 更新所选文件路径显示
-            inFilePath = updatePathLabel(selectedFile.getPath(), inFilePath, key_inFilePath, inPath_Img, configFile_Img, anchorPane_Img);
+            inFilePath = updatePathLabel(selectedFile.getPath(), inFilePath, key_inFilePath, inPath_Img, configFile_Img);
             // 读取文件数据
             addInFile(selectedFile, getFilterExtension());
         }
@@ -825,7 +825,7 @@ public class ImgToExcelController extends CommonProperties {
         File selectedFile = creatDirectoryChooser(actionEvent, outFilePath, text_selectDirectory);
         if (selectedFile != null) {
             // 更新所选文件路径显示
-            outFilePath = updatePathLabel(selectedFile.getPath(), outFilePath, key_outFilePath, outPath_Img, configFile_Img, anchorPane_Img);
+            outFilePath = updatePathLabel(selectedFile.getPath(), outFilePath, key_outFilePath, outPath_Img, configFile_Img);
             if (StringUtils.isNotEmpty(excelPath_Img.getText())) {
                 reselect();
             }
@@ -845,7 +845,7 @@ public class ImgToExcelController extends CommonProperties {
         File selectedFile = creatFileChooser(actionEvent, excelInPath, extensionFilters, text_selectExcel);
         if (selectedFile != null) {
             // 更新所选文件路径显示
-            excelInPath = updatePathLabel(selectedFile.getPath(), excelInPath, key_excelInPath, excelPath_Img, configFile_Img, anchorPane_Img);
+            excelInPath = updatePathLabel(selectedFile.getPath(), excelInPath, key_excelInPath, excelPath_Img, configFile_Img);
             addInData();
         }
     }

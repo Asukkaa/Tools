@@ -572,7 +572,7 @@ public class FileRenameController extends CommonProperties {
             setControlLastConfig(renameType_Re, prop, key_lastRenameType);
             setControlLastConfig(hideFileType_Re, prop, key_lastHideFileType);
             setControlLastConfig(openDirectory_Re, prop, key_lastOpenDirectory);
-            setControlLastConfig(inPath_Re, prop, key_lastInPath, anchorPane_Re);
+            setControlLastConfig(inPath_Re, prop, key_lastInPath);
             setControlLastConfig(filterFileType_Re, prop, key_lastFilterFileType);
             setControlLastConfig(directoryNameType_Re, prop, key_lastDirectoryNameType);
             // 根据重命名类型设置上次配置值
@@ -700,7 +700,7 @@ public class FileRenameController extends CommonProperties {
         setControlLastConfig(readRow_Re, prop, key_lastReadRow);
         setControlLastConfig(readCell_Re, prop, key_lastReadCell);
         setControlLastConfig(sheetName_Re, prop, key_lastSheetName);
-        setControlLastConfig(excelPath_Re, prop, key_lastExcelPath, anchorPane_Re);
+        setControlLastConfig(excelPath_Re, prop, key_lastExcelPath);
     }
 
     /**
@@ -842,7 +842,7 @@ public class FileRenameController extends CommonProperties {
             // 设置列表通过拖拽排序行
             tableViewDragRow(tableView_Re);
             // 构建右键菜单
-            tableViewContextMenu(tableView_Re, fileNumber_Re, anchorPane_Re);
+            tableViewContextMenu(tableView_Re, fileNumber_Re);
         });
     }
 
@@ -865,7 +865,7 @@ public class FileRenameController extends CommonProperties {
                 .setInFile(selectedFile);
         if (selectedFile != null) {
             // 更新所选文件路径显示
-            inFilePath = updatePathLabel(selectedFile.getAbsolutePath(), inFilePath, key_inFilePath, inPath_Re, configFile_Rename, anchorPane_Re);
+            inFilePath = updatePathLabel(selectedFile.getAbsolutePath(), inFilePath, key_inFilePath, inPath_Re, configFile_Rename);
             // 读取数据
             List<File> inFileList = readAllFiles(fileConfig);
             addInData(inFileList);
@@ -1010,7 +1010,7 @@ public class FileRenameController extends CommonProperties {
         List<FileChooser.ExtensionFilter> extensionFilters = new ArrayList<>(Collections.singleton(new FileChooser.ExtensionFilter("Excel", "*.xlsx")));
         File selectedFile = creatFileChooser(actionEvent, excelInPath, extensionFilters, text_selectExcel);
         if (selectedFile != null) {
-            excelInPath = updatePathLabel(selectedFile.getAbsolutePath(), excelInPath, key_excelInPath, excelPath_Re, configFile_Rename, anchorPane_Re);
+            excelInPath = updatePathLabel(selectedFile.getAbsolutePath(), excelInPath, key_excelInPath, excelPath_Re, configFile_Rename);
             readExcelRename();
         }
     }

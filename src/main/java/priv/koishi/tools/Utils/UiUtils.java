@@ -1,15 +1,10 @@
 package priv.koishi.tools.Utils;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
@@ -21,7 +16,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.input.*;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.*;
@@ -501,17 +495,16 @@ public class UiUtils {
      * @param pathKey          配置文件中路径的key
      * @param pathLabel        要展示路径的文本框
      * @param configFile       要更新的配置文件
-     * @param pane             组件所在布局
      * @return 所选文件路径
      * @throws IOException io异常
      */
-    public static String updatePathLabel(String selectedFilePath, String filePath, String pathKey, Label pathLabel, String configFile, Pane pane) throws IOException {
+    public static String updatePathLabel(String selectedFilePath, String filePath, String pathKey, Label pathLabel, String configFile) throws IOException {
         // 只有跟上次选的路径不一样才更新
         if (StringUtils.isBlank(filePath) || !filePath.equals(selectedFilePath)) {
             updateProperties(configFile, pathKey, selectedFilePath);
             filePath = selectedFilePath;
         }
-        setPathLabel(pathLabel, selectedFilePath, false, pane);
+        setPathLabel(pathLabel, selectedFilePath, false);
         return filePath;
     }
 
@@ -672,15 +665,14 @@ public class UiUtils {
      *
      * @param tableView 要添加右键菜单的列表
      * @param label     列表对应的统计信息展示栏
-     * @param pane      列表所在布局
      */
-    public static void tableViewContextMenu(TableView<FileBean> tableView, Label label, Pane pane) {
+    public static void tableViewContextMenu(TableView<FileBean> tableView, Label label) {
         // 添加右键菜单
         ContextMenu contextMenu = new ContextMenu();
         // 移动所选行选项
         buildMoveDataMenu(tableView, contextMenu);
         // 查看文件选项
-        buildFilePathItem(tableView, contextMenu, pane);
+        buildFilePathItem(tableView, contextMenu);
         // 取消选中选项
         buildClearSelectedData(tableView, contextMenu);
         // 删除所选数据选项
@@ -706,9 +698,8 @@ public class UiUtils {
      *
      * @param tableView   要添加右键菜单的列表
      * @param contextMenu 右键菜单集合
-     * @param pane        列表所在布局
      */
-    private static void buildFilePathItem(TableView<FileBean> tableView, ContextMenu contextMenu, Pane pane) {
+    private static void buildFilePathItem(TableView<FileBean> tableView, ContextMenu contextMenu) {
         Menu menu = new Menu("查看文件");
         // 创建二级菜单项
         MenuItem openFile = new MenuItem("打开所选文件");
@@ -717,7 +708,7 @@ public class UiUtils {
         // 为每个菜单项添加事件处理
         openFile.setOnAction(event -> openFileMenuItem(tableView));
         openDirector.setOnAction(event -> openDirectorMenuItem(tableView));
-        copyFilePath.setOnAction(event -> copyFilePathItem(tableView, pane));
+        copyFilePath.setOnAction(event -> copyFilePathItem(tableView));
         // 将菜单添加到菜单列表
         menu.getItems().addAll(openFile, openDirector, copyFilePath);
         contextMenu.getItems().add(menu);
@@ -762,11 +753,10 @@ public class UiUtils {
      * 复制文件路径选项
      *
      * @param tableView 要添加右键菜单的列表
-     * @param pane      列表所在布局
      */
-    private static void copyFilePathItem(TableView<FileBean> tableView, Pane pane) {
+    private static void copyFilePathItem(TableView<FileBean> tableView) {
         FileBean fileBean = tableView.getSelectionModel().getSelectedItem();
-        copyText(fileBean.getPath(), pane);
+        copyText(fileBean.getPath());
     }
 
     /**
@@ -1053,12 +1043,11 @@ public class UiUtils {
      * @param label 需要处理的文本框
      * @param prop  配置文件
      * @param key   要读取的key
-     * @param pane  组件所在布局
      */
-    public static void setControlLastConfig(Label label, Properties prop, String key, Pane pane) {
+    public static void setControlLastConfig(Label label, Properties prop, String key) {
         String lastValue = prop.getProperty(key);
         if (FilenameUtils.getPrefixLength(lastValue) != 0) {
-            setPathLabel(label, lastValue, false, pane);
+            setPathLabel(label, lastValue, false);
         }
     }
 
@@ -1083,13 +1072,18 @@ public class UiUtils {
      * @param pathLabel 文件路径文本栏
      * @param path      文件路径
      * @param openFile  点击是否打开文件，true打开文件，false打开文件所在文件夹
-     * @param pane      组件所在布局
      * @throws RuntimeException io异常
      */
-    public static void setPathLabel(Label pathLabel, String path, boolean openFile, Pane pane) {
+    public static void setPathLabel(Label pathLabel, String path, boolean openFile) {
         pathLabel.setText(path);
-        pathLabel.getStyleClass().add("label-button-style");
         File file = new File(path);
+        String openText = "\n鼠标左键点击打开 ";
+        if (!file.exists()) {
+            pathLabel.getStyleClass().add("label-err-style");
+            openText = "\n文件不存在，鼠标左键点击打开 ";
+        } else {
+            pathLabel.getStyleClass().add("label-button-style");
+        }
         String openPath;
         // 判断是否打开文件
         if (!openFile && file.isFile()) {
@@ -1112,19 +1106,18 @@ public class UiUtils {
                 }
             }
         });
-        addToolTip(path + "\n鼠标左键点击打开 " + openPath, pathLabel);
+        addToolTip(path + openText + openPath, pathLabel);
         // 设置右键菜单
-        setPathLabelContextMenu(pathLabel, pane);
+        setPathLabelContextMenu(pathLabel);
     }
 
     /**
      * 给路径Label设置右键菜单
      *
      * @param valueLabel 要处理的文本栏
-     * @param pane       组件所在布局
      * @throws RuntimeException io异常
      */
-    public static void setPathLabelContextMenu(Label valueLabel, Pane pane) {
+    public static void setPathLabelContextMenu(Label valueLabel) {
         String path = valueLabel.getText();
         ContextMenu contextMenu = new ContextMenu();
         MenuItem openDirectoryMenuItem = new MenuItem("打开文件夹");
@@ -1150,7 +1143,7 @@ public class UiUtils {
         MenuItem copyValueMenuItem = new MenuItem("复制路径");
         contextMenu.getItems().add(copyValueMenuItem);
         valueLabel.setContextMenu(contextMenu);
-        copyValueMenuItem.setOnAction(event -> copyText(valueLabel.getText(), pane));
+        copyValueMenuItem.setOnAction(event -> copyText(valueLabel.getText()));
         valueLabel.setOnMousePressed(event -> {
             if (event.isSecondaryButtonDown()) {
                 contextMenu.show(valueLabel, event.getScreenX(), event.getScreenY());
@@ -1163,9 +1156,8 @@ public class UiUtils {
      *
      * @param valueLabel 要处理的文本栏
      * @param text       右键菜单文本
-     * @param pane       组件所在布局
      */
-    public static void setCopyValueContextMenu(Label valueLabel, String text, Pane pane) {
+    public static void setCopyValueContextMenu(Label valueLabel, String text) {
         ContextMenu contextMenu = new ContextMenu();
         MenuItem copyValueMenuItem = new MenuItem(text);
         contextMenu.getItems().add(copyValueMenuItem);
@@ -1176,16 +1168,15 @@ public class UiUtils {
             }
         });
         // 设置右键菜单行为
-        copyValueMenuItem.setOnAction(event -> copyText(valueLabel.getText(), pane));
+        copyValueMenuItem.setOnAction(event -> copyText(valueLabel.getText()));
     }
 
     /**
      * 复制文本
      *
      * @param value 要复制的文本
-     * @param pane  组件所在布局
      */
-    public static void copyText(String value, Pane pane) {
+    public static void copyText(String value) {
         // 获取当前系统剪贴板
         Clipboard clipboard = Clipboard.getSystemClipboard();
         // 创建剪贴板内容对象
@@ -1195,36 +1186,7 @@ public class UiUtils {
         // 设置剪贴板内容
         clipboard.setContent(content);
         // 复制成功消息气泡
-        buildMessageBubble(pane, text_copySuccess, 1);
-    }
-
-    /**
-     * 创建消息弹窗
-     *
-     * @param pane 组件所在布局
-     * @param text 消息弹窗提示文案
-     * @param time 显示弹窗时间
-     */
-    public static void buildMessageBubble(Pane pane, String text, double time) {
-        MessageBubble bubble = new MessageBubble(text);
-        pane.getChildren().add(bubble);
-        // 将事件处理器声明为变量
-        final EventHandler<MouseEvent> mouseMovedHandler = mouseEvent -> {
-            Point2D sceneCoords = new Point2D(mouseEvent.getSceneX(), mouseEvent.getSceneY());
-            Point2D localCoords = pane.sceneToLocal(sceneCoords);
-            bubble.setLayoutX(localCoords.getX() + 30);
-            bubble.setLayoutY(localCoords.getY() + 30);
-        };
-        // 使用变量添加监听
-        Scene scene = pane.getScene();
-        scene.addEventFilter(MouseEvent.MOUSE_MOVED, mouseMovedHandler);
-        KeyFrame keyFrame = new KeyFrame(Duration.seconds(time), ae -> {
-            pane.getChildren().remove(bubble);
-            // 使用保存的handler变量移除监听
-            scene.removeEventFilter(MouseEvent.MOUSE_MOVED, mouseMovedHandler);
-        });
-        Timeline timeline = new Timeline(keyFrame);
-        timeline.play();
+        new MessageBubble(text_copySuccess, 2);
     }
 
     /**

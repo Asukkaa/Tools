@@ -13,12 +13,17 @@ import javafx.application.Platform;
 public class MousePositionListener {
 
     /**
+     * 计时器
+     */
+    AnimationTimer timer;
+
+    /**
      * 鼠标位置监听器
      *
      * @param mousePositionUpdater ui更新器
      */
     public MousePositionListener(MousePositionUpdater mousePositionUpdater) {
-        AnimationTimer timer = new AnimationTimer() {
+        timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
                 Platform.runLater(() -> {
@@ -29,6 +34,13 @@ public class MousePositionListener {
             }
         };
         timer.start();
+    }
+
+    /**
+     * 停止计时
+     */
+    public void stop() {
+        timer.stop();
     }
 
 }
