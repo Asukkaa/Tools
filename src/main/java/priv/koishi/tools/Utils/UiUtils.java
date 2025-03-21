@@ -679,8 +679,6 @@ public class UiUtils {
         ContextMenu contextMenu = new ContextMenu();
         // 移动所选行选项
         buildMoveDataMenu(tableView, contextMenu);
-        // 所选行下移一行选项
-        buildDownMoveDataMenuItem(tableView, contextMenu);
         // 查看文件选项
         buildFilePathItem(tableView, contextMenu, pane);
         // 取消选中选项
