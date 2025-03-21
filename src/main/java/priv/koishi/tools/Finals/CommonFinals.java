@@ -172,6 +172,14 @@ public class CommonFinals {
 
     public static final String tip_preparationRunTime = "在运行自动操作前将会等待的时间，只能填自然数，单位秒，不填默认为 ";
 
+    public static final String version = "2.1.1";
+
+    public static final String buildDate = "2025年3月";
+
+    public static final String tip_version = """
+    version：%s
+    %s构建""".formatted(version, buildDate);
+
     public static final String tip_recordClick = """
             点击录制自动操作按钮将会等待设置的准备时间后开始录制自动操作
             每次鼠标点击并松开为一个步骤，每次点击间隔为操作前等待时间""";
@@ -192,10 +200,6 @@ public class CommonFinals {
             如果是运行 自动化操作 则会 鼠标左键 点击一次第一步操作的起始坐标后再执行自动化操作
             建议 Windows 用户不要勾选， macOS 用户需要勾选
             Windows 会直接点击对应窗口的对应坐标，macOS 需要先点击对应窗口将焦点切换过去才能点中对应窗口的对应坐标""";
-
-    public static final String tip_version = """
-            version：2.1.0
-            2025年3月19日构建""";
 
     public static final String tip_updateSameCode = """
             选中列表中的数据后点击这个按钮，会将选中数据的第一行到最后一行，
