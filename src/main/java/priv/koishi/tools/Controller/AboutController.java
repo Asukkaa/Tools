@@ -5,7 +5,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 
 import java.awt.*;
@@ -30,9 +29,6 @@ import static priv.koishi.tools.Utils.UiUtils.*;
  * Time:16:45
  */
 public class AboutController {
-
-    @FXML
-    private AnchorPane anchorPane_Abt;
 
     @FXML
     private TextField logsNum_Abt;
