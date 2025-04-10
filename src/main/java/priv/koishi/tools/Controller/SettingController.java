@@ -256,7 +256,7 @@ public class SettingController {
         systemMemory_Set.setText(systemUnitSizeMemory);
         setPathLabel(thisPath_Set, userDir, false);
         String scriptPath = userDir + File.separator + scriptName;
-        addValueToolTip(nextRunMemory_Set, tip_defaultNextRunMemory, text_nowValue);
+        addValueToolTip(nextRunMemory_Set, tip_defaultNextRunMemory);
         // 下次运行的最大内存输入监听
         integerRangeTextField(nextRunMemory_Set, 1, systemMemoryValue, tip_defaultNextRunMemory);
         BufferedReader reader = new BufferedReader(new FileReader(scriptPath));
@@ -265,7 +265,7 @@ public class SettingController {
             if (line.contains(Xmx)) {
                 scriptMemory = line.substring(line.lastIndexOf(Xmx) + Xmx.length(), line.lastIndexOf(g));
                 nextRunMemory_Set.setText(scriptMemory);
-                addValueToolTip(nextRunMemory_Set, text_nowSetting + scriptMemory + text_memorySetting, text_nowValue);
+                addValueToolTip(nextRunMemory_Set, text_nowSetting + scriptMemory + text_memorySetting);
                 // 下次运行的最大内存输入监听
                 integerRangeTextField(nextRunMemory_Set, 1, systemMemoryValue, text_nowSetting + scriptMemory + text_memorySetting);
                 break;

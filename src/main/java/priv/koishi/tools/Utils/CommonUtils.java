@@ -6,7 +6,7 @@ import com.github.kwhat.jnativehook.mouse.NativeMouseListener;
 import org.apache.commons.lang3.StringUtils;
 import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Configuration.FileConfig;
-import priv.koishi.tools.Vo.FileNumVo;
+import priv.koishi.tools.Bean.Vo.FileNumVo;
 
 import java.io.File;
 import java.io.IOException;

@@ -1,6 +1,8 @@
 package priv.koishi.tools.Utils;
 
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.geometry.Rectangle2D;
@@ -26,15 +28,12 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import priv.koishi.tools.Bean.ClickPositionBean;
-import priv.koishi.tools.Bean.FileBean;
-import priv.koishi.tools.Bean.FileNumBean;
-import priv.koishi.tools.Bean.TaskBean;
+import priv.koishi.tools.Bean.*;
+import priv.koishi.tools.Bean.Vo.FileNumVo;
 import priv.koishi.tools.Configuration.FileConfig;
 import priv.koishi.tools.Enum.SelectItemsEnums;
 import priv.koishi.tools.MainApplication;
 import priv.koishi.tools.MessageBubble.MessageBubble;
-import priv.koishi.tools.Vo.FileNumVo;
 
 import java.awt.*;
 import java.io.File;
@@ -42,6 +41,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.Service.ReadDataService.showReadExcelData;
@@ -99,6 +99,16 @@ public class UiUtils {
         tooltip.setAnchorLocation(PopupWindow.AnchorLocation.WINDOW_BOTTOM_LEFT);
         tooltip.getStyleClass().add("tooltip-font-size");
         return tooltip;
+    }
+
+    /**
+     * 文本输入框鼠标停留提示输入值
+     *
+     * @param textField 要添加提示的文本输入框
+     * @param text      要展示的提示文案
+     */
+    public static void addValueToolTip(TextField textField, String text) {
+        addValueToolTip(textField, text, text_nowValue);
     }
 
     /**
@@ -370,15 +380,32 @@ public class UiUtils {
     }
 
     /**
+     * 递归获取类及其父类的所有字段
+     *
+     * @param clazz 要获取字段的类
+     * @return 当前类和父类所有字段
+     */
+    private static List<Field> getAllFields(Class<?> clazz) {
+        List<Field> fields = new ArrayList<>();
+        while (clazz != null && clazz != Object.class) {
+            fields.addAll(Arrays.asList(clazz.getDeclaredFields()));
+            clazz = clazz.getSuperclass();
+        }
+        return fields;
+    }
+
+    /**
      * 根据bean属性名自动填充javafx表格
      *
-     * @param tableView 要处理的javafx表格
-     * @param beanClass 要处理的javafx表格的数据bean类
-     * @param tabId     用于区分不同列表的id，要展示的数据bean属性名加上tabId即为javafx列表的列对应的id
+     * @param tableView   要处理的javafx表格
+     * @param beanClass   要处理的javafx表格的数据bean类
+     * @param tabId       用于区分不同列表的id，要展示的数据bean属性名加上tabId即为javafx列表的列对应的id
+     * @param indexColumn 序号列
+     * @param <T>         要处理的javafx表格的数据bean类
      */
-    public static <T> void autoBuildTableViewData(TableView<T> tableView, Class<?> beanClass, String tabId) {
-        // 获取对象的所有字段
-        List<Field> fields = List.of(beanClass.getDeclaredFields());
+    public static <T> void autoBuildTableViewData(TableView<T> tableView, Class<?> beanClass, String tabId, TableColumn<T, Integer> indexColumn) {
+        // 递归获取类及其父类的所有字段
+        List<Field> fields = getAllFields(beanClass);
         ObservableList<? extends TableColumn<?, ?>> columns = tableView.getColumns();
         fields.forEach(f -> {
             String fieldName = f.getName();
@@ -388,8 +415,47 @@ public class UiUtils {
             } else {
                 finalFieldName = fieldName;
             }
-            Optional<? extends TableColumn<?, ?>> matched = columns.stream().filter(c -> c.getId().equals(finalFieldName)).findFirst();
-            matched.ifPresent(m -> buildCellValue(m, fieldName));
+            Optional<? extends TableColumn<?, ?>> matched = columns.stream().filter(c ->
+                    finalFieldName.equals(c.getId())).findFirst();
+            matched.ifPresent(m -> {
+                if (indexColumn != null && m.getId().equals(indexColumn.getId())) {
+                    buildIndexCellValue(indexColumn);
+                } else {
+                    buildCellValue(m, fieldName);
+                }
+            });
+        });
+    }
+
+    /**
+     * 设置列为序号列
+     *
+     * @param column 要处理的列
+     * @param <T>    列对应的数据类型
+     */
+    public static <T> void buildIndexCellValue(TableColumn<T, Integer> column) {
+        column.setCellFactory(new Callback<>() {
+            @Override
+            public TableCell<T, Integer> call(TableColumn<T, Integer> param) {
+                return new TableCell<>() {
+                    @Override
+                    protected void updateItem(Integer item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) {
+                            setText(null);
+                        } else {
+                            // 获取当前行的索引并加1（行号从1开始）
+                            int rowIndex = getIndex() + 1;
+                            T itemData = getTableRow().getItem();
+                            if (itemData instanceof Indexable indexable) {
+                                indexable.setIndex(rowIndex);
+                            }
+                            setText(String.valueOf(rowIndex));
+                            setTooltip(creatTooltip(String.valueOf(rowIndex)));
+                        }
+                    }
+                };
+            }
         });
     }
 
@@ -454,15 +520,18 @@ public class UiUtils {
      * @param min       可输入的最小值，为空则不限制
      * @param max       可输入的最大值，为空则不限制
      * @param tip       鼠标悬停提示文案
+     * @return 监听器
      */
-    public static void integerRangeTextField(TextField textField, Integer min, Integer max, String tip) {
-        textField.textProperty().addListener((observable, oldValue, newValue) -> {
+    public static ChangeListener<String> integerRangeTextField(TextField textField, Integer min, Integer max, String tip) {
+        ChangeListener<String> listener = (observable, oldValue, newValue) -> {
             // 这里处理文本变化的逻辑
             if (!isInIntegerRange(newValue, min, max) && StringUtils.isNotBlank(newValue)) {
                 textField.setText(oldValue);
             }
-            addValueToolTip(textField, tip, text_nowValue);
-        });
+            addValueToolTip(textField, tip);
+        };
+        textField.textProperty().addListener(listener);
+        return listener;
     }
 
     /**
@@ -470,9 +539,12 @@ public class UiUtils {
      *
      * @param textField 要监听的文本输入框
      * @param tip       鼠标悬停提示文案
+     * @return 监听器
      */
-    public static void textFieldValueListener(TextField textField, String tip) {
-        textField.textProperty().addListener((observable, oldValue, newValue) -> addValueToolTip(textField, tip, text_nowValue));
+    public static ChangeListener<String> textFieldValueListener(TextField textField, String tip) {
+        ChangeListener<String> listener = (observable, oldValue, newValue) -> addValueToolTip(textField, tip);
+        textField.textProperty().addListener(listener);
+        return listener;
     }
 
     /**
@@ -574,51 +646,121 @@ public class UiUtils {
      * 设置列表通过拖拽排序行
      *
      * @param tableView 要处理的列表
+     * @param <T>       列表数据类型
      */
+    @SuppressWarnings("unchecked")
     public static <T> void tableViewDragRow(TableView<T> tableView) {
         tableView.setRowFactory(tv -> {
             TableRow<T> row = new TableRow<>();
-            // 拖拽-检测
+            final ObservableList<Integer> draggedIndices = FXCollections.observableArrayList();
+            // 拖拽检测
             row.setOnDragDetected(e -> {
                 if (!row.isEmpty()) {
-                    Integer index = row.getIndex();
-                    Dragboard db = row.startDragAndDrop(TransferMode.MOVE);
-                    db.setDragView(row.snapshot(null, null));
-                    ClipboardContent cc = new ClipboardContent();
-                    cc.put(dataFormat, index);
-                    db.setContent(cc);
-                    e.consume();
-                }
-            });
-            // 释放-验证
-            row.setOnDragOver(e -> {
-                Dragboard db = e.getDragboard();
-                if (db.hasContent(dataFormat)) {
-                    if (row.getIndex() != (Integer) db.getContent(dataFormat) && row.getIndex() < tableView.getItems().size()) {
-                        e.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+                    // 获取所有选中的行索引
+                    draggedIndices.setAll(tableView.getSelectionModel().getSelectedIndices().stream().sorted().collect(Collectors.toList()));
+                    // 只允许非空且选中多行时拖拽
+                    if (!draggedIndices.isEmpty()) {
+                        Dragboard db = row.startDragAndDrop(TransferMode.MOVE);
+                        db.setDragView(row.snapshot(null, null));
+                        // 使用自定义数据格式存储多个索引
+                        ClipboardContent cc = new ClipboardContent();
+                        cc.put(dataFormat, new ArrayList<>(draggedIndices));
+                        db.setContent(cc);
                         e.consume();
                     }
                 }
             });
-            // 释放-执行
+            // 拖拽悬停验证
+            row.setOnDragOver(e -> {
+                Dragboard db = e.getDragboard();
+                if (db.hasContent(dataFormat)) {
+                    // 禁止拖拽到选中行内部
+                    List<?> indices = (List<?>) db.getContent(dataFormat);
+                    int dropIndex = row.isEmpty() ? tableView.getItems().size() : row.getIndex();
+                    if (!indices.contains(dropIndex)) {
+                        e.acceptTransferModes(TransferMode.MOVE);
+                        e.consume();
+                    }
+                }
+            });
+            // 拖拽释放处理
             row.setOnDragDropped(e -> {
                 Dragboard db = e.getDragboard();
                 if (db.hasContent(dataFormat)) {
-                    int draggedIndex = (Integer) db.getContent(dataFormat);
-                    int dropIndex;
-                    if (row.isEmpty()) {
-                        dropIndex = tableView.getItems().size();
+                    List<Integer> indices = (List<Integer>) db.getContent(dataFormat);
+                    int maxIndex = tableView.getItems().size();
+                    int dropIndex = row.isEmpty() ? maxIndex : row.getIndex();
+                    // 计算有效插入位置
+                    int adjustedDropIndex = calculateAdjustedIndex(indices, dropIndex, maxIndex);
+                    if (adjustedDropIndex != -1) {
+                        // 批量移动数据
+                        moveRows(tableView, indices, adjustedDropIndex);
+                        // 更新选中状态
+                        selectMovedRows(tableView, indices, adjustedDropIndex);
+                        e.setDropCompleted(true);
+                        e.consume();
                     } else {
-                        dropIndex = row.getIndex();
+                        // 确保拖拽失败
+                        e.setDropCompleted(false);
+                        // 消费事件以避免进一步传播
+                        e.consume();
                     }
-                    tableView.getItems().add(dropIndex, tableView.getItems().remove(draggedIndex));
-                    e.setDropCompleted(true);
-                    tableView.getSelectionModel().select(dropIndex);
-                    e.consume();
                 }
             });
             return row;
         });
+    }
+
+
+    /**
+     * 计算调整后的插入位置
+     *
+     * @param draggedIndices 被拖拽行的原始索引列表（需保证有序）
+     * @param dropIndex      拖拽操作的目标放置位置原始索引
+     * @param maxIndex       表格数据项总数
+     * @return 调整后的有效插入位置，返回-1表示无效拖拽位置
+     */
+    private static int calculateAdjustedIndex(List<Integer> draggedIndices, int dropIndex, int maxIndex) {
+        int firstDragged = draggedIndices.getFirst();
+        int lastDragged = draggedIndices.getLast();
+        if (dropIndex + 1 >= maxIndex) {
+            return maxIndex - draggedIndices.size();
+        }
+        if (dropIndex >= firstDragged && dropIndex <= lastDragged) {
+            return -1;
+        }
+        return dropIndex;
+    }
+
+    /**
+     * 批量移动行数据
+     *
+     * @param tableView   目标表格视图对象
+     * @param indices     需要移动的行索引列表（需保证有序）
+     * @param targetIndex 移动的目标插入位置（经过调整后的有效位置）
+     * @param <T>         表格数据项类型
+     */
+    private static <T> void moveRows(TableView<T> tableView, List<Integer> indices, int targetIndex) {
+        ObservableList<T> items = tableView.getItems();
+        List<T> movedItems = indices.stream().map(items::get).toList();
+        // 批量操作减少刷新次数
+        items.removeAll(movedItems);
+        items.addAll(targetIndex, movedItems);
+    }
+
+    /**
+     * 重新选中移动后的行
+     *
+     * @param tableView       目标表格视图对象
+     * @param originalIndices 移动前的原始行索引列表
+     * @param targetIndex     移动后的起始插入位置
+     * @param <T>             表格数据项类型
+     */
+    private static <T> void selectMovedRows(TableView<T> tableView, List<Integer> originalIndices, int targetIndex) {
+        tableView.getSelectionModel().clearSelection();
+        for (int i = 0; i < originalIndices.size(); i++) {
+            tableView.getSelectionModel().select(targetIndex + i);
+        }
     }
 
     /**
