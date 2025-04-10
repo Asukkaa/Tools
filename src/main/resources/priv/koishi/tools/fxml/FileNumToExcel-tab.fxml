@@ -108,6 +108,7 @@
             </placeholder>
 
             <columns>
+                <TableColumn fx:id="index_Num" text="行号" sortable="false"/>
                 <TableColumn fx:id="groupId_Num" text="序号"/>
                 <TableColumn fx:id="groupName_Num" text="分组名称"/>
                 <TableColumn fx:id="groupNumber_Num" text="文件数量"/>

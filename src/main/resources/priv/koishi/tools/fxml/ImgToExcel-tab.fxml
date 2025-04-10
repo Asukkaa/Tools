@@ -106,6 +106,7 @@
             </placeholder>
 
             <columns>
+                <TableColumn fx:id="index_Img" text="行号" sortable="false"/>
                 <TableColumn fx:id="groupId_Img" text="序号"/>
                 <TableColumn fx:id="groupName_Img" text="分组名称"/>
                 <TableColumn fx:id="groupNumber_Img" text="文件数量"/>

@@ -145,7 +145,7 @@ public class FileNumToExcelController extends CommonProperties {
     private ChoiceBox<String> hideFileType_Num, directoryNameType_Num;
 
     @FXML
-    private TableColumn<FileNumBean, Integer> groupName_Num, groupNumber_Num;
+    private TableColumn<FileNumBean, Integer> groupName_Num, groupNumber_Num, index_Num;
 
     @FXML
     private TableColumn<FileNumBean, String> fileName_Num, groupId_Num, fileUnitSize_Num;
@@ -180,6 +180,8 @@ public class FileNumToExcelController extends CommonProperties {
         double stageWidth = stage.getWidth();
         double tableWidth = stageWidth * 0.94;
         table.setMaxWidth(tableWidth);
+        Node index = scene.lookup("#index_Num");
+        index.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
         Node groupId = scene.lookup("#groupId_Num");
         groupId.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
         Node groupNameNum = scene.lookup("#groupName_Num");
@@ -187,7 +189,7 @@ public class FileNumToExcelController extends CommonProperties {
         Node groupNumberNum = scene.lookup("#groupNumber_Num");
         groupNumberNum.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
         Node fileNameNum = scene.lookup("#fileName_Num");
-        fileNameNum.setStyle("-fx-pref-width: " + tableWidth * 0.6 + "px;");
+        fileNameNum.setStyle("-fx-pref-width: " + tableWidth * 0.5 + "px;");
         Node fileUnitSize = scene.lookup("#fileUnitSize_Num");
         fileUnitSize.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
         Label fileNum = (Label) scene.lookup("#fileNumber_Num");
@@ -488,9 +490,10 @@ public class FileNumToExcelController extends CommonProperties {
      */
     private void tableViewAdaption() {
         groupId_Num.prefWidthProperty().bind(tableView_Num.widthProperty().multiply(0.1));
+        groupId_Num.prefWidthProperty().bind(tableView_Num.widthProperty().multiply(0.1));
         groupName_Num.prefWidthProperty().bind(tableView_Num.widthProperty().multiply(0.1));
         groupNumber_Num.prefWidthProperty().bind(tableView_Num.widthProperty().multiply(0.1));
-        fileName_Num.prefWidthProperty().bind(tableView_Num.widthProperty().multiply(0.6));
+        fileName_Num.prefWidthProperty().bind(tableView_Num.widthProperty().multiply(0.5));
         fileUnitSize_Num.prefWidthProperty().bind(tableView_Num.widthProperty().multiply(0.1));
     }
 
@@ -516,7 +519,7 @@ public class FileNumToExcelController extends CommonProperties {
             // 设置要防重复点击的组件
             setDisableNodes();
             // 绑定表格数据
-            autoBuildTableViewData(tableView_Num, FileNumBean.class, tabId);
+            autoBuildTableViewData(tableView_Num, FileNumBean.class, tabId, index_Num);
         });
     }
 

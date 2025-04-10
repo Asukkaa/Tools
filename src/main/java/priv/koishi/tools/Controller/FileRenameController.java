@@ -127,7 +127,7 @@ public class FileRenameController extends CommonProperties {
     private TableView<FileBean> tableView_Re;
 
     @FXML
-    private TableColumn<FileBean, Integer> id_Re;
+    private TableColumn<FileBean, Integer> id_Re, index_Re;
 
     @FXML
     private TableColumn<FileBean, String> name_Re, rename_Re, path_Re, size_Re, fileType_Re,
@@ -172,6 +172,8 @@ public class FileRenameController extends CommonProperties {
         double stageWidth = stage.getWidth();
         double tableWidth = stageWidth * 0.94;
         table.setMaxWidth(tableWidth);
+        Node index = scene.lookup("#index_Re");
+        index.setStyle("-fx-pref-width: " + tableWidth * 0.04 + "px;");
         Node id = scene.lookup("#id_Re");
         id.setStyle("-fx-pref-width: " + tableWidth * 0.04 + "px;");
         Node name = scene.lookup("#name_Re");
@@ -179,17 +181,17 @@ public class FileRenameController extends CommonProperties {
         Node rename = scene.lookup("#rename_Re");
         rename.setStyle("-fx-pref-width: " + tableWidth * 0.12 + "px;");
         Node fileType = scene.lookup("#fileType_Re");
-        fileType.setStyle("-fx-pref-width: " + tableWidth * 0.06 + "px;");
+        fileType.setStyle("-fx-pref-width: " + tableWidth * 0.05 + "px;");
         Node path = scene.lookup("#path_Re");
         path.setStyle("-fx-pref-width: " + tableWidth * 0.2 + "px;");
         Node size = scene.lookup("#size_Re");
         size.setStyle("-fx-pref-width: " + tableWidth * 0.08 + "px;");
         Node showStatus = scene.lookup("#showStatus_Re");
-        showStatus.setStyle("-fx-pref-width: " + tableWidth * 0.06 + "px;");
+        showStatus.setStyle("-fx-pref-width: " + tableWidth * 0.05 + "px;");
         Node creatDate = scene.lookup("#creatDate_Re");
-        creatDate.setStyle("-fx-pref-width: " + tableWidth * 0.16 + "px;");
+        creatDate.setStyle("-fx-pref-width: " + tableWidth * 0.15 + "px;");
         Node updateDate = scene.lookup("#updateDate_Re");
-        updateDate.setStyle("-fx-pref-width: " + tableWidth * 0.16 + "px;");
+        updateDate.setStyle("-fx-pref-width: " + tableWidth * 0.15 + "px;");
         Label fileNum = (Label) scene.lookup("#fileNumber_Re");
         HBox fileNumberHBox = (HBox) scene.lookup("#fileNumberHBox_Re");
         nodeRightAlignment(fileNumberHBox, tableWidth, fileNum);
@@ -707,15 +709,16 @@ public class FileRenameController extends CommonProperties {
      * 设置javafx单元格宽度
      */
     private void bindPrefWidthProperty() {
+        index_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.04));
         id_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.04));
         name_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.12));
         rename_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.12));
-        fileType_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.06));
+        fileType_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.05));
         path_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.2));
         size_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.08));
-        showStatus_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.06));
-        creatDate_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.16));
-        updateDate_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.16));
+        showStatus_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.05));
+        creatDate_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.15));
+        updateDate_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.15));
     }
 
     /**
@@ -833,7 +836,7 @@ public class FileRenameController extends CommonProperties {
             // 设置要防重复点击的组件
             setDisableNodes();
             // 绑定表格数据
-            autoBuildTableViewData(tableView_Re, FileBean.class, tabId);
+            autoBuildTableViewData(tableView_Re, FileBean.class, tabId, index_Re);
             // 设置文件大小排序
             fileSizeColum(size_Re);
             // 表格设置为可编辑
@@ -1109,7 +1112,7 @@ public class FileRenameController extends CommonProperties {
             case text_specifyString: {
                 typeLabel_Re.setText(text_matchString);
                 renameValue_Re.setText("");
-                addValueToolTip(renameValue_Re, tip_renameValue, text_nowValue);
+                addValueToolTip(renameValue_Re, tip_renameValue);
                 renameBehavior_Re.getItems().remove(text_bothSides);
                 renameBehavior_Re.getItems().add(text_bothSides);
                 // 根据重命名方法选项展示组件
@@ -1119,7 +1122,7 @@ public class FileRenameController extends CommonProperties {
             case text_specifyIndex: {
                 typeLabel_Re.setText(text_matchIndex);
                 renameValue_Re.setText("");
-                addValueToolTip(renameValue_Re, tip_renameValue, text_nowValue);
+                addValueToolTip(renameValue_Re, tip_renameValue);
                 renameBehavior_Re.getItems().remove(text_bothSides);
                 renameBehavior_Re.setValue(renameBehavior_Re.getItems().getFirst());
                 // 根据重命名方法选项展示组件

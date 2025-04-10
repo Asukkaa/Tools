@@ -65,6 +65,7 @@
             </placeholder>
 
             <columns>
+                <TableColumn fx:id="index_Click" text="序号" sortable="false"/>
                 <TableColumn fx:id="name_Click" text="操作名称" sortable="false"/>
                 <TableColumn fx:id="startX_Click" text="起始横(X)坐标" sortable="false"/>
                 <TableColumn fx:id="startY_Click" text="起始纵(Y)坐标" sortable="false"/>

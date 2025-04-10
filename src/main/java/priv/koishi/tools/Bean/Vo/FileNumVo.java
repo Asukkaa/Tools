@@ -1,4 +1,4 @@
-package priv.koishi.tools.Vo;
+package priv.koishi.tools.Bean.Vo;
 
 import lombok.Data;
 import lombok.experimental.Accessors;

@@ -14,7 +14,12 @@ import java.util.List;
  */
 @Data
 @Accessors(chain = true)
-public class FileNumBean {
+public class FileNumBean implements Indexable {
+
+    /**
+     * 序号
+     */
+    Integer index;
 
     /**
      * 分组序号
@@ -55,5 +60,15 @@ public class FileNumBean {
      * 文件名称列表
      */
     List<String> fileNameList;
+
+    /**
+     * 为列表数据设置序号接口
+     *
+     * @param index 要设置的序号
+     */
+    @Override
+    public void setIndex(int index) {
+        this.index = index;
+    }
 
 }

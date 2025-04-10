@@ -163,24 +163,26 @@ public class ImgToExcelController extends CommonProperties {
     private TableView<FileNumBean> tableView_Img;
 
     @FXML
-    private TableColumn<FileNumBean, String> groupId_Img, groupName_Img, groupNumber_Img,
-            fileName_Img, fileUnitSize_Img;
+    private TableColumn<FileNumBean, Integer> groupId_Img, groupNumber_Img, index_Img;
 
     @FXML
-    private Label inPath_Img, outPath_Img, excelPath_Img, fileNumber_Img, log_Img, tip_Img,
-            excelType_Img, excelTypeLabel_Img;
+    private TableColumn<FileNumBean, String>  groupName_Img, fileName_Img, fileUnitSize_Img;
 
     @FXML
-    private Button fileButton_Img, reselectButton_Img, clearButton_Img, exportButton_Img,
-            cancel_Img, outPathButton_Img, excelPathButton_Img;
+    private Label inPath_Img, outPath_Img, excelPath_Img, fileNumber_Img, log_Img, tip_Img, excelType_Img,
+            excelTypeLabel_Img;
 
     @FXML
-    private TextField imgWidth_Img, imgHeight_Img, excelName_Img, sheetName_Img, subCode_Img,
-            startRow_Img, startCell_Img, readRow_Img, readCell_Img, maxRow_Img, maxImgNum_Img;
+    private Button fileButton_Img, reselectButton_Img, clearButton_Img, exportButton_Img, cancel_Img,
+            outPathButton_Img, excelPathButton_Img;
 
     @FXML
-    private CheckBox jpg_Img, png_Img, jpeg_Img, recursion_Img, showFileType_Img, openDirectory_Img,
-            openFile_Img, noImg_Img, exportTitle_Img, exportFileNum_Img, exportFileSize_Img;
+    private TextField imgWidth_Img, imgHeight_Img, excelName_Img, sheetName_Img, subCode_Img, startRow_Img,
+            startCell_Img, readRow_Img, readCell_Img, maxRow_Img, maxImgNum_Img;
+
+    @FXML
+    private CheckBox jpg_Img, png_Img, jpeg_Img, recursion_Img, showFileType_Img, openDirectory_Img, openFile_Img,
+            noImg_Img, exportTitle_Img, exportFileNum_Img, exportFileSize_Img;
 
     /**
      * 组件自适应宽高
@@ -197,6 +199,8 @@ public class ImgToExcelController extends CommonProperties {
         double stageWidth = stage.getWidth();
         double tableWidth = stageWidth * 0.94;
         table.setMaxWidth(tableWidth);
+        Node index = scene.lookup("#index_Img");
+        index.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
         Node groupId = scene.lookup("#groupId_Img");
         groupId.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
         Node groupNameNum = scene.lookup("#groupName_Img");
@@ -204,7 +208,7 @@ public class ImgToExcelController extends CommonProperties {
         Node groupNumberNum = scene.lookup("#groupNumber_Img");
         groupNumberNum.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
         Node fileNameNum = scene.lookup("#fileName_Img");
-        fileNameNum.setStyle("-fx-pref-width: " + tableWidth * 0.6 + "px;");
+        fileNameNum.setStyle("-fx-pref-width: " + tableWidth * 0.5 + "px;");
         Node fileUnitSize = scene.lookup("#fileUnitSize_Img");
         fileUnitSize.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
         Label fileNum = (Label) scene.lookup("#fileNumber_Img");
@@ -582,10 +586,11 @@ public class ImgToExcelController extends CommonProperties {
      * 设置javafx单元格宽度
      */
     private void tableViewAdaption() {
+        index_Img.prefWidthProperty().bind(tableView_Img.widthProperty().multiply(0.1));
         groupId_Img.prefWidthProperty().bind(tableView_Img.widthProperty().multiply(0.1));
         groupName_Img.prefWidthProperty().bind(tableView_Img.widthProperty().multiply(0.1));
         groupNumber_Img.prefWidthProperty().bind(tableView_Img.widthProperty().multiply(0.1));
-        fileName_Img.prefWidthProperty().bind(tableView_Img.widthProperty().multiply(0.6));
+        fileName_Img.prefWidthProperty().bind(tableView_Img.widthProperty().multiply(0.5));
         fileUnitSize_Img.prefWidthProperty().bind(tableView_Img.widthProperty().multiply(0.1));
     }
 
@@ -611,7 +616,7 @@ public class ImgToExcelController extends CommonProperties {
             // 设置要防重复点击的组件
             setDisableNodes();
             // 绑定表格数据
-            autoBuildTableViewData(tableView_Img, FileNumBean.class, tabId);
+            autoBuildTableViewData(tableView_Img, FileNumBean.class, tabId, index_Img);
         });
     }
 

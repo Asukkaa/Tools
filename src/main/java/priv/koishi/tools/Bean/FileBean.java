@@ -15,7 +15,12 @@ import java.io.File;
  */
 @Data
 @Accessors(chain = true)
-public class FileBean {
+public class FileBean implements Indexable {
+
+    /**
+     * 序号
+     */
+    Integer index;
 
     /**
      * 文件列表展示id
@@ -99,6 +104,16 @@ public class FileBean {
      */
     public String getFullName() {
         return getName() + getFileType();
+    }
+
+    /**
+     * 为列表数据设置序号接口
+     *
+     * @param index 要设置的序号
+     */
+    @Override
+    public void setIndex(int index) {
+        this.index = index;
     }
 
 }

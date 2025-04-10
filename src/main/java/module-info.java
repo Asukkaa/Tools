@@ -1,10 +1,7 @@
 module priv.koishi.tools {
 
     requires static lombok;
-    requires org.apache.poi.ooxml;
-    requires org.apache.commons.collections4;
     requires org.apache.commons.lang3;
-    requires org.apache.logging.log4j;
     requires org.apache.logging.log4j.core;
     requires jdk.management;
     requires com.github.kwhat.jnativehook;
@@ -12,6 +9,8 @@ module priv.koishi.tools {
     requires nsmenufx;
     requires javafx.controls;
     requires javafx.fxml;
+    requires org.apache.poi.ooxml;
+    requires org.apache.commons.collections4;
     requires org.apache.commons.io;
 
     opens priv.koishi.tools to javafx.fxml;
@@ -25,5 +24,5 @@ module priv.koishi.tools {
     exports priv.koishi.tools.Enum;
     exports priv.koishi.tools.Configuration;
     exports priv.koishi.tools.Finals;
-    exports priv.koishi.tools.Vo;
+    exports priv.koishi.tools.Bean.Vo;
 }

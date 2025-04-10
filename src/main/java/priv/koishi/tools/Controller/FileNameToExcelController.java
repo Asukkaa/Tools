@@ -127,7 +127,7 @@ public class FileNameToExcelController extends CommonProperties {
     private TableView<FileBean> tableView_Name;
 
     @FXML
-    private TableColumn<FileBean, Integer> id_Name;
+    private TableColumn<FileBean, Integer> id_Name, index_Name;
 
     @FXML
     private TableColumn<FileBean, String> name_Name, path_Name, size_Name, fileType_Name,
@@ -165,22 +165,24 @@ public class FileNameToExcelController extends CommonProperties {
         double stageWidth = stage.getWidth();
         double tableWidth = stageWidth * 0.94;
         table.setMaxWidth(tableWidth);
+        Node index = scene.lookup("#index_Name");
+        index.setStyle("-fx-pref-width: " + tableWidth * 0.04 + "px;");
         Node id = scene.lookup("#id_Name");
         id.setStyle("-fx-pref-width: " + tableWidth * 0.04 + "px;");
         Node name = scene.lookup("#name_Name");
         name.setStyle("-fx-pref-width: " + tableWidth * 0.14 + "px;");
         Node fileType = scene.lookup("#fileType_Name");
-        fileType.setStyle("-fx-pref-width: " + tableWidth * 0.06 + "px;");
+        fileType.setStyle("-fx-pref-width: " + tableWidth * 0.05 + "px;");
         Node path = scene.lookup("#path_Name");
         path.setStyle("-fx-pref-width: " + tableWidth * 0.3 + "px;");
         Node size = scene.lookup("#size_Name");
         size.setStyle("-fx-pref-width: " + tableWidth * 0.08 + "px;");
         Node showStatus = scene.lookup("#showStatus_Name");
-        showStatus.setStyle("-fx-pref-width: " + tableWidth * 0.06 + "px;");
+        showStatus.setStyle("-fx-pref-width: " + tableWidth * 0.05 + "px;");
         Node creatDate = scene.lookup("#creatDate_Name");
-        creatDate.setStyle("-fx-pref-width: " + tableWidth * 0.16 + "px;");
+        creatDate.setStyle("-fx-pref-width: " + tableWidth * 0.15 + "px;");
         Node updateDate = scene.lookup("#updateDate_Name");
-        updateDate.setStyle("-fx-pref-width: " + tableWidth * 0.16 + "px;");
+        updateDate.setStyle("-fx-pref-width: " + tableWidth * 0.15 + "px;");
         Label fileNum = (Label) scene.lookup("#fileNumber_Name");
         HBox fileNumberHBox = (HBox) scene.lookup("#fileNumberHBox_Name");
         nodeRightAlignment(fileNumberHBox, tableWidth, fileNum);
@@ -347,14 +349,15 @@ public class FileNameToExcelController extends CommonProperties {
      * 设置列表各列宽度
      */
     private void bindPrefWidthProperty() {
+        index_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.04));
         id_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.04));
         name_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.14));
-        fileType_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.06));
+        fileType_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.05));
         path_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.3));
         size_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.08));
-        showStatus_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.06));
-        creatDate_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.16));
-        updateDate_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.16));
+        showStatus_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.05));
+        creatDate_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.15));
+        updateDate_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.15));
     }
 
     /**
@@ -438,7 +441,7 @@ public class FileNameToExcelController extends CommonProperties {
             // 设置要防重复点击的组件
             setDisableNodes();
             // 绑定表格数据
-            autoBuildTableViewData(tableView_Name, FileBean.class, tabId);
+            autoBuildTableViewData(tableView_Name, FileBean.class, tabId, index_Name);
             // 设置文件大小排序
             fileSizeColum(size_Name);
             // 设置列表通过拖拽排序行

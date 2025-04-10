@@ -42,6 +42,7 @@ import priv.koishi.tools.Bean.AutoClickTaskBean;
 import priv.koishi.tools.Bean.ClickPositionBean;
 import priv.koishi.tools.EditingCell.EditingCell;
 import priv.koishi.tools.Listener.MousePositionListener;
+import priv.koishi.tools.Listener.MousePositionUpdater;
 import priv.koishi.tools.MainApplication;
 import priv.koishi.tools.Properties.CommonProperties;
 import priv.koishi.tools.ThreadPool.CommonThreadPoolExecutor;
@@ -64,7 +65,6 @@ import static priv.koishi.tools.Utils.CommonUtils.removeNativeListener;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
-import static priv.koishi.tools.Utils.UiUtils.setControlLastConfig;
 
 /**
  * 自动点击工具页面控制器
@@ -73,7 +73,7 @@ import static priv.koishi.tools.Utils.UiUtils.setControlLastConfig;
  * Date:2025-02-17
  * Time:17:21
  */
-public class AutoClickController extends CommonProperties {
+public class AutoClickController extends CommonProperties implements MousePositionUpdater {
 
     /**
      * 导出文件路径
@@ -247,6 +247,9 @@ public class AutoClickController extends CommonProperties {
     private TableView<ClickPositionBean> tableView_Click;
 
     @FXML
+    private TableColumn<ClickPositionBean, Integer> index_Click;
+
+    @FXML
     private TableColumn<ClickPositionBean, String> name_Click, startX_Click, startY_Click, endX_Click, endY_Click,
             clickTime_Click, clickNum_Click, clickInterval_Click, waitTime_Click, type_Click;
 
@@ -265,8 +268,10 @@ public class AutoClickController extends CommonProperties {
         double stageWidth = stage.getWidth();
         double tableWidth = stageWidth * 0.95;
         table.setMaxWidth(tableWidth);
+        Node index = scene.lookup("#index_Click");
+        index.setStyle("-fx-pref-width: " + tableWidth * 0.05 + "px;");
         Node name = scene.lookup("#name_Click");
-        name.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
+        name.setStyle("-fx-pref-width: " + tableWidth * 0.05 + "px;");
         Node startX = scene.lookup("#startX_Click");
         startX.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
         Node startY = scene.lookup("#startY_Click");
@@ -395,7 +400,8 @@ public class AutoClickController extends CommonProperties {
      * 设置javafx单元格宽度
      */
     private void bindPrefWidthProperty() {
-        name_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.1));
+        index_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.05));
+        name_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.05));
         startX_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.1));
         startY_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.1));
         endX_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.1));
@@ -936,9 +942,11 @@ public class AutoClickController extends CommonProperties {
 
     /**
      * 根据鼠标位置调整ui
+     *
+     * @param mousePoint 鼠标位置
      */
-    private void onMousePositionUpdate() {
-        Point mousePoint = MouseInfo.getPointerInfo().getLocation();
+    @Override
+    public void onMousePositionUpdate(Point mousePoint) {
         int x = (int) mousePoint.getX();
         int y = (int) mousePoint.getY();
         String text = "当前鼠标位置为： X: " + x + " Y: " + y;
@@ -1040,7 +1048,7 @@ public class AutoClickController extends CommonProperties {
                     }
                     int dataSize = tableView_Click.getItems().size() + 1;
                     pressButton = e.getButton();
-                    Point mousePoint = MouseInfo.getPointerInfo().getLocation();
+                    Point mousePoint = MousePositionListener.getMousePoint();
                     int startX = (int) mousePoint.getX();
                     int startY = (int) mousePoint.getY();
                     clickBean = new ClickPositionBean();
@@ -1049,7 +1057,9 @@ public class AutoClickController extends CommonProperties {
                             .setType(recordClickTypeMap.get(pressButton))
                             .setWaitTime(String.valueOf(waitTime))
                             .setStartX(String.valueOf(startX))
-                            .setStartY(String.valueOf(startY));
+                            .setStartY(String.valueOf(startY))
+                            .setClickInterval("0")
+                            .setClickNum("1");
                     Platform.runLater(() -> {
                         log_Click.setTextFill(Color.BLUE);
                         String log = text_recorded + recordClickTypeMap.get(pressButton) + " 点击 (" + clickBean.getStartX() + "," + clickBean.getStartY() + ")";
@@ -1067,15 +1077,13 @@ public class AutoClickController extends CommonProperties {
                     releasedTime = System.currentTimeMillis();
                     // 计算点击持续时间（毫秒）
                     long duration = releasedTime - pressTime;
-                    Point mousePoint = MouseInfo.getPointerInfo().getLocation();
+                    Point mousePoint = MousePositionListener.getMousePoint();
                     int endX = (int) mousePoint.getX();
                     int endY = (int) mousePoint.getY();
                     // 创建点击步骤对象
                     clickBean.setClickTime(String.valueOf(duration))
                             .setEndX(String.valueOf(endX))
-                            .setEndY(String.valueOf(endY))
-                            .setClickInterval("0")
-                            .setClickNum("1");
+                            .setEndY(String.valueOf(endY));
                     Platform.runLater(() -> {
                         // 添加至表格
                         List<ClickPositionBean> clickPositionBeans = new ArrayList<>();
@@ -1146,11 +1154,11 @@ public class AutoClickController extends CommonProperties {
             mainScene = anchorPane_Click.getScene();
             mainStage = (Stage) mainScene.getWindow();
             // 获取鼠标坐标监听器
-            new MousePositionListener(this::onMousePositionUpdate);
+            MousePositionListener.getInstance().addListener(this);
             // 设置要防重复点击的组件
             setDisableNodes();
             // 自动填充javafx表格
-            autoBuildTableViewData(tableView_Click, ClickPositionBean.class, tabId);
+            autoBuildTableViewData(tableView_Click, ClickPositionBean.class, tabId, index_Click);
             // 表格设置为可编辑
             makeCellCanEdit();
             // 设置列表通过拖拽排序行

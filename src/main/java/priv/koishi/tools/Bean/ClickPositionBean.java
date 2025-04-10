@@ -1,5 +1,6 @@
 package priv.koishi.tools.Bean;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -14,12 +15,19 @@ import java.util.UUID;
  */
 @Data
 @Accessors(chain = true)
-public class ClickPositionBean {
+public class ClickPositionBean implements Indexable {
 
     /**
      * 唯一标识符
      */
+    @JsonIgnore
     String uuid = UUID.randomUUID().toString();
+
+    /**
+     * 序号
+     */
+    @JsonIgnore
+    Integer index;
 
     /**
      * 操作名称
@@ -70,5 +78,15 @@ public class ClickPositionBean {
      * 操作类型
      */
     String type;
+
+    /**
+     * 为列表数据设置序号接口
+     *
+     * @param index 要设置的序号
+     */
+    @Override
+    public void setIndex(int index) {
+        this.index = index;
+    }
 
 }
