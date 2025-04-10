@@ -1,12 +1,17 @@
 package priv.koishi.tools.Controller;
 
+import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
+import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import lombok.Setter;
 import priv.koishi.tools.Bean.ClickPositionBean;
+
+import java.util.Map;
+import java.util.WeakHashMap;
 
 import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
@@ -19,6 +24,11 @@ import static priv.koishi.tools.Utils.UiUtils.*;
  * Time 15:09
  */
 public class DetailController {
+
+    /**
+     * 带鼠标悬停提示的内容变化监听器
+     */
+    private final Map<Object, ChangeListener<?>> changeListeners = new WeakHashMap<>();
 
     /**
      * 页面数据对象
@@ -62,21 +72,49 @@ public class DetailController {
      */
     private void textFieldChangeListener() {
         // 操作名称文本输入框鼠标悬停提示
-        textFieldValueListener(clickName_Det, tip_clickName);
+        ChangeListener<String> clickNameListener = textFieldValueListener(clickName_Det, tip_clickName);
+        changeListeners.put(clickName_Det, clickNameListener);
         // 限制单次操作点击间隔文本输入框内容
-        integerRangeTextField(wait_Det, 0, null, tip_wait);
+        ChangeListener<String> waitListener = integerRangeTextField(wait_Det, 0, null, tip_wait);
+        changeListeners.put(wait_Det, waitListener);
         // 限制操作时长文本输入内容
-        integerRangeTextField(timeClick_Det, 0, null, tip_clickTime);
+        ChangeListener<String> timeClickListener = integerRangeTextField(timeClick_Det, 0, null, tip_clickTime);
+        changeListeners.put(timeClick_Det, timeClickListener);
         // 限制鼠标结束位置横(X)坐标文本输入框内容
-        integerRangeTextField(mouseEndX_Det, 0, null, tip_mouseEndX);
+        ChangeListener<String> mouseEndXListener = integerRangeTextField(mouseEndX_Det, 0, null, tip_mouseEndX);
+        changeListeners.put(mouseEndX_Det, mouseEndXListener);
         // 限制鼠标结束位置纵(Y)坐标文本输入框内容
-        integerRangeTextField(mouseEndY_Det, 0, null, tip_mouseEndY);
+        ChangeListener<String> mouseEndYListener = integerRangeTextField(mouseEndY_Det, 0, null, tip_mouseEndY);
+        changeListeners.put(mouseEndY_Det, mouseEndYListener);
         // 限制鼠标起始位置横(X)坐标文本输入框内容
-        integerRangeTextField(mouseStartX_Det, 0, null, tip_mouseStartX);
+        ChangeListener<String> mouseStartXListener = integerRangeTextField(mouseStartX_Det, 0, null, tip_mouseStartX);
+        changeListeners.put(mouseStartX_Det, mouseStartXListener);
         // 限制鼠标起始位置纵(Y)坐标文本输入框内容
-        integerRangeTextField(mouseStartY_Det, 0, null, tip_mouseStartY);
+        ChangeListener<String> mouseStartYListener = integerRangeTextField(mouseStartY_Det, 0, null, tip_mouseStartY);
+        changeListeners.put(mouseStartY_Det, mouseStartYListener);
         // 限制点击次数文本输入框内容
-        integerRangeTextField(clickNumBer_Det, 0, null, tip_clickNumBer);
+        ChangeListener<String> clickNumBerListener = integerRangeTextField(clickNumBer_Det, 0, null, tip_clickNumBer);
+        changeListeners.put(clickNumBer_Det, clickNumBerListener);
+    }
+
+    /**
+     * 移除所有监听器
+     */
+    @SuppressWarnings("unchecked")
+    private void removeAllListeners() {
+        // 处理带鼠标悬停提示的变更监听器集合，遍历所有entry，根据不同类型移除对应的选择/数值监听器
+        changeListeners.forEach((key, listener) -> {
+            if (key instanceof ChoiceBox<?> choiceBox) {
+                choiceBox.getSelectionModel().selectedItemProperty().removeListener((InvalidationListener) listener);
+            } else if (key instanceof Slider slider) {
+                slider.valueProperty().removeListener((ChangeListener<? super Number>) listener);
+            } else if (key instanceof TextInputControl textInput) {
+                textInput.textProperty().removeListener((ChangeListener<? super String>) listener);
+            } else if (key instanceof CheckBox checkBox) {
+                checkBox.selectedProperty().removeListener((ChangeListener<? super Boolean>) listener);
+            }
+        });
+        changeListeners.clear();
     }
 
     /**
@@ -104,6 +142,8 @@ public class DetailController {
         setToolTip();
         // 给输入框添加内容变化监听
         textFieldChangeListener();
+        // 窗口关闭时移除所有监听器
+        Platform.runLater(() -> anchorPane_Det.getScene().getWindow().setOnCloseRequest(e -> removeAllListeners()));
     }
 
     /**
