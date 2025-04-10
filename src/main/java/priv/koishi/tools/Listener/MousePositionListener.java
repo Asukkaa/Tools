@@ -2,6 +2,11 @@ package priv.koishi.tools.Listener;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
+import lombok.Getter;
+
+import java.awt.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * 鼠标位置监听器
@@ -13,34 +18,70 @@ import javafx.application.Platform;
 public class MousePositionListener {
 
     /**
-     * 计时器
+     * 需要接收鼠标位置更新的监听器对象
      */
-    AnimationTimer timer;
+    private static MousePositionListener instance;
 
     /**
-     * 鼠标位置监听器
-     *
-     * @param mousePositionUpdater ui更新器
+     * 需要接收鼠标位置更新的监听器集合
      */
-    public MousePositionListener(MousePositionUpdater mousePositionUpdater) {
-        timer = new AnimationTimer() {
+    private final Set<MousePositionUpdater> listeners = new HashSet<>();
+
+    /**
+     * 当前鼠标位置坐标
+     */
+    @Getter
+    private static Point mousePoint;
+
+    /**
+     * 私有构造函数，初始化鼠标位置监听定时器
+     * 创建AnimationTimer定时在JavaFX应用线程中更新鼠标位置
+     * 通过MouseInfo获取系统级鼠标坐标，通知所有注册的监听器
+     */
+    private MousePositionListener() {
+        AnimationTimer timer = new AnimationTimer() {
+            /**
+             * 定时器处理逻辑，将通知操作调度到JavaFX应用线程
+             * @param now 当前时间戳（纳秒）
+             */
             @Override
             public void handle(long now) {
-                Platform.runLater(() -> {
-                    if (mousePositionUpdater != null) {
-                        mousePositionUpdater.onMousePositionUpdate();
-                    }
-                });
+                Platform.runLater(this::notifyListeners);
+            }
+
+            /**
+             * 通知所有注册的监听器最新鼠标坐标
+             * 先获取系统级鼠标位置，然后遍历回调所有监听器
+             */
+            private void notifyListeners() {
+                mousePoint = MouseInfo.getPointerInfo().getLocation();
+                for (MousePositionUpdater updater : listeners) {
+                    updater.onMousePositionUpdate(mousePoint);
+                }
             }
         };
         timer.start();
     }
 
     /**
-     * 停止计时
+     * 获取单例实例（线程安全）
+     *
+     * @return 返回MousePositionListener的唯一实例
      */
-    public void stop() {
-        timer.stop();
+    public static synchronized MousePositionListener getInstance() {
+        if (instance == null) {
+            instance = new MousePositionListener();
+        }
+        return instance;
+    }
+
+    /**
+     * 注册鼠标位置更新监听器
+     *
+     * @param listener 需要接收鼠标位置更新的监听器对象
+     */
+    public void addListener(MousePositionUpdater listener) {
+        listeners.add(listener);
     }
 
 }
