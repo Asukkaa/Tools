@@ -85,6 +85,9 @@
                    text="设置操作步骤后上下拖拽数据行可调整数据顺序，右键点击数据行可进行调整操作，双击单元格可进行编辑"/>
         </HBox>
 
-        <Label fx:id="log_Click"/>
+        <HBox fx:id="logHBox_Click" spacing="10">
+            <Label fx:id="log_Click"/>
+            <Label fx:id="err_Click" textFill="red" alignment="CENTER_RIGHT"/>
+        </HBox>
     </VBox>
 </AnchorPane>

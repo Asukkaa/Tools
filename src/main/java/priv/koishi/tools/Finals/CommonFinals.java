@@ -16,6 +16,80 @@ import java.util.Map;
  */
 public class CommonFinals {
 
+    /**
+     * 程序名称
+     */
+    public static final String appName = "Tools";
+
+    /**
+     * 资源文件夹地址前缀
+     */
+    public static String resourcePath = "/priv/koishi/tools/";
+
+    /**
+     * 程序根目录
+     */
+    public static final String appNameSeparator = appName + File.separator;
+
+    /**
+     * win系统下启动脚本名称
+     */
+    public static final String appBat = "app.bat";
+
+    /**
+     * 启动脚本最大内存设置参数
+     */
+    public static final String Xmx = "-Xmx";
+
+    /**
+     * log4j配置文件名称
+     */
+    public static String log4j2 = "log4j2.xml";
+
+    public static final String xlsx = ".xlsx";
+
+    public static final String xls = ".xls";
+
+    public static final String jpg = ".jpg";
+
+    public static final String png = ".png";
+
+    public static final String jpeg = ".jpeg";
+
+    public static final String log = ".log";
+
+    public static final String PMC = ".pmc";
+
+    public static final String exe = ".exe";
+
+    public static final String app = ".app";
+
+    public static final String macos = "mac";
+
+    public static final String win = "win";
+
+    public static final String Byte = "Byte";
+
+    public static final String KB = "KB";
+
+    public static final String MB = "MB";
+
+    public static final String GB = "GB";
+
+    public static final String TB = "TB";
+
+    public static final String g = "g";
+
+    /**
+     * 启用
+     */
+    public static final String activation = "1";
+
+    /**
+     * 禁用
+     */
+    public static final String unActivation = "0";
+
     public static final String tip_startSize = "只能填自然数，0为不限制编号位数，不填默认为0";
 
     public static final String tip_renameStr = "填写后会将匹配到的字符串替换为所填写的字符串";
@@ -177,8 +251,8 @@ public class CommonFinals {
     public static final String buildDate = "2025年4月11日";
 
     public static final String tip_version = """
-    version：%s
-    %s构建""".formatted(version, buildDate);
+            version：%s
+            %s构建""".formatted(version, buildDate);
 
     public static final String tip_recordClick = """
             点击录制自动操作按钮将会等待设置的准备时间后开始录制自动操作
@@ -211,6 +285,19 @@ public class CommonFinals {
             替换：将匹配的字符串替换为所填写的字符串
             删除：只删除指定位置的字符
             移除：移除指定位置左侧或右侧所有字符串""";
+
+    public static final String tip_NativeHookException = """
+            需要在macOS系统设置中启用辅助设备权限：
+            1. 打开 [系统偏好设置 → 安全性与隐私 → 隐私]
+            2. 在左侧列表选择「辅助功能」
+            3. 点击🔒解锁设置
+            4. 删除列表中的\s""" + appName + app + """
+             （如果有的话）
+            5. 将\s""" + appName + app + """
+             添加到允许列表中
+            6. 重启\s""" + appName + app;
+
+    public static final String text_NativeHookException = "需要在macOS系统设置中启用辅助设备权限";
 
     public static final String text_onlyNaturalNumber = "只能填自然数，不填默认为 ";
 
@@ -383,44 +470,6 @@ public class CommonFinals {
     public static final String text_isAdd = " (添加)";
 
     public static final String text_isRecord = " (录制)";
-
-    public static final String xlsx = ".xlsx";
-
-    public static final String xls = ".xls";
-
-    public static final String jpg = ".jpg";
-
-    public static final String png = ".png";
-
-    public static final String jpeg = ".jpeg";
-
-    public static final String log = ".log";
-
-    public static final String PMC = ".pmc";
-
-    public static final String exe = ".exe";
-
-    public static final String app = ".app";
-
-    public static final String macos = "mac";
-
-    public static final String win = "win";
-
-    public static final String Byte = "Byte";
-
-    public static final String KB = "KB";
-
-    public static final String MB = "MB";
-
-    public static final String GB = "GB";
-
-    public static final String TB = "TB";
-
-    public static final String g = "g";
-
-    public static final String activation = "1";
-
-    public static final String unActivation = "0";
 
     public static final String id_settingTab = "settingTab";
 
@@ -701,36 +750,6 @@ public class CommonFinals {
      * 迅雷网盘地址
      */
     public static final String xunleiLink = "https://pan.xunlei.com/s/VOGTX2MnWwCrqIwhUV6GEVOyA1?pwd=7pau#";
-
-    /**
-     * 程序名称
-     */
-    public static final String appName = "Tools";
-
-    /**
-     * 资源文件夹地址前缀
-     */
-    public static String resourcePath = "/priv/koishi/tools/";
-
-    /**
-     * 程序根目录
-     */
-    public static final String appNameSeparator = appName + File.separator;
-
-    /**
-     * win系统下启动脚本名称
-     */
-    public static final String appBat = "app.bat";
-
-    /**
-     * 启动脚本最大内存设置参数
-     */
-    public static final String Xmx = "-Xmx";
-
-    /**
-     * log4j配置文件名称
-     */
-    public static String log4j2 = "log4j2.xml";
 
     /**
      * 默认浮窗横轴偏移量

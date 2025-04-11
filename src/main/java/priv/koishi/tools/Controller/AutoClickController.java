@@ -224,13 +224,14 @@ public class AutoClickController extends CommonProperties implements MousePositi
     private AnchorPane anchorPane_Click;
 
     @FXML
-    private HBox fileNumberHBox_Click, tipHBox_Click, cancelTipHBox_Click;
+    private HBox fileNumberHBox_Click, tipHBox_Click, cancelTipHBox_Click, logHBox_Click;
 
     @FXML
     private ProgressBar progressBar_Click;
 
     @FXML
-    private Label mousePosition_Click, dataNumber_Click, log_Click, tip_Click, cancelTip_Click, outPath_Click;
+    private Label mousePosition_Click, dataNumber_Click, log_Click, tip_Click, cancelTip_Click, outPath_Click,
+            err_Click;
 
     @FXML
     private CheckBox openDirectory_Click, showWindowRun_Click, hideWindowRun_Click, firstClick_Click,
@@ -299,8 +300,12 @@ public class AutoClickController extends CommonProperties implements MousePositi
         Label cancelTip = (Label) scene.lookup("#cancelTip_Click");
         HBox cancelTipHBox = (HBox) scene.lookup("#cancelTipHBox_Click");
         nodeRightAlignment(cancelTipHBox, tableWidth, cancelTip);
+        Label err = (Label) scene.lookup("#err_Click");
+        if (err != null) {
+            HBox logHBox = (HBox) scene.lookup("#logHBox_Click");
+            nodeRightAlignment(logHBox, tableWidth, err);
+        }
     }
-
 
     /**
      * 保存最后一次配置的值
@@ -1129,13 +1134,27 @@ public class AutoClickController extends CommonProperties implements MousePositi
     }
 
     /**
+     * 禁用需要辅助控制权限的组件
+     */
+    private void setNativeHookExceptionLog() {
+        runClick_Click.setDisable(true);
+        recordClick_Click.setDisable(true);
+        clickTest_Click.setDisable(true);
+        String errorMessage = appName + " 缺少必要系统权限";
+        if (systemName.contains(macos)) {
+            errorMessage = text_NativeHookException;
+        }
+        err_Click.setText(errorMessage);
+        err_Click.setTooltip(creatTooltip(tip_NativeHookException));
+    }
+
+    /**
      * 页面初始化
      *
-     * @throws IOException         配置文件读取失败
-     * @throws NativeHookException 注册全局输入监听失败
+     * @throws IOException 配置文件读取失败
      */
     @FXML
-    private void initialize() throws IOException, NativeHookException {
+    private void initialize() throws IOException {
         // 设置javafx单元格宽度
         bindPrefWidthProperty();
         // 读取配置文件
@@ -1148,8 +1167,15 @@ public class AutoClickController extends CommonProperties implements MousePositi
         textFieldChangeListener();
         // 设置初始配置值为上次配置值
         setLastConfig();
-        // 注册全局输入监听器
-        GlobalScreen.registerNativeHook();
+        try {
+            // 注册全局输入监听器
+            GlobalScreen.registerNativeHook();
+        } catch (NativeHookException e) {
+            setNativeHookExceptionLog();
+        }
+        if (StringUtils.isBlank(err_Click.getText())) {
+            logHBox_Click.getChildren().remove(err_Click);
+        }
         Platform.runLater(() -> {
             mainScene = anchorPane_Click.getScene();
             mainStage = (Stage) mainScene.getWindow();
