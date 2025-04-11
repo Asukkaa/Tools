@@ -6,23 +6,21 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.apache.poi.xssf.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.ExcelConfig;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.Utils.ExcelUtils.*;
-import static priv.koishi.tools.Utils.FileUtils.*;
+import static priv.koishi.tools.Utils.FileUtils.checkFileExists;
+import static priv.koishi.tools.Utils.FileUtils.getFileType;
 import static priv.koishi.tools.Utils.UiUtils.changeDisableNodes;
 
 /**
@@ -67,9 +65,10 @@ public class ImgToExcelService {
                 String excelInPath = excelConfig.getInPath();
                 checkFileExists(excelInPath, text_excelNotExists);
                 updateMessage(text_printData);
-                fileInputStream = new FileInputStream(excelInPath);
-                workbook = new XSSFWorkbook(fileInputStream);
-                sxssfWorkbook = new SXSSFWorkbook(workbook, 50);
+                try (FileInputStream fis = new FileInputStream(excelInPath)) {
+                    XSSFWorkbook templateWorkbook = new XSSFWorkbook(fis);
+                    sxssfWorkbook = new SXSSFWorkbook(templateWorkbook, 50);
+                }
                 taskBean.getCancelButton().setVisible(true);
                 String sheetName = excelConfig.getSheetName();
                 int startRowNum = excelConfig.getStartRowNum();
@@ -87,6 +86,7 @@ public class ImgToExcelService {
                 updateMessage(text_identify + fileNum + text_data);
                 boolean exportFileNum = excelConfig.isExportFileNum();
                 boolean exportFileSize = excelConfig.isExportFileSize();
+                sxssfWorkbook.setCompressTempFiles(true);
                 List<String> titles = new ArrayList<>();
                 // 创建表头
                 if (excelConfig.isExportTitle()) {
@@ -106,21 +106,21 @@ public class ImgToExcelService {
                     if (exportFileNum && !exportFileSize) {
                         // 附加项只导出文件数量
                         startCell.setCellValue(fileNumBean.getGroupNumber());
-                        maxCellNum = buildImgExcel(imgList, excelConfig, startCellNum + 1, rowNum, sheet, sxssfWorkbook, row, maxCellNum);
+                        maxCellNum = buildImgExcel(imgList, excelConfig, startCellNum + 1, rowNum, sheet, row, maxCellNum);
                     } else if (!exportFileNum && exportFileSize) {
                         // 附加项只导出文件大小
                         startCell.setCellValue(fileNumBean.getFileUnitSize());
-                        maxCellNum = buildImgExcel(imgList, excelConfig, startCellNum + 1, rowNum, sheet, sxssfWorkbook, row, maxCellNum);
+                        maxCellNum = buildImgExcel(imgList, excelConfig, startCellNum + 1, rowNum, sheet, row, maxCellNum);
                     } else if (exportFileNum) {
                         // 附加项导出文件数量和大小
                         startCell.setCellValue(fileNumBean.getGroupNumber());
                         int sizeCellNum = startCellNum + 1;
                         Cell sizeCell = row.createCell(sizeCellNum);
                         sizeCell.setCellValue(fileNumBean.getFileUnitSize());
-                        maxCellNum = buildImgExcel(imgList, excelConfig, sizeCellNum + 1, rowNum, sheet, sxssfWorkbook, row, maxCellNum);
+                        maxCellNum = buildImgExcel(imgList, excelConfig, sizeCellNum + 1, rowNum, sheet, row, maxCellNum);
                     } else {
                         // 不导出附加项
-                        maxCellNum = buildImgExcel(imgList, excelConfig, startCellNum, rowNum, sheet, sxssfWorkbook, row, maxCellNum);
+                        maxCellNum = buildImgExcel(imgList, excelConfig, startCellNum, rowNum, sheet, row, maxCellNum);
                     }
                     updateMessage(text_printing + (i + 1) + "/" + fileNum + text_data);
                     updateProgress(i + 1, fileNum);
@@ -139,18 +139,17 @@ public class ImgToExcelService {
     /**
      * 插入图片
      *
-     * @param imgList       图片路径
-     * @param excelConfig   excel导出设置
-     * @param cellNum       图片起始列号
-     * @param rowNum        图片的起始行号
-     * @param sheet         当前表
-     * @param sxssfWorkbook 当前工作簿
-     * @param row           当前行
-     * @param maxCellNum    最大列号
+     * @param imgList     图片路径
+     * @param excelConfig excel导出设置
+     * @param cellNum     图片起始列号
+     * @param rowNum      图片的起始行号
+     * @param sheet       当前表
+     * @param row         当前行
+     * @param maxCellNum  最大列号
      * @return 最大列号
      */
     private static int buildImgExcel(List<String> imgList, ExcelConfig excelConfig, int cellNum, int rowNum,
-                                     Sheet sheet, SXSSFWorkbook sxssfWorkbook, Row row, int maxCellNum) throws IOException {
+                                     Sheet sheet, Row row, int maxCellNum) throws IOException {
         if (CollectionUtils.isEmpty(imgList)) {
             Cell cell = getOrCreateCell(cellNum, row);
             if (excelConfig.isNoImg()) {
@@ -158,11 +157,10 @@ public class ImgToExcelService {
             }
             maxCellNum = Math.max(maxCellNum, cellNum);
         } else {
-            sxssfWorkbook.setCompressTempFiles(true);
+            CreationHelper helper = sxssfWorkbook.getCreationHelper();
+            Drawing<?> drawing = sheet.createDrawingPatriarch();
             for (String i : imgList) {
                 // 将图片插入Excel单元格
-                CreationHelper helper = sxssfWorkbook.getCreationHelper();
-                Drawing<?> drawing = sheet.createDrawingPatriarch();
                 ClientAnchor anchor = helper.createClientAnchor();
                 // 设置图片的起始位置以及大小
                 anchor.setCol1(cellNum);
@@ -170,14 +168,24 @@ public class ImgToExcelService {
                 anchor.setCol2(cellNum + 1);
                 anchor.setRow2(rowNum + 1);
                 anchor.setAnchorType(ClientAnchor.AnchorType.MOVE_DONT_RESIZE);
-                String extension = getFileType(new File(i));
+                File imgFile = new File(i);
+                String extension = getFileType(imgFile);
                 // 读取图片文件
-                try (InputStream inputStream = Files.newInputStream(Paths.get(i))) {
-                    if (jpg.equals(extension) || jpeg.equals(extension)) {
-                        drawing.createPicture(anchor, sxssfWorkbook.addPicture(inputStream.readAllBytes(), Workbook.PICTURE_TYPE_JPEG));
-                    } else if (png.equals(extension)) {
-                        drawing.createPicture(anchor, sxssfWorkbook.addPicture(inputStream.readAllBytes(), Workbook.PICTURE_TYPE_PNG));
+                try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(imgFile.toPath()))) {
+                    // 分块读取
+                    ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+                    byte[] chunk = new byte[8192];
+                    int bytesRead;
+                    while ((bytesRead = inputStream.read(chunk)) != -1) {
+                        buffer.write(chunk, 0, bytesRead);
                     }
+                    buffer.flush();
+                    if (jpg.equals(extension) || jpeg.equals(extension)) {
+                        drawing.createPicture(anchor, sxssfWorkbook.addPicture(buffer.toByteArray(), Workbook.PICTURE_TYPE_JPEG));
+                    } else if (png.equals(extension)) {
+                        drawing.createPicture(anchor, sxssfWorkbook.addPicture(buffer.toByteArray(), Workbook.PICTURE_TYPE_PNG));
+                    }
+                    buffer.close();
                 }
                 sheet.setColumnWidth(cellNum, 256 * excelConfig.getImgWidth());
                 sheet.getRow(rowNum).setHeightInPoints(excelConfig.getImgHeight());

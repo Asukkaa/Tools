@@ -403,6 +403,14 @@ public class ImgToExcelController extends CommonProperties {
                 taskUnbind(taskBean);
                 readExcelTask = null;
             });
+            readExcelTask.setOnFailed(event -> {
+                taskUnbind(taskBean);
+                taskNotSuccess(taskBean, text_taskFailed);
+                // 获取抛出的异常
+                Throwable ex = readExcelTask.getException();
+                readExcelTask = null;
+                throw new RuntimeException(ex);
+            });
             if (!readExcelTask.isRunning()) {
                 executorService.execute(readExcelTask);
             }

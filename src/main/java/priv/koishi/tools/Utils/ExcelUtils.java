@@ -4,11 +4,12 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import priv.koishi.tools.Configuration.ExcelConfig;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -169,17 +170,13 @@ public class ExcelUtils {
      * @throws Exception        io异常
      */
     public static String saveExcel(Workbook workbook, ExcelConfig excelConfig) throws Exception {
-        String filePath = excelConfig.getOutPath() + "\\" + excelConfig.getOutName() + excelConfig.getOutExcelType();
+        SXSSFWorkbook sxssfWorkbook = (workbook instanceof SXSSFWorkbook) ? (SXSSFWorkbook) workbook :
+                new SXSSFWorkbook((XSSFWorkbook) workbook, 100, true, true);
+        String filePath = excelConfig.getOutPath() + File.separator + excelConfig.getOutName() + excelConfig.getOutExcelType();
         checkDirectory(new File(filePath).getParent());
-        BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(Files.newOutputStream(Paths.get(filePath)));
-        // 将Excel写入文件
-        try (workbook) {
-            workbook.write(bufferedOutputStream);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } finally {
-            bufferedOutputStream.flush();
-            bufferedOutputStream.close();
+        try (BufferedOutputStream bos = new BufferedOutputStream(
+                Files.newOutputStream(Paths.get(filePath)), 65536)) {
+            sxssfWorkbook.write(bos);
         }
         return filePath;
     }

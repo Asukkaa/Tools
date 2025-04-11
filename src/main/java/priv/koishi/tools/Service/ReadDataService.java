@@ -1,6 +1,8 @@
 package priv.koishi.tools.Service;
 
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -13,8 +15,8 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import priv.koishi.tools.Bean.FileBean;
 import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Bean.TaskBean;
-import priv.koishi.tools.Configuration.*;
 import priv.koishi.tools.Bean.Vo.FileNumVo;
+import priv.koishi.tools.Configuration.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,11 +27,11 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import static priv.koishi.tools.Service.FileRenameService.buildRename;
 import static priv.koishi.tools.Finals.CommonFinals.*;
+import static priv.koishi.tools.Service.FileRenameService.buildRename;
 import static priv.koishi.tools.Utils.CommonUtils.matchGroupData;
 import static priv.koishi.tools.Utils.FileUtils.*;
-import static priv.koishi.tools.Utils.UiUtils.*;
+import static priv.koishi.tools.Utils.UiUtils.changeDisableNodes;
 
 /**
  * 读取数据线程任务类
@@ -168,7 +170,14 @@ public class ReadDataService {
             throw new Exception(text_selectNull);
         }
         // 渲染数据
-        Platform.runLater(() -> taskBean.getTableView().getItems().addAll(fileBeans));
+        Platform.runLater(() -> {
+            // 创建新列表避免直接操作原始集合
+            ObservableList<FileNumBean> newItems = FXCollections.observableArrayList(taskBean.getTableView().getItems());
+            newItems.addAll(fileBeans);
+            // 直接替换整个列表而不是修改原列表
+            taskBean.getTableView().setItems(FXCollections.observableArrayList(newItems));
+            taskBean.getTableView().refresh();
+        });
         return fileBeans;
     }
 
