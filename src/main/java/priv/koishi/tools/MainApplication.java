@@ -179,10 +179,8 @@ public class MainApplication extends Application {
     private static void tableViewContextMenu(TableView<TabBean> tableView) {
         // 添加右键菜单
         ContextMenu contextMenu = new ContextMenu();
-        // 所选行上移一行选项
-        buildUpMoveDataMenuItem(tableView, contextMenu);
-        // 所选行下移一行选项
-        buildDownMoveDataMenuItem(tableView, contextMenu);
+        // 移动所选行选项
+        buildMoveDataMenu(tableView, contextMenu);
         // 取消选中选项
         buildClearSelectedData(tableView, contextMenu);
         // 为列表添加右键菜单并设置可选择多行

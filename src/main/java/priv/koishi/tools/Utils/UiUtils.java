@@ -711,7 +711,6 @@ public class UiUtils {
         });
     }
 
-
     /**
      * 计算调整后的插入位置
      *
@@ -902,45 +901,26 @@ public class UiUtils {
     }
 
     /**
-     * 所选行上移一行选项
-     *
-     * @param tableView   要添加右键菜单的列表
-     * @param contextMenu 右键菜单集合
-     */
-    public static <T> void buildUpMoveDataMenuItem(TableView<T> tableView, ContextMenu contextMenu) {
-        MenuItem menuItem = new MenuItem("所选行上移一行");
-        menuItem.setOnAction(event -> upMoveDataMenuItem(tableView));
-        contextMenu.getItems().add(menuItem);
-    }
-
-    /**
-     * 所选行下移一行选项
-     *
-     * @param tableView   要添加右键菜单的列表
-     * @param contextMenu 右键菜单集合
-     */
-    public static <T> void buildDownMoveDataMenuItem(TableView<T> tableView, ContextMenu contextMenu) {
-        MenuItem menuItem = new MenuItem("所选行下移一行");
-        menuItem.setOnAction(event -> downMoveDataMenuItem(tableView));
-        contextMenu.getItems().add(menuItem);
-    }
-
-    /**
      * 移动所选行选项
      *
      * @param tableView   要添加右键菜单的列表
      * @param contextMenu 右键菜单集合
+     * @param <T>         表格数据项类型
      */
     public static <T> void buildMoveDataMenu(TableView<T> tableView, ContextMenu contextMenu) {
         Menu menu = new Menu("移动所选数据");
         // 创建二级菜单项
         MenuItem up = new MenuItem("所选行上移一行");
         MenuItem down = new MenuItem("所选行下移一行");
+        MenuItem top = new MenuItem("所选行置顶");
+        MenuItem bottom = new MenuItem("所选行置底");
         // 为每个菜单项添加事件处理
         up.setOnAction(event -> upMoveDataMenuItem(tableView));
         down.setOnAction(event -> downMoveDataMenuItem(tableView));
+        top.setOnAction(event -> topMoveDataMenuItem(tableView));
+        bottom.setOnAction(event -> bottomMoveDataMenuItem(tableView));
         // 将菜单添加到菜单列表
-        menu.getItems().addAll(up, down);
+        menu.getItems().addAll(up, down, top, bottom);
         contextMenu.getItems().add(menu);
     }
 
@@ -948,6 +928,7 @@ public class UiUtils {
      * 所选行上移一行选项
      *
      * @param tableView 要处理的数据列表
+     * @param <T>       表格数据项类型
      */
     private static <T> void upMoveDataMenuItem(TableView<T> tableView) {
         // getSelectedCells处理上移操作有bug，通过getSelectedItems拿到的数据是实时变化的，需要一个新的list来存
@@ -979,6 +960,7 @@ public class UiUtils {
      * 所选行下移一行选项
      *
      * @param tableView 要处理的数据列表
+     * @param <T>       表格数据项类型
      */
     private static <T> void downMoveDataMenuItem(TableView<T> tableView) {
         var selectedCells = tableView.getSelectionModel().getSelectedCells();
@@ -989,6 +971,54 @@ public class UiUtils {
             loopTime++;
             if (row + loopTime < fileList.size()) {
                 fileList.add(row, fileList.remove(row + 1));
+            }
+        }
+    }
+
+    /**
+     * 所选行置顶
+     *
+     * @param tableView 要处理的数据列表
+     * @param <T>       表格数据项类型
+     */
+    private static <T> void topMoveDataMenuItem(TableView<T> tableView) {
+        ObservableList<T> items = tableView.getItems();
+        List<T> selectedItems = new ArrayList<>(tableView.getSelectionModel().getSelectedItems());
+        if (!selectedItems.isEmpty()) {
+            // 移除所有选中项
+            items.removeAll(selectedItems);
+            // 插入到列表顶部（保持原有顺序）
+            items.addAll(0, selectedItems);
+            // 刷新表格显示
+            tableView.refresh();
+            // 重新选中被移动的项
+            tableView.getSelectionModel().clearSelection();
+            tableView.getSelectionModel().selectRange(0, selectedItems.size());
+        }
+    }
+
+    /**
+     * 所选行置底
+     *
+     * @param tableView 要处理的数据列表
+     * @param <T>       表格数据项类型
+     */
+    private static <T> void bottomMoveDataMenuItem(TableView<T> tableView) {
+        ObservableList<T> items = tableView.getItems();
+        List<T> selectedItems = new ArrayList<>(tableView.getSelectionModel().getSelectedItems());
+        if (!selectedItems.isEmpty()) {
+            // 移除所有选中项
+            items.removeAll(selectedItems);
+            // 插入到列表末尾（保持原有顺序）
+            items.addAll(selectedItems);
+            // 刷新表格显示
+            tableView.refresh();
+            // 重新选中被移动的项
+            tableView.getSelectionModel().clearSelection();
+            int lastIndex = items.size() - 1;
+            int startIndex = lastIndex - selectedItems.size() + 1;
+            if (startIndex >= 0 && lastIndex >= startIndex) {
+                tableView.getSelectionModel().selectRange(startIndex, lastIndex + 1);
             }
         }
     }
@@ -1055,18 +1085,14 @@ public class UiUtils {
     private static List<ClickPositionBean> getCopyList(List<ClickPositionBean> selectedItem) {
         List<ClickPositionBean> copiedList = new ArrayList<>();
         selectedItem.forEach(clickPositionBean -> {
-            ClickPositionBean copyClickPositionBean = new ClickPositionBean();
-            copyClickPositionBean.setName(clickPositionBean.getName())
-                    .setStartX(clickPositionBean.getStartX())
-                    .setStartY(clickPositionBean.getStartY())
-                    .setEndX(clickPositionBean.getEndX())
-                    .setEndY(clickPositionBean.getEndY())
-                    .setClickTime(clickPositionBean.getClickTime())
-                    .setClickNum(clickPositionBean.getClickNum())
-                    .setClickInterval(clickPositionBean.getClickInterval())
-                    .setWaitTime(clickPositionBean.getWaitTime())
-                    .setType(clickPositionBean.getType());
-            copiedList.add(copyClickPositionBean);
+            ClickPositionBean copyBean = new ClickPositionBean();
+            try {
+                copyProperties(clickPositionBean, copyBean);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+            copyBean.setUuid(UUID.randomUUID().toString());
+            copiedList.add(copyBean);
         });
         return copiedList;
     }
