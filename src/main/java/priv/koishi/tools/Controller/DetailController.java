@@ -31,6 +31,11 @@ public class DetailController {
     private final Map<Object, ChangeListener<?>> changeListeners = new WeakHashMap<>();
 
     /**
+     * 详情页页面舞台
+     */
+    private Stage stage;
+
+    /**
      * 页面数据对象
      */
     private ClickPositionBean selectedItem;
@@ -143,7 +148,10 @@ public class DetailController {
         // 给输入框添加内容变化监听
         textFieldChangeListener();
         // 窗口关闭时移除所有监听器
-        Platform.runLater(() -> anchorPane_Det.getScene().getWindow().setOnCloseRequest(e -> removeAllListeners()));
+        Platform.runLater(() -> {
+            stage = (Stage) anchorPane_Det.getScene().getWindow();
+            stage.setOnCloseRequest(e -> removeAllListeners());
+        });
     }
 
     /**
@@ -173,13 +181,16 @@ public class DetailController {
     }
 
     /**
-     * 关闭窗口按钮
+     * 删除当前步骤按钮
      */
     @FXML
-    private void closeDetails() {
-        // 关闭当前窗口
-        Stage stage = (Stage) anchorPane_Det.getScene().getWindow();
+    private void removeDetail() {
+        selectedItem.setRemove(true);
         stage.close();
+        // 触发列表刷新（通过回调）
+        if (refreshCallback != null) {
+            refreshCallback.run();
+        }
     }
 
 }

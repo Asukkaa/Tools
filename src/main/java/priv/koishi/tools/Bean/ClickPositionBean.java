@@ -80,6 +80,12 @@ public class ClickPositionBean implements Indexable {
     String type;
 
     /**
+     * 删除标志
+     */
+    @JsonIgnore
+    boolean remove;
+
+    /**
      * 为列表数据设置序号接口
      *
      * @param index 要设置的序号

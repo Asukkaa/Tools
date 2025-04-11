@@ -272,7 +272,7 @@ public class AutoClickController extends CommonProperties implements MousePositi
         Node index = scene.lookup("#index_Click");
         index.setStyle("-fx-pref-width: " + tableWidth * 0.05 + "px;");
         Node name = scene.lookup("#name_Click");
-        name.setStyle("-fx-pref-width: " + tableWidth * 0.05 + "px;");
+        name.setStyle("-fx-pref-width: " + tableWidth * 0.2 + "px;");
         Node startX = scene.lookup("#startX_Click");
         startX.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
         Node startY = scene.lookup("#startY_Click");
@@ -282,13 +282,13 @@ public class AutoClickController extends CommonProperties implements MousePositi
         Node endY = scene.lookup("#endY_Click");
         endY.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
         Node clickTime = scene.lookup("#clickTime_Click");
-        clickTime.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
+        clickTime.setStyle("-fx-pref-width: " + tableWidth * 0.05 + "px;");
         Node clickNum = scene.lookup("#clickNum_Click");
-        clickNum.setStyle("-fx-pref-width: " + tableWidth * 0.07 + "px;");
+        clickNum.setStyle("-fx-pref-width: " + tableWidth * 0.05 + "px;");
         Node clickInterval = scene.lookup("#clickInterval_Click");
-        clickInterval.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
+        clickInterval.setStyle("-fx-pref-width: " + tableWidth * 0.05 + "px;");
         Node waitTime = scene.lookup("#waitTime_Click");
-        waitTime.setStyle("-fx-pref-width: " + tableWidth * 0.13 + "px;");
+        waitTime.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
         Node type = scene.lookup("#type_Click");
         type.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
         Label dataNum = (Label) scene.lookup("#dataNumber_Click");
@@ -406,15 +406,15 @@ public class AutoClickController extends CommonProperties implements MousePositi
      */
     private void bindPrefWidthProperty() {
         index_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.05));
-        name_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.05));
+        name_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.2));
         startX_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.1));
         startY_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.1));
         endX_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.1));
         endY_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.1));
-        clickTime_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.1));
-        clickNum_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.07));
-        clickInterval_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.1));
-        waitTime_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.13));
+        clickTime_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.05));
+        clickNum_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.05));
+        clickInterval_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.05));
+        waitTime_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.1));
         type_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.1));
     }
 
@@ -452,9 +452,17 @@ public class AutoClickController extends CommonProperties implements MousePositi
         controller.initData(item);
         // 设置保存后的回调
         controller.setRefreshCallback(() -> {
+            if (item.isRemove()) {
+                tableView_Click.getItems().remove(item);
+            }
             // 刷新列表
             tableView_Click.refresh();
-            dataNumber_Click.setText(text_allHave + tableView_Click.getItems().size() + text_process);
+            int tableSize = tableView_Click.getItems().size();
+            if (tableSize > 0) {
+                dataNumber_Click.setText(text_allHave + tableSize + text_process);
+            } else {
+                dataNumber_Click.setText(text_dataListNull);
+            }
         });
         Stage detailStage = new Stage();
         Scene scene = new Scene(root, detailWidth, detailHeight);
