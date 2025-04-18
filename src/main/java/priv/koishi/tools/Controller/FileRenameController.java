@@ -181,17 +181,17 @@ public class FileRenameController extends CommonProperties {
         Node rename = scene.lookup("#rename_Re");
         rename.setStyle("-fx-pref-width: " + tableWidth * 0.12 + "px;");
         Node fileType = scene.lookup("#fileType_Re");
-        fileType.setStyle("-fx-pref-width: " + tableWidth * 0.05 + "px;");
+        fileType.setStyle("-fx-pref-width: " + tableWidth * 0.06 + "px;");
         Node path = scene.lookup("#path_Re");
         path.setStyle("-fx-pref-width: " + tableWidth * 0.2 + "px;");
         Node size = scene.lookup("#size_Re");
         size.setStyle("-fx-pref-width: " + tableWidth * 0.08 + "px;");
         Node showStatus = scene.lookup("#showStatus_Re");
-        showStatus.setStyle("-fx-pref-width: " + tableWidth * 0.05 + "px;");
+        showStatus.setStyle("-fx-pref-width: " + tableWidth * 0.06 + "px;");
         Node creatDate = scene.lookup("#creatDate_Re");
-        creatDate.setStyle("-fx-pref-width: " + tableWidth * 0.15 + "px;");
+        creatDate.setStyle("-fx-pref-width: " + tableWidth * 0.14 + "px;");
         Node updateDate = scene.lookup("#updateDate_Re");
-        updateDate.setStyle("-fx-pref-width: " + tableWidth * 0.15 + "px;");
+        updateDate.setStyle("-fx-pref-width: " + tableWidth * 0.14 + "px;");
         Label fileNum = (Label) scene.lookup("#fileNumber_Re");
         HBox fileNumberHBox = (HBox) scene.lookup("#fileNumberHBox_Re");
         nodeRightAlignment(fileNumberHBox, tableWidth, fileNum);
@@ -713,12 +713,12 @@ public class FileRenameController extends CommonProperties {
         id_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.04));
         name_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.12));
         rename_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.12));
-        fileType_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.05));
+        fileType_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.06));
         path_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.2));
         size_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.08));
-        showStatus_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.05));
-        creatDate_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.15));
-        updateDate_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.15));
+        showStatus_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.06));
+        creatDate_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.14));
+        updateDate_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.14));
     }
 
     /**

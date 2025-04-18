@@ -195,8 +195,10 @@ public class MainApplication extends Application {
      */
     private static void buildTableView(TableView<TabBean> tableView, List<TabBean> tabBeanList) {
         for (TableColumn<TabBean, ?> column : tableView.getColumns()) {
+            addTableColumnToolTip(column);
             if ("tabName_Set".equals(column.getId())) {
                 column.setCellValueFactory(new PropertyValueFactory<>("tabName"));
+                addTableCellToolTip(column);
             } else if ("activationCheckBox_Set".equals(column.getId())) {
                 column.setCellValueFactory(new PropertyValueFactory<>("activationCheckBox"));
             }
