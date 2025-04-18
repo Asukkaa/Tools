@@ -112,7 +112,6 @@
                         <configuration>
                             <mainClass>priv.koishi.tools/priv.koishi.tools.MainApplication</mainClass>
                             <launcher>app</launcher>
-                            <jlinkImageName>app</jlinkImageName>
                             <noManPages>true</noManPages>
                             <stripDebug>true</stripDebug>
                             <noHeaderFiles>true</noHeaderFiles>
