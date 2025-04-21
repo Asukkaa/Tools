@@ -374,7 +374,6 @@ public class SettingController {
         setLoadLastConfigCheckBox(lastTab_Set, configFile, key_loadLastConfig);
     }
 
-
     /**
      * 记住窗口是否全屏设置
      *
