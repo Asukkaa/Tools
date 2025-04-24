@@ -5,7 +5,7 @@
 可以编辑自动操作流程或录制自动操作流程，支持导入导出自动操作流程，支持循环自动操作。
 自动流程文件为 .pmc 文件，本质为 json 文件，更改文件拓展名只为方便过滤可导入的文件。
 其中 excel 相关功能是使用 apache poi 实现的， json 文件解析与封装为 jackson 实现，自动流程录制相关监听为 jnativehook 实现。
-打包工具为 maven javafx:jlink 插件，使用 jdk 版本为 Amazon Corretto 21.0.6 。
+打包工具为 maven javafx:jlink 插件，使用 jdk 版本为 Amazon Corretto 21.0.7 。
 
 ## 项目背景
 开发这个项目主要目的是为了辅助资产审计业务中统计资产时资产信息归档的工作，目前遇到的资产审计业务需要给资产贴上资产标签并拍照归档。
@@ -16,7 +16,7 @@
 而读取文件信息与统计文件信息都是批量向 excel 插入的基础功能，也单独提供界面供用户使用。
 
 ## 如何打包
-在 maven 依赖都下载完毕后需要对 SparseBitSet-1.3.jar 、 commons-math3-3.6.1.jar 、 log4j-api-2.24.2.jar 、 log4j-core-2.24.2.jar 这几个不支持模块化的包进行模块化注入，具体方法可参考： https://blog.csdn.net/weixin_44167999/article/details/135753822 
+在 maven 依赖都下载完毕后需要对 SparseBitSet-1.3.jar 、 commons-math3-3.6.1.jar 、 log4j-api-2.24.3.jar 、 log4j-core-2.24.3.jar 这几个不支持模块化的包进行模块化注入，具体方法可参考： https://blog.csdn.net/weixin_44167999/article/details/135753822 
 
 在注入模块化后即可使用 maven javafx:jlink 插件进行打包，打包后的程序文件在 ../target/app 中，其中启动文件为 ../app/bin 目录下的 app 脚本， win 系统为 bat 脚本， macOS 为不带拓展名的 shell 可执行文件。
 程序逻辑部分在 ../app/lib 目录中，后续更新只需替换 lib 文件夹即可。
