@@ -15,17 +15,16 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.Configurator;
 import priv.koishi.tools.Bean.TabBean;
-import priv.koishi.tools.ThreadPool.CommonThreadPoolExecutor;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import static priv.koishi.tools.Controller.MainController.mainAdaption;
 import static priv.koishi.tools.Controller.MainController.saveLastConfig;
@@ -44,19 +43,14 @@ import static priv.koishi.tools.Utils.UiUtils.*;
 public class MainApplication extends Application {
 
     /**
+     * 日志记录器
+     */
+    private static Logger logger;
+
+    /**
      * 程序主舞台
      */
     private Stage primaryStage;
-
-    /**
-     * 线程池
-     */
-    private final CommonThreadPoolExecutor commonThreadPoolExecutor = new CommonThreadPoolExecutor();
-
-    /**
-     * 线程池实例
-     */
-    private final ExecutorService executorService = commonThreadPoolExecutor.createNewThreadPool();
 
     /**
      * 加载fxml页面
@@ -113,6 +107,7 @@ public class MainApplication extends Application {
             }
         });
         stage.show();
+        logger.info("--------------程序启动成功-------------------");
     }
 
     /**
@@ -227,14 +222,9 @@ public class MainApplication extends Application {
      */
     @Override
     public void stop() throws Exception {
-        if (executorService != null) {
-            executorService.shutdown();
-            if (!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
-                executorService.shutdownNow();
-            }
-        }
         saveLastConfig(primaryStage);
         GlobalScreen.unregisterNativeHook();
+        logger.info("==============程序退出中====================");
         System.exit(0);
     }
 
@@ -283,6 +273,8 @@ public class MainApplication extends Application {
             ConfigurationSource source = new ConfigurationSource(new FileInputStream(log4j2));
             Configurator.initialize(null, source);
         }
+        logger = LogManager.getLogger(MainApplication.class);
+        logger.info("==============程序启动中====================");
         launch();
     }
 
