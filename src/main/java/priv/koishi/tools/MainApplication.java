@@ -20,6 +20,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.Configurator;
 import priv.koishi.tools.Bean.TabBean;
+import priv.koishi.tools.ThreadPool.ThreadPoolManager;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -27,7 +28,7 @@ import java.io.InputStream;
 import java.util.*;
 
 import static priv.koishi.tools.Controller.MainController.mainAdaption;
-import static priv.koishi.tools.Controller.MainController.saveLastConfig;
+import static priv.koishi.tools.Controller.MainController.saveAllLastConfig;
 import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.Utils.FileUtils.checkRunningInputStream;
 import static priv.koishi.tools.Utils.FileUtils.isRunningFromJar;
@@ -222,8 +223,12 @@ public class MainApplication extends Application {
      */
     @Override
     public void stop() throws Exception {
-        saveLastConfig(primaryStage);
+        // 关闭线程池
+        ThreadPoolManager.shutdownAll();
+        // 卸载全局输入监听钩子
         GlobalScreen.unregisterNativeHook();
+        // 保存设置
+        saveAllLastConfig(primaryStage);
         logger.info("==============程序退出中====================");
         System.exit(0);
     }

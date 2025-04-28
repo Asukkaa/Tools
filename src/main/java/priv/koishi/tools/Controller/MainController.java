@@ -13,19 +13,6 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.Properties;
 
-import static priv.koishi.tools.Controller.AboutController.saveLogsNumSetting;
-import static priv.koishi.tools.Controller.AutoClickController.autoClickAdaption;
-import static priv.koishi.tools.Controller.AutoClickController.autoClickSaveLastConfig;
-import static priv.koishi.tools.Controller.FileNameToExcelController.fileNameToExcelAdaption;
-import static priv.koishi.tools.Controller.FileNameToExcelController.fileNameToExcelSaveLastConfig;
-import static priv.koishi.tools.Controller.FileNumToExcelController.fileNumToExcelAdaption;
-import static priv.koishi.tools.Controller.FileNumToExcelController.fileNumToExcelSaveLastConfig;
-import static priv.koishi.tools.Controller.FileRenameController.fileRenameAdaption;
-import static priv.koishi.tools.Controller.FileRenameController.fileRenameSaveLastConfig;
-import static priv.koishi.tools.Controller.ImgToExcelController.imgToExcelAdaption;
-import static priv.koishi.tools.Controller.ImgToExcelController.imgToExcelSaveLastConfig;
-import static priv.koishi.tools.Controller.SettingController.saveSetting;
-import static priv.koishi.tools.Controller.SettingController.settingAdaption;
 import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.Utils.FileUtils.checkRunningInputStream;
 import static priv.koishi.tools.Utils.FileUtils.checkRunningOutputStream;
@@ -60,34 +47,34 @@ public class MainController {
             switch (tabBean.getTabId()) {
                 case id_fileNameToExcelTab:
                     if (isActivation) {
-                        fileNameToExcelAdaption(stage);
+                        FileNameToExcelController.adaption(stage);
                     }
                     break;
                 case id_fileNumToExcelTab:
                     if (isActivation) {
-                        fileNumToExcelAdaption(stage);
+                        FileNumToExcelController.adaption(stage);
                     }
                     break;
                 case id_imgToExcelTab:
                     if (isActivation) {
-                        imgToExcelAdaption(stage);
+                        ImgToExcelController.adaption(stage);
                     }
                     break;
                 case id_fileRenameTab:
                     if (isActivation) {
-                        fileRenameAdaption(stage);
+                        FileRenameController.adaption(stage);
                     }
                     break;
                 case id_settingTab:
                     if (isActivation) {
-                        settingAdaption(stage);
+                        SettingController.adaption(stage);
                     }
                     break;
                 case id_aboutTab:
                     break;
                 case id_autoClickTab:
                     if (isActivation) {
-                        autoClickAdaption(stage);
+                        AutoClickController.adaption(stage);
                     }
                     break;
             }
@@ -99,24 +86,24 @@ public class MainController {
      *
      * @throws IOException io异常
      */
-    public static void saveLastConfig(Stage stage) throws IOException {
+    public static void saveAllLastConfig(Stage stage) throws IOException {
         Scene scene = stage.getScene();
         // 保存批量向excel功能插入图片最后设置
-        imgToExcelSaveLastConfig(scene);
+        ImgToExcelController.saveLastConfig(scene);
         // 保存分组统计文件信息导出到excel最后设置
-        fileNumToExcelSaveLastConfig(scene);
+        FileNumToExcelController.saveLastConfig(scene);
         // 保存导出文件详细信息到excel最后设置
-        fileNameToExcelSaveLastConfig(scene);
+        FileNameToExcelController.saveLastConfig(scene);
         // 保存文件批量重命名功能最后设置
-        fileRenameSaveLastConfig(scene);
+        FileRenameController.saveLastConfig(scene);
         // 保存自动操作工具功能最后设置
-        autoClickSaveLastConfig(scene);
+        AutoClickController.saveLastConfig(scene);
         // 保存关程序闭前页面状态设置
-        mainSavaLastConfig(stage);
+        MainController.saveLastConfig(stage);
         // 保存设置页面最后设置
-        saveSetting(scene);
+        SettingController.saveLastConfig(scene);
         // 保存日志文件数量设置
-        saveLogsNumSetting(scene);
+        AboutController.saveLastConfig(scene);
     }
 
     /**
@@ -124,7 +111,7 @@ public class MainController {
      *
      * @throws IOException io异常
      */
-    private static void mainSavaLastConfig(Stage stage) throws IOException {
+    private static void saveLastConfig(Stage stage) throws IOException {
         InputStream input = checkRunningInputStream(configFile);
         Properties prop = new Properties();
         prop.load(input);

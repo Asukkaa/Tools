@@ -39,12 +39,12 @@ public class CommonThreadPoolExecutor {
     /**
      * 线程创建工厂
      */
-    ThreadFactory threadFactory = new CommonTreadFactory();
+    ThreadFactory threadFactory = new CommonThreadFactory();
 
     /**
-     * 拒绝策略
+     * 拒绝策略（严格拒绝重复任务）
      */
-    RejectedExecutionHandler handler = new CommonIgnorePolicy();
+    RejectedExecutionHandler handler =  new ThreadPoolExecutor.AbortPolicy();
 
     /**
      * 构造函数

@@ -246,9 +246,9 @@ public class CommonFinals {
 
     public static final String tip_preparationRunTime = "在运行自动操作前将会等待的时间，只能填自然数，单位秒，不填默认为 ";
 
-    public static final String version = "2.1.5";
+    public static final String version = "2.1.6";
 
-    public static final String buildDate = "2025年4月24日";
+    public static final String buildDate = "2025年4月";
 
     public static final String tip_version = """
             version：%s

@@ -76,7 +76,7 @@ public class SettingController {
      *
      * @param stage 程序主舞台
      */
-    public static void settingAdaption(Stage stage) {
+    public static void adaption(Stage stage) {
         Scene scene = stage.getScene();
         // 设置组件高度
         double stageHeight = stage.getHeight();
@@ -98,7 +98,7 @@ public class SettingController {
      * @param scene 程序主场景
      * @throws IOException io异常
      */
-    public static void saveSetting(Scene scene) throws IOException {
+    public static void saveLastConfig(Scene scene) throws IOException {
         // 保存最大运行内存设置
         saveMemorySetting(scene);
         // 保存页面开启状态与展示顺序设置

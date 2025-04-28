@@ -24,7 +24,7 @@ import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.*;
 import priv.koishi.tools.EditingCell.EditingCell;
 import priv.koishi.tools.Properties.CommonProperties;
-import priv.koishi.tools.ThreadPool.CommonThreadPoolExecutor;
+import priv.koishi.tools.ThreadPool.ThreadPoolManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,7 +40,8 @@ import static priv.koishi.tools.Service.FileRenameService.*;
 import static priv.koishi.tools.Service.ReadDataService.readExcel;
 import static priv.koishi.tools.Service.ReadDataService.readFile;
 import static priv.koishi.tools.Utils.FileUtils.*;
-import static priv.koishi.tools.Utils.TaskUtils.*;
+import static priv.koishi.tools.Utils.TaskUtils.bindingProgressBarTask;
+import static priv.koishi.tools.Utils.TaskUtils.taskUnbind;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
 /**
@@ -88,14 +89,9 @@ public class FileRenameController extends CommonProperties {
     private static final List<Node> disableNodes = new ArrayList<>();
 
     /**
-     * 线程池
-     */
-    private final CommonThreadPoolExecutor commonThreadPoolExecutor = new CommonThreadPoolExecutor();
-
-    /**
      * 线程池实例
      */
-    private final ExecutorService executorService = commonThreadPoolExecutor.createNewThreadPool();
+    private static final ExecutorService executorService = ThreadPoolManager.getPool(FileRenameController.class);
 
     /**
      * 读取文件线程
@@ -162,7 +158,7 @@ public class FileRenameController extends CommonProperties {
      *
      * @param stage 程序主舞台
      */
-    public static void fileRenameAdaption(Stage stage) {
+    public static void adaption(Stage stage) {
         Scene scene = stage.getScene();
         // 设置组件高度
         double stageHeight = stage.getHeight();
@@ -209,7 +205,7 @@ public class FileRenameController extends CommonProperties {
      * @param scene 程序主场景
      * @throws IOException io异常
      */
-    public static void fileRenameSaveLastConfig(Scene scene) throws IOException {
+    public static void saveLastConfig(Scene scene) throws IOException {
         AnchorPane anchorPane = (AnchorPane) scene.lookup("#anchorPane_Re");
         if (anchorPane != null) {
             InputStream input = checkRunningInputStream(configFile_Rename);

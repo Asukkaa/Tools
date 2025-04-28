@@ -57,8 +57,14 @@ import static priv.koishi.tools.Utils.FileUtils.*;
  */
 public class UiUtils {
 
+    /**
+     * 拖拽数据格式
+     */
     private static final DataFormat dataFormat = new DataFormat("application/x-java-serialized-object");
 
+    /**
+     * 日志记录器
+     */
     private static final Logger logger = LogManager.getLogger(UiUtils.class);
 
     /**

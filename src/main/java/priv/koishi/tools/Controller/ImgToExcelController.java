@@ -17,6 +17,8 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Bean.TaskBean;
@@ -24,7 +26,7 @@ import priv.koishi.tools.Configuration.ExcelConfig;
 import priv.koishi.tools.Configuration.FileConfig;
 import priv.koishi.tools.Properties.CommonProperties;
 import priv.koishi.tools.Service.ImgToExcelService;
-import priv.koishi.tools.ThreadPool.CommonThreadPoolExecutor;
+import priv.koishi.tools.ThreadPool.ThreadPoolManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,6 +53,11 @@ import static priv.koishi.tools.Utils.UiUtils.*;
  * Time:下午1:24
  */
 public class ImgToExcelController extends CommonProperties {
+
+    /**
+     * 日志记录器
+     */
+    private static final Logger logger = LogManager.getLogger(ImgToExcelController.class);
 
     /**
      * 要处理的文件夹路径
@@ -118,14 +125,9 @@ public class ImgToExcelController extends CommonProperties {
     private static final List<Node> disableNodes = new ArrayList<>();
 
     /**
-     * 线程池
-     */
-    private final CommonThreadPoolExecutor commonThreadPoolExecutor = new CommonThreadPoolExecutor();
-
-    /**
      * 线程池实例
      */
-    private final ExecutorService executorService = commonThreadPoolExecutor.createNewThreadPool();
+    private static final ExecutorService executorService = ThreadPoolManager.getPool(ImgToExcelController.class);
 
     /**
      * 构建excel线程
@@ -166,7 +168,7 @@ public class ImgToExcelController extends CommonProperties {
     private TableColumn<FileNumBean, Integer> groupId_Img, groupNumber_Img, index_Img;
 
     @FXML
-    private TableColumn<FileNumBean, String>  groupName_Img, fileName_Img, fileUnitSize_Img;
+    private TableColumn<FileNumBean, String> groupName_Img, fileName_Img, fileUnitSize_Img;
 
     @FXML
     private Label inPath_Img, outPath_Img, excelPath_Img, fileNumber_Img, log_Img, tip_Img, excelType_Img,
@@ -189,7 +191,7 @@ public class ImgToExcelController extends CommonProperties {
      *
      * @param stage 程序主舞台
      */
-    public static void imgToExcelAdaption(Stage stage) {
+    public static void adaption(Stage stage) {
         Scene scene = stage.getScene();
         // 设置组件高度
         double stageHeight = stage.getHeight();
@@ -225,7 +227,7 @@ public class ImgToExcelController extends CommonProperties {
      * @param scene 程序主场景
      * @throws IOException io异常
      */
-    public static void imgToExcelSaveLastConfig(Scene scene) throws IOException {
+    public static void saveLastConfig(Scene scene) throws IOException {
         AnchorPane anchorPane = (AnchorPane) scene.lookup("#anchorPane_Img");
         if (anchorPane != null) {
             InputStream input = checkRunningInputStream(configFile_Img);
@@ -670,6 +672,12 @@ public class ImgToExcelController extends CommonProperties {
         return filterExtensionList;
     }
 
+    private void resetTasks() {
+        saveExcelTask = null;
+        buildExcelTask = null;
+        inFileList = null;
+    }
+
     /**
      * 拖拽释放行为
      *
@@ -776,13 +784,15 @@ public class ImgToExcelController extends CommonProperties {
                                 if (openFile_Img.isSelected()) {
                                     openFile(excelPath);
                                 }
-                                ImgToExcelService.closeStream();
                             } catch (IOException ex) {
                                 throw new RuntimeException(ex);
                             } finally {
-                                saveExcelTask = null;
-                                buildExcelTask = null;
-                                inFileList = null;
+                                try {
+                                    ImgToExcelService.closeStream();
+                                } catch (IOException ex) {
+                                    logger.error("关闭流时发生异常", ex);
+                                }
+                                resetTasks();
                                 taskUnbind(taskBean);
                             }
                             taskBean.getMassageLabel().setText(text_saveSuccess + excelPath);
@@ -792,9 +802,7 @@ public class ImgToExcelController extends CommonProperties {
                             taskNotSuccess(taskBean, text_taskFailed);
                             // 获取抛出的异常
                             Throwable ex = saveExcelTask.getException();
-                            saveExcelTask = null;
-                            buildExcelTask = null;
-                            inFileList = null;
+                            resetTasks();
                             throw new RuntimeException(ex);
                         });
                         if (!saveExcelTask.isRunning()) {
@@ -805,9 +813,7 @@ public class ImgToExcelController extends CommonProperties {
                         taskNotSuccess(taskBean, text_taskFailed);
                         // 获取抛出的异常
                         Throwable ex = buildExcelTask.getException();
-                        saveExcelTask = null;
-                        buildExcelTask = null;
-                        inFileList = null;
+                        resetTasks();
                         throw new RuntimeException(ex);
                     });
                     if (!buildExcelTask.isRunning()) {
