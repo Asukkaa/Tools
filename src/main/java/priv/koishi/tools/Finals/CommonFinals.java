@@ -617,8 +617,6 @@ public class CommonFinals {
 
     public static final String key_tabIds = "tabIds";
 
-    public static final String key_margin = "margin";
-
     public static final String key_floatingX = "floatingX";
 
     public static final String key_floatingY = "floatingY";
@@ -804,6 +802,11 @@ public class CommonFinals {
     public static String extension_file = "文件";
 
     public static final String extension_folder = "文件夹";
+
+    /**
+     * 默认点击时长
+     */
+    public static final String defaultClickTimeOffset = "120";
 
     /**
      * 默认浮窗横轴偏移量

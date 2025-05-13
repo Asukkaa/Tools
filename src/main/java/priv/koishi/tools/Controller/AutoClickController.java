@@ -17,7 +17,6 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -34,8 +33,8 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.robot.Robot;
 import javafx.scene.shape.Rectangle;
-import javafx.stage.*;
 import javafx.stage.Window;
+import javafx.stage.*;
 import javafx.util.Duration;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -89,17 +88,17 @@ public class AutoClickController extends CommonProperties implements MousePositi
     /**
      * 默认导出文件名称
      */
-    private static String defaultOutFileName;
+    public static final String defaultOutFileName = "PMC自动操作流程";
 
     /**
      * 默认录制准备时间
      */
-    private static String defaultPreparationRecordTime;
+    private static String preparationRecordTimeDefault;
 
     /**
      * 默认运行准备时间
      */
-    private static String defaultPreparationRunTime;
+    private static String preparationRunTimeDefault;
 
     /**
      * 详情页高度
@@ -120,11 +119,6 @@ public class AutoClickController extends CommonProperties implements MousePositi
      * 浮窗Y坐标
      */
     private int floatingY;
-
-    /**
-     * 浮窗距离屏幕的边距
-     */
-    private int margin;
 
     /**
      * 浮窗宽度
@@ -363,6 +357,7 @@ public class AutoClickController extends CommonProperties implements MousePositi
         InputStream input = checkRunningInputStream(configFile_Click);
         prop.load(input);
         if (activation.equals(prop.getProperty(key_loadLastConfig))) {
+            setControlLastConfig(outPath_Click, prop, key_outFilePath);
             setControlLastConfig(loopTime_Click, prop, key_lastLoopTime);
             setControlLastConfig(firstClick_Click, prop, key_lastFirstClick);
             setControlLastConfig(outFileName_Click, prop, key_lastOutFileName);
@@ -371,7 +366,6 @@ public class AutoClickController extends CommonProperties implements MousePositi
             setControlLastConfig(showWindowRun_Click, prop, key_lastShowWindowRun);
             setControlLastConfig(hideWindowRecord_Click, prop, key_lastHideWindowRecord);
             setControlLastConfig(showWindowRecord_Click, prop, key_lastShowWindowRecord);
-            setControlLastConfig(outPath_Click, prop, key_outFilePath);
             setControlLastConfig(preparationRunTime_Click, prop, key_lastPreparationRunTime);
             setControlLastConfig(preparationRecordTime_Click, prop, key_lastPreparationRecordTime);
         }
@@ -389,16 +383,14 @@ public class AutoClickController extends CommonProperties implements MousePositi
         prop.load(input);
         inFilePath = prop.getProperty(key_inFilePath);
         outFilePath = prop.getProperty(key_outFilePath);
-        margin = Integer.parseInt(prop.getProperty(key_margin));
-        defaultOutFileName = prop.getProperty(key_defaultOutFileName);
         floatingX = Integer.parseInt(prop.getProperty(key_floatingX));
         floatingY = Integer.parseInt(prop.getProperty(key_floatingY));
         detailWidth = Integer.parseInt(prop.getProperty(key_detailWidth));
         detailHeight = Integer.parseInt(prop.getProperty(key_detailHeight));
         floatingWidth = Integer.parseInt(prop.getProperty(key_floatingWidth));
         floatingHeight = Integer.parseInt(prop.getProperty(key_floatingHeight));
-        defaultPreparationRunTime = prop.getProperty(key_defaultPreparationRunTime);
-        defaultPreparationRecordTime = prop.getProperty(key_defaultPreparationRecordTime);
+        preparationRunTimeDefault = prop.getProperty(key_defaultPreparationRunTime);
+        preparationRecordTimeDefault = prop.getProperty(key_defaultPreparationRecordTime);
         input.close();
     }
 
@@ -475,9 +467,6 @@ public class AutoClickController extends CommonProperties implements MousePositi
      * 初始化浮窗
      */
     private void initFloatingWindow() {
-        // 获取主屏幕信息（初始位置用）
-        Screen primaryScreen = Screen.getPrimary();
-        Rectangle2D primaryBounds = primaryScreen.getBounds();
         // 创建一个矩形作为浮窗的内容
         Rectangle rectangle = new Rectangle(floatingWidth, floatingHeight);
         // 设置透明度
@@ -500,9 +489,6 @@ public class AutoClickController extends CommonProperties implements MousePositi
         // 设置始终置顶
         floatingStage.setAlwaysOnTop(true);
         floatingStage.setScene(scene);
-        // 初始位置设置在主屏幕顶部居中
-        floatingStage.setX(primaryBounds.getMinX() + (primaryBounds.getWidth() - floatingWidth) / 2);
-        floatingStage.setY(primaryBounds.getMinY() - margin);
     }
 
     /**
@@ -541,7 +527,7 @@ public class AutoClickController extends CommonProperties implements MousePositi
             // 改变要防重复点击的组件状态
             changeDisableNodes(disableNodes, true);
             // 获取准备时间值
-            int preparationTimeValue = setDefaultIntValue(preparationRecordTime_Click, Integer.parseInt(defaultPreparationRecordTime), 0, null);
+            int preparationTimeValue = setDefaultIntValue(preparationRecordTime_Click, Integer.parseInt(preparationRecordTimeDefault), 0, null);
             // 开始录制
             if (hideWindowRecord_Click.isSelected()) {
                 mainStage.setIconified(true);
@@ -690,7 +676,7 @@ public class AutoClickController extends CommonProperties implements MousePositi
                 // 改变要防重复点击的组件状态
                 changeDisableNodes(taskBean, true);
                 // 获取准备时间值
-                int preparationTimeValue = setDefaultIntValue(preparationRunTime_Click, Integer.parseInt(defaultPreparationRunTime), 0, null);
+                int preparationTimeValue = setDefaultIntValue(preparationRunTime_Click, Integer.parseInt(preparationRunTimeDefault), 0, null);
                 // 设置浮窗文本显示准备时间
                 floatingLabel.setText(text_cancelTask + preparationTimeValue + text_run);
                 showFloatingWindow();
@@ -879,9 +865,9 @@ public class AutoClickController extends CommonProperties implements MousePositi
     private ClickPositionBean getClickSetting(int tableViewItemSize) {
         ClickPositionBean clickPositionBean = new ClickPositionBean();
         clickPositionBean.setName(text_step + (tableViewItemSize + 1) + text_isAdd)
+                .setClickTime(defaultClickTimeOffset)
                 .setType(mouseButton_primary)
                 .setClickInterval("0")
-                .setClickTime("0")
                 .setClickNum("1")
                 .setWaitTime("0")
                 .setStartX("0")
@@ -903,9 +889,9 @@ public class AutoClickController extends CommonProperties implements MousePositi
         // 限制循环次数文本输入框内容
         integerRangeTextField(loopTime_Click, 0, null, tip_loopTime);
         // 限制运行准备时间文本输入框内容
-        integerRangeTextField(preparationRunTime_Click, 0, null, tip_preparationRunTime + defaultPreparationRunTime);
+        integerRangeTextField(preparationRunTime_Click, 0, null, tip_preparationRunTime + preparationRunTimeDefault);
         // 限制录制准备时间文本输入框内容
-        integerRangeTextField(preparationRecordTime_Click, 0, null, tip_preparationRecordTime + defaultPreparationRecordTime);
+        integerRangeTextField(preparationRecordTime_Click, 0, null, tip_preparationRecordTime + preparationRecordTimeDefault);
     }
 
     /**
@@ -928,8 +914,8 @@ public class AutoClickController extends CommonProperties implements MousePositi
         addToolTip(tip_hideWindowRecord, hideWindowRecord_Click);
         addToolTip(tip_showWindowRecord, showWindowRecord_Click);
         addToolTip(tip_autoClickFileName + defaultOutFileName, outFileName_Click);
-        addToolTip(tip_preparationRunTime + defaultPreparationRunTime, preparationRunTime_Click);
-        addToolTip(tip_preparationRecordTime + defaultPreparationRecordTime, preparationRecordTime_Click);
+        addToolTip(tip_preparationRunTime + preparationRunTimeDefault, preparationRunTime_Click);
+        addToolTip(tip_preparationRecordTime + preparationRecordTimeDefault, preparationRecordTime_Click);
     }
 
     /**
@@ -996,8 +982,10 @@ public class AutoClickController extends CommonProperties implements MousePositi
                             if (recordTimeline != null) {
                                 recordTimeline.stop();
                                 recordTimeline = null;
-                                log_Click.setTextFill(Color.BLUE);
-                                log_Click.setText("录制已结束");
+                                Platform.runLater(() -> {
+                                    log_Click.setTextFill(Color.BLUE);
+                                    log_Click.setText("录制已结束");
+                                });
                             }
                             // 停止运行计时
                             if (runTimeline != null) {

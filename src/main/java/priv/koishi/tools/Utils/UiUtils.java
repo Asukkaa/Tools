@@ -1236,9 +1236,21 @@ public class UiUtils {
      * @param prop    配置文件
      * @param key     要读取的key
      */
-    @SuppressWarnings("unchecked")
     public static void setControlLastConfig(Control control, Properties prop, String key) {
-        String lastValue = prop.getProperty(key);
+        setControlLastConfig(control, prop, key, "");
+    }
+
+    /**
+     * 为配置组件设置上次配置值
+     *
+     * @param control 需要处理的组件
+     * @param prop    配置文件
+     * @param key     要读取的key
+     * @param defaultValue 默认值
+     */
+    @SuppressWarnings("unchecked")
+    public static void setControlLastConfig(Control control, Properties prop, String key, String defaultValue) {
+        String lastValue = prop.getProperty(key, defaultValue);
         if (StringUtils.isNotBlank(lastValue)) {
             if (control instanceof ChoiceBox) {
                 ChoiceBox<String> choiceBox = (ChoiceBox<String>) control;
@@ -1249,6 +1261,8 @@ public class UiUtils {
                 label.setText(lastValue);
             } else if (control instanceof TextField textField) {
                 textField.setText(lastValue);
+            } else if (control instanceof Slider slider) {
+                slider.setValue(Double.parseDouble(lastValue));
             }
         }
     }
