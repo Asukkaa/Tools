@@ -1358,14 +1358,18 @@ public class UiUtils {
     public static void setPathLabelContextMenu(Label valueLabel) {
         String path = valueLabel.getText();
         ContextMenu contextMenu = new ContextMenu();
-        MenuItem openDirectoryMenuItem = new MenuItem("打开文件夹");
-        openDirectoryMenuItem.setOnAction(event -> {
-            try {
-                openDirectory(path);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        File file = new File(path);
+        if ((!file.getName().contains(app) && file.isDirectory())) {
+            MenuItem openDirectoryMenuItem = new MenuItem("打开文件夹");
+            openDirectoryMenuItem.setOnAction(event -> {
+                try {
+                    openDirectory(path);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            contextMenu.getItems().add(openDirectoryMenuItem);
+        }
         MenuItem openParentDirectoryMenuItem = new MenuItem("打开上级文件夹");
         openParentDirectoryMenuItem.setOnAction(event -> {
             try {
@@ -1374,8 +1378,8 @@ public class UiUtils {
                 throw new RuntimeException(e);
             }
         });
-        contextMenu.getItems().addAll(openDirectoryMenuItem, openParentDirectoryMenuItem);
-        if (new File(path).isFile()) {
+        contextMenu.getItems().add(openParentDirectoryMenuItem);
+        if (file.isFile()) {
             MenuItem openFileMenuItem = new MenuItem("打开文件");
             openFileMenuItem.setOnAction(event -> {
                 try {
