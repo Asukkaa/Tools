@@ -1297,7 +1297,7 @@ public class UiUtils {
     }
 
     /**
-     * 显示可打开的文件类路径
+     * 设置可打开的文件路径文本框
      *
      * @param pathLabel 文件路径文本栏
      * @param path      文件路径
@@ -1366,7 +1366,15 @@ public class UiUtils {
                 throw new RuntimeException(e);
             }
         });
-        contextMenu.getItems().add(openDirectoryMenuItem);
+        MenuItem openParentDirectoryMenuItem = new MenuItem("打开上级文件夹");
+        openParentDirectoryMenuItem.setOnAction(event -> {
+            try {
+                openParentDirectory(path);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        contextMenu.getItems().addAll(openDirectoryMenuItem, openParentDirectoryMenuItem);
         if (new File(path).isFile()) {
             MenuItem openFileMenuItem = new MenuItem("打开文件");
             openFileMenuItem.setOnAction(event -> {
