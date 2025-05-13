@@ -1315,10 +1315,8 @@ public class UiUtils {
         }
         String openPath;
         // 判断打开方式
-        boolean openFile;
         boolean openParentDirectory;
         if (file.isDirectory()) {
-            openFile = false;
             if (systemName.contains(mac) && file.getName().contains(app)) {
                 openPath = file.getParent();
                 openParentDirectory = true;
@@ -1327,9 +1325,8 @@ public class UiUtils {
                 openPath = path;
             }
         } else {
-            openParentDirectory = false;
+            openParentDirectory = true;
             openPath = file.getParent();
-            openFile = true;
         }
         // 设置鼠标点击事件
         pathLabel.setOnMouseClicked(event -> {
@@ -1337,14 +1334,10 @@ public class UiUtils {
             if (event.getButton() == MouseButton.PRIMARY) {
                 try {
                     // 判断是否打开文件
-                    if (!openFile) {
-                        if (openParentDirectory) {
-                            openParentDirectory(path);
-                        } else {
-                            openDirectory(path);
-                        }
+                    if (openParentDirectory) {
+                        openParentDirectory(path);
                     } else {
-                        openFile(path);
+                        openDirectory(path);
                     }
                 } catch (IOException e) {
                     throw new RuntimeException(e);
