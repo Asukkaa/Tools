@@ -624,7 +624,7 @@ public class UiUtils {
             updateProperties(configFile, pathKey, selectedFilePath);
             filePath = selectedFilePath;
         }
-        setPathLabel(pathLabel, selectedFilePath, false);
+        setPathLabel(pathLabel, selectedFilePath);
         return filePath;
     }
 
@@ -1243,9 +1243,9 @@ public class UiUtils {
     /**
      * 为配置组件设置上次配置值
      *
-     * @param control 需要处理的组件
-     * @param prop    配置文件
-     * @param key     要读取的key
+     * @param control      需要处理的组件
+     * @param prop         配置文件
+     * @param key          要读取的key
      * @param defaultValue 默认值
      */
     @SuppressWarnings("unchecked")
@@ -1277,7 +1277,7 @@ public class UiUtils {
     public static void setControlLastConfig(Label label, Properties prop, String key) {
         String lastValue = prop.getProperty(key);
         if (FilenameUtils.getPrefixLength(lastValue) != 0) {
-            setPathLabel(label, lastValue, false);
+            setPathLabel(label, lastValue);
         }
     }
 
@@ -1301,10 +1301,9 @@ public class UiUtils {
      *
      * @param pathLabel 文件路径文本栏
      * @param path      文件路径
-     * @param openFile  点击是否打开文件，true打开文件，false打开文件所在文件夹
      * @throws RuntimeException io异常
      */
-    public static void setPathLabel(Label pathLabel, String path, boolean openFile) {
+    public static void setPathLabel(Label pathLabel, String path) {
         pathLabel.setText(path);
         File file = new File(path);
         String openText = "\n鼠标左键点击打开 ";
@@ -1315,23 +1314,35 @@ public class UiUtils {
             pathLabel.getStyleClass().add("label-button-style");
         }
         String openPath;
-        // 判断是否打开文件
-        if (!openFile && file.isFile()) {
-            openPath = file.getParent();
-        } else {
+        // 判断打开方式
+        boolean openFile;
+        boolean openParentDirectory;
+        if (file.isDirectory()) {
+            openFile = false;
             if (systemName.contains(mac) && file.getName().contains(app)) {
                 openPath = file.getParent();
+                openParentDirectory = true;
             } else {
+                openParentDirectory = false;
                 openPath = path;
             }
+        } else {
+            openParentDirectory = false;
+            openPath = file.getParent();
+            openFile = true;
         }
+        // 设置鼠标点击事件
         pathLabel.setOnMouseClicked(event -> {
             // 只接受左键点击
             if (event.getButton() == MouseButton.PRIMARY) {
                 try {
                     // 判断是否打开文件
                     if (!openFile) {
-                        openDirectory(path);
+                        if (openParentDirectory) {
+                            openParentDirectory(path);
+                        } else {
+                            openDirectory(path);
+                        }
                     } else {
                         openFile(path);
                     }

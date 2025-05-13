@@ -203,7 +203,7 @@ public class SettingController {
         // 限制下次运行内存文本输入框内容
         integerRangeTextField(nextRunMemory_Set, 1, null, tip_nextRunMemory);
         // 获取当前运行路径
-        setPathLabel(thisPath_Set, getAppPath(), false);
+        setPathLabel(thisPath_Set, getAppPath());
         long maxMemory = Runtime.getRuntime().maxMemory();
         runningMemory_Set.setText(getUnitSize(maxMemory, false));
         OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
