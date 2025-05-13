@@ -1379,7 +1379,7 @@ public class UiUtils {
             }
         });
         contextMenu.getItems().add(openParentDirectoryMenuItem);
-        if (file.isFile()) {
+        if (file.isFile() && !file.getName().equals(appName + exe)) {
             MenuItem openFileMenuItem = new MenuItem("打开文件");
             openFileMenuItem.setOnAction(event -> {
                 try {
