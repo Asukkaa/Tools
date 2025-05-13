@@ -1319,7 +1319,11 @@ public class UiUtils {
         if (!openFile && file.isFile()) {
             openPath = file.getParent();
         } else {
-            openPath = path;
+            if (systemName.contains(mac) && file.getName().contains(app)) {
+                openPath = file.getParent();
+            } else {
+                openPath = path;
+            }
         }
         pathLabel.setOnMouseClicked(event -> {
             // 只接受左键点击
