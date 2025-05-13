@@ -14,6 +14,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -455,8 +456,9 @@ public class FileNameToExcelController extends CommonProperties {
     private void inDirectoryButton(ActionEvent actionEvent) throws Exception {
         getConfig();
         List<String> filterExtensionList = getFilterExtensionList(filterFileType_Name);
+        Window window = ((Node) actionEvent.getSource()).getScene().getWindow();
         // 显示文件选择器
-        File selectedFile = creatDirectoryChooser(actionEvent, inFilePath, text_selectDirectory);
+        File selectedFile = creatDirectoryChooser(window, inFilePath, text_selectDirectory);
         FileConfig fileConfig = new FileConfig();
         fileConfig.setShowDirectoryName(directoryNameType_Name.getValue())
                 .setShowHideFile(hideFileType_Name.getValue())
@@ -576,7 +578,8 @@ public class FileNameToExcelController extends CommonProperties {
     @FXML
     private void exportPath(ActionEvent actionEvent) throws IOException {
         getConfig();
-        File selectedFile = creatDirectoryChooser(actionEvent, outFilePath, text_selectDirectory);
+        Window window = ((Node) actionEvent.getSource()).getScene().getWindow();
+        File selectedFile = creatDirectoryChooser(window, outFilePath, text_selectDirectory);
         if (selectedFile != null) {
             // 更新所选文件路径显示
             outFilePath = updatePathLabel(selectedFile.getPath(), outFilePath, key_outFilePath, outPath_Name, configFile_Name);
@@ -595,7 +598,8 @@ public class FileNameToExcelController extends CommonProperties {
         extensionFilters.add(new FileChooser.ExtensionFilter("Excel", "*.xlsx", "*.xls"));
         extensionFilters.add(new FileChooser.ExtensionFilter("Excel(2007)", "*.xlsx"));
         extensionFilters.add(new FileChooser.ExtensionFilter("Excel(2003)", "*.xls"));
-        File selectedFile = creatFileChooser(actionEvent, excelInPath, extensionFilters, text_selectExcel);
+        Window window = ((Node) actionEvent.getSource()).getScene().getWindow();
+        File selectedFile = creatFileChooser(window, excelInPath, extensionFilters, text_selectExcel);
         if (selectedFile != null) {
             // 更新所选文件路径显示
             excelInPath = updatePathLabel(selectedFile.getPath(), excelInPath, key_excelInPath, excelPath_Name, configFile_Name);

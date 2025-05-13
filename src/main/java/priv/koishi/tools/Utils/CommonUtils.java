@@ -12,6 +12,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.management.GarbageCollectorMXBean;
+import java.lang.management.ManagementFactory;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -437,6 +439,29 @@ public class CommonUtils {
             } else {
                 targetField.set(target, value);
             }
+        }
+    }
+
+    /**
+     * 获取当前GC类型
+     *
+     * @return 当前GC类型
+     */
+    public static String getCurrentGCType() {
+        List<String> gcNames = ManagementFactory.getGarbageCollectorMXBeans().stream()
+                .map(GarbageCollectorMXBean::getName).collect(Collectors.toList());
+        if (gcNames.contains("G1 Young Generation") || gcNames.contains("G1 Old Generation")) {
+            return "G1GC";
+        } else if (gcNames.contains("PS Scavenge") || gcNames.contains("PS MarkSweep")) {
+            return "ParallelGC";
+        } else if (gcNames.contains("ZGC Cycles") || gcNames.contains("ZGC Pauses")) {
+            return "ZGC";
+        } else if (gcNames.contains("Shenandoah Pauses") || gcNames.contains("Shenandoah Cycles")) {
+            return "ShenandoahGC";
+        } else if (gcNames.contains("Copy") || gcNames.contains("MarkSweepCompact")) {
+            return "SerialGC";
+        } else {
+            return "未知GC类型: " + String.join(", ", gcNames);
         }
     }
 

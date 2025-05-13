@@ -10,17 +10,16 @@ import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 import priv.koishi.tools.Bean.TabBean;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
+import static priv.koishi.tools.Controller.MainController.saveAllLastConfig;
 import static priv.koishi.tools.Finals.CommonFinals.*;
+import static priv.koishi.tools.Utils.CommonUtils.getCurrentGCType;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
@@ -34,23 +33,9 @@ import static priv.koishi.tools.Utils.UiUtils.*;
 public class SettingController {
 
     /**
-     * 启动脚本设置的最大内存值
+     * 程序主舞台
      */
-    private static String scriptMemory;
-
-    /**
-     * 启动脚本名称
-     */
-    private static final String scriptName = getScriptName();
-
-    @FXML
-    private TableView<TabBean> tableView_Set;
-
-    @FXML
-    private TableColumn<TabBean, String> tabName_Set;
-
-    @FXML
-    private TableColumn<TabBean, CheckBox> activationCheckBox_Set;
+    private Stage mainStage;
 
     @FXML
     private AnchorPane anchorPane_Set;
@@ -65,7 +50,19 @@ public class SettingController {
     private TextField nextRunMemory_Set;
 
     @FXML
-    private Label runningMemory_Set, thisPath_Set, systemMemory_Set;
+    private ChoiceBox<String> nextGcType_Set;
+
+    @FXML
+    private TableView<TabBean> tableView_Set;
+
+    @FXML
+    private TableColumn<TabBean, String> tabName_Set;
+
+    @FXML
+    private TableColumn<TabBean, CheckBox> activationCheckBox_Set;
+
+    @FXML
+    private Label runningMemory_Set, thisPath_Set, systemMemory_Set, gcType_Set;
 
     @FXML
     private CheckBox loadRename_Set, loadFileNum_Set, loadFileName_Set, loadImgToExcel_Set, lastTab_Set,
@@ -99,8 +96,8 @@ public class SettingController {
      * @throws IOException io异常
      */
     public static void saveLastConfig(Scene scene) throws IOException {
-        // 保存最大运行内存设置
-        saveMemorySetting(scene);
+        // 保存jvm设置
+        saveJVMConfig(scene);
         // 保存页面开启状态与展示顺序设置
         saveTabIds(scene);
     }
@@ -132,59 +129,21 @@ public class SettingController {
     }
 
     /**
-     * 获取运行脚本名称
-     *
-     * @return 根据不同操作系统返回不同脚本名称
-     */
-    private static String getScriptName() {
-        if (systemName.contains(macos)) {
-            return appName;
-        }
-        return appBat;
-    }
-
-    /**
-     * 保存最大运行内存设置
+     * 保存JVM参数设置
      *
      * @param scene 程序主场景
      * @throws IOException io异常
      */
-    private static void saveMemorySetting(Scene scene) throws IOException {
-        TextField nextRunMemoryTextField = (TextField) scene.lookup("#nextRunMemory_Set");
-        String nextRunMemoryValue = nextRunMemoryTextField.getText();
-        Label thisPath = (Label) scene.lookup("#thisPath_Set");
-        Path scriptFilePath = Paths.get(thisPath.getText() + File.separator + scriptName);
-        List<String> lines = Files.readAllLines(scriptFilePath);
-        String newLineContent = Xmx + nextRunMemoryValue;
-        if (StringUtils.isNotBlank(nextRunMemoryValue)) {
-            if (scriptMemory == null) {
-                newLineContent = text_VMOptions + newLineContent + g;
-                writeMemorySetting(scriptFilePath, lines, newLineContent, text_VMOptions);
-            } else if (!nextRunMemoryValue.equals(scriptMemory)) {
-                String originalLineContent = Xmx + scriptMemory;
-                writeMemorySetting(scriptFilePath, lines, newLineContent, originalLineContent);
-            }
-        }
-    }
-
-    /**
-     * 写入最大运行内存设置
-     *
-     * @param scriptFilePath      启动脚本路径
-     * @param lines               启动脚本内容
-     * @param newLineContent      修改后的值
-     * @param originalLineContent 修改前的值
-     * @throws IOException io异常
-     */
-    private static void writeMemorySetting(Path scriptFilePath, List<String> lines, String newLineContent, String originalLineContent) throws IOException {
-        for (int i = 0; i < lines.size(); i++) {
-            String line = lines.get(i);
-            if (line.contains(originalLineContent)) {
-                lines.set(i, line.replace(originalLineContent, newLineContent));
-                break;
-            }
-        }
-        Files.write(scriptFilePath, lines);
+    private static void saveJVMConfig(Scene scene) throws IOException {
+        TextField nextRunMemory = (TextField) scene.lookup("#nextRunMemory_Set");
+        String XmxValue = nextRunMemory.getText() + G;
+        ChoiceBox<?> nextGcType = (ChoiceBox<?>) scene.lookup("#nextGcType_Set");
+        String nextGcTypeValue = (String) nextGcType.getValue();
+        Map<String, String> options = new HashMap<>();
+        options.put(Xmx, XmxValue);
+        options.put(XX, nextGcTypeValue);
+        // 更新cfg文件中jvm参数设置
+        setJavaOptionValue(options);
     }
 
     /**
@@ -235,43 +194,31 @@ public class SettingController {
     }
 
     /**
-     * 获取最大运行内存并展示
+     * 获取JVM设置并展示
      *
      * @throws IOException io异常
      */
-    private void getMaxMemory() throws IOException {
+    private void getJVMConfig() throws IOException {
+        // 限制下次运行内存文本输入框内容
+        integerRangeTextField(nextRunMemory_Set, 1, null, tip_nextRunMemory);
+        // 获取当前运行路径
+        setPathLabel(thisPath_Set, getAppPath(), false);
         long maxMemory = Runtime.getRuntime().maxMemory();
         runningMemory_Set.setText(getUnitSize(maxMemory, false));
         OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
         long totalMemory = ((com.sun.management.OperatingSystemMXBean) osBean).getTotalMemorySize();
         String systemUnitSizeMemory = getUnitSize(totalMemory, false);
-        String memoryUnit = systemUnitSizeMemory.substring(systemUnitSizeMemory.lastIndexOf(" ") + 1);
-        // 获取操作系统内存整数部分作为下次启动时程序分配最大内存的限制
-        int systemMemoryValue = (int) Double.parseDouble(systemUnitSizeMemory.substring(0, systemUnitSizeMemory.lastIndexOf(" ")));
-        if (TB.equals(memoryUnit)) {
-            systemMemoryValue = systemMemoryValue * 1024;
-        } else if (!GB.equals(memoryUnit)) {
-            systemMemoryValue = 1;
-        }
         systemMemory_Set.setText(systemUnitSizeMemory);
-        setPathLabel(thisPath_Set, userDir, false);
-        String scriptPath = userDir + File.separator + scriptName;
-        addValueToolTip(nextRunMemory_Set, tip_defaultNextRunMemory);
-        // 下次运行的最大内存输入监听
-        integerRangeTextField(nextRunMemory_Set, 1, systemMemoryValue, tip_defaultNextRunMemory);
-        BufferedReader reader = new BufferedReader(new FileReader(scriptPath));
-        String line;
-        while ((line = reader.readLine()) != null) {
-            if (line.contains(Xmx)) {
-                scriptMemory = line.substring(line.lastIndexOf(Xmx) + Xmx.length(), line.lastIndexOf(g));
-                nextRunMemory_Set.setText(scriptMemory);
-                addValueToolTip(nextRunMemory_Set, text_nowSetting + scriptMemory + text_memorySetting);
-                // 下次运行的最大内存输入监听
-                integerRangeTextField(nextRunMemory_Set, 1, systemMemoryValue, text_nowSetting + scriptMemory + text_memorySetting);
-                break;
-            }
+        Map<String, String> jvm = getJavaOptionValue(jvmArgs);
+        String xmxValue = jvm.get(Xmx);
+        if (StringUtils.isNotBlank(xmxValue)) {
+            nextRunMemory_Set.setText(xmxValue.substring(0, xmxValue.indexOf(G)));
         }
-        reader.close();
+        gcType_Set.setText(getCurrentGCType());
+        String gcType = jvm.get(XX);
+        if (StringUtils.isNotBlank(gcType)) {
+            nextGcType_Set.setValue(gcType);
+        }
     }
 
     /**
@@ -284,9 +231,11 @@ public class SettingController {
         addToolTip(lastTab_Set.getText(), lastTab_Set);
         addToolTip(fullWindow_Set.getText(), fullWindow_Set);
         addToolTip(loadRename_Set.getText(), loadRename_Set);
+        addValueToolTip(nextRunMemory_Set, tip_nextRunMemory);
         addToolTip(loadFileNum_Set.getText(), loadFileNum_Set);
         addToolTip(loadFileName_Set.getText(), loadFileName_Set);
         addToolTip(loadImgToExcel_Set.getText(), loadImgToExcel_Set);
+        addValueToolTip(nextGcType_Set, tip_nextGcType, nextGcType_Set.getValue());
     }
 
     /**
@@ -309,9 +258,13 @@ public class SettingController {
         // 设置是否加载最后一次功能配置信息初始值
         setLoadLastConfigs();
         // 获取最大运行内存并展示
-        getMaxMemory();
+        getJVMConfig();
         // 设置鼠标悬停提示
         setToolTip();
+        Platform.runLater(() -> {
+            Scene mainScene = anchorPane_Set.getScene();
+            mainStage = (Stage) mainScene.getWindow();
+        });
     }
 
     /**
@@ -411,17 +364,15 @@ public class SettingController {
      */
     @FXML
     private void reLaunch() throws IOException {
+        // 重启前需要保存设置，如果只使用关闭方法中的保存功能可能无法及时更新jvm配置参数
+        saveAllLastConfig(mainStage);
         Platform.exit();
         if (!isRunningFromJar()) {
             ProcessBuilder processBuilder = null;
             if (systemName.contains(win)) {
-                String path = userDir.substring(0, userDir.lastIndexOf(appNameSeparator) + appNameSeparator.length());
-                String appPath = path + File.separator + appName + exe;
-                processBuilder = new ProcessBuilder(appPath);
-            } else if (systemName.contains(macos)) {
-                String macApp = File.separator + appName + app;
-                String appPath = userDir.substring(0, userDir.lastIndexOf(macApp)) + macApp;
-                processBuilder = new ProcessBuilder("open", "-n", appPath);
+                processBuilder = new ProcessBuilder(getAppPath());
+            } else if (systemName.contains(mac)) {
+                processBuilder = new ProcessBuilder("open", "-n", getAppPath());
             }
             if (processBuilder != null) {
                 processBuilder.start();

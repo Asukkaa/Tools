@@ -15,6 +15,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -639,8 +640,9 @@ public class ImgToExcelController extends CommonProperties {
     @FXML
     private void inDirectoryButton(ActionEvent actionEvent) throws Exception {
         getConfig();
+        Window window = ((Node) actionEvent.getSource()).getScene().getWindow();
         // 显示文件选择器
-        File selectedFile = creatDirectoryChooser(actionEvent, inFilePath, text_selectDirectory);
+        File selectedFile = creatDirectoryChooser(window, inFilePath, text_selectDirectory);
         if (selectedFile != null) {
             // 更新所选文件路径显示
             inFilePath = updatePathLabel(selectedFile.getPath(), inFilePath, key_inFilePath, inPath_Img, configFile_Img);
@@ -841,7 +843,8 @@ public class ImgToExcelController extends CommonProperties {
     @FXML
     private void exportPath(ActionEvent actionEvent) throws Exception {
         getConfig();
-        File selectedFile = creatDirectoryChooser(actionEvent, outFilePath, text_selectDirectory);
+        Window window = ((Node) actionEvent.getSource()).getScene().getWindow();
+        File selectedFile = creatDirectoryChooser(window, outFilePath, text_selectDirectory);
         if (selectedFile != null) {
             // 更新所选文件路径显示
             outFilePath = updatePathLabel(selectedFile.getPath(), outFilePath, key_outFilePath, outPath_Img, configFile_Img);
@@ -861,7 +864,8 @@ public class ImgToExcelController extends CommonProperties {
     private void getExcelPath(ActionEvent actionEvent) throws Exception {
         getConfig();
         List<FileChooser.ExtensionFilter> extensionFilters = new ArrayList<>(Collections.singleton(new FileChooser.ExtensionFilter("Excel", "*.xlsx")));
-        File selectedFile = creatFileChooser(actionEvent, excelInPath, extensionFilters, text_selectExcel);
+        Window window = ((Node) actionEvent.getSource()).getScene().getWindow();
+        File selectedFile = creatFileChooser(window, excelInPath, extensionFilters, text_selectExcel);
         if (selectedFile != null) {
             // 更新所选文件路径显示
             excelInPath = updatePathLabel(selectedFile.getPath(), excelInPath, key_excelInPath, excelPath_Img, configFile_Img);

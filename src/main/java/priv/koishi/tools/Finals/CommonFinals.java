@@ -3,9 +3,13 @@ package priv.koishi.tools.Finals;
 import com.github.kwhat.jnativehook.mouse.NativeMouseEvent;
 import javafx.scene.input.MouseButton;
 
-import java.io.File;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import static priv.koishi.tools.Utils.FileUtils.getCFGPath;
+import static priv.koishi.tools.Utils.FileUtils.getDesktopPath;
 
 /**
  * 通用常量类
@@ -22,29 +26,147 @@ public class CommonFinals {
     public static final String appName = "Tools";
 
     /**
+     * 程序logo
+     */
+    public static String logoPath = "icon/Tools.png";
+
+    /**
      * 资源文件夹地址前缀
      */
     public static String resourcePath = "/priv/koishi/tools/";
 
     /**
-     * 程序根目录
+     * excel插入图片功能配置文件路径
      */
-    public static final String appNameSeparator = appName + File.separator;
+    public static final String configFile_Img = "config/imgToExcelConfig.properties";
 
     /**
-     * win系统下启动脚本名称
+     * 重命名功能配置文件路径
      */
-    public static final String appBat = "app.bat";
+    public static final String configFile_Rename = "config/fileRenameConfig.properties";
 
     /**
-     * 启动脚本最大内存设置参数
+     * 统计文件数量功能配置文件路径
      */
-    public static final String Xmx = "-Xmx";
+    public static final String configFile_Num = "config/fileNumToExcelConfig.properties";
+
+    /**
+     * 读取文件名称功能配置文件路径
+     */
+    public static final String configFile_Name = "config/fileNameToExcelConfig.properties";
+
+    /**
+     * app配置文件路径
+     */
+    public static final String configFile = "config/config.properties";
+
+    /**
+     * 读取自动操作工具功能配置文件路径
+     */
+    public static final String configFile_Click = "config/autoClickConfig.properties";
+
+    /**
+     * 百度网盘地址
+     */
+    public static final String baiduLink = "https://pan.baidu.com/s/1q4nwoz-ABjZLIwuBep09ZA?pwd=ju2b";
+
+    /**
+     * 夸克网盘地址
+     */
+    public static final String quarkLink = "https://pan.quark.cn/s/962190eadcb1";
+
+    /**
+     * 迅雷网盘地址
+     */
+    public static final String xunleiLink = "https://pan.xunlei.com/s/VOGTX2MnWwCrqIwhUV6GEVOyA1?pwd=7pau#";
 
     /**
      * log4j配置文件名称
      */
     public static String log4j2 = "log4j2.xml";
+
+    /**
+     * jpackage打包后的资源文件路径
+     */
+    public static String packagePath = "runtime/bin/";
+
+    /**
+     * 当前程序运行位置
+     */
+    public static final String userDir = System.getProperty("user.dir");
+
+    /**
+     * 当前程序运行操作系统
+     */
+    public static final String systemName = System.getProperty("os.name").toLowerCase();
+
+    /**
+     * java home目录
+     */
+    public static final String javaHome = System.getProperty("java.home");
+
+    /**
+     * cfg文件路径
+     */
+    public static final String cfgFilePath = getCFGPath();
+
+    /**
+     * 桌面目录
+     */
+    public static final String desktopPath = getDesktopPath();
+
+    /**
+     * 文件选择器默认路径
+     */
+    public static final String defaultFileChooserPath = desktopPath;
+
+    /**
+     * 启用
+     */
+    public static final String activation = "1";
+
+    /**
+     * 禁用
+     */
+    public static final String unActivation = "0";
+
+    /**
+     * jvm最大内存设置参数
+     */
+    public static final String Xmx = "-Xmx";
+
+    /**
+     * gc类型设置参数
+     */
+    public static final String XX = "-XX:+Use";
+
+    /**
+     * jvm参数
+     */
+    public static final List<String> jvmArgs = Arrays.asList(Xmx, XX);
+
+    /**
+     * cfg文件jvm参数头
+     */
+    public static final String javaOptions = "java-options=";
+
+    /**
+     * log文件夹目录
+     */
+    public static final String logsDir = "/bin/logs";
+
+    /**
+     * log文件夹名称
+     */
+    public static final String logs = "logs";
+
+    public static final String appDirectory = "/app";
+
+    public static final String contentsDirectory = "/Contents";
+
+    public static final String desktop = "Desktop";
+
+    public static final String cfg = ".cfg";
 
     public static final String xlsx = ".xlsx";
 
@@ -64,7 +186,7 @@ public class CommonFinals {
 
     public static final String app = ".app";
 
-    public static final String macos = "mac";
+    public static final String mac = "mac";
 
     public static final String win = "win";
 
@@ -78,17 +200,7 @@ public class CommonFinals {
 
     public static final String TB = "TB";
 
-    public static final String g = "g";
-
-    /**
-     * 启用
-     */
-    public static final String activation = "1";
-
-    /**
-     * 禁用
-     */
-    public static final String unActivation = "0";
+    public static final String G = "G";
 
     public static final String tip_startSize = "只能填自然数，0为不限制编号位数，不填默认为0";
 
@@ -198,8 +310,6 @@ public class CommonFinals {
 
     public static final String tip_openLink = "点击即可跳转对应网盘分享页";
 
-    public static final String tip_defaultNextRunMemory = "当前配置值为空，程序最大内存设置为操作系统最大内存1/4，填写其他值关闭程序即可保存修改，重启动程序即可生效";
-
     public static final String tip_wait = "每步操作执行前等待时间，单位为毫秒，只能填自然数，不填默认为 0";
 
     public static final String tip_mouseStartX = "鼠标点击位置起始横坐标，与结束位置横坐标不同则执行拖拽操作，只能填自然数，不填默认为 0";
@@ -246,13 +356,15 @@ public class CommonFinals {
 
     public static final String tip_preparationRunTime = "在运行自动操作前将会等待的时间，只能填自然数，单位秒，不填默认为 ";
 
-    public static final String version = "2.1.6";
+    public static final String tip_nextRunMemory = "下次启动程序将会按照此设置项分配程序最大运行内存，单位为GB，只能填自然数，为空将设置为默认值操作系统最大内存的1/4";
 
-    public static final String buildDate = "2025年4月29日";
-
-    public static final String tip_version = """
-            version：%s
-            %s构建""".formatted(version, buildDate);
+    public static final String tip_nextGcType = """
+            下次启动程序将会按照此设置项设置垃圾回收（GC）方式
+            G1GC：分区回收，低延迟与吞吐量平衡
+            ZGC：亚毫秒级停顿
+            ParallelGC：多线程并行回收，吞吐量优先
+            ShenandoahGC：全并发回收，停顿时间与堆大小无关
+            SerialGC：单线程回收，简单高效""";
 
     public static final String tip_recordClick = """
             点击录制自动操作按钮将会等待设置的准备时间后开始录制自动操作
@@ -296,6 +408,14 @@ public class CommonFinals {
             5. 将\s""" + appName + app + """
              添加到允许列表中
             6. 重启\s""" + appName + app;
+
+    public static final String version = "2.2.0";
+
+    public static final String buildDate = "2025年5月13日";
+
+    public static final String tip_version = """
+            version：%s
+            %s构建""".formatted(version, buildDate);
 
     public static final String text_NativeHookException = "需要在macOS系统设置中启用辅助设备权限";
 
@@ -417,13 +537,7 @@ public class CommonFinals {
 
     public static final String text_copySuccess = "复制成功";
 
-    public static final String text_nowSetting = "当前配置值为 ";
-
-    public static final String text_memorySetting = " GB ，关闭程序即可保存修改，重启动程序即可生效";
-
     public static final String text_nowValue = "当前所填值为 ";
-
-    public static final String text_VMOptions = "JLINK_VM_OPTIONS=";
 
     public static final String text_nullSelect = "未选中任何数据";
 
@@ -690,66 +804,6 @@ public class CommonFinals {
     public static String extension_file = "文件";
 
     public static final String extension_folder = "文件夹";
-
-    /**
-     * excel插入图片功能配置文件路径
-     */
-    public static final String configFile_Img = "config/imgToExcelConfig.properties";
-
-    /**
-     * 重命名功能配置文件路径
-     */
-    public static final String configFile_Rename = "config/fileRenameConfig.properties";
-
-    /**
-     * 统计文件数量功能配置文件路径
-     */
-    public static final String configFile_Num = "config/fileNumToExcelConfig.properties";
-
-    /**
-     * 读取文件名称功能配置文件路径
-     */
-    public static final String configFile_Name = "config/fileNameToExcelConfig.properties";
-
-    /**
-     * app配置文件路径
-     */
-    public static final String configFile = "config/config.properties";
-
-    /**
-     * 读取自动操作工具功能配置文件路径
-     */
-    public static final String configFile_Click = "config/autoClickConfig.properties";
-
-    /**
-     * 当前程序运行位置
-     */
-    public static final String userDir = System.getProperty("user.dir");
-
-    /**
-     * 当前程序运行操作系统
-     */
-    public static final String systemName = System.getProperty("os.name").toLowerCase();
-
-    /**
-     * 用户目录
-     */
-    public static final String userHome = System.getProperty("user.home");
-
-    /**
-     * 百度网盘地址
-     */
-    public static final String baiduLink = "https://pan.baidu.com/s/1q4nwoz-ABjZLIwuBep09ZA?pwd=ju2b";
-
-    /**
-     * 夸克网盘地址
-     */
-    public static final String quarkLink = "https://pan.quark.cn/s/962190eadcb1";
-
-    /**
-     * 迅雷网盘地址
-     */
-    public static final String xunleiLink = "https://pan.xunlei.com/s/VOGTX2MnWwCrqIwhUV6GEVOyA1?pwd=7pau#";
 
     /**
      * 默认浮窗横轴偏移量

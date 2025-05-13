@@ -35,6 +35,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.robot.Robot;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.*;
+import javafx.stage.Window;
 import javafx.util.Duration;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -1150,7 +1151,7 @@ public class AutoClickController extends CommonProperties implements MousePositi
         recordClick_Click.setDisable(true);
         clickTest_Click.setDisable(true);
         String errorMessage = appName + " 缺少必要系统权限";
-        if (systemName.contains(macos)) {
+        if (systemName.contains(mac)) {
             errorMessage = text_NativeHookException;
         }
         err_Click.setText(errorMessage);
@@ -1259,7 +1260,8 @@ public class AutoClickController extends CommonProperties implements MousePositi
         if (autoClickTask == null && !recordClicking) {
             getConfig();
             List<FileChooser.ExtensionFilter> extensionFilters = new ArrayList<>(Collections.singleton(new FileChooser.ExtensionFilter("Perfect Mouse Control", "*.pmc")));
-            File selectedFile = creatFileChooser(actionEvent, inFilePath, extensionFilters, text_selectAutoFile);
+            Window window = ((Node) actionEvent.getSource()).getScene().getWindow();
+            File selectedFile = creatFileChooser(window, inFilePath, extensionFilters, text_selectAutoFile);
             if (selectedFile != null) {
                 inFilePath = selectedFile.getPath();
                 updateProperties(configFile_Click, key_inFilePath, new File(inFilePath).getParent());
@@ -1313,7 +1315,8 @@ public class AutoClickController extends CommonProperties implements MousePositi
     @FXML
     private void addOutPath(ActionEvent actionEvent) throws IOException {
         getConfig();
-        File selectedFile = creatDirectoryChooser(actionEvent, outFilePath, text_selectDirectory);
+        Window window = ((Node) actionEvent.getSource()).getScene().getWindow();
+        File selectedFile = creatDirectoryChooser(window, outFilePath, text_selectDirectory);
         if (selectedFile != null) {
             // 更新所选文件路径显示
             outFilePath = updatePathLabel(selectedFile.getPath(), outFilePath, key_outFilePath, outPath_Click, configFile_Click);

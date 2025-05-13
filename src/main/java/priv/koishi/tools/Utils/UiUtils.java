@@ -4,7 +4,6 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.control.Dialog;
@@ -20,6 +19,7 @@ import javafx.scene.input.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.stage.Window;
 import javafx.stage.*;
 import javafx.util.Callback;
 import javafx.util.Duration;
@@ -132,6 +132,17 @@ public class UiUtils {
     /**
      * 为组件添加鼠标悬停提示框
      *
+     * @param node  要添加提示的组件
+     * @param text  提示文案
+     * @param value 当前所填值
+     */
+    public static void addValueToolTip(Node node, String text, String value) {
+        addValueToolTip(node, text, text_nowValue, value);
+    }
+
+    /**
+     * 为组件添加鼠标悬停提示框
+     *
      * @param node      要添加提示的组件
      * @param text      提示文案
      * @param valueText 当前所填值提示文案
@@ -156,53 +167,49 @@ public class UiUtils {
     /**
      * 创建一个文件选择器
      *
-     * @param event            交互事件
+     * @param window           文件选择器窗口
      * @param path             文件选择器初始路径
      * @param extensionFilters 要过滤的文件格式
      * @param title            文件选择器标题
      * @return 文件选择器选择的文件
      */
-    public static File creatFileChooser(ActionEvent event, String path, List<FileChooser.ExtensionFilter> extensionFilters, String title) {
+    public static File creatFileChooser(Window window, String path, List<FileChooser.ExtensionFilter> extensionFilters, String title) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle(title);
         // 设置初始目录
-        if (StringUtils.isBlank(path)) {
-            fileChooser.setInitialDirectory(new File(userHome));
-        } else {
-            File file = new File(path);
-            // 设置初始目录
-            if (file.isDirectory()) {
-                fileChooser.setInitialDirectory(file);
-            } else if (file.isFile()) {
-                file = new File(file.getParent());
-                fileChooser.setInitialDirectory(file);
-            }
+        File file = getExistsFile(path);
+        // 设置初始目录
+        if (file.isDirectory()) {
+            fileChooser.setInitialDirectory(file);
+        } else if (file.isFile()) {
+            file = new File(file.getParent());
+            fileChooser.setInitialDirectory(file);
         }
         // 设置过滤条件
         if (CollectionUtils.isNotEmpty(extensionFilters)) {
             fileChooser.getExtensionFilters().addAll(extensionFilters);
         }
-        return fileChooser.showOpenDialog(((Node) event.getSource()).getScene().getWindow());
+        return fileChooser.showOpenDialog(window);
     }
 
     /**
      * 创建一个文件夹选择器
      *
-     * @param event 交互事件
-     * @param path  文件夹选择器初始路径
-     * @param title 文件夹选择器标题
+     * @param window 文件夹选择器窗口
+     * @param path   文件夹选择器初始路径
+     * @param title  文件夹选择器标题
      * @return 文件夹选择器选择的文件夹
      */
-    public static File creatDirectoryChooser(ActionEvent event, String path, String title) {
+    public static File creatDirectoryChooser(Window window, String path, String title) {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle(title);
+        File file = getExistsFile(path);
         // 设置初始目录
-        if (StringUtils.isBlank(path) || !new File(path).isDirectory()) {
-            directoryChooser.setInitialDirectory(new File(userHome));
-        } else {
-            directoryChooser.setInitialDirectory(new File(path));
+        if (!file.isDirectory()) {
+            file = file.getParentFile();
         }
-        return directoryChooser.showDialog(((Node) event.getSource()).getScene().getWindow());
+        directoryChooser.setInitialDirectory(file);
+        return directoryChooser.showDialog(window);
     }
 
     /**
@@ -1544,6 +1551,16 @@ public class UiUtils {
         } else {
             dataNumber.setText(text_dataListNull);
         }
+    }
+
+    /**
+     * 给窗口设置logo
+     *
+     * @param stage 要设置logo的窗口
+     * @param path  logo路径
+     */
+    public static void setWindLogo(Stage stage, String path) {
+        stage.getIcons().add(new Image(Objects.requireNonNull(MainApplication.class.getResource(path)).toString()));
     }
 
 }

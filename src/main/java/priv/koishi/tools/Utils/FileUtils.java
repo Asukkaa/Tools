@@ -3,7 +3,9 @@ package priv.koishi.tools.Utils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import priv.koishi.tools.Configuration.FileConfig;
+import priv.koishi.tools.Finals.CommonFinals;
 
+import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
 import java.io.*;
 import java.net.URL;
@@ -13,10 +15,8 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.*;
 import java.util.List;
-import java.util.Properties;
 
 import static priv.koishi.tools.Finals.CommonFinals.*;
 
@@ -73,7 +73,7 @@ public class FileUtils {
         long mac = 1000;
         long kb;
         // macOS与Windows文件大小进制不同
-        if (systemName.contains(macos) && distinguishOS) {
+        if (systemName.contains(CommonFinals.mac) && distinguishOS) {
             kb = mac;
         } else {
             kb = win;
@@ -98,7 +98,7 @@ public class FileUtils {
         double mac = 1000;
         double kb;
         // macOS与Windows文件大小进制不同
-        if (systemName.contains(macos)) {
+        if (systemName.contains(CommonFinals.mac)) {
             kb = mac;
         } else {
             kb = win;
@@ -408,7 +408,7 @@ public class FileUtils {
         if (isRunningFromJar()) {
             input = new FileInputStream(resourcesPath + path);
         } else {
-            input = new FileInputStream(path);
+            input = new FileInputStream(getAppResourcePath(path));
         }
         return input;
     }
@@ -425,7 +425,7 @@ public class FileUtils {
         if (isRunningFromJar()) {
             output = new FileOutputStream(resourcesPath + path);
         } else {
-            output = new FileOutputStream(path);
+            output = new FileOutputStream(getAppResourcePath(path));
         }
         return output;
     }
@@ -459,6 +459,194 @@ public class FileUtils {
             counter++;
         }
         return path;
+    }
+
+    /**
+     * 递归寻找存在的文件或上级文件
+     *
+     * @param path 要寻找的文件路径
+     * @return 存在的文件或上级文件
+     */
+    public static File getExistsFile(String path) {
+        File defaultFile = new File(defaultFileChooserPath);
+        // 验证输入有效性
+        if (StringUtils.isBlank(path)) {
+            return defaultFile;
+        }
+        File currentFile = new File(path);
+        // 直接验证文件存在性
+        if (currentFile.exists()) {
+            return currentFile;
+        }
+        // 获取父目录并验证递归终止条件
+        File parentFile = currentFile.getParentFile();
+        if (parentFile == null || parentFile.getPath().equals(currentFile.getPath())) {
+            return defaultFile;
+        }
+        return getExistsFile(parentFile.getPath());
+    }
+
+    /**
+     * 获取app资源文件绝对路径
+     *
+     * @param path 资源文件相对路径
+     * @return 资源文件绝对路径
+     */
+    public static String getAppResourcePath(String path) {
+        String resourcePath = packagePath + path;
+        // 处理macos打包成.app文件后的路径
+        if (systemName.contains(mac)) {
+            resourcePath = javaHome + "/bin/" + path;
+        }
+        if (!new File(resourcePath).exists()) {
+            resourcePath = path;
+        }
+        return resourcePath;
+    }
+
+    /**
+     * 获取logs文件夹地址
+     *
+     * @return 不同操作系统下logs文件夹地址
+     */
+    public static String getLogsPath() {
+        String logsPath = userDir + File.separator + logs;
+        // 处理macos打包成.app文件后的路径
+        if (systemName.contains(mac) && !isRunningFromJar()) {
+            logsPath = javaHome + logsDir;
+        }
+        return logsPath;
+    }
+
+    /**
+     * 获取程序启动路径
+     *
+     * @return 不同操作系统下程序启动路径
+     */
+    public static String getAppPath() {
+        if (systemName.contains(win)) {
+            return new File(javaHome).getParent() + File.separator + appName + exe;
+        } else if (systemName.contains(mac)) {
+            return javaHome.substring(0, javaHome.indexOf(app) + app.length());
+        }
+        return javaHome;
+    }
+
+    /**
+     * 获取用户桌面路径
+     *
+     * @return 用户桌面路径
+     */
+    public static String getDesktopPath() {
+        FileSystemView fsv = FileSystemView.getFileSystemView();
+        File desktopFile = fsv.getHomeDirectory();
+        String path = desktopFile.getAbsolutePath();
+        if (!path.contains(desktop)) {
+            String desktopPath = path + File.separator + desktop;
+            if (new File(desktopPath).exists()) {
+                return desktopPath;
+            }
+        }
+        return path;
+    }
+
+    /**
+     * 根据jvm参数key读取cfg文件对应设置值
+     *
+     * @param optionKeys 要查询的jvm参数key
+     * @return jvm参数key与对应的参数右侧的值
+     * @throws IOException 配置文件读取异常
+     */
+    public static Map<String, String> getJavaOptionValue(List<String> optionKeys) throws IOException {
+        Map<String, String> jvmOptions = new HashMap<>();
+        List<String> jvmOptionsList = new ArrayList<>(optionKeys);
+        try (BufferedReader reader = Files.newBufferedReader(Path.of(cfgFilePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                // 检测配置段
+                if (line.startsWith(javaOptions)) {
+                    String arg = line.substring(javaOptions.length());
+                    Iterator<String> iterator = jvmOptionsList.iterator();
+                    while (iterator.hasNext()) {
+                        String optionKey = iterator.next();
+                        if (arg.contains(optionKey)) {
+                            String value = arg.substring(arg.indexOf(optionKey) + optionKey.length());
+                            jvmOptions.put(optionKey, value);
+                            iterator.remove();
+                        }
+                    }
+                }
+            }
+        }
+        jvmOptionsList.forEach(optionKey -> jvmOptions.put(optionKey, ""));
+        return jvmOptions;
+    }
+
+    /**
+     * 更新cfg文件中jvm参数设置
+     *
+     * @param options 要修改的jvm参数键值对
+     * @throws IOException 配置文件读取或写入异常
+     */
+    public static void setJavaOptionValue(Map<String, String> options) throws IOException {
+        Path configPath = Path.of(cfgFilePath);
+        List<String> lines = Files.readAllLines(configPath);
+        boolean modified = false;
+        for (int i = 0; i < lines.size(); i++) {
+            String line = lines.get(i);
+            if (line.startsWith(javaOptions)) {
+                Iterator<Map.Entry<String, String>> iterator = options.entrySet().iterator();
+                while (iterator.hasNext()) {
+                    Map.Entry<String, String> entry = iterator.next();
+                    String optionKey = entry.getKey();
+                    String optionValue = entry.getValue();
+                    if (line.contains(optionKey)) {
+                        if (StringUtils.isNotBlank(optionValue)) {
+                            // 处理修改参数
+                            String newLineContent = javaOptions + optionKey + optionValue;
+                            lines.set(i, line.replace(line, newLineContent));
+                        } else {
+                            // 处理删除参数
+                            lines.remove(i);
+                        }
+                        iterator.remove();
+                        modified = true;
+                    }
+                }
+            }
+        }
+        // 处理新增参数
+        for (Map.Entry<String, String> entry : options.entrySet()) {
+            String optionValue = entry.getValue();
+            if (StringUtils.isNotBlank(optionValue)) {
+                lines.add(javaOptions + entry.getKey() + optionValue);
+                modified = true;
+            }
+        }
+        if (modified) {
+            Files.write(configPath, lines);
+        }
+    }
+
+    /**
+     * 获取cfg文件路径
+     *
+     * @return cfg文件路径
+     */
+    public static String getCFGPath() {
+        String cfgPath;
+        if (isRunningFromJar()) {
+            cfgPath = appName + cfg;
+        } else {
+            String appPath = getAppPath();
+            String cfgFileName = "/" + appName + cfg;
+            if (systemName.contains(win)) {
+                cfgPath = new File(appPath).getParent() + appDirectory + cfgFileName;
+            } else {
+                cfgPath = appPath + contentsDirectory + appDirectory + cfgFileName;
+            }
+        }
+        return cfgPath;
     }
 
 }

@@ -16,6 +16,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import priv.koishi.tools.Bean.FileBean;
@@ -855,8 +856,9 @@ public class FileRenameController extends CommonProperties {
     private void inDirectoryButton(ActionEvent actionEvent) throws Exception {
         getConfig();
         List<String> filterExtensionList = getFilterExtensionList(filterFileType_Re);
+        Window window = ((Node) actionEvent.getSource()).getScene().getWindow();
         // 显示文件选择器
-        File selectedFile = creatDirectoryChooser(actionEvent, inFilePath, text_selectDirectory);
+        File selectedFile = creatDirectoryChooser(window, inFilePath, text_selectDirectory);
         FileConfig fileConfig = new FileConfig();
         fileConfig.setShowDirectoryName(directoryNameType_Re.getValue())
                 .setShowHideFile(hideFileType_Re.getValue())
@@ -1007,7 +1009,8 @@ public class FileRenameController extends CommonProperties {
     private void getExcelPath(ActionEvent actionEvent) throws IOException {
         getConfig();
         List<FileChooser.ExtensionFilter> extensionFilters = new ArrayList<>(Collections.singleton(new FileChooser.ExtensionFilter("Excel", "*.xlsx")));
-        File selectedFile = creatFileChooser(actionEvent, excelInPath, extensionFilters, text_selectExcel);
+        Window window = ((Node) actionEvent.getSource()).getScene().getWindow();
+        File selectedFile = creatFileChooser(window, excelInPath, extensionFilters, text_selectExcel);
         if (selectedFile != null) {
             excelInPath = updatePathLabel(selectedFile.getAbsolutePath(), excelInPath, key_excelInPath, excelPath_Re, configFile_Rename);
             readExcelRename();

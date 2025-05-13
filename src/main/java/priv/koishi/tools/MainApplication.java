@@ -10,7 +10,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -22,6 +21,7 @@ import org.apache.logging.log4j.core.config.Configurator;
 import priv.koishi.tools.Bean.TabBean;
 import priv.koishi.tools.ThreadPool.ThreadPoolManager;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,8 +30,7 @@ import java.util.*;
 import static priv.koishi.tools.Controller.MainController.mainAdaption;
 import static priv.koishi.tools.Controller.MainController.saveAllLastConfig;
 import static priv.koishi.tools.Finals.CommonFinals.*;
-import static priv.koishi.tools.Utils.FileUtils.checkRunningInputStream;
-import static priv.koishi.tools.Utils.FileUtils.isRunningFromJar;
+import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
 /**
@@ -78,7 +77,7 @@ public class MainApplication extends Application {
         Scene scene = new Scene(fxmlLoader.load(), appWidth, appHeight);
         stage.setTitle(appName);
         stage.setScene(scene);
-        stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResource("icon/Tools.png")).toExternalForm()));
+        setWindLogo(stage, logoPath);
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("css/Styles.css")).toExternalForm());
         TabPane tabPane = (TabPane) scene.lookup("#tabPane");
         // 读取各功能页面入口设置
@@ -97,9 +96,11 @@ public class MainApplication extends Application {
         // 初始化macOS系统应用菜单
         initMenu(tabPane);
         // 监听窗口面板宽度变化
-        stage.widthProperty().addListener((v1, v2, v3) -> Platform.runLater(() -> mainAdaption(stage, tabBeanList)));
+        stage.widthProperty().addListener((v1, v2, v3) ->
+                Platform.runLater(() -> mainAdaption(stage, tabBeanList)));
         // 监听窗口面板高度变化
-        stage.heightProperty().addListener((v1, v2, v3) -> Platform.runLater(() -> mainAdaption(stage, tabBeanList)));
+        stage.heightProperty().addListener((v1, v2, v3) ->
+                Platform.runLater(() -> mainAdaption(stage, tabBeanList)));
         stage.setOnCloseRequest(event -> {
             try {
                 stop();
@@ -213,7 +214,8 @@ public class MainApplication extends Application {
     public void init() throws Exception {
         super.init();
         // 在init()方法中设置全局异常处理器
-        Platform.runLater(() -> Thread.setDefaultUncaughtExceptionHandler((e, exception) -> showExceptionAlert(exception)));
+        Platform.runLater(() -> Thread.setDefaultUncaughtExceptionHandler((e, exception) ->
+                showExceptionAlert(exception)));
     }
 
     /**
@@ -275,7 +277,15 @@ public class MainApplication extends Application {
     public static void main(String[] args) throws IOException {
         // 打包后需要手动指定日志配置文件位置
         if (!isRunningFromJar()) {
-            ConfigurationSource source = new ConfigurationSource(new FileInputStream(log4j2));
+            String logsPath = getLogsPath();
+            File logDirectory = new File(logsPath);
+            if (!logDirectory.exists()) {
+                if (!logDirectory.mkdirs()) {
+                    throw new IOException("日志文件夹创建失败： " + logsPath);
+                }
+            }
+            System.setProperty("log.dir", logsPath);
+            ConfigurationSource source = new ConfigurationSource(new FileInputStream(getAppResourcePath(log4j2)));
             Configurator.initialize(null, source);
         }
         logger = LogManager.getLogger(MainApplication.class);
