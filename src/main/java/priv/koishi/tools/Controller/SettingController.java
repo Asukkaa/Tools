@@ -136,7 +136,8 @@ public class SettingController {
      */
     private static void saveJVMConfig(Scene scene) throws IOException {
         TextField nextRunMemory = (TextField) scene.lookup("#nextRunMemory_Set");
-        String XmxValue = nextRunMemory.getText() + G;
+        String nextRunMemoryValue = nextRunMemory.getText();
+        String XmxValue = StringUtils.isBlank(nextRunMemoryValue) ? "" : nextRunMemoryValue + G;
         ChoiceBox<?> nextGcType = (ChoiceBox<?>) scene.lookup("#nextGcType_Set");
         String nextGcTypeValue = (String) nextGcType.getValue();
         Map<String, String> options = new HashMap<>();
