@@ -923,7 +923,7 @@ public class AutoClickController extends CommonProperties implements MousePositi
      *
      * @param clickPositionBeans 自动流程集合
      */
-    private void addAutoClickPositions(List<ClickPositionBean> clickPositionBeans) throws IOException {
+    private void addAutoClickPositions(List<? extends ClickPositionBean> clickPositionBeans) throws IOException {
         for (ClickPositionBean clickPositionBean : clickPositionBeans) {
             clickPositionBean.setUuid(UUID.randomUUID().toString());
             if (!isInIntegerRange(clickPositionBean.getStartX(), 0, null) || !isInIntegerRange(clickPositionBean.getStartY(), 0, null)

@@ -14,7 +14,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
 
@@ -337,9 +340,10 @@ public class FileUtils {
     public static String getFileCreatTime(File file) throws IOException {
         Path path = Paths.get(file.getPath());
         BasicFileAttributes attr = Files.readAttributes(path, BasicFileAttributes.class);
-        Date creationTime = new Date(attr.creationTime().toMillis());
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        return sdf.format(creationTime);
+        Instant instant = attr.creationTime().toInstant();
+        ZonedDateTime creationTime = instant.atZone(ZoneId.systemDefault());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return creationTime.format(formatter);
     }
 
     /**
@@ -349,9 +353,10 @@ public class FileUtils {
      * @return 格式化后的时间字符串
      */
     public static String getFileUpdateTime(File file) {
-        long lastModified = file.lastModified();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        return sdf.format(new Date(lastModified));
+        Instant instant = Instant.ofEpochMilli(file.lastModified());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                .withZone(ZoneId.systemDefault());
+        return formatter.format(instant);
     }
 
     /**
