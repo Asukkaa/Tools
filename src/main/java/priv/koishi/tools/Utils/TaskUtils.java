@@ -66,7 +66,7 @@ public class TaskUtils {
      * @throws RuntimeException io异常
      * @return null
      */
-    public static Task<Workbook> saveExcelOnSucceeded(ExcelConfig excelConfig, TaskBean<?> taskBean, Task<Workbook> buildExcelTask,
+    public static Task<Workbook> saveExcelOnSucceeded(ExcelConfig excelConfig, TaskBean<?> taskBean, Task<? extends Workbook> buildExcelTask,
                                                       CheckBox openDirectory, CheckBox openFile, ExecutorService executorService) {
         bindingProgressBarTask(buildExcelTask, taskBean);
         Label massageLabel = taskBean.getMassageLabel();

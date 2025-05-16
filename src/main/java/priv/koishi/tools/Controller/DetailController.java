@@ -59,7 +59,7 @@ public class DetailController {
      * @param item 列表选中的数据
      */
     public void initData(ClickPositionBean item) {
-        this.selectedItem = item;
+        selectedItem = item;
         clickName_Det.setText(item.getName());
         mouseStartX_Det.setText(item.getStartX());
         mouseStartY_Det.setText(item.getStartY());

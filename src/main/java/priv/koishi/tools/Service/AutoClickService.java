@@ -79,7 +79,7 @@ public class AutoClickService {
             }
 
             // 执行点击任务
-            private void clicks(List<ClickPositionBean> tableViewItems, String loopTimeText) {
+            private void clicks(List<? extends ClickPositionBean> tableViewItems, String loopTimeText) {
                 int dataSize = tableViewItems.size();
                 Label floatingLabel = taskBean.getFloatingLabel();
                 updateProgress(0, dataSize);

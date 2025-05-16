@@ -36,7 +36,7 @@ public class MainController {
      *
      * @param stage 程序主舞台
      */
-    public static void mainAdaption(Stage stage, List<TabBean> tabBeanList) {
+    public static void mainAdaption(Stage stage, List<? extends TabBean> tabBeanList) {
         Scene scene = stage.getScene();
         // 设置组件高度
         double stageHeight = stage.getHeight();
@@ -99,7 +99,7 @@ public class MainController {
         // 保存自动操作工具功能最后设置
         AutoClickController.saveLastConfig(scene);
         // 保存关程序闭前页面状态设置
-        MainController.saveLastConfig(stage);
+        saveLastConfig(stage);
         // 保存设置页面最后设置
         SettingController.saveLastConfig(scene);
         // 保存日志文件数量设置

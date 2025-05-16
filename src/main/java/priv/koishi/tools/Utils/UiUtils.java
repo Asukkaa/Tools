@@ -637,7 +637,7 @@ public class UiUtils {
      * @param dataNumber     用于展示列表数据数量的文本框
      * @param dataNumberUnit 数据数量单位
      */
-    public static <T> void addData(List<T> data, int addType, TableView<T> tableView, Label dataNumber, String dataNumberUnit) {
+    public static <T> void addData(List<? extends T> data, int addType, TableView<T> tableView, Label dataNumber, String dataNumberUnit) {
         ObservableList<T> tableViewItems = tableView.getItems();
         List<T> selectedItem = tableView.getSelectionModel().getSelectedItems();
         switch (addType) {
@@ -700,7 +700,7 @@ public class UiUtils {
     public static <T> void tableViewDragRow(TableView<T> tableView) {
         tableView.setRowFactory(tv -> {
             TableRow<T> row = new TableRow<>();
-            final ObservableList<Integer> draggedIndices = FXCollections.observableArrayList();
+            ObservableList<Integer> draggedIndices = FXCollections.observableArrayList();
             // 拖拽检测
             row.setOnDragDetected(e -> {
                 if (!row.isEmpty()) {
@@ -943,7 +943,7 @@ public class UiUtils {
      *
      * @param tableView 要添加右键菜单的列表
      */
-    private static void copyFilePathItem(TableView<FileBean> tableView) {
+    private static void copyFilePathItem(TableView<? extends FileBean> tableView) {
         FileBean fileBean = tableView.getSelectionModel().getSelectedItem();
         copyText(fileBean.getPath());
     }
@@ -1223,7 +1223,7 @@ public class UiUtils {
      * @param disableNodes 防重复点击组件列表
      * @param disable      可点击状态，true设置为不可点击，false设置为可点击
      */
-    public static void changeDisableNodes(List<Node> disableNodes, boolean disable) {
+    public static void changeDisableNodes(List<? extends Node> disableNodes, boolean disable) {
         if (CollectionUtils.isNotEmpty(disableNodes)) {
             disableNodes.forEach(dc -> dc.setDisable(disable));
         }

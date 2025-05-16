@@ -180,7 +180,7 @@ public class FileUtils {
      * @param fileList   上层文件夹查询的文件列表
      * @param directory  最外层文件夹
      */
-    public static void readFiles(FileConfig fileConfig, List<File> fileList, File directory) {
+    public static void readFiles(FileConfig fileConfig, List<? super File> fileList, File directory) {
         File[] files = directory.listFiles();
         String showHideFile = fileConfig.getShowHideFile();
         String showDirectoryName = fileConfig.getShowDirectoryName();

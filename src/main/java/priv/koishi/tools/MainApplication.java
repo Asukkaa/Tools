@@ -190,7 +190,7 @@ public class MainApplication extends Application {
      * @param tableView   tab信息列表
      * @param tabBeanList 要渲染的tab信息
      */
-    private static void buildTableView(TableView<TabBean> tableView, List<TabBean> tabBeanList) {
+    private static void buildTableView(TableView<TabBean> tableView, List<? extends TabBean> tabBeanList) {
         for (TableColumn<TabBean, ?> column : tableView.getColumns()) {
             addTableColumnToolTip(column);
             if ("tabName_Set".equals(column.getId())) {

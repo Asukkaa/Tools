@@ -153,7 +153,7 @@ public class AutoClickController extends CommonProperties implements MousePositi
     /**
      * 无辅助功能权限
      */
-    private boolean isNativeHookException = false;
+    private boolean isNativeHookException;
 
     /**
      * 正在录制标识
@@ -816,7 +816,7 @@ public class AutoClickController extends CommonProperties implements MousePositi
      * @param tableView   要添加右键菜单的列表
      * @param contextMenu 右键菜单集合
      */
-    private void buildDetailMenuItem(TableView<ClickPositionBean> tableView, ContextMenu contextMenu) {
+    private void buildDetailMenuItem(TableView<? extends ClickPositionBean> tableView, ContextMenu contextMenu) {
         MenuItem detailItem = new MenuItem("查看所选项第一行详情");
         detailItem.setOnAction(e -> {
             ClickPositionBean selected = tableView.getSelectionModel().getSelectedItems().getFirst();

@@ -435,7 +435,7 @@ public class FileRenameController extends CommonProperties {
      * @param fileBeanList    读取的文件信息
      * @param excelRenameList 读取的excel数据
      */
-    private void showMatchExcelData(TaskBean<?> taskBean, ObservableList<FileBean> fileBeanList, List<String> excelRenameList) {
+    private void showMatchExcelData(TaskBean<?> taskBean, ObservableList<? extends FileBean> fileBeanList, List<String> excelRenameList) {
         if (CollectionUtils.isNotEmpty(fileBeanList) && CollectionUtils.isNotEmpty(excelRenameList)) {
             matchExcelRename(fileBeanList, excelRenameList);
         }
@@ -454,7 +454,7 @@ public class FileRenameController extends CommonProperties {
      * @param fileBeanList    要匹配的文件信息
      * @param excelRenameList 要匹配的excel数据
      */
-    private void matchExcelRename(ObservableList<FileBean> fileBeanList, List<String> excelRenameList) {
+    private void matchExcelRename(ObservableList<? extends FileBean> fileBeanList, List<String> excelRenameList) {
         int fileBeanListSize = fileBeanList.size();
         int excelRenameListSize = excelRenameList.size();
         for (int i = 0; i < fileBeanListSize; i++) {

@@ -187,7 +187,7 @@ public class ReadDataService {
      * @param taskBean 读取文件线程任务参数
      * @return 无参数线程任务
      */
-    public static Task<Void> readFile(TaskBean<FileBean> taskBean) {
+    public static Task<Void> readFile(TaskBean<? super FileBean> taskBean) {
         return new Task<>() {
             @Override
             protected Void call() throws IOException {
@@ -297,7 +297,7 @@ public class ReadDataService {
      * @param fileList    要排序的文件
      * @param reverseSort 是否倒序标识，true倒序，false为正序
      */
-    private static void comparingByType(List<File> fileList, boolean reverseSort) {
+    private static void comparingByType(List<? extends File> fileList, boolean reverseSort) {
         fileList.sort((o1, o2) -> {
             // 比较文件后缀名
             String ext1 = getFileType(o1);
@@ -316,7 +316,7 @@ public class ReadDataService {
      * @param fileList    要排序的文件
      * @param reverseSort 是否倒序标识，true倒序，false为正序
      */
-    private static void comparingBySize(List<File> fileList, boolean reverseSort) {
+    private static void comparingBySize(List<? extends File> fileList, boolean reverseSort) {
         if (reverseSort) {
             fileList.sort((o1, o2) -> {
                 long size1 = o1.length();
@@ -334,7 +334,7 @@ public class ReadDataService {
      * @param fileList    要排序的文件
      * @param reverseSort 是否倒序标识，true倒序，false为正序
      */
-    private static void comparingByUpdateTime(List<File> fileList, boolean reverseSort) {
+    private static void comparingByUpdateTime(List<? extends File> fileList, boolean reverseSort) {
         if (reverseSort) {
             fileList.sort((f1, f2) -> {
                 long diff = f2.lastModified() - f1.lastModified();
@@ -357,7 +357,7 @@ public class ReadDataService {
      * @param fileList    要排序的文件
      * @param reverseSort 是否倒序标识，true倒序，false为正序
      */
-    private static void comparingByCreatTime(List<File> fileList, boolean reverseSort) {
+    private static void comparingByCreatTime(List<? extends File> fileList, boolean reverseSort) {
         fileList.sort((o1, o2) -> {
             try {
                 BasicFileAttributes attr1 = Files.readAttributes(o1.toPath(), BasicFileAttributes.class);
@@ -379,7 +379,7 @@ public class ReadDataService {
      * @param fileList    要排序的文件
      * @param reverseSort 是否倒序标识，true倒序，false为正序
      */
-    private static void comparingByName(List<File> fileList, boolean reverseSort) {
+    private static void comparingByName(List<? extends File> fileList, boolean reverseSort) {
         if (reverseSort) {
             fileList.sort((o1, o2) -> o2.getName().compareTo(o1.getName()));
         } else {

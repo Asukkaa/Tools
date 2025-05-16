@@ -144,7 +144,7 @@ public class CommonUtils {
      * @param fileConfig   文件查询设置，用来获取文件名分隔符、分组最大匹配数量、是否展示文件拓展名
      * @return 用于列表统计展示的对象
      */
-    public static FileNumVo matchGroupData(List<FileNumBean> fileNumBeans, List<File> inFileList, FileConfig fileConfig) {
+    public static FileNumVo matchGroupData(List<? extends FileNumBean> fileNumBeans, List<? extends File> inFileList, FileConfig fileConfig) {
         List<String> paths = new ArrayList<>();
         inFileList.forEach(file -> paths.add(file.getPath()));
         List<FileNumBean> fileNumList = buildNameGroupData(paths, fileConfig);

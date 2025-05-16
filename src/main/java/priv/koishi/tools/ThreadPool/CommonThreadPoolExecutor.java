@@ -44,13 +44,7 @@ public class CommonThreadPoolExecutor {
     /**
      * 拒绝策略（严格拒绝重复任务）
      */
-    RejectedExecutionHandler handler =  new ThreadPoolExecutor.AbortPolicy();
-
-    /**
-     * 构造函数
-     */
-    public CommonThreadPoolExecutor() {
-    }
+    RejectedExecutionHandler handler = new ThreadPoolExecutor.AbortPolicy();
 
     /**
      * 默认线程池
@@ -58,8 +52,8 @@ public class CommonThreadPoolExecutor {
      * @return 线程池
      */
     public ExecutorService createNewThreadPool() {
-        return new ThreadPoolExecutor(this.corePoolSize, this.maximumPoolSize, this.keepAliveTime, this.unit,
-                this.workQueue, this.threadFactory, this.handler);
+        return new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, unit,
+                workQueue, threadFactory, handler);
     }
 
 }
