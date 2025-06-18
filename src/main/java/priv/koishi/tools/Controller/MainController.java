@@ -1,10 +1,9 @@
 package priv.koishi.tools.Controller;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.Scene;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.stage.Stage;
 import priv.koishi.tools.Bean.TabBean;
 
 import java.io.IOException;
@@ -14,8 +13,10 @@ import java.util.List;
 import java.util.Properties;
 
 import static priv.koishi.tools.Finals.CommonFinals.*;
+import static priv.koishi.tools.MainApplication.mainStage;
 import static priv.koishi.tools.Utils.FileUtils.checkRunningInputStream;
 import static priv.koishi.tools.Utils.FileUtils.checkRunningOutputStream;
+import static priv.koishi.tools.Utils.UiUtils.creatTooltip;
 
 /**
  * 全局页面控制器
@@ -23,58 +24,107 @@ import static priv.koishi.tools.Utils.FileUtils.checkRunningOutputStream;
  * @author KOISHI Date:2024-10-02
  * Time:下午1:08
  */
-public class MainController {
+public class MainController extends RootController {
+
+    /**
+     * 关于页面控制器
+     */
+    public static AboutController aboutController;
+
+    /**
+     * 设置页面控制器
+     */
+    public static SettingController settingController;
+
+    /**
+     * 自动操作工具页面控制器
+     */
+    public static AutoClickController autoClickController;
+
+    /**
+     * 获取文件夹下的文件信息页面控制器
+     */
+    public static FileNameToExcelController fileNameToExcelController;
+
+    /**
+     * 分组统计文件夹下文件数量页面控制器
+     */
+    public static FileNumToExcelController fileNumToExcelController;
+
+    /**
+     * 将图片与excel匹配并插入页面控制器
+     */
+    public static ImgToExcelController imgToExcelController;
+
+    /**
+     * 按指定规则批量重命名文件页面控制器
+     */
+    public static FileRenameController fileRenameController;
 
     @FXML
-    private TabPane tabPane;
+    public TabPane tabPane;
 
     @FXML
-    private Tab fileNumToExcelTab, fileNameToExcelTab, imgToExcelTab, fileRenameTab, settingTab, aboutTab, autoClickTab;
+    public Tab fileNumToExcelTab, fileNameToExcelTab, imgToExcelTab, fileRenameTab, settingTab, aboutTab, autoClickTab;
+
+    /**
+     * 页面初始化
+     */
+    @FXML
+    private void initialize() {
+        // 设置tab页的鼠标悬停提示
+        tabPane.getTabs().forEach(tab -> tab.setTooltip(creatTooltip(tab.getText())));
+        Platform.runLater(() -> {
+            aboutController = getController(AboutController.class);
+            settingController = getController(SettingController.class);
+            autoClickController = getController(AutoClickController.class);
+            imgToExcelController = getController(ImgToExcelController.class);
+            fileRenameController = getController(FileRenameController.class);
+            fileNumToExcelController = getController(FileNumToExcelController.class);
+            fileNameToExcelController = getController(FileNameToExcelController.class);
+        });
+    }
 
     /**
      * 组件自适应宽高
-     *
-     * @param stage 程序主舞台
      */
-    public static void mainAdaption(Stage stage, List<? extends TabBean> tabBeanList) {
-        Scene scene = stage.getScene();
+    public void mainAdaption(List<? extends TabBean> tabBeanList) {
         // 设置组件高度
-        double stageHeight = stage.getHeight();
-        TabPane tabPane = (TabPane) scene.lookup("#tabPane");
+        double stageHeight = mainStage.getHeight();
         tabPane.setStyle("-fx-pref-height: " + stageHeight + "px;");
         tabBeanList.forEach(tabBean -> {
             boolean isActivation = tabBean.getActivationCheckBox().isSelected();
             switch (tabBean.getTabId()) {
                 case id_fileNameToExcelTab:
                     if (isActivation) {
-                        FileNameToExcelController.adaption(stage);
+                        fileNameToExcelController.adaption();
                     }
                     break;
                 case id_fileNumToExcelTab:
                     if (isActivation) {
-                        FileNumToExcelController.adaption(stage);
+                        fileNumToExcelController.adaption();
                     }
                     break;
                 case id_imgToExcelTab:
                     if (isActivation) {
-                        ImgToExcelController.adaption(stage);
+                        imgToExcelController.adaption();
                     }
                     break;
                 case id_fileRenameTab:
                     if (isActivation) {
-                        FileRenameController.adaption(stage);
+                        fileRenameController.adaption();
                     }
                     break;
                 case id_settingTab:
                     if (isActivation) {
-                        SettingController.adaption(stage);
+                        settingController.adaption();
                     }
                     break;
                 case id_aboutTab:
                     break;
                 case id_autoClickTab:
                     if (isActivation) {
-                        AutoClickController.adaption(stage);
+                        autoClickController.adaption();
                     }
                     break;
             }
@@ -86,24 +136,23 @@ public class MainController {
      *
      * @throws IOException io异常
      */
-    public static void saveAllLastConfig(Stage stage) throws IOException {
-        Scene scene = stage.getScene();
+    public void saveAllLastConfig() throws IOException {
         // 保存批量向excel功能插入图片最后设置
-        ImgToExcelController.saveLastConfig(scene);
+        imgToExcelController.saveLastConfig();
         // 保存分组统计文件信息导出到excel最后设置
-        FileNumToExcelController.saveLastConfig(scene);
+        fileNumToExcelController.saveLastConfig();
         // 保存导出文件详细信息到excel最后设置
-        FileNameToExcelController.saveLastConfig(scene);
+        fileNameToExcelController.saveLastConfig();
         // 保存文件批量重命名功能最后设置
-        FileRenameController.saveLastConfig(scene);
+        fileRenameController.saveLastConfig();
         // 保存自动操作工具功能最后设置
-        AutoClickController.saveLastConfig(scene);
+        autoClickController.saveLastConfig();
         // 保存关程序闭前页面状态设置
-        saveLastConfig(stage);
+        saveLastConfig();
         // 保存设置页面最后设置
-        SettingController.saveLastConfig(scene);
+        settingController.saveLastConfig();
         // 保存日志文件数量设置
-        AboutController.saveLastConfig(scene);
+        aboutController.saveLastConfig();
     }
 
     /**
@@ -111,17 +160,15 @@ public class MainController {
      *
      * @throws IOException io异常
      */
-    private static void saveLastConfig(Stage stage) throws IOException {
+    private void saveLastConfig() throws IOException {
         InputStream input = checkRunningInputStream(configFile);
         Properties prop = new Properties();
         prop.load(input);
-        Scene scene = stage.getScene();
-        TabPane tabPane = (TabPane) scene.lookup("#tabPane");
         Tab selectedTab = tabPane.getSelectionModel().getSelectedItem();
         prop.put(key_lastTab, selectedTab.getId());
-        String fullWindow = stage.isFullScreen() ? activation : unActivation;
+        String fullWindow = mainStage.isFullScreen() ? activation : unActivation;
         prop.put(key_lastFullWindow, fullWindow);
-        String maximize = stage.isMaximized() ? activation : unActivation;
+        String maximize = mainStage.isMaximized() ? activation : unActivation;
         prop.put(key_lastMaxWindow, maximize);
         OutputStream output = checkRunningOutputStream(configFile);
         prop.store(output, null);

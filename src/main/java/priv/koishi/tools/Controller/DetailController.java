@@ -23,7 +23,7 @@ import static priv.koishi.tools.Utils.UiUtils.*;
  * Date 2022/3/11
  * Time 15:09
  */
-public class DetailController {
+public class DetailController extends RootController {
 
     /**
      * 带鼠标悬停提示的内容变化监听器
@@ -44,13 +44,13 @@ public class DetailController {
     private Runnable refreshCallback;
 
     @FXML
-    private AnchorPane anchorPane_Det;
+    public AnchorPane anchorPane_Det;
 
     @FXML
-    private ChoiceBox<String> clickType_Det;
+    public ChoiceBox<String> clickType_Det;
 
     @FXML
-    private TextField clickName_Det, mouseStartX_Det, mouseStartY_Det, mouseEndX_Det, mouseEndY_Det, wait_Det,
+    public TextField clickName_Det, mouseStartX_Det, mouseStartY_Det, mouseEndX_Det, mouseEndY_Det, wait_Det,
             clickNumBer_Det, timeClick_Det, interval_Det;
 
     /**

@@ -14,7 +14,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -25,7 +24,6 @@ import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.ExcelConfig;
 import priv.koishi.tools.Configuration.FileConfig;
-import priv.koishi.tools.Properties.CommonProperties;
 import priv.koishi.tools.Service.ImgToExcelService;
 import priv.koishi.tools.ThreadPool.ThreadPoolManager;
 
@@ -40,6 +38,7 @@ import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 
 import static priv.koishi.tools.Finals.CommonFinals.*;
+import static priv.koishi.tools.MainApplication.mainStage;
 import static priv.koishi.tools.Service.ImgToExcelService.buildImgGroupExcel;
 import static priv.koishi.tools.Service.ReadDataService.readExcel;
 import static priv.koishi.tools.Utils.FileUtils.*;
@@ -53,7 +52,7 @@ import static priv.koishi.tools.Utils.UiUtils.*;
  * Date:2024-10-16
  * Time:下午1:24
  */
-public class ImgToExcelController extends CommonProperties {
+public class ImgToExcelController extends RootController {
 
     /**
      * 日志记录器
@@ -151,154 +150,106 @@ public class ImgToExcelController extends CommonProperties {
     private Scene mainScene;
 
     @FXML
-    private AnchorPane anchorPane_Img;
+    public AnchorPane anchorPane_Img;
 
     @FXML
-    private ProgressBar progressBar_Img;
+    public ProgressBar progressBar_Img;
 
     @FXML
-    private ChoiceBox<String> hideFileType_Img;
+    public ChoiceBox<String> hideFileType_Img;
 
     @FXML
-    private HBox fileNumberHBox_Img, tipHBox_Img;
+    public HBox fileNumberHBox_Img, tipHBox_Img;
 
     @FXML
-    private TableView<FileNumBean> tableView_Img;
+    public TableView<FileNumBean> tableView_Img;
 
     @FXML
-    private TableColumn<FileNumBean, Integer> groupId_Img, groupNumber_Img, index_Img;
+    public TableColumn<FileNumBean, Integer> groupId_Img, groupNumber_Img, index_Img;
 
     @FXML
-    private TableColumn<FileNumBean, String> groupName_Img, fileName_Img, fileUnitSize_Img;
+    public TableColumn<FileNumBean, String> groupName_Img, fileName_Img, fileUnitSize_Img;
 
     @FXML
-    private Label inPath_Img, outPath_Img, excelPath_Img, fileNumber_Img, log_Img, tip_Img, excelType_Img,
+    public Label inPath_Img, outPath_Img, excelPath_Img, fileNumber_Img, log_Img, tip_Img, excelType_Img,
             excelTypeLabel_Img;
 
     @FXML
-    private Button fileButton_Img, reselectButton_Img, clearButton_Img, exportButton_Img, cancel_Img,
+    public Button fileButton_Img, reselectButton_Img, clearButton_Img, exportButton_Img, cancel_Img,
             outPathButton_Img, excelPathButton_Img;
 
     @FXML
-    private TextField imgWidth_Img, imgHeight_Img, excelName_Img, sheetName_Img, subCode_Img, startRow_Img,
+    public TextField imgWidth_Img, imgHeight_Img, excelName_Img, sheetName_Img, subCode_Img, startRow_Img,
             startCell_Img, readRow_Img, readCell_Img, maxRow_Img, maxImgNum_Img;
 
     @FXML
-    private CheckBox jpg_Img, png_Img, jpeg_Img, recursion_Img, showFileType_Img, openDirectory_Img, openFile_Img,
+    public CheckBox jpg_Img, png_Img, jpeg_Img, recursion_Img, showFileType_Img, openDirectory_Img, openFile_Img,
             noImg_Img, exportTitle_Img, exportFileNum_Img, exportFileSize_Img;
 
     /**
      * 组件自适应宽高
-     *
-     * @param stage 程序主舞台
      */
-    public static void adaption(Stage stage) {
-        Scene scene = stage.getScene();
+    public void adaption() {
         // 设置组件高度
-        double stageHeight = stage.getHeight();
-        TableView<?> table = (TableView<?>) scene.lookup("#tableView_Img");
-        table.setPrefHeight(stageHeight * 0.45);
+        double stageHeight = mainStage.getHeight();
+        tableView_Img.setPrefHeight(stageHeight * 0.45);
         // 设置组件宽度
-        double stageWidth = stage.getWidth();
+        double stageWidth = mainStage.getWidth();
         double tableWidth = stageWidth * 0.94;
-        table.setMaxWidth(tableWidth);
-        Node index = scene.lookup("#index_Img");
-        index.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
-        Node groupId = scene.lookup("#groupId_Img");
-        groupId.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
-        Node groupNameNum = scene.lookup("#groupName_Img");
-        groupNameNum.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
-        Node groupNumberNum = scene.lookup("#groupNumber_Img");
-        groupNumberNum.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
-        Node fileNameNum = scene.lookup("#fileName_Img");
-        fileNameNum.setStyle("-fx-pref-width: " + tableWidth * 0.5 + "px;");
-        Node fileUnitSize = scene.lookup("#fileUnitSize_Img");
-        fileUnitSize.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
-        Label fileNum = (Label) scene.lookup("#fileNumber_Img");
-        Label tip_Img = (Label) scene.lookup("#tip_Img");
-        HBox fileNumberHBox = (HBox) scene.lookup("#fileNumberHBox_Img");
-        nodeRightAlignment(fileNumberHBox, tableWidth, fileNum);
-        HBox tipHBox = (HBox) scene.lookup("#tipHBox_Img");
-        nodeRightAlignment(tipHBox, tableWidth, tip_Img);
+        tableView_Img.setMaxWidth(tableWidth);
+        nodeRightAlignment(fileNumberHBox_Img, tableWidth, fileNumber_Img);
+        nodeRightAlignment(tipHBox_Img, tableWidth, tip_Img);
     }
 
     /**
      * 保存最后一次配置的值
      *
-     * @param scene 程序主场景
      * @throws IOException io异常
      */
-    public static void saveLastConfig(Scene scene) throws IOException {
-        AnchorPane anchorPane = (AnchorPane) scene.lookup("#anchorPane_Img");
-        if (anchorPane != null) {
+    public void saveLastConfig() throws IOException {
+        if (anchorPane_Img != null) {
             InputStream input = checkRunningInputStream(configFile_Img);
             Properties prop = new Properties();
             prop.load(input);
-            ChoiceBox<?> hideFileType = (ChoiceBox<?>) scene.lookup("#hideFileType_Img");
-            prop.put(key_lastHideFileType, hideFileType.getValue());
-            CheckBox recursion = (CheckBox) scene.lookup("#recursion_Img");
-            String recursionValue = recursion.isSelected() ? activation : unActivation;
+            prop.put(key_lastHideFileType, hideFileType_Img.getValue());
+            String recursionValue = recursion_Img.isSelected() ? activation : unActivation;
             prop.put(key_lastRecursion, recursionValue);
-            CheckBox showFileType = (CheckBox) scene.lookup("#showFileType_Img");
-            String showFileTypeValue = showFileType.isSelected() ? activation : unActivation;
+            String showFileTypeValue = showFileType_Img.isSelected() ? activation : unActivation;
             prop.put(key_lastShowFileType, showFileTypeValue);
-            CheckBox openDirectory = (CheckBox) scene.lookup("#openDirectory_Img");
-            String openDirectoryValue = openDirectory.isSelected() ? activation : unActivation;
+            String openDirectoryValue = openDirectory_Img.isSelected() ? activation : unActivation;
             prop.put(key_lastOpenDirectory, openDirectoryValue);
-            CheckBox openFile = (CheckBox) scene.lookup("#openFile_Img");
-            String openFileValue = openFile.isSelected() ? activation : unActivation;
+            String openFileValue = openFile_Img.isSelected() ? activation : unActivation;
             prop.put(key_lastOpenFile, openFileValue);
-            TextField excelName = (TextField) scene.lookup("#excelName_Img");
-            prop.put(key_lastExcelName, excelName.getText());
-            TextField sheetName = (TextField) scene.lookup("#sheetName_Img");
-            prop.put(key_lastSheetName, sheetName.getText());
-            TextField subCode = (TextField) scene.lookup("#subCode_Img");
-            prop.put(key_lastSubCode, subCode.getText());
-            TextField startRow = (TextField) scene.lookup("#startRow_Img");
-            prop.put(key_lastStartRow, startRow.getText());
-            TextField startCell = (TextField) scene.lookup("#startCell_Img");
-            prop.put(key_lastStartCell, startCell.getText());
-            TextField readRow = (TextField) scene.lookup("#readRow_Img");
-            prop.put(key_lastReadRow, readRow.getText());
-            TextField readCell = (TextField) scene.lookup("#readCell_Img");
-            prop.put(key_lastReadCell, readCell.getText());
-            TextField maxRow = (TextField) scene.lookup("#maxRow_Img");
-            prop.put(key_lastMaxRow, maxRow.getText());
-            TextField imgWidth = (TextField) scene.lookup("#imgWidth_Img");
-            prop.put(key_lastImgWidth, imgWidth.getText());
-            TextField imgHeight = (TextField) scene.lookup("#imgHeight_Img");
-            prop.put(key_lastImgHeight, imgHeight.getText());
-            Label inPath = (Label) scene.lookup("#inPath_Img");
-            prop.put(key_lastInPath, inPath.getText());
-            Label outPath = (Label) scene.lookup("#outPath_Img");
-            prop.put(key_lastOutPath, outPath.getText());
-            Label excelPath = (Label) scene.lookup("#excelPath_Img");
-            prop.put(key_lastExcelPath, excelPath.getText());
-            TextField maxImgNum = (TextField) scene.lookup("#maxImgNum_Img");
-            prop.put(key_lastMaxImgNum, maxImgNum.getText());
-            CheckBox noImg = (CheckBox) scene.lookup("#noImg_Img");
-            String noImgValue = noImg.isSelected() ? activation : unActivation;
+            prop.put(key_lastExcelName, excelName_Img.getText());
+            prop.put(key_lastSheetName, sheetName_Img.getText());
+            prop.put(key_lastSubCode, subCode_Img.getText());
+            prop.put(key_lastStartRow, startRow_Img.getText());
+            prop.put(key_lastStartCell, startCell_Img.getText());
+            prop.put(key_lastReadRow, readRow_Img.getText());
+            prop.put(key_lastReadCell, readCell_Img.getText());
+            prop.put(key_lastMaxRow, maxRow_Img.getText());
+            prop.put(key_lastImgWidth, imgWidth_Img.getText());
+            prop.put(key_lastImgHeight, imgHeight_Img.getText());
+            prop.put(key_lastInPath, inPath_Img.getText());
+            prop.put(key_lastOutPath, outPath_Img.getText());
+            prop.put(key_lastExcelPath, excelPath_Img.getText());
+            prop.put(key_lastMaxImgNum, maxImgNum_Img.getText());
+            String noImgValue = noImg_Img.isSelected() ? activation : unActivation;
             prop.put(key_lastNoImg, noImgValue);
-            CheckBox exportFileNum = (CheckBox) scene.lookup("#exportFileNum_Img");
-            String exportFileNumValue = exportFileNum.isSelected() ? activation : unActivation;
+            String exportFileNumValue = exportFileNum_Img.isSelected() ? activation : unActivation;
             prop.put(key_lastExportFileNum, exportFileNumValue);
-            CheckBox exportFileSize = (CheckBox) scene.lookup("#exportFileSize_Img");
-            String exportFileSizeValue = exportFileSize.isSelected() ? activation : unActivation;
+            String exportFileSizeValue = exportFileSize_Img.isSelected() ? activation : unActivation;
             prop.put(key_lastExportFileSize, exportFileSizeValue);
-            CheckBox exportTitle = (CheckBox) scene.lookup("#exportTitle_Img");
-            String exportTitleValue = exportTitle.isSelected() ? activation : unActivation;
+            String exportTitleValue = exportTitle_Img.isSelected() ? activation : unActivation;
             prop.put(key_lastExportTitle, exportTitleValue);
             List<String> lastFilterFileTypes = new ArrayList<>();
-            CheckBox jpgCheckBox = (CheckBox) scene.lookup("#jpg_Img");
-            if (jpgCheckBox.isSelected()) {
+            if (jpg_Img.isSelected()) {
                 lastFilterFileTypes.add(jpg);
             }
-            CheckBox pngCheckBox = (CheckBox) scene.lookup("#png_Img");
-            if (pngCheckBox.isSelected()) {
+            if (png_Img.isSelected()) {
                 lastFilterFileTypes.add(png);
             }
-            CheckBox jpegCheckBox = (CheckBox) scene.lookup("#jpeg_Img");
-            if (jpegCheckBox.isSelected()) {
+            if (jpeg_Img.isSelected()) {
                 lastFilterFileTypes.add(jpeg);
             }
             prop.put(key_lastFilterFileType, String.join(" ", lastFilterFileTypes));

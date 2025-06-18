@@ -19,17 +19,17 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.Configurator;
 import priv.koishi.tools.Bean.TabBean;
+import priv.koishi.tools.Controller.MainController;
 import priv.koishi.tools.ThreadPool.ThreadPoolManager;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
-import static priv.koishi.tools.Controller.MainController.mainAdaption;
-import static priv.koishi.tools.Controller.MainController.saveAllLastConfig;
+
 import static priv.koishi.tools.Finals.CommonFinals.*;
+import static priv.koishi.tools.Finals.CommonFinals.isRunningFromJar;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
@@ -50,7 +50,17 @@ public class MainApplication extends Application {
     /**
      * 程序主舞台
      */
-    private Stage primaryStage;
+    public static Stage mainStage;
+
+    /**
+     * 程序主场景
+     */
+    public static Scene mainScene;
+
+    /**
+     * 主控制器
+     */
+    public static MainController mainController;
 
     /**
      * 加载fxml页面
@@ -61,7 +71,7 @@ public class MainApplication extends Application {
      */
     @Override
     public void start(Stage stage) throws Exception {
-        primaryStage = stage;
+        mainStage = stage;
         // 读取fxml页面
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("fxml/Main-view.fxml"));
         Properties prop = new Properties();
@@ -74,16 +84,18 @@ public class MainApplication extends Application {
         } else if (activation.equals(prop.getProperty(key_lastFullWindow)) && activation.equals(prop.getProperty(key_loadLastFullWindow))) {
             stage.setFullScreen(true);
         }
-        Scene scene = new Scene(fxmlLoader.load(), appWidth, appHeight);
+        mainScene = new Scene(fxmlLoader.load(), appWidth, appHeight);
         stage.setTitle(appName);
-        stage.setScene(scene);
+        stage.setScene(mainScene);
         setWindLogo(stage, logoPath);
-        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("css/Styles.css")).toExternalForm());
-        TabPane tabPane = (TabPane) scene.lookup("#tabPane");
+        // 设置css样式
+        setWindowCss(mainScene, stylesCss);
+        mainController = fxmlLoader.getController();
+        TabPane tabPane = mainController.tabPane;
         // 读取各功能页面入口设置
         List<String> tabStateIds = Arrays.asList(prop.getProperty(key_tabIds).split(" "));
         // 初始化各功能页面入口
-        List<TabBean> tabBeanList = buildTabsData(scene, tabPane, tabStateIds);
+        List<TabBean> tabBeanList = buildTabsData(tabPane, tabStateIds);
         // 设置默认选中的Tab
         if (activation.equals(prop.getProperty(key_loadLastConfig))) {
             tabPane.getTabs().forEach(tab -> {
@@ -97,10 +109,10 @@ public class MainApplication extends Application {
         initMenu(tabPane);
         // 监听窗口面板宽度变化
         stage.widthProperty().addListener((v1, v2, v3) ->
-                Platform.runLater(() -> mainAdaption(stage, tabBeanList)));
+                Platform.runLater(() -> mainController.mainAdaption(tabBeanList)));
         // 监听窗口面板高度变化
         stage.heightProperty().addListener((v1, v2, v3) ->
-                Platform.runLater(() -> mainAdaption(stage, tabBeanList)));
+                Platform.runLater(() -> mainController.mainAdaption(tabBeanList)));
         stage.setOnCloseRequest(event -> {
             try {
                 stop();
@@ -115,13 +127,12 @@ public class MainApplication extends Application {
     /**
      * 初始化各功能页面入口
      *
-     * @param scene       程序主场景
      * @param tabPane     各功能页面入口所在tab布局
      * @param tabStateIds 带启用状态的tab id
      * @return 含有各功能页面属性的列表
      */
     @SuppressWarnings("unchecked")
-    private static List<TabBean> buildTabsData(Scene scene, TabPane tabPane, List<String> tabStateIds) {
+    private static List<TabBean> buildTabsData(TabPane tabPane, List<String> tabStateIds) {
         List<TabBean> tabBeanList = new ArrayList<>();
         ObservableList<Tab> tabs = tabPane.getTabs();
         List<String> tabIds = new ArrayList<>();
@@ -159,7 +170,7 @@ public class MainApplication extends Application {
         tabs.clear();
         tabs.addAll(sortTabs);
         Platform.runLater(() -> {
-            TableView<TabBean> tableView = (TableView<TabBean>) scene.lookup("#tableView_Set");
+            TableView<TabBean> tableView = (TableView<TabBean>) mainScene.lookup("#tableView_Set");
             // 构建tab信息列表
             buildTableView(tableView, tabBeanList);
             // 为tab信息列表添加右键菜单
@@ -230,7 +241,7 @@ public class MainApplication extends Application {
         // 卸载全局输入监听钩子
         GlobalScreen.unregisterNativeHook();
         // 保存设置
-        saveAllLastConfig(primaryStage);
+        mainController.saveAllLastConfig();
         logger.info("==============程序退出中====================");
         System.exit(0);
     }
@@ -242,20 +253,16 @@ public class MainApplication extends Application {
      */
     private void initMenu(TabPane tabPane) {
         MenuItem about = new MenuItem("关于 " + appName);
-        about.setOnAction(e -> tabPane.getTabs().forEach(tab -> {
-            if ("aboutTab".equals(tab.getId())) {
-                tabPane.getSelectionModel().select(tab);
-            }
-            showStage(primaryStage);
-        }));
+        about.setOnAction(e -> {
+            tabPane.getSelectionModel().select(mainController.aboutTab);
+            showStage(mainStage);
+        });
         MenuItem setting = new MenuItem("设置...");
         setting.setAccelerator(new KeyCodeCombination(KeyCode.COMMA, KeyCombination.META_DOWN));
-        setting.setOnAction(e -> tabPane.getTabs().forEach(tab -> {
-            if ("settingTab".equals(tab.getId())) {
-                tabPane.getSelectionModel().select(tab);
-            }
-            showStage(primaryStage);
-        }));
+        setting.setOnAction(e -> {
+            tabPane.getSelectionModel().select(mainController.settingTab);
+            showStage(mainStage);
+        });
         MenuToolkit.toolkit(Locale.getDefault()).createAboutMenuItem(appName);
         MenuItem hide = MenuToolkit.toolkit(Locale.getDefault()).createHideMenuItem(appName);
         hide.setText("隐藏 " + appName);
@@ -276,15 +283,9 @@ public class MainApplication extends Application {
      */
     public static void main(String[] args) throws IOException {
         // 打包后需要手动指定日志配置文件位置
-        if (!isRunningFromJar()) {
-            String logsPath = getLogsPath();
-            File logDirectory = new File(logsPath);
-            if (!logDirectory.exists()) {
-                if (!logDirectory.mkdirs()) {
-                    throw new IOException("日志文件夹创建失败： " + logsPath);
-                }
-            }
-            System.setProperty("log.dir", logsPath);
+        System.setProperty("log.dir", getLogsPath());
+        // 打包后需要手动指定日志配置文件位置
+        if (!isRunningFromJar) {
             ConfigurationSource source = new ConfigurationSource(new FileInputStream(getAppResourcePath(log4j2)));
             Configurator.initialize(null, source);
         }

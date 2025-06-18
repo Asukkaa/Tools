@@ -20,12 +20,12 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
-import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.TransferMode;
@@ -33,8 +33,8 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.robot.Robot;
 import javafx.scene.shape.Rectangle;
-import javafx.stage.Window;
 import javafx.stage.*;
+import javafx.stage.Window;
 import javafx.util.Duration;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -44,7 +44,6 @@ import priv.koishi.tools.EditingCell.EditingCell;
 import priv.koishi.tools.Listener.MousePositionListener;
 import priv.koishi.tools.Listener.MousePositionUpdater;
 import priv.koishi.tools.MainApplication;
-import priv.koishi.tools.Properties.CommonProperties;
 import priv.koishi.tools.ThreadPool.ThreadPoolManager;
 
 import java.awt.*;
@@ -53,8 +52,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -73,7 +72,7 @@ import static priv.koishi.tools.Utils.UiUtils.*;
  * Date:2025-02-17
  * Time:17:21
  */
-public class AutoClickController extends CommonProperties implements MousePositionUpdater {
+public class AutoClickController extends RootController implements MousePositionUpdater {
 
     /**
      * 导出文件路径
@@ -216,130 +215,84 @@ public class AutoClickController extends CommonProperties implements MousePositi
     private Stage mainStage;
 
     @FXML
-    private AnchorPane anchorPane_Click;
+    public AnchorPane anchorPane_Click;
 
     @FXML
-    private HBox fileNumberHBox_Click, tipHBox_Click, cancelTipHBox_Click, logHBox_Click;
+    public HBox fileNumberHBox_Click, tipHBox_Click, cancelTipHBox_Click, logHBox_Click;
 
     @FXML
-    private ProgressBar progressBar_Click;
+    public ProgressBar progressBar_Click;
 
     @FXML
-    private Label mousePosition_Click, dataNumber_Click, log_Click, tip_Click, cancelTip_Click, outPath_Click,
+    public Label mousePosition_Click, dataNumber_Click, log_Click, tip_Click, cancelTip_Click, outPath_Click,
             err_Click;
 
     @FXML
-    private CheckBox openDirectory_Click, showWindowRun_Click, hideWindowRun_Click, firstClick_Click,
+    public CheckBox openDirectory_Click, showWindowRun_Click, hideWindowRun_Click, firstClick_Click,
             hideWindowRecord_Click, showWindowRecord_Click;
 
     @FXML
-    private Button clearButton_Click, runClick_Click, clickTest_Click, addPosition_Click, loadAutoClick_Click,
+    public Button clearButton_Click, runClick_Click, clickTest_Click, addPosition_Click, loadAutoClick_Click,
             exportAutoClick_Click, addOutPath_Click, recordClick_Click;
 
     @FXML
-    private TextField loopTime_Click, outFileName_Click, preparationRecordTime_Click, preparationRunTime_Click;
+    public TextField loopTime_Click, outFileName_Click, preparationRecordTime_Click, preparationRunTime_Click;
 
     @FXML
-    private TableView<ClickPositionBean> tableView_Click;
+    public TableView<ClickPositionBean> tableView_Click;
 
     @FXML
-    private TableColumn<ClickPositionBean, Integer> index_Click;
+    public TableColumn<ClickPositionBean, Integer> index_Click;
 
     @FXML
-    private TableColumn<ClickPositionBean, String> name_Click, startX_Click, startY_Click, endX_Click, endY_Click,
+    public TableColumn<ClickPositionBean, String> name_Click, startX_Click, startY_Click, endX_Click, endY_Click,
             clickTime_Click, clickNum_Click, clickInterval_Click, waitTime_Click, type_Click;
 
     /**
      * 组件自适应宽高
-     *
-     * @param stage 程序主舞台
      */
-    public static void adaption(Stage stage) {
-        Scene scene = stage.getScene();
+    public void adaption() {
         // 设置组件高度
-        double stageHeight = stage.getHeight();
-        TableView<?> table = (TableView<?>) scene.lookup("#tableView_Click");
-        table.setPrefHeight(stageHeight * 0.45);
+        double stageHeight = mainStage.getHeight();
+        tableView_Click.setPrefHeight(stageHeight * 0.45);
         // 设置组件宽度
-        double stageWidth = stage.getWidth();
+        double stageWidth = mainStage.getWidth();
         double tableWidth = stageWidth * 0.95;
-        table.setMaxWidth(tableWidth);
-        Node index = scene.lookup("#index_Click");
-        index.setStyle("-fx-pref-width: " + tableWidth * 0.05 + "px;");
-        Node name = scene.lookup("#name_Click");
-        name.setStyle("-fx-pref-width: " + tableWidth * 0.15 + "px;");
-        Node startX = scene.lookup("#startX_Click");
-        startX.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
-        Node startY = scene.lookup("#startY_Click");
-        startY.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
-        Node endX = scene.lookup("#endX_Click");
-        endX.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
-        Node endY = scene.lookup("#endY_Click");
-        endY.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
-        Node clickTime = scene.lookup("#clickTime_Click");
-        clickTime.setStyle("-fx-pref-width: " + tableWidth * 0.07 + "px;");
-        Node clickNum = scene.lookup("#clickNum_Click");
-        clickNum.setStyle("-fx-pref-width: " + tableWidth * 0.07 + "px;");
-        Node clickInterval = scene.lookup("#clickInterval_Click");
-        clickInterval.setStyle("-fx-pref-width: " + tableWidth * 0.07 + "px;");
-        Node waitTime = scene.lookup("#waitTime_Click");
-        waitTime.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
-        Node type = scene.lookup("#type_Click");
-        type.setStyle("-fx-pref-width: " + tableWidth * 0.9 + "px;");
-        Label dataNum = (Label) scene.lookup("#dataNumber_Click");
-        HBox fileNumberHBox = (HBox) scene.lookup("#fileNumberHBox_Click");
-        nodeRightAlignment(fileNumberHBox, tableWidth, dataNum);
-        Label tip = (Label) scene.lookup("#tip_Click");
-        HBox tipHBox = (HBox) scene.lookup("#tipHBox_Click");
-        nodeRightAlignment(tipHBox, tableWidth, tip);
-        Label cancelTip = (Label) scene.lookup("#cancelTip_Click");
-        HBox cancelTipHBox = (HBox) scene.lookup("#cancelTipHBox_Click");
-        nodeRightAlignment(cancelTipHBox, tableWidth, cancelTip);
-        Label err = (Label) scene.lookup("#err_Click");
-        if (err != null) {
-            HBox logHBox = (HBox) scene.lookup("#logHBox_Click");
-            nodeRightAlignment(logHBox, tableWidth, err);
+        tableView_Click.setMaxWidth(tableWidth);
+        nodeRightAlignment(fileNumberHBox_Click, tableWidth, dataNumber_Click);
+        nodeRightAlignment(tipHBox_Click, tableWidth, tip_Click);
+        nodeRightAlignment(cancelTipHBox_Click, tableWidth, cancelTip_Click);
+        if (err_Click != null) {
+            nodeRightAlignment(logHBox_Click, tableWidth, err_Click);
         }
     }
 
     /**
      * 保存最后一次配置的值
      *
-     * @param scene 程序主场景
      * @throws IOException io异常
      */
-    public static void saveLastConfig(Scene scene) throws IOException {
-        AnchorPane anchorPane = (AnchorPane) scene.lookup("#anchorPane_Click");
-        if (anchorPane != null) {
+    public void saveLastConfig() throws IOException {
+        if (anchorPane_Click != null) {
             InputStream input = checkRunningInputStream(configFile_Click);
             Properties prop = new Properties();
             prop.load(input);
-            CheckBox firstClick = (CheckBox) scene.lookup("#firstClick_Click");
-            String lastFirstClickValue = firstClick.isSelected() ? activation : unActivation;
+            String lastFirstClickValue = firstClick_Click.isSelected() ? activation : unActivation;
             prop.put(key_lastFirstClick, lastFirstClickValue);
-            TextField outFileName = (TextField) scene.lookup("#outFileName_Click");
-            prop.put(key_lastOutFileName, outFileName.getText());
-            CheckBox openDirectory = (CheckBox) scene.lookup("#openDirectory_Click");
-            String lastOpenDirectoryValue = openDirectory.isSelected() ? activation : unActivation;
+            prop.put(key_lastOutFileName, outFileName_Click.getText());
+            String lastOpenDirectoryValue = openDirectory_Click.isSelected() ? activation : unActivation;
             prop.put(key_lastOpenDirectory, lastOpenDirectoryValue);
-            CheckBox hideWindowRun = (CheckBox) scene.lookup("#hideWindowRun_Click");
-            String lastHideWindowRunValue = hideWindowRun.isSelected() ? activation : unActivation;
+            String lastHideWindowRunValue = hideWindowRun_Click.isSelected() ? activation : unActivation;
             prop.put(key_lastHideWindowRun, lastHideWindowRunValue);
-            CheckBox showWindowRun = (CheckBox) scene.lookup("#showWindowRun_Click");
-            String lastShowWindowRunValue = showWindowRun.isSelected() ? activation : unActivation;
+            String lastShowWindowRunValue = showWindowRun_Click.isSelected() ? activation : unActivation;
             prop.put(key_lastShowWindowRun, lastShowWindowRunValue);
-            CheckBox hideWindowRecord = (CheckBox) scene.lookup("#hideWindowRecord_Click");
-            String lastHideWindowRecordValue = hideWindowRecord.isSelected() ? activation : unActivation;
+            String lastHideWindowRecordValue = hideWindowRecord_Click.isSelected() ? activation : unActivation;
             prop.put(key_lastHideWindowRecord, lastHideWindowRecordValue);
-            CheckBox showWindowRecord = (CheckBox) scene.lookup("#showWindowRecord_Click");
-            String lastShowWindowRecordValue = showWindowRecord.isSelected() ? activation : unActivation;
+            String lastShowWindowRecordValue = showWindowRecord_Click.isSelected() ? activation : unActivation;
             prop.put(key_lastShowWindowRecord, lastShowWindowRecordValue);
-            TextField preparationRecordTime = (TextField) scene.lookup("#preparationRecordTime_Click");
-            prop.put(key_lastPreparationRecordTime, preparationRecordTime.getText());
-            TextField preparationRunTime = (TextField) scene.lookup("#preparationRunTime_Click");
-            prop.put(key_lastPreparationRunTime, preparationRunTime.getText());
-            Label outPath = (Label) scene.lookup("#outPath_Click");
-            prop.put(key_outFilePath, outPath.getText());
+            prop.put(key_lastPreparationRecordTime, preparationRecordTime_Click.getText());
+            prop.put(key_lastPreparationRunTime, preparationRunTime_Click.getText());
+            prop.put(key_outFilePath, outPath_Click.getText());
             OutputStream output = checkRunningOutputStream(configFile_Click);
             prop.store(output, null);
             input.close();

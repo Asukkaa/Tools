@@ -1,7 +1,6 @@
 package priv.koishi.tools.Controller;
 
 import javafx.fxml.FXML;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -28,16 +27,16 @@ import static priv.koishi.tools.Utils.UiUtils.*;
  * Date:2025-01-07
  * Time:16:45
  */
-public class AboutController {
+public class AboutController extends RootController {
 
     @FXML
-    private TextField logsNum_Abt;
+    public TextField logsNum_Abt;
 
     @FXML
-    private Label logsPath_Abt, mail_Abt, version_Abt, title_Abt;
+    public Label logsPath_Abt, mail_Abt, version_Abt, title_Abt;
 
     @FXML
-    private Button openBaiduLinkBtn_Abt, openQuarkLinkBtn_Abt, openXunleiLinkBtn_Abt;
+    public Button openBaiduLinkBtn_Abt, openQuarkLinkBtn_Abt, openXunleiLinkBtn_Abt;
 
     /**
      * 读取配置文件
@@ -66,15 +65,13 @@ public class AboutController {
     /**
      * 保存日志问文件数量设置
      *
-     * @param scene 程序主场景
      * @throws IOException io异常
      */
-    public static void saveLastConfig(Scene scene) throws IOException {
+    public void saveLastConfig() throws IOException {
         InputStream input = checkRunningInputStream(configFile);
         Properties prop = new Properties();
         prop.load(input);
-        TextField logsNumTextField = (TextField) scene.lookup("#logsNum_Abt");
-        String logsNumValue = logsNumTextField.getText();
+        String logsNumValue = logsNum_Abt.getText();
         prop.setProperty(key_logsNum, logsNumValue);
         OutputStream output = checkRunningOutputStream(configFile);
         prop.store(output, null);

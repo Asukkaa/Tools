@@ -2,7 +2,9 @@ package priv.koishi.tools.Finals;
 
 import com.github.kwhat.jnativehook.mouse.NativeMouseEvent;
 import javafx.scene.input.MouseButton;
+import priv.koishi.tools.Utils.FileUtils;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -31,9 +33,19 @@ public class CommonFinals {
     public static String logoPath = "icon/Tools.png";
 
     /**
+     * css样式文件路径
+     */
+    public static String stylesCss = "css/Styles.css";
+
+    /**
      * 资源文件夹地址前缀
      */
     public static String resourcePath = "/priv/koishi/tools/";
+
+    /**
+     * 打包前资源文件夹地址前缀
+     */
+    public static String resourcesPath = "src/main/resources" + resourcePath;
 
     /**
      * excel插入图片功能配置文件路径
@@ -119,6 +131,26 @@ public class CommonFinals {
      * 文件选择器默认路径
      */
     public static final String defaultFileChooserPath = desktopPath;
+
+    /**
+     * 程序根目录
+     */
+    public static final String toolsDir = new File(javaHome).getParent();
+
+    /**
+     * 判断程序是否打包运行(在jar环境运为true，其他环境为false)
+     */
+    public static final boolean isRunningFromJar = FileUtils.isRunningFromJar();
+
+    /**
+     * win操作系统
+     */
+    public static final boolean isWin = systemName.contains("win");
+
+    /**
+     * mac操作系统
+     */
+    public static final boolean isMac = systemName.contains("mac");
 
     /**
      * 启用
@@ -409,9 +441,9 @@ public class CommonFinals {
              添加到允许列表中
             6. 重启\s""" + appName + app;
 
-    public static final String version = "2.2.1";
+    public static final String version = "2.3.0";
 
-    public static final String buildDate = "2025年5月16日";
+    public static final String buildDate = "2025.06.18";
 
     public static final String tip_version = """
             version：%s

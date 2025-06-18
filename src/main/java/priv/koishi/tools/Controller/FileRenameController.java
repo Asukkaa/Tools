@@ -15,7 +15,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -24,7 +23,6 @@ import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.*;
 import priv.koishi.tools.EditingCell.EditingCell;
-import priv.koishi.tools.Properties.CommonProperties;
 import priv.koishi.tools.ThreadPool.ThreadPoolManager;
 
 import java.io.File;
@@ -37,6 +35,7 @@ import java.util.stream.Collectors;
 
 import static priv.koishi.tools.Enum.SelectItemsEnums.*;
 import static priv.koishi.tools.Finals.CommonFinals.*;
+import static priv.koishi.tools.MainApplication.mainStage;
 import static priv.koishi.tools.Service.FileRenameService.*;
 import static priv.koishi.tools.Service.ReadDataService.readExcel;
 import static priv.koishi.tools.Service.ReadDataService.readFile;
@@ -52,7 +51,7 @@ import static priv.koishi.tools.Utils.UiUtils.*;
  * Date:2024-10-18
  * Time:下午4:36
  */
-public class FileRenameController extends CommonProperties {
+public class FileRenameController extends RootController {
 
     /**
      * 要处理的文件夹路径
@@ -115,119 +114,81 @@ public class FileRenameController extends CommonProperties {
     private Scene mainScene;
 
     @FXML
-    private AnchorPane anchorPane_Re;
+    public AnchorPane anchorPane_Re;
 
     @FXML
-    private ProgressBar progressBar_Re;
+    public ProgressBar progressBar_Re;
 
     @FXML
-    private TableView<FileBean> tableView_Re;
+    public TableView<FileBean> tableView_Re;
 
     @FXML
-    private TableColumn<FileBean, Integer> id_Re, index_Re;
+    public TableColumn<FileBean, Integer> id_Re, index_Re;
 
     @FXML
-    private TableColumn<FileBean, String> name_Re, rename_Re, path_Re, size_Re, fileType_Re,
+    public TableColumn<FileBean, String> name_Re, rename_Re, path_Re, size_Re, fileType_Re,
             creatDate_Re, updateDate_Re, showStatus_Re;
 
     @FXML
-    private CheckBox openDirectory_Re, addSpace_Re;
+    public CheckBox openDirectory_Re, addSpace_Re;
 
     @FXML
-    private VBox vbox_Re, codeRenameVBox_Re, strRenameVBox_Re, excelRenameVBox_Re;
+    public VBox vbox_Re, codeRenameVBox_Re, strRenameVBox_Re, excelRenameVBox_Re;
 
     @FXML
-    private Label excelPath_Re, fileNumber_Re, inPath_Re, log_Re, typeLabel_Re, tip_Re, warn_Re;
+    public Label excelPath_Re, fileNumber_Re, inPath_Re, log_Re, typeLabel_Re, tip_Re, warn_Re;
 
     @FXML
-    private HBox renameTypeHBox_Re, behaviorHBox_Re, targetStrHBox_Re, warnHBox_Re, tipHBox_Re, fileNumberHBox_Re;
+    public HBox renameTypeHBox_Re, behaviorHBox_Re, targetStrHBox_Re, warnHBox_Re, tipHBox_Re, fileNumberHBox_Re;
 
     @FXML
-    private Button fileButton_Re, clearButton_Re, renameButton_Re, reselectButton_Re, updateRenameButton_Re,
+    public Button fileButton_Re, clearButton_Re, renameButton_Re, reselectButton_Re, updateRenameButton_Re,
             excelPathButton_Re, updateSameCode_Re;
 
     @FXML
-    private ChoiceBox<String> hideFileType_Re, directoryNameType_Re, renameType_Re, subCode_Re, differenceCode_Re,
+    public ChoiceBox<String> hideFileType_Re, directoryNameType_Re, renameType_Re, subCode_Re, differenceCode_Re,
             targetStr_Re, leftBehavior_Re, rightBehavior_Re, renameBehavior_Re;
 
     @FXML
-    private TextField sheetName_Re, filterFileType_Re, readRow_Re, readCell_Re, maxRow_Re, startName_Re, nameNum_Re,
+    public TextField sheetName_Re, filterFileType_Re, readRow_Re, readCell_Re, maxRow_Re, startName_Re, nameNum_Re,
             startSize_Re, left_Re, right_Re, renameStr_Re, leftValue_Re, rightValue_Re, renameValue_Re, tag_Re;
 
     /**
      * 组件自适应宽高
-     *
-     * @param stage 程序主舞台
      */
-    public static void adaption(Stage stage) {
-        Scene scene = stage.getScene();
+    public void adaption() {
         // 设置组件高度
-        double stageHeight = stage.getHeight();
-        TableView<?> table = (TableView<?>) scene.lookup("#tableView_Re");
-        table.setPrefHeight(stageHeight * 0.45);
+        double stageHeight = mainStage.getHeight();
+        tableView_Re.setPrefHeight(stageHeight * 0.45);
         // 设置组件宽度
-        double stageWidth = stage.getWidth();
+        double stageWidth = mainStage.getWidth();
         double tableWidth = stageWidth * 0.94;
-        table.setMaxWidth(tableWidth);
-        Node index = scene.lookup("#index_Re");
-        index.setStyle("-fx-pref-width: " + tableWidth * 0.04 + "px;");
-        Node id = scene.lookup("#id_Re");
-        id.setStyle("-fx-pref-width: " + tableWidth * 0.04 + "px;");
-        Node name = scene.lookup("#name_Re");
-        name.setStyle("-fx-pref-width: " + tableWidth * 0.12 + "px;");
-        Node rename = scene.lookup("#rename_Re");
-        rename.setStyle("-fx-pref-width: " + tableWidth * 0.12 + "px;");
-        Node fileType = scene.lookup("#fileType_Re");
-        fileType.setStyle("-fx-pref-width: " + tableWidth * 0.06 + "px;");
-        Node path = scene.lookup("#path_Re");
-        path.setStyle("-fx-pref-width: " + tableWidth * 0.2 + "px;");
-        Node size = scene.lookup("#size_Re");
-        size.setStyle("-fx-pref-width: " + tableWidth * 0.08 + "px;");
-        Node showStatus = scene.lookup("#showStatus_Re");
-        showStatus.setStyle("-fx-pref-width: " + tableWidth * 0.06 + "px;");
-        Node creatDate = scene.lookup("#creatDate_Re");
-        creatDate.setStyle("-fx-pref-width: " + tableWidth * 0.14 + "px;");
-        Node updateDate = scene.lookup("#updateDate_Re");
-        updateDate.setStyle("-fx-pref-width: " + tableWidth * 0.14 + "px;");
-        Label fileNum = (Label) scene.lookup("#fileNumber_Re");
-        HBox fileNumberHBox = (HBox) scene.lookup("#fileNumberHBox_Re");
-        nodeRightAlignment(fileNumberHBox, tableWidth, fileNum);
-        Label tip = (Label) scene.lookup("#tip_Re");
-        HBox tipHBox = (HBox) scene.lookup("#tipHBox_Re");
-        nodeRightAlignment(tipHBox, tableWidth, tip);
-        Label warn = (Label) scene.lookup("#warn_Re");
-        HBox warnHBox = (HBox) scene.lookup("#warnHBox_Re");
-        nodeRightAlignment(warnHBox, tableWidth, warn);
+        tableView_Re.setMaxWidth(tableWidth);
+        nodeRightAlignment(fileNumberHBox_Re, tableWidth, fileNumber_Re);
+        nodeRightAlignment(tipHBox_Re, tableWidth, tip_Re);
+        nodeRightAlignment(warnHBox_Re, tableWidth, warn_Re);
     }
 
     /**
      * 保存最后一次配置的值
      *
-     * @param scene 程序主场景
      * @throws IOException io异常
      */
-    public static void saveLastConfig(Scene scene) throws IOException {
-        AnchorPane anchorPane = (AnchorPane) scene.lookup("#anchorPane_Re");
-        if (anchorPane != null) {
+    public void saveLastConfig() throws IOException {
+        if (anchorPane_Re != null) {
             InputStream input = checkRunningInputStream(configFile_Rename);
             Properties prop = new Properties();
             prop.load(input);
-            ChoiceBox<?> directoryNameType = (ChoiceBox<?>) scene.lookup("#directoryNameType_Re");
-            prop.put(key_lastDirectoryNameType, directoryNameType.getValue());
-            ChoiceBox<?> hideFileType = (ChoiceBox<?>) scene.lookup("#hideFileType_Re");
-            prop.put(key_lastHideFileType, hideFileType.getValue());
-            CheckBox openDirectory = (CheckBox) scene.lookup("#openDirectory_Re");
-            String openDirectoryValue = openDirectory.isSelected() ? activation : unActivation;
+            prop.put(key_lastDirectoryNameType, directoryNameType_Re.getValue());
+            prop.put(key_lastHideFileType, hideFileType_Re.getValue());
+            String openDirectoryValue = openDirectory_Re.isSelected() ? activation : unActivation;
             prop.put(key_lastOpenDirectory, openDirectoryValue);
-            TextField filterFileType = (TextField) scene.lookup("#filterFileType_Re");
-            prop.put(key_lastFilterFileType, filterFileType.getText());
-            Label inPath = (Label) scene.lookup("#inPath_Re");
-            prop.put(key_lastInPath, inPath.getText());
-            ChoiceBox<?> renameType = (ChoiceBox<?>) scene.lookup("#renameType_Re");
-            String renameTypeValue = (String) renameType.getValue();
+            prop.put(key_lastFilterFileType, filterFileType_Re.getText());
+            prop.put(key_lastInPath, inPath_Re.getText());
+            String renameTypeValue = renameType_Re.getValue();
             prop.put(key_lastRenameType, renameTypeValue);
             // 根据文件重命名依据设置保存配置信息
-            saveLastConfigByRenameType(prop, renameTypeValue, scene);
+            saveLastConfigByRenameType(prop, renameTypeValue);
             OutputStream output = checkRunningOutputStream(configFile_Rename);
             prop.store(output, null);
             input.close();
@@ -240,23 +201,22 @@ public class FileRenameController extends CommonProperties {
      *
      * @param prop            配置文件
      * @param renameTypeValue 重命名类型
-     * @param scene           程序主场景
      */
-    private static void saveLastConfigByRenameType(Properties prop, String renameTypeValue, Scene scene) {
+    private void saveLastConfigByRenameType(Properties prop, String renameTypeValue) {
         switch (renameTypeValue) {
             case text_codeRename: {
                 // 按编号规则重命名保存配置信息
-                saveLastConfigByCodeRename(prop, scene);
+                saveLastConfigByCodeRename(prop);
                 break;
             }
             case text_strRename: {
                 // 按指定字符重命名保存配置信息
-                saveLastConfigByStrRename(prop, scene);
+                saveLastConfigByStrRename(prop);
                 break;
             }
             case text_excelRename: {
                 // 按excel模板重命名保存配置信息
-                saveLastConfigByExcelRename(prop, scene);
+                saveLastConfigByExcelRename(prop);
                 break;
             }
         }
@@ -265,64 +225,45 @@ public class FileRenameController extends CommonProperties {
     /**
      * 按编号规则重命名保存配置信息
      *
-     * @param prop  配置文件
-     * @param scene 程序主场景
+     * @param prop 配置文件
      */
-    private static void saveLastConfigByCodeRename(Properties prop, Scene scene) {
-        TextField startName = (TextField) scene.lookup("#startName_Re");
-        prop.put(key_lastStartName, startName.getText());
-        TextField startSize = (TextField) scene.lookup("#startSize_Re");
-        prop.put(key_lastStartSize, startSize.getText());
-        TextField nameNum = (TextField) scene.lookup("#nameNum_Re");
-        prop.put(key_lastNameNum, nameNum.getText());
-        TextField tag = (TextField) scene.lookup("#tag_Re");
-        prop.put(key_lastTag, tag.getText());
-        CheckBox addSpace = (CheckBox) scene.lookup("#addSpace_Re");
-        String addSpaceValue = addSpace.isSelected() ? activation : unActivation;
+    private void saveLastConfigByCodeRename(Properties prop) {
+        prop.put(key_lastStartName, startName_Re.getText());
+        prop.put(key_lastStartSize, startSize_Re.getText());
+        prop.put(key_lastNameNum, nameNum_Re.getText());
+        prop.put(key_lastTag, tag_Re.getText());
+        String addSpaceValue = addSpace_Re.isSelected() ? activation : unActivation;
         prop.put(key_lastAddSpace, addSpaceValue);
-        ChoiceBox<?> differenceCode = (ChoiceBox<?>) scene.lookup("#differenceCode_Re");
-        prop.put(key_lastDifferenceCode, differenceCode.getValue());
-        ChoiceBox<?> subCode = (ChoiceBox<?>) scene.lookup("#subCode_Re");
-        prop.put(key_lastSubCode, subCode.getValue());
+        prop.put(key_lastDifferenceCode, differenceCode_Re.getValue());
+        prop.put(key_lastSubCode, subCode_Re.getValue());
     }
 
     /**
      * 按指定字符重命名保存配置信息
      *
-     * @param prop  配置文件
-     * @param scene 程序主场景
+     * @param prop 配置文件
      */
-    private static void saveLastConfigByStrRename(Properties prop, Scene scene) {
-        ChoiceBox<?> targetStr = (ChoiceBox<?>) scene.lookup("#targetStr_Re");
-        String targetStrValue = (String) targetStr.getValue();
+    private void saveLastConfigByStrRename(Properties prop) {
+        String targetStrValue = targetStr_Re.getValue();
         prop.put(key_lastTargetStr, targetStrValue);
         if (text_specifyString.equals(targetStrValue) || text_specifyIndex.equals(targetStrValue)) {
-            TextField renameValue = (TextField) scene.lookup("#renameValue_Re");
-            prop.put(key_lastRenameValue, renameValue.getText());
-            ChoiceBox<?> renameBehavior = (ChoiceBox<?>) scene.lookup("#renameBehavior_Re");
-            String renameBehaviorValue = (String) renameBehavior.getValue();
+            prop.put(key_lastRenameValue, renameValue_Re.getText());
+            String renameBehaviorValue = renameBehavior_Re.getValue();
             prop.put(key_lastRenameBehavior, renameBehaviorValue);
             if (text_replace.equals(renameBehaviorValue)) {
-                TextField renameStr = (TextField) scene.lookup("#renameStr_Re");
-                prop.put(key_lastRenameStr, renameStr.getText());
+                prop.put(key_lastRenameStr, renameStr_Re.getText());
             } else if (text_bothSides.equals(renameBehaviorValue)) {
-                TextField left = (TextField) scene.lookup("#left_Re");
-                prop.put(key_lastLeft, left.getText());
-                ChoiceBox<?> leftBehavior = (ChoiceBox<?>) scene.lookup("#leftBehavior_Re");
-                String leftBehaviorValue = (String) leftBehavior.getValue();
+                prop.put(key_lastLeft, left_Re.getText());
+                String leftBehaviorValue = leftBehavior_Re.getValue();
                 prop.put(key_lastLeftBehavior, leftBehaviorValue);
                 if (text_insert.equals(leftBehaviorValue) || text_replace.equals(leftBehaviorValue)) {
-                    TextField leftValue = (TextField) scene.lookup("#leftValue_Re");
-                    prop.put(key_lastLeftValue, leftValue.getText());
+                    prop.put(key_lastLeftValue, leftValue_Re.getText());
                 }
-                TextField right = (TextField) scene.lookup("#right_Re");
-                prop.put(key_lastRight, right.getText());
-                ChoiceBox<?> rightBehavior = (ChoiceBox<?>) scene.lookup("#rightBehavior_Re");
-                String rightBehaviorValue = (String) rightBehavior.getValue();
+                prop.put(key_lastRight, right_Re.getText());
+                String rightBehaviorValue = rightBehavior_Re.getValue();
                 prop.put(key_lastRightBehavior, rightBehaviorValue);
                 if (text_insert.equals(rightBehaviorValue) || text_replace.equals(rightBehaviorValue)) {
-                    TextField rightValue = (TextField) scene.lookup("#rightValue_Re");
-                    prop.put(key_lastRightValue, rightValue.getText());
+                    prop.put(key_lastRightValue, rightValue_Re.getText());
                 }
             }
         }
@@ -331,20 +272,14 @@ public class FileRenameController extends CommonProperties {
     /**
      * 按excel模板重命名保存配置信息
      *
-     * @param prop  配置文件
-     * @param scene 程序主场景
+     * @param prop 配置文件
      */
-    private static void saveLastConfigByExcelRename(Properties prop, Scene scene) {
-        TextField sheetName = (TextField) scene.lookup("#sheetName_Re");
-        prop.put(key_lastSheetName, sheetName.getText());
-        TextField readRow = (TextField) scene.lookup("#readRow_Re");
-        prop.put(key_lastReadRow, readRow.getText());
-        TextField readCell = (TextField) scene.lookup("#readCell_Re");
-        prop.put(key_lastReadCell, readCell.getText());
-        TextField maxRow = (TextField) scene.lookup("#maxRow_Re");
-        prop.put(key_lastMaxRow, maxRow.getText());
-        Label excelPath = (Label) scene.lookup("#excelPath_Re");
-        prop.put(key_lastExcelPath, excelPath.getText());
+    private void saveLastConfigByExcelRename(Properties prop) {
+        prop.put(key_lastSheetName, sheetName_Re.getText());
+        prop.put(key_lastReadRow, readRow_Re.getText());
+        prop.put(key_lastReadCell, readCell_Re.getText());
+        prop.put(key_lastMaxRow, maxRow_Re.getText());
+        prop.put(key_lastExcelPath, excelPath_Re.getText());
     }
 
     /**

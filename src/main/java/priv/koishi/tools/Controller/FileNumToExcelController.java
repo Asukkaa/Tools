@@ -13,7 +13,6 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -22,7 +21,6 @@ import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.ExcelConfig;
 import priv.koishi.tools.Configuration.FileConfig;
-import priv.koishi.tools.Properties.CommonProperties;
 import priv.koishi.tools.ThreadPool.ThreadPoolManager;
 
 import java.io.File;
@@ -35,6 +33,7 @@ import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 
 import static priv.koishi.tools.Finals.CommonFinals.*;
+import static priv.koishi.tools.MainApplication.mainStage;
 import static priv.koishi.tools.Service.FileNumToExcelService.buildNameGroupNumExcel;
 import static priv.koishi.tools.Service.ReadDataService.readExcel;
 import static priv.koishi.tools.Utils.FileUtils.*;
@@ -48,7 +47,7 @@ import static priv.koishi.tools.Utils.UiUtils.*;
  * Date:2024-10-08
  * Time:下午3:29
  */
-public class FileNumToExcelController extends CommonProperties {
+public class FileNumToExcelController extends RootController {
 
     /**
      * 要处理的文件夹路径
@@ -126,133 +125,92 @@ public class FileNumToExcelController extends CommonProperties {
     private Scene mainScene;
 
     @FXML
-    private AnchorPane anchorPane_Num;
+    public AnchorPane anchorPane_Num;
 
     @FXML
-    private HBox fileNumberHBox_Num;
+    public HBox fileNumberHBox_Num;
 
     @FXML
-    private ProgressBar progressBar_Num;
+    public ProgressBar progressBar_Num;
 
     @FXML
-    private TableView<FileNumBean> tableView_Num;
+    public TableView<FileNumBean> tableView_Num;
 
     @FXML
-    private ChoiceBox<String> hideFileType_Num, directoryNameType_Num;
+    public ChoiceBox<String> hideFileType_Num, directoryNameType_Num;
 
     @FXML
-    private TableColumn<FileNumBean, Integer> groupName_Num, groupNumber_Num, index_Num;
+    public TableColumn<FileNumBean, Integer> groupName_Num, groupNumber_Num, index_Num;
 
     @FXML
-    private TableColumn<FileNumBean, String> fileName_Num, groupId_Num, fileUnitSize_Num;
+    public TableColumn<FileNumBean, String> fileName_Num, groupId_Num, fileUnitSize_Num;
 
     @FXML
-    private Label outPath_Num, excelPath_Num, fileNumber_Num, inPath_Num, log_Num, excelType_Num, excelTypeLabel_Num;
+    public Label outPath_Num, excelPath_Num, fileNumber_Num, inPath_Num, log_Num, excelType_Num, excelTypeLabel_Num;
 
     @FXML
-    private Button fileButton_Num, clearButton_Num, exportButton_Num, reselectButton_Num,
+    public Button fileButton_Num, clearButton_Num, exportButton_Num, reselectButton_Num,
             excelPathButton_Num, outPathButton_Num;
 
     @FXML
-    private CheckBox recursion_Num, openDirectory_Num, openFile_Num, showFileType_Num,
+    public CheckBox recursion_Num, openDirectory_Num, openFile_Num, showFileType_Num,
             exportTitle_Num, exportFileNum_Num, exportFileSize_Num;
 
     @FXML
-    private TextField excelName_Num, sheetName_Num, startRow_Num, startCell_Num, filterFileType_Num,
+    public TextField excelName_Num, sheetName_Num, startRow_Num, startCell_Num, filterFileType_Num,
             subCode_Num, readRow_Num, readCell_Num, maxRow_Num;
 
     /**
      * 组件自适应宽高
-     *
-     * @param stage 程序主舞台
      */
-    public static void adaption(Stage stage) {
-        Scene scene = stage.getScene();
+    public void adaption() {
         // 设置组件高度
-        double stageHeight = stage.getHeight();
-        TableView<?> table = (TableView<?>) scene.lookup("#tableView_Num");
-        table.setPrefHeight(stageHeight * 0.45);
+        double stageHeight = mainStage.getHeight();
+        tableView_Num.setPrefHeight(stageHeight * 0.45);
         // 设置组件宽度
-        double stageWidth = stage.getWidth();
+        double stageWidth = mainStage.getWidth();
         double tableWidth = stageWidth * 0.94;
-        table.setMaxWidth(tableWidth);
-        Node index = scene.lookup("#index_Num");
-        index.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
-        Node groupId = scene.lookup("#groupId_Num");
-        groupId.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
-        Node groupNameNum = scene.lookup("#groupName_Num");
-        groupNameNum.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
-        Node groupNumberNum = scene.lookup("#groupNumber_Num");
-        groupNumberNum.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
-        Node fileNameNum = scene.lookup("#fileName_Num");
-        fileNameNum.setStyle("-fx-pref-width: " + tableWidth * 0.5 + "px;");
-        Node fileUnitSize = scene.lookup("#fileUnitSize_Num");
-        fileUnitSize.setStyle("-fx-pref-width: " + tableWidth * 0.1 + "px;");
-        Label fileNum = (Label) scene.lookup("#fileNumber_Num");
-        HBox fileNumberHBox = (HBox) scene.lookup("#fileNumberHBox_Num");
-        nodeRightAlignment(fileNumberHBox, tableWidth, fileNum);
+        tableView_Num.setMaxWidth(tableWidth);
+        nodeRightAlignment(fileNumberHBox_Num, tableWidth, fileNumber_Num);
     }
 
     /**
      * 保存最后一次配置的值
      *
-     * @param scene 程序主场景
      * @throws IOException io异常
      */
-    public static void saveLastConfig(Scene scene) throws IOException {
-        AnchorPane anchorPane = (AnchorPane) scene.lookup("#anchorPane_Num");
-        if (anchorPane != null) {
+    public void saveLastConfig() throws IOException {
+        if (anchorPane_Num != null) {
             InputStream input = checkRunningInputStream(configFile_Num);
             Properties prop = new Properties();
             prop.load(input);
-            ChoiceBox<?> directoryNameType = (ChoiceBox<?>) scene.lookup("#directoryNameType_Num");
-            prop.put(key_lastDirectoryNameType, directoryNameType.getValue());
-            ChoiceBox<?> hideFileType = (ChoiceBox<?>) scene.lookup("#hideFileType_Num");
-            prop.put(key_lastHideFileType, hideFileType.getValue());
-            CheckBox recursion = (CheckBox) scene.lookup("#recursion_Num");
-            String recursionValue = recursion.isSelected() ? activation : unActivation;
+            prop.put(key_lastDirectoryNameType, directoryNameType_Num.getValue());
+            prop.put(key_lastHideFileType, hideFileType_Num.getValue());
+            String recursionValue = recursion_Num.isSelected() ? activation : unActivation;
             prop.put(key_lastRecursion, recursionValue);
-            CheckBox showFileType = (CheckBox) scene.lookup("#showFileType_Num");
-            String showFileTypeValue = showFileType.isSelected() ? activation : unActivation;
+            String showFileTypeValue = showFileType_Num.isSelected() ? activation : unActivation;
             prop.put(key_lastShowFileType, showFileTypeValue);
-            CheckBox openDirectory = (CheckBox) scene.lookup("#openDirectory_Num");
-            String openDirectoryValue = openDirectory.isSelected() ? activation : unActivation;
+            String openDirectoryValue = openDirectory_Num.isSelected() ? activation : unActivation;
             prop.put(key_lastOpenDirectory, openDirectoryValue);
-            CheckBox openFile = (CheckBox) scene.lookup("#openFile_Num");
-            String openFileValue = openFile.isSelected() ? activation : unActivation;
+            String openFileValue = openFile_Num.isSelected() ? activation : unActivation;
             prop.put(key_lastOpenFile, openFileValue);
-            TextField excelName = (TextField) scene.lookup("#excelName_Num");
-            prop.put(key_lastExcelName, excelName.getText());
-            TextField sheetName = (TextField) scene.lookup("#sheetName_Num");
-            prop.put(key_lastSheetName, sheetName.getText());
-            TextField subCode = (TextField) scene.lookup("#subCode_Num");
-            prop.put(key_lastSubCode, subCode.getText());
-            TextField startRow = (TextField) scene.lookup("#startRow_Num");
-            prop.put(key_lastStartRow, startRow.getText());
-            TextField startCell = (TextField) scene.lookup("#startCell_Num");
-            prop.put(key_lastStartCell, startCell.getText());
-            TextField readRow = (TextField) scene.lookup("#readRow_Num");
-            prop.put(key_lastReadRow, readRow.getText());
-            TextField readCell = (TextField) scene.lookup("#readCell_Num");
-            prop.put(key_lastReadCell, readCell.getText());
-            TextField maxRow = (TextField) scene.lookup("#maxRow_Num");
-            prop.put(key_lastMaxRow, maxRow.getText());
-            TextField filterFileType = (TextField) scene.lookup("#filterFileType_Num");
-            prop.put(key_lastFilterFileType, filterFileType.getText());
-            Label inPath = (Label) scene.lookup("#inPath_Num");
-            prop.put(key_lastInPath, inPath.getText());
-            Label outPath = (Label) scene.lookup("#outPath_Num");
-            prop.put(key_lastOutPath, outPath.getText());
-            Label excelPath = (Label) scene.lookup("#excelPath_Num");
-            prop.put(key_lastExcelPath, excelPath.getText());
-            CheckBox exportFileNum = (CheckBox) scene.lookup("#exportFileNum_Num");
-            String exportFileNumValue = exportFileNum.isSelected() ? activation : unActivation;
+            prop.put(key_lastExcelName, excelName_Num.getText());
+            prop.put(key_lastSheetName, sheetName_Num.getText());
+            prop.put(key_lastSubCode, subCode_Num.getText());
+            prop.put(key_lastStartRow, startRow_Num.getText());
+            prop.put(key_lastStartCell, startCell_Num.getText());
+            prop.put(key_lastReadRow, readRow_Num.getText());
+            prop.put(key_lastReadCell, readCell_Num.getText());
+            prop.put(key_lastMaxRow, maxRow_Num.getText());
+            prop.put(key_lastFilterFileType, filterFileType_Num.getText());
+            prop.put(key_lastInPath, inPath_Num.getText());
+            prop.put(key_lastOutPath, outPath_Num.getText());
+            prop.put(key_lastExcelPath, excelPath_Num.getText());
+            String exportFileNumValue = exportFileNum_Num.isSelected() ? activation : unActivation;
             prop.put(key_lastExportFileNum, exportFileNumValue);
-            CheckBox exportFileSize = (CheckBox) scene.lookup("#exportFileSize_Num");
-            String exportFileSizeValue = exportFileSize.isSelected() ? activation : unActivation;
+            String exportFileSizeValue = exportFileSize_Num.isSelected() ? activation : unActivation;
             prop.put(key_lastExportFileSize, exportFileSizeValue);
-            CheckBox exportTitle = (CheckBox) scene.lookup("#exportTitle_Num");
-            String exportTitleValue = exportTitle.isSelected() ? activation : unActivation;
+            String exportTitleValue = exportTitle_Num.isSelected() ? activation : unActivation;
             prop.put(key_lastExportTitle, exportTitleValue);
             OutputStream output = checkRunningOutputStream(configFile_Num);
             prop.store(output, null);

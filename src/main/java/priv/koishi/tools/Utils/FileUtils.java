@@ -33,9 +33,9 @@ import static priv.koishi.tools.Finals.CommonFinals.*;
 public class FileUtils {
 
     /**
-     * 资源文件夹地址前缀
+     * 字符串格式保留两位小数
      */
-    static String resourcesPath = "src/main/resources/priv/koishi/tools/";
+    private static final DecimalFormat df = new DecimalFormat("0.00");
 
     /**
      * 获取文件类型
@@ -149,7 +149,6 @@ public class FileUtils {
         long gb = mb * kb;
         long tb = gb * kb;
         String ret = "";
-        DecimalFormat df = new DecimalFormat("0.00");
         if (size >= tb) {
             ret = df.format(size / (tb * 1.0)) + " " + TB;
         } else if (size >= gb) {
@@ -405,6 +404,15 @@ public class FileUtils {
      * @return 在jar环境运为true，其他环境为false
      */
     public static boolean isRunningFromJar() {
+        return "jar".equals(getRunningFrom());
+    }
+
+    /**
+     * 获取程序运行环境
+     *
+     * @return 运行环境
+     */
+    public static String getRunningFrom() {
         // 获取当前运行的JVM的类加载器
         ClassLoader classLoader = ClassLoader.getSystemClassLoader();
         // 获取URL资源
@@ -414,7 +422,7 @@ public class FileUtils {
         if (resource != null) {
             protocol = resource.getProtocol();
         }
-        return "jar".equals(protocol);
+        return protocol;
     }
 
     /**
@@ -514,15 +522,7 @@ public class FileUtils {
      * @return 资源文件绝对路径
      */
     public static String getAppResourcePath(String path) {
-        String resourcePath = packagePath + path;
-        // 处理macos打包成.app文件后的路径
-        if (systemName.contains(mac)) {
-            resourcePath = javaHome + "/bin/" + path;
-        }
-        if (!new File(resourcePath).exists()) {
-            resourcePath = path;
-        }
-        return resourcePath;
+        return javaHome + packagePath + path;
     }
 
     /**
@@ -531,9 +531,12 @@ public class FileUtils {
      * @return 不同操作系统下logs文件夹地址
      */
     public static String getLogsPath() {
-        String logsPath = userDir + File.separator + logs;
+        if (isRunningFromJar) {
+            return userDir + File.separator + logs;
+        }
+        String logsPath = toolsDir + File.separator + logs;
         // 处理macos打包成.app文件后的路径
-        if (systemName.contains(mac) && !isRunningFromJar()) {
+        if (isMac) {
             logsPath = javaHome + logsDir;
         }
         return logsPath;
@@ -545,9 +548,9 @@ public class FileUtils {
      * @return 不同操作系统下程序启动路径
      */
     public static String getAppPath() {
-        if (systemName.contains(win)) {
-            return new File(javaHome).getParent() + File.separator + appName + exe;
-        } else if (systemName.contains(mac)) {
+        if (isWin) {
+            return toolsDir + File.separator + appName + exe;
+        } else if (isMac) {
             return javaHome.substring(0, javaHome.indexOf(app) + app.length());
         }
         return javaHome;

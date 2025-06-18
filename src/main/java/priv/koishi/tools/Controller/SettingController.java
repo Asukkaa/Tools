@@ -2,11 +2,8 @@ package priv.koishi.tools.Controller;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
-import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 import priv.koishi.tools.Bean.TabBean;
 
@@ -17,10 +14,12 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
 import java.util.*;
 
-import static priv.koishi.tools.Controller.MainController.saveAllLastConfig;
 import static priv.koishi.tools.Finals.CommonFinals.*;
+import static priv.koishi.tools.MainApplication.mainController;
+import static priv.koishi.tools.MainApplication.mainStage;
 import static priv.koishi.tools.Utils.CommonUtils.getCurrentGCType;
 import static priv.koishi.tools.Utils.FileUtils.*;
+import static priv.koishi.tools.Utils.FileUtils.isRunningFromJar;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
 /**
@@ -30,92 +29,75 @@ import static priv.koishi.tools.Utils.UiUtils.*;
  * Date:2024-11-12
  * Time:下午4:51
  */
-public class SettingController {
-
-    /**
-     * 程序主舞台
-     */
-    private Stage mainStage;
+public class SettingController extends RootController {
 
     @FXML
-    private AnchorPane anchorPane_Set;
+    public AnchorPane anchorPane_Set;
 
     @FXML
-    private Button reLaunch_Set;
+    public Button reLaunch_Set;
 
     @FXML
-    private ChoiceBox<String> sort_Set;
+    public ChoiceBox<String> sort_Set;
 
     @FXML
-    private TextField nextRunMemory_Set;
+    public TextField nextRunMemory_Set;
 
     @FXML
-    private ChoiceBox<String> nextGcType_Set;
+    public ChoiceBox<String> nextGcType_Set;
 
     @FXML
-    private TableView<TabBean> tableView_Set;
+    public TableView<TabBean> tableView_Set;
 
     @FXML
-    private TableColumn<TabBean, String> tabName_Set;
+    public TableColumn<TabBean, String> tabName_Set;
 
     @FXML
-    private TableColumn<TabBean, CheckBox> activationCheckBox_Set;
+    public TableColumn<TabBean, CheckBox> activationCheckBox_Set;
 
     @FXML
-    private Label runningMemory_Set, thisPath_Set, systemMemory_Set, gcType_Set;
+    public Label runningMemory_Set, thisPath_Set, systemMemory_Set, gcType_Set;
 
     @FXML
-    private CheckBox loadRename_Set, loadFileNum_Set, loadFileName_Set, loadImgToExcel_Set, lastTab_Set,
+    public CheckBox loadRename_Set, loadFileNum_Set, loadFileName_Set, loadImgToExcel_Set, lastTab_Set,
             fullWindow_Set, reverseSort_Set, loadAutoClick_Set, maxWindow_Set;
 
     /**
      * 组件自适应宽高
-     *
-     * @param stage 程序主舞台
      */
-    public static void adaption(Stage stage) {
-        Scene scene = stage.getScene();
+    public void adaption() {
         // 设置组件高度
-        double stageHeight = stage.getHeight();
-        TableView<?> table = (TableView<?>) scene.lookup("#tableView_Set");
-        table.setPrefHeight(stageHeight * 0.2);
+        double stageHeight = mainStage.getHeight();
+        tableView_Set.setPrefHeight(stageHeight * 0.2);
         // 设置组件宽度
-        double stageWidth = stage.getWidth();
+        double stageWidth = mainStage.getWidth();
         double tableWidth = stageWidth * 0.5;
-        table.setMaxWidth(tableWidth);
-        Node tabName = scene.lookup("#tabName_Set");
-        tabName.setStyle("-fx-pref-width: " + tableWidth * 0.7 + "px;");
-        Node tabState = scene.lookup("#activationCheckBox_Set");
-        tabState.setStyle("-fx-pref-width: " + tableWidth * 0.3 + "px;");
+        tableView_Set.setMaxWidth(tableWidth);
     }
 
     /**
      * 保存设置
      *
-     * @param scene 程序主场景
      * @throws IOException io异常
      */
-    public static void saveLastConfig(Scene scene) throws IOException {
+    public void saveLastConfig() throws IOException {
         // 保存jvm设置
-        saveJVMConfig(scene);
+        saveJVMConfig();
         // 保存页面开启状态与展示顺序设置
-        saveTabIds(scene);
+        saveTabIds();
     }
 
     /**
      * 保存页面开启状态与展示顺序设置
      *
-     * @param scene 程序主场景
      * @throws IOException io异常
      */
-    @SuppressWarnings("unchecked")
-    private static void saveTabIds(Scene scene) throws IOException {
+    private void saveTabIds() throws IOException {
         InputStream input = checkRunningInputStream(configFile);
         Properties prop = new Properties();
         prop.load(input);
-        TableView<TabBean> tableView = (TableView<TabBean>) scene.lookup("#tableView_Set");
         List<String> tabIds = new ArrayList<>();
-        for (TabBean tabBean : tableView.getItems()) {
+        for (TabBean tabBean : tableView_Set.getItems()) {
             String tabId = tabBean.getTabId();
             String activationState = tabBean.getActivationCheckBox().isSelected() ? activation : unActivation;
             String tabStateId = tabId + "." + activationState;
@@ -131,15 +113,12 @@ public class SettingController {
     /**
      * 保存JVM参数设置
      *
-     * @param scene 程序主场景
      * @throws IOException io异常
      */
-    private static void saveJVMConfig(Scene scene) throws IOException {
-        TextField nextRunMemory = (TextField) scene.lookup("#nextRunMemory_Set");
-        String nextRunMemoryValue = nextRunMemory.getText();
+    private void saveJVMConfig() throws IOException {
+        String nextRunMemoryValue = nextRunMemory_Set.getText();
         String XmxValue = StringUtils.isBlank(nextRunMemoryValue) ? "" : nextRunMemoryValue + G;
-        ChoiceBox<?> nextGcType = (ChoiceBox<?>) scene.lookup("#nextGcType_Set");
-        String nextGcTypeValue = (String) nextGcType.getValue();
+        String nextGcTypeValue = nextGcType_Set.getValue();
         Map<String, String> options = new HashMap<>();
         options.put(Xmx, XmxValue);
         options.put(XX, nextGcTypeValue);
@@ -262,10 +241,6 @@ public class SettingController {
         getJVMConfig();
         // 设置鼠标悬停提示
         setToolTip();
-        Platform.runLater(() -> {
-            Scene mainScene = anchorPane_Set.getScene();
-            mainStage = (Stage) mainScene.getWindow();
-        });
     }
 
     /**
@@ -366,7 +341,7 @@ public class SettingController {
     @FXML
     private void reLaunch() throws IOException {
         // 重启前需要保存设置，如果只使用关闭方法中的保存功能可能无法及时更新jvm配置参数
-        saveAllLastConfig(mainStage);
+        mainController.saveAllLastConfig();
         Platform.exit();
         if (!isRunningFromJar()) {
             ProcessBuilder processBuilder = null;
