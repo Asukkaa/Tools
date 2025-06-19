@@ -103,6 +103,31 @@ public class CommonFinals {
     public static String packagePath = "/bin/";
 
     /**
+     * log文件夹名称
+     */
+    public static final String logs = "logs";
+
+    /**
+     * log文件夹目录
+     */
+    public static final String logsDir = packagePath + logs;
+
+    /**
+     * app目录
+     */
+    public static final String appDirectory = "/app";
+
+    /**
+     * Contents目录
+     */
+    public static final String contentsDirectory = "/Contents";
+
+    /**
+     * 桌面名称
+     */
+    public static final String desktop = "Desktop";
+
+    /**
      * 当前程序运行位置
      */
     public static final String userDir = System.getProperty("user.dir");
@@ -133,6 +158,11 @@ public class CommonFinals {
     public static final String javaHome = System.getProperty("java.home");
 
     /**
+     * 程序根目录
+     */
+    public static final String rootDir = new File(javaHome).getParent();
+
+    /**
      * cfg文件路径
      */
     public static final String cfgFilePath = getCFGPath();
@@ -146,11 +176,6 @@ public class CommonFinals {
      * 文件选择器默认路径
      */
     public static final String defaultFileChooserPath = desktopPath;
-
-    /**
-     * 程序根目录
-     */
-    public static final String rootDir = new File(javaHome).getParent();
 
     /**
      * 启用
@@ -181,22 +206,6 @@ public class CommonFinals {
      * cfg文件jvm参数头
      */
     public static final String javaOptions = "java-options=";
-
-    /**
-     * log文件夹名称
-     */
-    public static final String logs = "logs";
-
-    /**
-     * log文件夹目录
-     */
-    public static final String logsDir = packagePath + logs;
-
-    public static final String appDirectory = "/app";
-
-    public static final String contentsDirectory = "/Contents";
-
-    public static final String desktop = "Desktop";
 
     public static final String cfg = ".cfg";
 
