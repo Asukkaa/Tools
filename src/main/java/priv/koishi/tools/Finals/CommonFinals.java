@@ -100,7 +100,7 @@ public class CommonFinals {
     /**
      * jpackage打包后的资源文件路径
      */
-    public static String packagePath = "runtime/bin/";
+    public static String packagePath = "/bin/";
 
     /**
      * 当前程序运行位置
@@ -135,7 +135,7 @@ public class CommonFinals {
     /**
      * 程序根目录
      */
-    public static final String toolsDir = new File(javaHome).getParent();
+    public static final String rootDir = new File(javaHome).getParent();
 
     /**
      * 判断程序是否打包运行(在jar环境运为true，其他环境为false)
@@ -183,14 +183,14 @@ public class CommonFinals {
     public static final String javaOptions = "java-options=";
 
     /**
-     * log文件夹目录
-     */
-    public static final String logsDir = "/bin/logs";
-
-    /**
      * log文件夹名称
      */
     public static final String logs = "logs";
+
+    /**
+     * log文件夹目录
+     */
+    public static final String logsDir = packagePath + logs;
 
     public static final String appDirectory = "/app";
 

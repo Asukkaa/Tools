@@ -534,7 +534,7 @@ public class FileUtils {
         if (isRunningFromJar) {
             return userDir + File.separator + logs;
         }
-        String logsPath = toolsDir + File.separator + logs;
+        String logsPath = rootDir + File.separator + logs;
         // 处理macos打包成.app文件后的路径
         if (isMac) {
             logsPath = javaHome + logsDir;
@@ -549,7 +549,7 @@ public class FileUtils {
      */
     public static String getAppPath() {
         if (isWin) {
-            return toolsDir + File.separator + appName + exe;
+            return rootDir + File.separator + appName + exe;
         } else if (isMac) {
             return javaHome.substring(0, javaHome.indexOf(app) + app.length());
         }
