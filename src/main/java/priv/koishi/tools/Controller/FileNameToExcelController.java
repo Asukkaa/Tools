@@ -382,7 +382,6 @@ public class FileNameToExcelController extends RootController {
         // 设置初始配置值为上次配置值
         setLastConfig();
         Platform.runLater(() -> {
-            mainScene = anchorPane_Name.getScene();
             // 设置要防重复点击的组件
             setDisableNodes();
             // 绑定表格数据
