@@ -208,7 +208,6 @@ public class MainApplication extends Application {
      * @throws IOException io异常
      */
     public static void main(String[] args) throws IOException {
-        // 打包后需要手动指定日志配置文件位置
         System.setProperty("log.dir", getLogsPath());
         // 打包后需要手动指定日志配置文件位置
         if (!isRunningFromJar) {
