@@ -6,10 +6,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
-import javafx.scene.control.TabPane;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -82,9 +79,11 @@ public class MainApplication extends Application {
         prop.load(input);
         double appWidth = Double.parseDouble(prop.getProperty(key_appWidth));
         double appHeight = Double.parseDouble(prop.getProperty(key_appHeight));
-        if (activation.equals(prop.getProperty(key_lastMaxWindow)) && activation.equals(prop.getProperty(key_loadLastMaxWindow))) {
+        if (activation.equals(prop.getProperty(key_lastMaxWindow))
+                && activation.equals(prop.getProperty(key_loadLastMaxWindow))) {
             stage.setMaximized(true);
-        } else if (activation.equals(prop.getProperty(key_lastFullWindow)) && activation.equals(prop.getProperty(key_loadLastFullWindow))) {
+        } else if (activation.equals(prop.getProperty(key_lastFullWindow))
+                && activation.equals(prop.getProperty(key_loadLastFullWindow))) {
             stage.setFullScreen(true);
         }
         mainScene = new Scene(fxmlLoader.load(), appWidth, appHeight);
@@ -117,7 +116,10 @@ public class MainApplication extends Application {
     /**
      * 页面入口展示和自适应宽高
      *
-     * @param event 配置加载完成事件
+     * @param event          配置加载完成事件
+     * @param tabPane        主页面布局
+     * @param loadLastConfig 是否加载上次配置
+     * @param lastTab        默认选中的Tab
      */
     private void mainApplicationAdaption(SettingsLoadedEvent event, TabPane tabPane, String loadLastConfig, String lastTab) {
         List<TabBean> tabBeanList = event.getTabBeanList();
@@ -131,11 +133,12 @@ public class MainApplication extends Application {
                 Platform.runLater(() -> mainController.mainAdaption(tabBeanList)));
         // 设置默认选中的Tab
         if (activation.equals(loadLastConfig)) {
-            tabPane.getTabs().forEach(tab -> {
+            for (Tab tab : tabPane.getTabs()) {
                 if (tab.getId().equals(lastTab)) {
                     tabPane.getSelectionModel().select(tab);
+                    break;
                 }
-            });
+            }
         }
     }
 
