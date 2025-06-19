@@ -4,12 +4,12 @@ import com.github.kwhat.jnativehook.GlobalScreen;
 import de.jangassen.MenuToolkit;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.control.TabPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -20,13 +20,16 @@ import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.Configurator;
 import priv.koishi.tools.Bean.TabBean;
 import priv.koishi.tools.Controller.MainController;
+import priv.koishi.tools.EventBus.EventBus;
+import priv.koishi.tools.EventBus.SettingsLoadedEvent;
 import priv.koishi.tools.ThreadPool.ThreadPoolManager;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
-
+import java.util.List;
+import java.util.Locale;
+import java.util.Properties;
 
 import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.Finals.CommonFinals.isRunningFromJar;
@@ -92,27 +95,14 @@ public class MainApplication extends Application {
         setWindowCss(mainScene, stylesCss);
         mainController = fxmlLoader.getController();
         TabPane tabPane = mainController.tabPane;
-        // 读取各功能页面入口设置
-        List<String> tabStateIds = Arrays.asList(prop.getProperty(key_tabIds).split(" "));
-        // 初始化各功能页面入口
-        List<TabBean> tabBeanList = buildTabsData(tabPane, tabStateIds);
-        // 设置默认选中的Tab
-        if (activation.equals(prop.getProperty(key_loadLastConfig))) {
-            tabPane.getTabs().forEach(tab -> {
-                if (tab.getId().equals(prop.getProperty(key_lastTab))) {
-                    tabPane.getSelectionModel().select(tab);
-                }
-            });
-        }
+        String loadLastConfig = prop.getProperty(key_loadLastConfig);
+        String lastTab = prop.getProperty(key_lastTab);
         input.close();
         // 初始化macOS系统应用菜单
         initMenu(tabPane);
-        // 监听窗口面板宽度变化
-        stage.widthProperty().addListener((v1, v2, v3) ->
-                Platform.runLater(() -> mainController.mainAdaption(tabBeanList)));
-        // 监听窗口面板高度变化
-        stage.heightProperty().addListener((v1, v2, v3) ->
-                Platform.runLater(() -> mainController.mainAdaption(tabBeanList)));
+        // 页面入口展示和自适应宽高
+        EventBus.subscribe(SettingsLoadedEvent.class, event ->
+                mainApplicationAdaption(event, tabPane, loadLastConfig, lastTab));
         stage.setOnCloseRequest(event -> {
             try {
                 stop();
@@ -125,95 +115,28 @@ public class MainApplication extends Application {
     }
 
     /**
-     * 初始化各功能页面入口
+     * 页面入口展示和自适应宽高
      *
-     * @param tabPane     各功能页面入口所在tab布局
-     * @param tabStateIds 带启用状态的tab id
-     * @return 含有各功能页面属性的列表
+     * @param event 配置加载完成事件
      */
-    @SuppressWarnings("unchecked")
-    private static List<TabBean> buildTabsData(TabPane tabPane, List<String> tabStateIds) {
-        List<TabBean> tabBeanList = new ArrayList<>();
-        ObservableList<Tab> tabs = tabPane.getTabs();
-        List<String> tabIds = new ArrayList<>();
-        tabStateIds.forEach(tabStateId -> {
-            String tabId = tabStateId.substring(0, tabStateId.indexOf("."));
-            tabIds.add(tabId);
-            String state = tabStateId.substring(tabStateId.indexOf(".") + 1);
-            TabBean tabBean = new TabBean();
-            Optional<Tab> tabOptional = tabs.stream()
-                    .filter(t -> t.getId().equals(tabId))
-                    .findFirst();
-            if (tabOptional.isPresent()) {
-                Tab tab = tabOptional.get();
-                CheckBox checkBox = new CheckBox(text_activation);
-                addToolTip(tip_tabSwitch, checkBox);
-                boolean isActivation = activation.equals(state);
-                // 设置页面和关于页面不允许禁用
-                if (id_settingTab.equals(tabId) || id_aboutTab.equals(tabId)) {
-                    checkBox.setDisable(true);
-                    checkBox.setSelected(true);
-                    isActivation = true;
+    private void mainApplicationAdaption(SettingsLoadedEvent event, TabPane tabPane, String loadLastConfig, String lastTab) {
+        List<TabBean> tabBeanList = event.getTabBeanList();
+        // 初始化组件宽高
+        mainController.mainAdaption(tabBeanList);
+        // 监听窗口面板宽度变化
+        mainStage.widthProperty().addListener((v1, v2, v3) ->
+                Platform.runLater(() -> mainController.mainAdaption(tabBeanList)));
+        // 监听窗口面板高度变化
+        mainStage.heightProperty().addListener((v1, v2, v3) ->
+                Platform.runLater(() -> mainController.mainAdaption(tabBeanList)));
+        // 设置默认选中的Tab
+        if (activation.equals(loadLastConfig)) {
+            tabPane.getTabs().forEach(tab -> {
+                if (tab.getId().equals(lastTab)) {
+                    tabPane.getSelectionModel().select(tab);
                 }
-                checkBox.setSelected(isActivation);
-                tabBean.setActivationCheckBox(checkBox)
-                        .setTabName(tab.getText())
-                        .setTabId(tabId);
-                tabBeanList.add(tabBean);
-                if (!isActivation) {
-                    tabs.remove(tab);
-                }
-            }
-        });
-        // 功能页按照设置排序
-        List<Tab> sortTabs = new ArrayList<>(sortTabsByIds(tabs, tabIds));
-        tabs.clear();
-        tabs.addAll(sortTabs);
-        Platform.runLater(() -> {
-            TableView<TabBean> tableView = (TableView<TabBean>) mainScene.lookup("#tableView_Set");
-            // 构建tab信息列表
-            buildTableView(tableView, tabBeanList);
-            // 为tab信息列表添加右键菜单
-            tableViewContextMenu(tableView);
-        });
-        return tabBeanList;
-    }
-
-    /**
-     * 构建右键菜单
-     *
-     * @param tableView 要添加右键菜单的列表
-     */
-    private static void tableViewContextMenu(TableView<TabBean> tableView) {
-        // 添加右键菜单
-        ContextMenu contextMenu = new ContextMenu();
-        // 移动所选行选项
-        buildMoveDataMenu(tableView, contextMenu);
-        // 取消选中选项
-        buildClearSelectedData(tableView, contextMenu);
-        // 为列表添加右键菜单并设置可选择多行
-        setContextMenu(contextMenu, tableView);
-    }
-
-    /**
-     * 构建tab信息列表
-     *
-     * @param tableView   tab信息列表
-     * @param tabBeanList 要渲染的tab信息
-     */
-    private static void buildTableView(TableView<TabBean> tableView, List<? extends TabBean> tabBeanList) {
-        for (TableColumn<TabBean, ?> column : tableView.getColumns()) {
-            addTableColumnToolTip(column);
-            if ("tabName_Set".equals(column.getId())) {
-                column.setCellValueFactory(new PropertyValueFactory<>("tabName"));
-                addTableCellToolTip(column);
-            } else if ("activationCheckBox_Set".equals(column.getId())) {
-                column.setCellValueFactory(new PropertyValueFactory<>("activationCheckBox"));
-            }
+            });
         }
-        tableView.setItems(FXCollections.observableArrayList(tabBeanList));
-        // 设置列表通过拖拽排序行
-        tableViewDragRow(tableView);
     }
 
     /**

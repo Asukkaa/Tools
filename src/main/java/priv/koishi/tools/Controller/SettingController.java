@@ -1,11 +1,17 @@
 package priv.koishi.tools.Controller;
 
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import org.apache.commons.lang3.StringUtils;
 import priv.koishi.tools.Bean.TabBean;
+import priv.koishi.tools.EventBus.EventBus;
+import priv.koishi.tools.EventBus.MainLoadedEvent;
+import priv.koishi.tools.EventBus.SettingsLoadedEvent;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -227,6 +233,103 @@ public class SettingController extends RootController {
     }
 
     /**
+     * 初始化各功能页面入口
+     */
+    private void buildTabsData(MainLoadedEvent event) {
+        Properties prop = new Properties();
+        InputStream input;
+        try {
+            input = checkRunningInputStream(configFile);
+            prop.load(input);
+            List<String> tabStateIds = Arrays.asList(prop.getProperty(key_tabIds).split(" "));
+            input.close();
+            List<TabBean> tabBeanList = new ArrayList<>();
+            ObservableList<Tab> tabs = mainController.tabPane.getTabs();
+            List<String> tabIds = new ArrayList<>();
+            tabStateIds.forEach(tabStateId -> {
+                String tabId = tabStateId.substring(0, tabStateId.indexOf("."));
+                tabIds.add(tabId);
+                String state = tabStateId.substring(tabStateId.indexOf(".") + 1);
+                TabBean tabBean = new TabBean();
+                Optional<Tab> tabOptional = tabs.stream()
+                        .filter(t -> t.getId().equals(tabId))
+                        .findFirst();
+                if (tabOptional.isPresent()) {
+                    Tab tab = tabOptional.get();
+                    CheckBox checkBox = new CheckBox(text_activation);
+                    addToolTip(tip_tabSwitch, checkBox);
+                    boolean isActivation = activation.equals(state);
+                    // 设置页面和关于页面不允许禁用
+                    if (id_settingTab.equals(tabId) || id_aboutTab.equals(tabId)) {
+                        checkBox.setDisable(true);
+                        checkBox.setSelected(true);
+                        isActivation = true;
+                    }
+                    checkBox.setSelected(isActivation);
+                    tabBean.setActivationCheckBox(checkBox)
+                            .setTabName(tab.getText())
+                            .setTabId(tabId);
+                    tabBeanList.add(tabBean);
+                    if (!isActivation) {
+                        tabs.remove(tab);
+                    }
+                }
+            });
+            // 功能页按照设置排序
+            List<Tab> sortTabs = new ArrayList<>(sortTabsByIds(tabs, tabIds));
+            tabs.clear();
+            tabs.addAll(sortTabs);
+            Platform.runLater(() -> {
+                // 构建tab信息列表
+                buildTableView(tableView_Set, tabBeanList);
+                // 为tab信息列表添加右键菜单
+                tableViewContextMenu(tableView_Set);
+                // 加载完成后发布事件
+                EventBus.publish(new SettingsLoadedEvent(tabBeanList));
+            });
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * 构建右键菜单
+     *
+     * @param tableView 要添加右键菜单的列表
+     */
+    private static void tableViewContextMenu(TableView<TabBean> tableView) {
+        // 添加右键菜单
+        ContextMenu contextMenu = new ContextMenu();
+        // 移动所选行选项
+        buildMoveDataMenu(tableView, contextMenu);
+        // 取消选中选项
+        buildClearSelectedData(tableView, contextMenu);
+        // 为列表添加右键菜单并设置可选择多行
+        setContextMenu(contextMenu, tableView);
+    }
+
+    /**
+     * 构建tab信息列表
+     *
+     * @param tableView   tab信息列表
+     * @param tabBeanList 要渲染的tab信息
+     */
+    private static void buildTableView(TableView<TabBean> tableView, List<? extends TabBean> tabBeanList) {
+        for (TableColumn<TabBean, ?> column : tableView.getColumns()) {
+            addTableColumnToolTip(column);
+            if ("tabName_Set".equals(column.getId())) {
+                column.setCellValueFactory(new PropertyValueFactory<>("tabName"));
+                addTableCellToolTip(column);
+            } else if ("activationCheckBox_Set".equals(column.getId())) {
+                column.setCellValueFactory(new PropertyValueFactory<>("activationCheckBox"));
+            }
+        }
+        tableView.setItems(FXCollections.observableArrayList(tabBeanList));
+        // 设置列表通过拖拽排序行
+        tableViewDragRow(tableView);
+    }
+
+    /**
      * 界面初始化
      *
      * @throws IOException io异常
@@ -241,6 +344,8 @@ public class SettingController extends RootController {
         getJVMConfig();
         // 设置鼠标悬停提示
         setToolTip();
+        // 初始化各功能页面入口
+        EventBus.subscribe(MainLoadedEvent.class, this::buildTabsData);
     }
 
     /**
