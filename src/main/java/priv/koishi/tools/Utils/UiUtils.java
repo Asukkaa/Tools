@@ -340,20 +340,32 @@ public class UiUtils {
     /**
      * 创建一个确认弹窗
      *
+     * @param title   确认弹窗标题
      * @param confirm 确认框文案
      * @param ok      确认按钮文案
      * @param cancel  取消按钮文案
      * @return 被点击的按钮
      */
-    public static ButtonType creatConfirmDialog(String confirm, String ok, String cancel) {
+    public static ButtonType creatConfirmDialog(String title, String confirm, String ok, String cancel) {
         Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle(title);
         dialog.setHeaderText(confirm);
         Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
-        stage.getIcons().add(new Image(Objects.requireNonNull(MainApplication.class.getResource("icon/Tools.png")).toString()));
-        ButtonType cancelButton = new ButtonType(cancel, ButtonBar.ButtonData.CANCEL_CLOSE);
+        setWindowLogo(stage, logoPath);
         ButtonType okButton = new ButtonType(ok, ButtonBar.ButtonData.APPLY);
+        ButtonType cancelButton = new ButtonType(cancel, ButtonBar.ButtonData.CANCEL_CLOSE);
         dialog.getDialogPane().getButtonTypes().addAll(okButton, cancelButton);
         return dialog.showAndWait().orElse(cancelButton);
+    }
+
+    /**
+     * 给窗口设置logo
+     *
+     * @param stage 要设置logo的窗口
+     * @param path  logo路径
+     */
+    public static void setWindowLogo(Stage stage, String path) {
+        stage.getIcons().add(new Image(Objects.requireNonNull(MainApplication.class.getResource(path)).toString()));
     }
 
     /**
@@ -1318,7 +1330,7 @@ public class UiUtils {
         // 判断打开方式
         boolean openParentDirectory;
         if (file.isDirectory()) {
-            if (systemName.contains(mac) && file.getName().contains(app)) {
+            if (isMac && file.getName().contains(app)) {
                 openPath = file.getParent();
                 openParentDirectory = true;
             } else {

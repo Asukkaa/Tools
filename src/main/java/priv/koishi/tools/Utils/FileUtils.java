@@ -3,7 +3,6 @@ package priv.koishi.tools.Utils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import priv.koishi.tools.Configuration.FileConfig;
-import priv.koishi.tools.Finals.CommonFinals;
 
 import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
@@ -76,7 +75,7 @@ public class FileUtils {
         long mac = 1000;
         long kb;
         // macOS与Windows文件大小进制不同
-        if (systemName.contains(CommonFinals.mac) && distinguishOS) {
+        if (isMac && distinguishOS) {
             kb = mac;
         } else {
             kb = win;
@@ -101,7 +100,7 @@ public class FileUtils {
         double mac = 1000;
         double kb;
         // macOS与Windows文件大小进制不同
-        if (systemName.contains(CommonFinals.mac)) {
+        if (isMac) {
             kb = mac;
         } else {
             kb = win;
@@ -320,7 +319,7 @@ public class FileUtils {
                 throw new IOException(text_fileNotExists);
             }
             ProcessBuilder processBuilder;
-            if (systemName.contains(win)) {
+            if (isWin) {
                 processBuilder = new ProcessBuilder("cmd.exe", "/C", "explorer /select, " + openPath);
             } else {
                 processBuilder = new ProcessBuilder("bash", "-c", "open -R " + "'" + openPath + "'");
@@ -664,7 +663,7 @@ public class FileUtils {
         } else {
             String appPath = getAppPath();
             String cfgFileName = "/" + appName + cfg;
-            if (systemName.contains(win)) {
+            if (isWin) {
                 cfgPath = new File(appPath).getParent() + appDirectory + cfgFileName;
             } else {
                 cfgPath = appPath + contentsDirectory + appDirectory + cfgFileName;

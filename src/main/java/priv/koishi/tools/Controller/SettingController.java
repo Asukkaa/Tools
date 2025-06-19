@@ -21,11 +21,11 @@ import java.lang.management.OperatingSystemMXBean;
 import java.util.*;
 
 import static priv.koishi.tools.Finals.CommonFinals.*;
+import static priv.koishi.tools.Finals.CommonFinals.isRunningFromJar;
 import static priv.koishi.tools.MainApplication.mainController;
 import static priv.koishi.tools.MainApplication.mainStage;
 import static priv.koishi.tools.Utils.CommonUtils.getCurrentGCType;
 import static priv.koishi.tools.Utils.FileUtils.*;
-import static priv.koishi.tools.Utils.FileUtils.isRunningFromJar;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
 /**
@@ -36,6 +36,11 @@ import static priv.koishi.tools.Utils.UiUtils.*;
  * Time:下午4:51
  */
 public class SettingController extends RootController {
+
+    /**
+     * 页面加载完毕标志（true 加载完毕，false 未加载完毕）
+     */
+    private boolean initializedFinished;
 
     @FXML
     public AnchorPane anchorPane_Set;
@@ -286,6 +291,8 @@ public class SettingController extends RootController {
                 tableViewContextMenu(tableView_Set);
                 // 加载完成后发布事件
                 EventBus.publish(new SettingsLoadedEvent(tabBeanList));
+                // 标记页面加载完毕
+                initializedFinished = true;
             });
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -327,6 +334,28 @@ public class SettingController extends RootController {
         tableView.setItems(FXCollections.observableArrayList(tabBeanList));
         // 设置列表通过拖拽排序行
         tableViewDragRow(tableView);
+    }
+
+    /**
+     * 创建重启应用确认弹窗
+     */
+    private void creatReLaunchConfirm() {
+        if (initializedFinished) {
+            ButtonType result = creatConfirmDialog(
+                    "需要重启应用",
+                    "该设置需要重启应用才能修改，是否立刻重启？",
+                    "立即重启",
+                    "取消");
+            ButtonBar.ButtonData buttonData = result.getButtonData();
+            if (!buttonData.isCancelButton()) {
+                // 重启应用
+                try {
+                    reLaunch();
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        }
     }
 
     /**
@@ -448,11 +477,11 @@ public class SettingController extends RootController {
         // 重启前需要保存设置，如果只使用关闭方法中的保存功能可能无法及时更新jvm配置参数
         mainController.saveAllLastConfig();
         Platform.exit();
-        if (!isRunningFromJar()) {
+        if (!isRunningFromJar) {
             ProcessBuilder processBuilder = null;
-            if (systemName.contains(win)) {
+            if (isWin) {
                 processBuilder = new ProcessBuilder(getAppPath());
-            } else if (systemName.contains(mac)) {
+            } else if (isMac) {
                 processBuilder = new ProcessBuilder("open", "-n", getAppPath());
             }
             if (processBuilder != null) {
@@ -476,6 +505,16 @@ public class SettingController extends RootController {
         prop.store(output, null);
         input.close();
         output.close();
+    }
+
+    /**
+     * gc类型变更下拉框监听
+     */
+    @FXML
+    private void nextGcTypeAction() {
+        addValueToolTip(nextGcType_Set, tip_nextGcType, nextGcType_Set.getValue());
+        // 创建重启确认框
+        creatReLaunchConfirm();
     }
 
 }

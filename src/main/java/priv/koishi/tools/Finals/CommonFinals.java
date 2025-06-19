@@ -218,10 +218,6 @@ public class CommonFinals {
 
     public static final String app = ".app";
 
-    public static final String mac = "mac";
-
-    public static final String win = "win";
-
     public static final String Byte = "Byte";
 
     public static final String KB = "KB";

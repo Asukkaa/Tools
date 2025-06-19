@@ -532,13 +532,21 @@ public class ImgToExcelController extends RootController {
         String appMemoryText = appMemory.getText();
         double appMemoryValue = fileSizeCompareValue(appMemoryText);
         if (totalFileSizeValue >= appMemoryValue) {
-            ButtonType result = creatConfirmDialog("要导出的文件需要占用内存过多，当前内存设置可能无法导出，是否继续导出？", "继续导出", "取消导出");
+            ButtonType result = creatConfirmDialog(
+                    "占用内存过多",
+                    "要导出的文件需要占用内存过多，当前内存设置可能无法导出，是否继续导出？",
+                    "继续导出",
+                    "取消导出");
             return !result.getButtonData().isCancelButton();
         }
         String maxExcelSize = "4 GB";
         double maxExcelSizeValue = fileSizeCompareValue(maxExcelSize);
         if (totalFileSizeValue >= maxExcelSizeValue) {
-            ButtonType result = creatConfirmDialog("当前匹配的文件导出后 excel 总大小可能超过 4 GB ，可能无法正常打开，是否继续导出？", "继续导出", "取消导出");
+            ButtonType result = creatConfirmDialog(
+                    "占用内存过多",
+                    "当前匹配的文件导出后 excel 总大小可能超过 4 GB ，可能无法正常打开，是否继续导出？",
+                    "继续导出",
+                    "取消导出");
             return !result.getButtonData().isCancelButton();
         }
         return true;
