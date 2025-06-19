@@ -5,8 +5,8 @@ import javafx.application.Platform;
 import lombok.Getter;
 
 import java.awt.*;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * 鼠标位置监听器
@@ -25,7 +25,12 @@ public class MousePositionListener {
     /**
      * 需要接收鼠标位置更新的监听器集合
      */
-    private final Set<MousePositionUpdater> listeners = new HashSet<>();
+    private final java.util.List<MousePositionUpdater> listeners = new CopyOnWriteArrayList<>();
+
+    /**
+     * 需要接收鼠标位置更新的监听器类的集合（用来防止重复添加）
+     */
+    private final List<Class<?>> classList = new CopyOnWriteArrayList<>();
 
     /**
      * 当前鼠标位置坐标
@@ -81,7 +86,20 @@ public class MousePositionListener {
      * @param listener 需要接收鼠标位置更新的监听器对象
      */
     public void addListener(MousePositionUpdater listener) {
-        listeners.add(listener);
+        if (!classList.contains(listener.getClass())) {
+            listeners.add(listener);
+            classList.add(listener.getClass());
+        }
+    }
+
+    /**
+     * 移除鼠标位置更新监听器
+     *
+     * @param listener 需要移除的监听器对象
+     */
+    public void removeListener(MousePositionUpdater listener) {
+        listeners.remove(listener);
+        classList.remove(listener.getClass());
     }
 
 }
