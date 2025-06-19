@@ -108,9 +108,24 @@ public class CommonFinals {
     public static final String userDir = System.getProperty("user.dir");
 
     /**
+     * 判断程序是否打包运行(在jar环境运为true，其他环境为false)
+     */
+    public static final boolean isRunningFromJar = FileUtils.isRunningFromJar();
+
+    /**
      * 当前程序运行操作系统
      */
     public static final String systemName = System.getProperty("os.name").toLowerCase();
+
+    /**
+     * win操作系统
+     */
+    public static final boolean isWin = systemName.contains("win");
+
+    /**
+     * mac操作系统
+     */
+    public static final boolean isMac = systemName.contains("mac");
 
     /**
      * java home目录
@@ -136,21 +151,6 @@ public class CommonFinals {
      * 程序根目录
      */
     public static final String rootDir = new File(javaHome).getParent();
-
-    /**
-     * 判断程序是否打包运行(在jar环境运为true，其他环境为false)
-     */
-    public static final boolean isRunningFromJar = FileUtils.isRunningFromJar();
-
-    /**
-     * win操作系统
-     */
-    public static final boolean isWin = systemName.contains("win");
-
-    /**
-     * mac操作系统
-     */
-    public static final boolean isMac = systemName.contains("mac");
 
     /**
      * 启用

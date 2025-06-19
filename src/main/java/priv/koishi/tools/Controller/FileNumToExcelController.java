@@ -6,7 +6,6 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.TransferMode;
@@ -33,6 +32,7 @@ import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 
 import static priv.koishi.tools.Finals.CommonFinals.*;
+import static priv.koishi.tools.MainApplication.mainScene;
 import static priv.koishi.tools.MainApplication.mainStage;
 import static priv.koishi.tools.Service.FileNumToExcelService.buildNameGroupNumExcel;
 import static priv.koishi.tools.Service.ReadDataService.readExcel;
@@ -118,11 +118,6 @@ public class FileNumToExcelController extends RootController {
      * 构建excel线程
      */
     private Task<Workbook> buildExcelTask;
-
-    /**
-     * 程序主场景
-     */
-    private Scene mainScene;
 
     @FXML
     public AnchorPane anchorPane_Num;
@@ -469,7 +464,6 @@ public class FileNumToExcelController extends RootController {
         // 设置初始配置值为上次配置值
         setLastConfig();
         Platform.runLater(() -> {
-            mainScene = anchorPane_Num.getScene();
             // 设置要防重复点击的组件
             setDisableNodes();
             // 绑定表格数据

@@ -6,7 +6,6 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.TransferMode;
@@ -35,6 +34,7 @@ import java.util.stream.Collectors;
 
 import static priv.koishi.tools.Enum.SelectItemsEnums.*;
 import static priv.koishi.tools.Finals.CommonFinals.*;
+import static priv.koishi.tools.MainApplication.mainScene;
 import static priv.koishi.tools.MainApplication.mainStage;
 import static priv.koishi.tools.Service.FileRenameService.*;
 import static priv.koishi.tools.Service.ReadDataService.readExcel;
@@ -107,11 +107,6 @@ public class FileRenameController extends RootController {
      * 重命名线程
      */
     private Task<String> renameTask;
-
-    /**
-     * 程序主场景
-     */
-    private Scene mainScene;
 
     @FXML
     public AnchorPane anchorPane_Re;
@@ -764,7 +759,6 @@ public class FileRenameController extends RootController {
         // 设置初始配置值为上次配置值
         setLastConfig();
         Platform.runLater(() -> {
-            mainScene = anchorPane_Re.getScene();
             // 设置要防重复点击的组件
             setDisableNodes();
             // 绑定表格数据
@@ -918,11 +912,7 @@ public class FileRenameController extends RootController {
                 renameTask.setOnSucceeded(event -> {
                     taskUnbind(taskBean);
                     if (openDirectory_Re.isSelected()) {
-                        try {
-                            openDirectory(renameTask.getValue());
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
+                        openDirectory(renameTask.getValue());
                     }
                     taskBean.getMassageLabel().setTextFill(Color.GREEN);
                     renameTask = null;

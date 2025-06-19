@@ -289,16 +289,19 @@ public class FileUtils {
      * 打开文件夹并选中文件
      *
      * @param openPath 要打开的路径
-     * @throws IOException 文件不存在
      */
-    public static void openDirectory(String openPath) throws IOException {
+    public static void openDirectory(String openPath) {
         if (StringUtils.isNotEmpty(openPath)) {
             File file = new File(openPath);
             if (!file.exists()) {
-                throw new IOException(text_fileNotExists);
+                throw new RuntimeException(text_fileNotExists);
             }
             if (file.isDirectory()) {
-                Desktop.getDesktop().open(file);
+                try {
+                    Desktop.getDesktop().open(file);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
             if (file.isFile()) {
                 openParentDirectory(openPath);
@@ -310,13 +313,12 @@ public class FileUtils {
      * 打开上级目录并选中目标文件
      *
      * @param openPath 目标文件的路径
-     * @throws IOException 文件不存在
      */
-    public static void openParentDirectory(String openPath) throws IOException {
+    public static void openParentDirectory(String openPath) {
         if (StringUtils.isNotEmpty(openPath)) {
             File file = new File(openPath);
             if (!file.exists()) {
-                throw new IOException(text_fileNotExists);
+                throw new RuntimeException(text_fileNotExists);
             }
             ProcessBuilder processBuilder;
             if (isWin) {
@@ -324,7 +326,11 @@ public class FileUtils {
             } else {
                 processBuilder = new ProcessBuilder("bash", "-c", "open -R " + "'" + openPath + "'");
             }
-            processBuilder.start();
+            try {
+                processBuilder.start();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -433,7 +439,7 @@ public class FileUtils {
      */
     public static InputStream checkRunningInputStream(String path) throws IOException {
         InputStream input;
-        if (isRunningFromJar()) {
+        if (isRunningFromJar) {
             input = new FileInputStream(resourcesPath + path);
         } else {
             input = new FileInputStream(getAppResourcePath(path));
@@ -450,7 +456,7 @@ public class FileUtils {
      */
     public static OutputStream checkRunningOutputStream(String path) throws IOException {
         OutputStream output;
-        if (isRunningFromJar()) {
+        if (isRunningFromJar) {
             output = new FileOutputStream(resourcesPath + path);
         } else {
             output = new FileOutputStream(getAppResourcePath(path));
@@ -658,7 +664,7 @@ public class FileUtils {
      */
     public static String getCFGPath() {
         String cfgPath;
-        if (isRunningFromJar()) {
+        if (isRunningFromJar) {
             cfgPath = appName + cfg;
         } else {
             String appPath = getAppPath();

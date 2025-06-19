@@ -58,6 +58,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static priv.koishi.tools.Finals.CommonFinals.*;
+import static priv.koishi.tools.MainApplication.mainScene;
+import static priv.koishi.tools.MainApplication.mainStage;
 import static priv.koishi.tools.Service.AutoClickService.autoClick;
 import static priv.koishi.tools.Utils.CommonUtils.isInIntegerRange;
 import static priv.koishi.tools.Utils.CommonUtils.removeNativeListener;
@@ -203,16 +205,6 @@ public class AutoClickController extends RootController implements MousePosition
      * 顶部浮窗鼠标位置信息栏
      */
     private Label floatingMousePosition;
-
-    /**
-     * 程序主场景
-     */
-    private Scene mainScene;
-
-    /**
-     * 程序主舞台
-     */
-    private Stage mainStage;
 
     @FXML
     public AnchorPane anchorPane_Click;
@@ -1128,8 +1120,6 @@ public class AutoClickController extends RootController implements MousePosition
             logHBox_Click.getChildren().remove(err_Click);
         }
         Platform.runLater(() -> {
-            mainScene = anchorPane_Click.getScene();
-            mainStage = (Stage) mainScene.getWindow();
             // 获取鼠标坐标监听器
             MousePositionListener.getInstance().addListener(this);
             // 设置要防重复点击的组件

@@ -6,7 +6,6 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.TransferMode;
@@ -37,7 +36,9 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 
+import static priv.koishi.tools.Controller.MainController.settingController;
 import static priv.koishi.tools.Finals.CommonFinals.*;
+import static priv.koishi.tools.MainApplication.mainScene;
 import static priv.koishi.tools.MainApplication.mainStage;
 import static priv.koishi.tools.Service.ImgToExcelService.buildImgGroupExcel;
 import static priv.koishi.tools.Service.ReadDataService.readExcel;
@@ -143,11 +144,6 @@ public class ImgToExcelController extends RootController {
      * 读取excel分组信息线程
      */
     private Task<List<FileNumBean>> readExcelTask;
-
-    /**
-     * 程序主场景
-     */
-    private Scene mainScene;
 
     @FXML
     public AnchorPane anchorPane_Img;
@@ -528,7 +524,7 @@ public class ImgToExcelController extends RootController {
         String fileNumberText = fileNumber_Img.getText();
         String totalFileSize = fileNumberText.substring(fileNumberText.lastIndexOf(text_totalFileSize) + text_totalFileSize.length());
         double totalFileSizeValue = fileSizeCompareValue(totalFileSize) * 2;
-        Label appMemory = (Label) mainScene.lookup("#runningMemory_Set");
+        Label appMemory = settingController.runningMemory_Set;
         String appMemoryText = appMemory.getText();
         double appMemoryValue = fileSizeCompareValue(appMemoryText);
         if (totalFileSizeValue >= appMemoryValue) {
@@ -582,7 +578,6 @@ public class ImgToExcelController extends RootController {
         // 设置初始配置值为上次配置值
         setLastConfig();
         Platform.runLater(() -> {
-            mainScene = anchorPane_Img.getScene();
             // 设置要防重复点击的组件
             setDisableNodes();
             // 绑定表格数据

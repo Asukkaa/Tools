@@ -942,13 +942,7 @@ public class UiUtils {
     private static void openDirectorMenuItem(TableView<FileBean> tableView) {
         List<FileBean> fileBeans = tableView.getSelectionModel().getSelectedItems();
         List<String> pathList = fileBeans.stream().map(FileBean::getPath).distinct().toList();
-        pathList.forEach(path -> {
-            try {
-                openDirectory(path);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        pathList.forEach(FileUtils::openDirectory);
     }
 
     /**
@@ -1318,12 +1312,22 @@ public class UiUtils {
      */
     public static void setPathLabel(Label pathLabel, String path) {
         pathLabel.setText(path);
+        if (StringUtils.isBlank(path)) {
+            pathLabel.getStyleClass().removeAll("label-button-style", "label-err-style");
+            pathLabel.setOnMouseClicked(null);
+            pathLabel.setContextMenu(null);
+            pathLabel.setOnMousePressed(null);
+            Tooltip.uninstall(pathLabel, pathLabel.getTooltip());
+            return;
+        }
         File file = new File(path);
         String openText = "\n鼠标左键点击打开 ";
         if (!file.exists()) {
+            pathLabel.getStyleClass().remove("label-button-style");
             pathLabel.getStyleClass().add("label-err-style");
             openText = "\n文件不存在，鼠标左键点击打开 ";
         } else {
+            pathLabel.getStyleClass().remove("label-err-style");
             pathLabel.getStyleClass().add("label-button-style");
         }
         String openPath;
@@ -1341,19 +1345,14 @@ public class UiUtils {
             openParentDirectory = true;
             openPath = file.getParent();
         }
-        // 设置鼠标点击事件
         pathLabel.setOnMouseClicked(event -> {
             // 只接受左键点击
             if (event.getButton() == MouseButton.PRIMARY) {
-                try {
-                    // 判断是否打开文件
-                    if (openParentDirectory) {
-                        openParentDirectory(path);
-                    } else {
-                        openDirectory(path);
-                    }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                // 判断是否打开文件
+                if (openParentDirectory) {
+                    openParentDirectory(path);
+                } else {
+                    openDirectory(path);
                 }
             }
         });
@@ -1374,23 +1373,11 @@ public class UiUtils {
         File file = new File(path);
         if ((!file.getName().contains(app) && file.isDirectory())) {
             MenuItem openDirectoryMenuItem = new MenuItem("打开文件夹");
-            openDirectoryMenuItem.setOnAction(event -> {
-                try {
-                    openDirectory(path);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            });
+            openDirectoryMenuItem.setOnAction(event -> openDirectory(path));
             contextMenu.getItems().add(openDirectoryMenuItem);
         }
         MenuItem openParentDirectoryMenuItem = new MenuItem("打开上级文件夹");
-        openParentDirectoryMenuItem.setOnAction(event -> {
-            try {
-                openParentDirectory(path);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        openParentDirectoryMenuItem.setOnAction(event -> openParentDirectory(path));
         contextMenu.getItems().add(openParentDirectoryMenuItem);
         if (file.isFile() && !file.getName().equals(appName + exe)) {
             MenuItem openFileMenuItem = new MenuItem("打开文件");
