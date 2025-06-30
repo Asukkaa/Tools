@@ -446,9 +446,9 @@ public class CommonFinals {
              添加到允许列表中
             6. 重启\s""" + appName + app;
 
-    public static final String version = "2.3.0";
+    public static final String version = "2.3.1";
 
-    public static final String buildDate = "2025.06.19";
+    public static final String buildDate = "2025.06.30";
 
     public static final String tip_version = """
             version：%s
