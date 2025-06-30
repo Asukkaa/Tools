@@ -1,27 +1,27 @@
 package priv.koishi.tools.Utils;
 
-import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.input.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.stage.Window;
 import javafx.stage.*;
+import javafx.stage.Window;
 import javafx.util.Callback;
 import javafx.util.Duration;
 import org.apache.commons.collections4.CollectionUtils;
@@ -40,8 +40,8 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static priv.koishi.tools.Finals.CommonFinals.*;
@@ -299,15 +299,22 @@ public class UiUtils {
     public static void showExceptionAlert(Throwable ex) {
         logger.error(ex, ex);
         Alert alert = creatErrorAlert(errToString(ex));
-        Throwable cause = ex.getCause().getCause();
-        if (cause != null) {
-            if (cause instanceof Exception) {
-                alert.setHeaderText(cause.getMessage());
+        Throwable cause = ex.getCause();
+        if (cause instanceof RuntimeException) {
+            alert.setHeaderText(cause.getMessage());
+        } else {
+            if (cause != null) {
+                cause = cause.getCause();
+            }
+            if (cause != null) {
+                if (cause instanceof Exception) {
+                    alert.setHeaderText(cause.getMessage());
+                } else {
+                    alert.setHeaderText(ex.getMessage());
+                }
             } else {
                 alert.setHeaderText(ex.getMessage());
             }
-        } else {
-            alert.setHeaderText(ex.getMessage());
         }
         // 展示弹窗
         alert.showAndWait();
@@ -323,7 +330,7 @@ public class UiUtils {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("异常信息");
         Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-        stage.getIcons().add(new Image(Objects.requireNonNull(MainApplication.class.getResource("icon/Tools.png")).toString()));
+        setWindowLogo(stage, logoPath);
         // 创建展示异常信息的TextArea
         TextArea textArea = new TextArea();
         textArea.setEditable(false);
@@ -331,7 +338,8 @@ public class UiUtils {
         textArea.setText(errString);
         // 创建VBox并添加TextArea
         VBox details = new VBox();
-        details.heightProperty().addListener((v1, v2, v3) -> Platform.runLater(() -> textArea.setPrefHeight(details.getHeight())));
+        VBox.setVgrow(textArea, Priority.ALWAYS);
+        textArea.setMaxHeight(Double.MAX_VALUE);
         details.getChildren().add(textArea);
         alert.getDialogPane().setExpandableContent(details);
         return alert;
@@ -603,7 +611,8 @@ public class UiUtils {
      * @return 监听器
      */
     public static ChangeListener<String> textFieldValueListener(TextField textField, String tip) {
-        ChangeListener<String> listener = (observable, oldValue, newValue) -> addValueToolTip(textField, tip);
+        ChangeListener<String> listener = (observable, oldValue, newValue) ->
+                addValueToolTip(textField, tip);
         textField.textProperty().addListener(listener);
         return listener;
     }
