@@ -452,7 +452,7 @@ public class CommonFinals {
 
     public static final String tip_version = """
             版本：%s
-            %s构建日期：""".formatted(version, buildDate);
+            构建日期：%s""".formatted(version, buildDate);
 
     public static final String text_NativeHookException = "需要在macOS系统设置中启用辅助设备权限";
 
