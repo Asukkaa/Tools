@@ -11,12 +11,12 @@ import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.ExcelConfig;
 
 import java.io.IOException;
-import java.util.concurrent.ExecutorService;
 
 import static priv.koishi.tools.Finals.CommonFinals.text_saveSuccess;
 import static priv.koishi.tools.Finals.CommonFinals.text_taskFailed;
 import static priv.koishi.tools.Utils.ExcelUtils.saveExcel;
-import static priv.koishi.tools.Utils.FileUtils.*;
+import static priv.koishi.tools.Utils.FileUtils.openDirectory;
+import static priv.koishi.tools.Utils.FileUtils.openFile;
 import static priv.koishi.tools.Utils.UiUtils.changeDisableNodes;
 
 /**
@@ -57,17 +57,17 @@ public class TaskUtils {
     /**
      * 线程执行成功后保存excel文件
      *
-     * @param excelConfig     excel设置
-     * @param taskBean        线程任务所需参数
-     * @param buildExcelTask  构建excel线程任务
-     * @param openDirectory   打开文件夹选项
-     * @param openFile        打开文件选项
-     * @param executorService 线程池
-     * @throws RuntimeException io异常
+     * @param excelConfig    excel设置
+     * @param taskBean       线程任务所需参数
+     * @param buildExcelTask 构建excel线程任务
+     * @param openDirectory  打开文件夹选项
+     * @param openFile       打开文件选项
+     * @param tabId          功能id
      * @return null
+     * @throws RuntimeException io异常
      */
     public static Task<Workbook> saveExcelOnSucceeded(ExcelConfig excelConfig, TaskBean<?> taskBean, Task<? extends Workbook> buildExcelTask,
-                                                      CheckBox openDirectory, CheckBox openFile, ExecutorService executorService) {
+                                                      CheckBox openDirectory, CheckBox openFile, String tabId) {
         bindingProgressBarTask(buildExcelTask, taskBean);
         Label massageLabel = taskBean.getMassageLabel();
         buildExcelTask.setOnSucceeded(event -> {
@@ -92,11 +92,15 @@ public class TaskUtils {
                 massageLabel.setText(text_saveSuccess + excelPath);
             });
             if (!saveExcelTask.isRunning()) {
-                executorService.execute(saveExcelTask);
+                Thread.ofVirtual()
+                        .name("saveExcelTask-vThread" + tabId)
+                        .start(saveExcelTask);
             }
         });
         if (!buildExcelTask.isRunning()) {
-            executorService.execute(buildExcelTask);
+            Thread.ofVirtual()
+                    .name("buildExcelTask-vThread" + tabId)
+                    .start(buildExcelTask);
         }
         return null;
     }

@@ -22,14 +22,12 @@ import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.*;
 import priv.koishi.tools.EditingCell.EditingCell;
-import priv.koishi.tools.ThreadPool.ThreadPoolManager;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
 import static priv.koishi.tools.Enum.SelectItemsEnums.*;
@@ -87,11 +85,6 @@ public class FileRenameController extends RootController {
      * 要防重复点击的组件
      */
     private static final List<Node> disableNodes = new ArrayList<>();
-
-    /**
-     * 线程池实例
-     */
-    private static final ExecutorService executorService = ThreadPoolManager.getPool(FileRenameController.class);
 
     /**
      * 读取文件线程
@@ -318,7 +311,9 @@ public class FileRenameController extends RootController {
                 readFileTask = null;
             });
             if (!readFileTask.isRunning()) {
-                executorService.execute(readFileTask);
+                Thread.ofVirtual()
+                        .name("readFileTask-vThread" + tabId)
+                        .start(readFileTask);
             }
         }
     }
@@ -353,7 +348,9 @@ public class FileRenameController extends RootController {
             bindingProgressBarTask(readExcelTask, taskBean);
             // 使用新线程启动
             if (!readExcelTask.isRunning()) {
-                executorService.execute(readExcelTask);
+                Thread.ofVirtual()
+                        .name("readExcelTask-vThread" + tabId)
+                        .start(readExcelTask);
             }
         }
     }
@@ -918,7 +915,9 @@ public class FileRenameController extends RootController {
                     renameTask = null;
                 });
                 if (!renameTask.isRunning()) {
-                    executorService.execute(renameTask);
+                    Thread.ofVirtual()
+                            .name("renameTask-vThread" + tabId)
+                            .start(renameTask);
                 }
             }
         }

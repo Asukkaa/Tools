@@ -91,6 +91,9 @@ public class EditingCell<T> extends TableCell<T, String> {
         this.max = max;
     }
 
+    /**
+     * 进入编辑状态
+     */
     @Override
     public void startEdit() {
         if (!isEmpty()) {
@@ -105,23 +108,30 @@ public class EditingCell<T> extends TableCell<T, String> {
         }
     }
 
+    /**
+     * 退出编辑状态
+     */
     @Override
     public void cancelEdit() {
         super.cancelEdit();
         setText(getItem());
         setGraphic(null);
+        // 移除监听器
+        removeListeners();
     }
 
+    /**
+     * 更新单元格显示的值
+     *
+     * @param item  显示的值
+     * @param empty 是否为空
+     */
     @Override
     public void updateItem(String item, boolean empty) {
         super.updateItem(item, empty);
         if (empty) {
-            if (textField != null && textChangeListener != null) {
-                textField.textProperty().removeListener(textChangeListener);
-                textField.focusedProperty().removeListener(textFocusedPropertyListener);
-                textChangeListener = null;
-                textFocusedPropertyListener = null;
-            }
+            // 移除监听器
+            removeListeners();
             textField = null;
             setTooltip(null);
             setText(null);
@@ -151,17 +161,26 @@ public class EditingCell<T> extends TableCell<T, String> {
         }
     }
 
+    /**
+     * 提交编辑
+     *
+     * @param newValue 要提交的新值
+     */
     @Override
     public void commitEdit(String newValue) {
         super.commitEdit(newValue);
         updateItem(newValue, false);
         setTProperties(newValue);
+        // 移除监听器
+        removeListeners();
     }
 
     /**
      * 将编辑后的对象属性进行保存.
      * 如果不将属性保存到cell所在表格的ObservableList集合中对象的相应属性中,
      * 则只是改变了表格显示的值,一旦表格刷新,则仍会表示旧值.
+     *
+     * @param newValue 新值
      */
     private void setTProperties(String newValue) {
         TableView<T> tableView = getTableView();
@@ -197,9 +216,25 @@ public class EditingCell<T> extends TableCell<T, String> {
 
     /**
      * 获取单元格值的字符串
+     *
+     * @return 单元格值的字符串
      */
     private String getString() {
         return getItem() == null ? "" : getItem();
+    }
+
+    /**
+     * 移除监听器
+     */
+    private void removeListeners() {
+        if (textField != null && textFocusedPropertyListener != null) {
+            textField.focusedProperty().removeListener(textFocusedPropertyListener);
+            textFocusedPropertyListener = null;
+        }
+        if (textField != null && textChangeListener != null) {
+            textField.textProperty().removeListener(textChangeListener);
+            textChangeListener = null;
+        }
     }
 
 }

@@ -20,7 +20,6 @@ import priv.koishi.tools.Bean.FileBean;
 import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.ExcelConfig;
 import priv.koishi.tools.Configuration.FileConfig;
-import priv.koishi.tools.ThreadPool.ThreadPoolManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,7 +28,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.ExecutorService;
 
 import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.MainApplication.mainScene;
@@ -88,11 +86,6 @@ public class FileNameToExcelController extends RootController {
      * 要防重复点击的组件
      */
     private static final List<Node> disableNodes = new ArrayList<>();
-
-    /**
-     * 线程池实例
-     */
-    private static final ExecutorService executorService = ThreadPoolManager.getPool(FileNameToExcelController.class);
 
     /**
      * 读取文件线程
@@ -230,7 +223,9 @@ public class FileNameToExcelController extends RootController {
                 readFileTask = null;
             });
             if (!readFileTask.isRunning()) {
-                executorService.execute(readFileTask);
+                Thread.ofVirtual()
+                        .name("readFileTask-vThread" + tabId)
+                        .start(readFileTask);
             }
         }
     }
@@ -511,10 +506,12 @@ public class FileNameToExcelController extends RootController {
             // 绑定带进度条的线程
             bindingProgressBarTask(buildExcelTask, taskBean);
             if (!buildExcelTask.isRunning()) {
-                executorService.execute(buildExcelTask);
+                Thread.ofVirtual()
+                        .name("buildExcelTask-vThread" + tabId)
+                        .start(buildExcelTask);
             }
             // 线程成功后保存excel
-            buildExcelTask = saveExcelOnSucceeded(excelConfig, taskBean, buildExcelTask, openDirectory_Name, openFile_Name, executorService);
+            buildExcelTask = saveExcelOnSucceeded(excelConfig, taskBean, buildExcelTask, openDirectory_Name, openFile_Name, tabId);
         }
     }
 

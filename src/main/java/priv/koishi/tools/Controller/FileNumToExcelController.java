@@ -20,7 +20,6 @@ import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.ExcelConfig;
 import priv.koishi.tools.Configuration.FileConfig;
-import priv.koishi.tools.ThreadPool.ThreadPoolManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,7 +28,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.ExecutorService;
 
 import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.MainApplication.mainScene;
@@ -103,11 +101,6 @@ public class FileNumToExcelController extends RootController {
      * 要防重复点击的组件
      */
     private static final List<Node> disableNodes = new ArrayList<>();
-
-    /**
-     * 线程池实例
-     */
-    private static final ExecutorService executorService = ThreadPoolManager.getPool(FileNumToExcelController.class);
 
     /**
      * 读取文件线程
@@ -298,8 +291,9 @@ public class FileNumToExcelController extends RootController {
             // 绑定带进度条的线程
             bindingProgressBarTask(readExcelTask, taskBean);
             if (!readExcelTask.isRunning()) {
-                // 使用新线程启动
-                executorService.execute(readExcelTask);
+                Thread.ofVirtual()
+                        .name("readExcelTask-vThread" + tabId)
+                        .start(readExcelTask);
             }
         }
         return readExcelTask;
@@ -576,12 +570,13 @@ public class FileNumToExcelController extends RootController {
                 // 获取Task任务
                 buildExcelTask = buildNameGroupNumExcel(taskBean, excelConfig);
                 // 线程成功后保存excel
-                buildExcelTask = saveExcelOnSucceeded(excelConfig, taskBean, buildExcelTask, openDirectory_Num, openFile_Num, executorService);
+                buildExcelTask = saveExcelOnSucceeded(excelConfig, taskBean, buildExcelTask, openDirectory_Num, openFile_Num, tabId);
                 readExcelTask = null;
             });
             if (!readExcelTask.isRunning()) {
-                // 使用新线程启动
-                executorService.execute(readExcelTask);
+                Thread.ofVirtual()
+                        .name("readExcelTask-vThread" + tabId)
+                        .start(readExcelTask);
             }
         }
     }

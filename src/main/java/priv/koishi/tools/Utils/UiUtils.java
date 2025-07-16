@@ -1,5 +1,6 @@
 package priv.koishi.tools.Utils;
 
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -300,24 +301,29 @@ public class UiUtils {
         logger.error(ex, ex);
         Alert alert = creatErrorAlert(errToString(ex));
         Throwable cause = ex.getCause();
+        String message;
         if (cause instanceof RuntimeException) {
-            alert.setHeaderText(cause.getMessage());
+            message = cause.getMessage();
         } else {
             if (cause != null) {
                 cause = cause.getCause();
             }
             if (cause != null) {
                 if (cause instanceof Exception) {
-                    alert.setHeaderText(cause.getMessage());
+                    message = cause.getMessage();
                 } else {
-                    alert.setHeaderText(ex.getMessage());
+                    message = ex.getMessage();
                 }
             } else {
-                alert.setHeaderText(ex.getMessage());
+                message = ex.getMessage();
             }
         }
+        if (message.length() > 200 && !message.contains("\n")) {
+            message = message.substring(0, 200) + " ...";
+        }
+        alert.setHeaderText(message);
         // 展示弹窗
-        alert.showAndWait();
+        Platform.runLater(alert::show);
     }
 
     /**
@@ -1214,9 +1220,20 @@ public class UiUtils {
     public static <T> void buildDeleteDataMenuItem(TableView<T> tableView, Label label, ContextMenu contextMenu, String unit) {
         MenuItem deleteDataMenuItem = new MenuItem("删除所选数据");
         deleteDataMenuItem.setOnAction(event -> {
-            List<T> ts = tableView.getSelectionModel().getSelectedItems();
+            TableView.TableViewSelectionModel<T> selectionModel = tableView.getSelectionModel();
+            // 要删除的选中项
+            ObservableList<T> selectedItems = selectionModel.getSelectedItems();
             ObservableList<T> items = tableView.getItems();
-            items.removeAll(ts);
+            // 获取首个选中行的索引
+            int selectedIndex = items.indexOf(selectedItems.getFirst());
+            items.removeAll(selectedItems);
+            if (selectedIndex > 0) {
+                // 选中删除项的上一行
+                tableView.getSelectionModel().clearSelection();
+                tableView.getSelectionModel().select(selectedIndex - 1);
+                // 滚动到插入位置
+                tableView.scrollTo(selectedIndex - 1);
+            }
             updateTableViewSizeText(tableView, label, unit);
         });
         contextMenu.getItems().add(deleteDataMenuItem);

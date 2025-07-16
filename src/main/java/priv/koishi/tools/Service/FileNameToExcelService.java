@@ -174,7 +174,8 @@ public class FileNameToExcelService {
                         for (int j = 0; j < ids.size(); j++) {
                             int cellNum = startCellNum + j;
                             Cell cell = row.createCell(cellNum);
-                            cell.setCellValue(properties.get(ids.get(j)).toString());
+                            Object o = properties.get(ids.get(j));
+                            cell.setCellValue(o == null ? "" : o.toString());
                             maxCellNum = Math.max(maxCellNum, cellNum);
                         }
                         updateMessage(text_printing + (i + 1) + "/" + dataSize + text_file + fileBean.getName() + text_coordinate + startRowNum + "," + startCellNum);

@@ -446,13 +446,13 @@ public class CommonFinals {
              添加到允许列表中
             6. 重启\s""" + appName + app;
 
-    public static final String version = "2.3.1";
+    public static final String version = "2.3.2";
 
-    public static final String buildDate = "2025.06.30";
+    public static final String buildDate = "2025.07.16";
 
     public static final String tip_version = """
-            version：%s
-            %s构建""".formatted(version, buildDate);
+            版本：%s
+            %s构建日期：""".formatted(version, buildDate);
 
     public static final String text_NativeHookException = "需要在macOS系统设置中启用辅助设备权限";
 

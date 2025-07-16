@@ -24,7 +24,6 @@ import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.ExcelConfig;
 import priv.koishi.tools.Configuration.FileConfig;
 import priv.koishi.tools.Service.ImgToExcelService;
-import priv.koishi.tools.ThreadPool.ThreadPoolManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,7 +33,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.ExecutorService;
 
 import static priv.koishi.tools.Controller.MainController.settingController;
 import static priv.koishi.tools.Finals.CommonFinals.*;
@@ -124,11 +122,6 @@ public class ImgToExcelController extends RootController {
      * 要防重复点击的组件
      */
     private static final List<Node> disableNodes = new ArrayList<>();
-
-    /**
-     * 线程池实例
-     */
-    private static final ExecutorService executorService = ThreadPoolManager.getPool(ImgToExcelController.class);
 
     /**
      * 构建excel线程
@@ -362,7 +355,9 @@ public class ImgToExcelController extends RootController {
                 throw new RuntimeException(ex);
             });
             if (!readExcelTask.isRunning()) {
-                executorService.execute(readExcelTask);
+                Thread.ofVirtual()
+                        .name("readExcelTask-vThread" + tabId)
+                        .start(readExcelTask);
             }
         }
         return readExcelTask;
@@ -762,7 +757,9 @@ public class ImgToExcelController extends RootController {
                             throw new RuntimeException(ex);
                         });
                         if (!saveExcelTask.isRunning()) {
-                            executorService.execute(saveExcelTask);
+                            Thread.ofVirtual()
+                                    .name("saveExcelTask-vThread" + tabId)
+                                    .start(saveExcelTask);
                         }
                     });
                     buildExcelTask.setOnFailed(s -> {
@@ -773,7 +770,9 @@ public class ImgToExcelController extends RootController {
                         throw new RuntimeException(ex);
                     });
                     if (!buildExcelTask.isRunning()) {
-                        executorService.execute(buildExcelTask);
+                        Thread.ofVirtual()
+                                .name("buildExcelTask-vThread" + tabId)
+                                .start(buildExcelTask);
                     }
                 }
             });
