@@ -170,13 +170,15 @@ public class ExcelUtils {
      * @throws Exception        io异常
      */
     public static String saveExcel(Workbook workbook, ExcelConfig excelConfig) throws Exception {
-        SXSSFWorkbook sxssfWorkbook = (workbook instanceof SXSSFWorkbook) ? (SXSSFWorkbook) workbook :
-                new SXSSFWorkbook((XSSFWorkbook) workbook, 100, true, true);
-        String filePath = excelConfig.getOutPath() + File.separator + excelConfig.getOutName() + excelConfig.getOutExcelType();
-        checkDirectory(new File(filePath).getParent());
-        try (BufferedOutputStream bos = new BufferedOutputStream(
-                Files.newOutputStream(Paths.get(filePath)), 65536)) {
-            sxssfWorkbook.write(bos);
+        String filePath;
+        try (SXSSFWorkbook sxssfWorkbook = (workbook instanceof SXSSFWorkbook) ? (SXSSFWorkbook) workbook :
+                new SXSSFWorkbook((XSSFWorkbook) workbook, 100, true, true)) {
+            filePath = excelConfig.getOutPath() + File.separator + excelConfig.getOutName() + excelConfig.getOutExcelType();
+            checkDirectory(new File(filePath).getParent());
+            try (BufferedOutputStream bos = new BufferedOutputStream(
+                    Files.newOutputStream(Paths.get(filePath)), 65536)) {
+                sxssfWorkbook.write(bos);
+            }
         }
         return filePath;
     }

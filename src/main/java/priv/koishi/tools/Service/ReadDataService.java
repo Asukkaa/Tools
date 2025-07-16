@@ -19,9 +19,10 @@ import priv.koishi.tools.Bean.Vo.FileNumVo;
 import priv.koishi.tools.Configuration.*;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -147,14 +148,16 @@ public class ReadDataService {
     private static Workbook getWorkbook(String excelInPath) throws Exception {
         String excelType = getFileType(new File(excelInPath));
         Workbook workbook = null;
-        if (xlsx.equals(excelType)) {
-            workbook = new XSSFWorkbook(new FileInputStream(excelInPath));
-        }
-        if (xls.equals(excelType)) {
-            workbook = new HSSFWorkbook(new FileInputStream(excelInPath));
-        }
-        if (workbook == null) {
-            throw new Exception("当前读取模板文件格式为 " + excelType + " 目前只支持读取 .xlsx 与 .xls 格式的文件");
+        try (InputStream inputStream = Files.newInputStream(Paths.get(excelInPath))) {
+            if (xlsx.equals(excelType)) {
+                workbook = new XSSFWorkbook(inputStream);
+            } else if (xls.equals(excelType)) {
+                workbook = new HSSFWorkbook(inputStream);
+            }
+            if (workbook == null) {
+                inputStream.close();
+                throw new Exception("当前读取模板文件格式为 " + excelType + " 目前只支持读取 .xlsx 与 .xls 格式的文件");
+            }
         }
         return workbook;
     }
