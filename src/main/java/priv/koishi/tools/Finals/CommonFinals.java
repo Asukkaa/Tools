@@ -539,6 +539,8 @@ public class CommonFinals {
 
     public static final String tip_nextRunMemory = "下次启动程序将会按照此设置项分配程序最大运行内存，单位为GB，只能填自然数，为空将设置为默认值操作系统最大内存的1/4";
 
+    public static final String tip_checkUpdate = "点击即可查询最新版本，查询失败可点击上方对应的网盘按钮查询";
+
     public static final String tip_nextGcType = """
             下次启动程序将会按照此设置项设置垃圾回收（GC）方式
             G1GC：分区回收，低延迟与吞吐量平衡

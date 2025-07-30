@@ -88,6 +88,8 @@ public class AboutController extends RootController {
         prop.load(input);
         // 获取日志储存数量配置
         setControlLastConfig(logsNum_Abt, prop, key_logsNum);
+        // 获取自动检查更新配置
+        setControlLastConfig(autoCheck_Abt, prop, key_autoCheck);
         title_Abt.setTextFill(Color.DEEPSKYBLUE);
         title_Abt.setText(appName);
         input.close();
@@ -152,10 +154,14 @@ public class AboutController extends RootController {
      * 设置鼠标悬停提示
      */
     private void setToolTip() {
-        // 给网盘跳转按钮添加鼠标悬停提示
-        addToolTip(tip_openLink, openBaiduLinkBtn_Abt, openQuarkLinkBtn_Abt, openXunleiLinkBtn_Abt);
         // 版本号鼠标悬停提示
         addToolTip(tip_version, version_Abt);
+        // 检查更新按钮添加鼠标悬停提示
+        addToolTip(tip_checkUpdate, checkUpdate_Abt);
+        // 自动检查更新开关添加鼠标悬停提示
+        addToolTip(autoCheck_Abt.getText(), autoCheck_Abt);
+        // 给网盘跳转按钮添加鼠标悬停提示
+        addToolTip(tip_openLink, openBaiduLinkBtn_Abt, openQuarkLinkBtn_Abt, openXunleiLinkBtn_Abt);
     }
 
     /**
