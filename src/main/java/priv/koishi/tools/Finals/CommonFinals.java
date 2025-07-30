@@ -269,26 +269,6 @@ public class CommonFinals {
     public static final String logsDir = packagePath + logs;
 
     /**
-     * app目录
-     */
-    public static final String appDirectory = "/app";
-
-    /**
-     * Contents目录
-     */
-    public static final String contentsDirectory = "/Contents";
-
-    /**
-     * 判断程序是否打包运行(在jar环境运为true，其他环境为false)
-     */
-    public static final boolean isRunningFromJar = isRunningFromJar();
-
-    /**
-     * cfg文件路径
-     */
-    public static final String cfgFilePath = getCFGPath();
-
-    /**
      * 当前程序运行位置
      */
     public static final String userDir = System.getProperty("user.dir");
@@ -319,6 +299,21 @@ public class CommonFinals {
     public static final boolean isMac = systemName.contains(mac);
 
     /**
+     * app目录
+     */
+    public static final String appDirectory = "/app";
+
+    /**
+     * Contents目录
+     */
+    public static final String contentsDirectory = "/Contents";
+
+    /**
+     * 判断程序是否打包运行(在jar环境运为true，其他环境为false)
+     */
+    public static final boolean isRunningFromJar = isRunningFromJar();
+
+    /**
      * java home目录
      */
     public static final String javaHome = System.getProperty("java.home");
@@ -337,6 +332,11 @@ public class CommonFinals {
      * 获取应用根目录(win为应用名目录，mac为应用程序目录)
      */
     public static final String appRootPath = new File(appLaunchPath).getParent();
+
+    /**
+     * cfg文件路径
+     */
+    public static final String cfgFilePath = getCFGPath();
 
     /**
      * 桌面名称
