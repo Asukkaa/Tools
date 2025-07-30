@@ -67,13 +67,13 @@
                 <TextField fx:id="startName_Re" prefHeight="20" prefWidth="100"/>
 
                 <Label prefHeight="25" text="文件编号位数:"/>
-                <TextField fx:id="startSize_Re" prefHeight="20" prefWidth="50"/>
+                <TextField fx:id="startSize_Re" prefHeight="20" prefWidth="50" promptText="0"/>
 
                 <Label prefHeight="25" text="相同编号文件数量:"/>
-                <TextField fx:id="nameNum_Re" prefHeight="20" prefWidth="50"/>
+                <TextField fx:id="nameNum_Re" prefHeight="20" prefWidth="50" promptText="0"/>
 
                 <Label prefHeight="25" text="相同编号文件起始尾缀:"/>
-                <TextField fx:id="tag_Re" prefHeight="20" prefWidth="50"/>
+                <TextField fx:id="tag_Re" prefHeight="20" prefWidth="50" promptText="1"/>
 
                 <CheckBox onAction="#handleCheckBoxAction" fx:id="addSpace_Re" prefHeight="25" selected="true"
                           style="-fx-cursor: hand" text="向分隔符左侧添加一个空格"/>
@@ -153,7 +153,7 @@
 
             <HBox fx:id="behaviorHBox_Re" spacing="10" visible="false">
                 <Label prefHeight="25" text="左侧:"/>
-                <TextField fx:id="left_Re" prefHeight="20" prefWidth="50"/>
+                <TextField fx:id="left_Re" prefHeight="20" prefWidth="50" promptText="0"/>
 
                 <ChoiceBox onAction="#leftBehaviorAction" fx:id="leftBehavior_Re" prefHeight="25" prefWidth="160">
                     <items>
@@ -175,7 +175,7 @@
                 <TextField fx:id="leftValue_Re" prefHeight="20" prefWidth="100"/>
 
                 <Label prefHeight="25" text="右侧:"/>
-                <TextField fx:id="right_Re" prefHeight="20" prefWidth="50"/>
+                <TextField fx:id="right_Re" prefHeight="20" prefWidth="50" promptText="0"/>
 
                 <ChoiceBox onAction="#rightBehaviorAction" fx:id="rightBehavior_Re" prefHeight="25" prefWidth="160">
                     <items>

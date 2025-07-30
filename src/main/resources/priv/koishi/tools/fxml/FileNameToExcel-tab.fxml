@@ -46,13 +46,13 @@
 
         <HBox spacing="10">
             <Label prefHeight="25" text="导出excel文件名称:"/>
-            <TextField fx:id="excelName_Name" prefHeight="20" prefWidth="100"/>
+            <TextField fx:id="excelName_Name" prefHeight="20" prefWidth="160"/>
 
             <Label prefHeight="25" text="excel表名称:"/>
-            <TextField fx:id="sheetName_Name" prefHeight="20" prefWidth="100"/>
+            <TextField fx:id="sheetName_Name" prefHeight="20" prefWidth="160"/>
 
             <Label fx:id="excelTypeLabel_Name" prefHeight="25" text="导出excel文件类型:"/>
-            <ChoiceBox fx:id="excelType_Name" prefHeight="20" prefWidth="80">
+            <ChoiceBox fx:id="excelType_Name" prefHeight="20" prefWidth="60">
                 <items>
                     <FXCollections fx:factory="observableArrayList">
                         <String fx:value=".xlsx"/>
@@ -70,7 +70,7 @@
 
         <HBox spacing="10">
             <Label prefHeight="25" text="导出预留行:"/>
-            <TextField fx:id="startRow_Name" prefHeight="20" prefWidth="50"/>
+            <TextField fx:id="startRow_Name" prefHeight="20" prefWidth="50" promptText="0"/>
 
             <Label prefHeight="25" text="导出预留列:"/>
             <TextField fx:id="startCell_Name" prefHeight="20" prefWidth="50"/>

@@ -70,6 +70,10 @@ public class DetailController extends RootController {
         timeClick_Det.setText(item.getClickTime());
         interval_Det.setText(item.getClickInterval());
         clickType_Det.setValue(item.getType());
+        // 设置鼠标悬停提示
+        setToolTip();
+        // 设置文本输入框提示
+        setPromptText();
     }
 
     /**
@@ -100,6 +104,19 @@ public class DetailController extends RootController {
         // 限制点击次数文本输入框内容
         ChangeListener<String> clickNumBerListener = integerRangeTextField(clickNumBer_Det, 0, null, tip_clickNumBer);
         changeListeners.put(clickNumBer_Det, clickNumBerListener);
+    }
+
+    /**
+     * 设置文本输入框提示
+     */
+    private void setPromptText() {
+        wait_Det.setPromptText(selectedItem.getWaitTime());
+        clickName_Det.setPromptText(selectedItem.getName());
+        mouseStartX_Det.setPromptText(selectedItem.getStartX());
+        mouseStartY_Det.setPromptText(selectedItem.getStartY());
+        timeClick_Det.setPromptText(selectedItem.getClickTime());
+        clickNumBer_Det.setPromptText(selectedItem.getClickNum());
+        interval_Det.setPromptText(selectedItem.getClickInterval());
     }
 
     /**
@@ -143,8 +160,6 @@ public class DetailController extends RootController {
      */
     @FXML
     private void initialize() {
-        // 设置鼠标悬停提示
-        setToolTip();
         // 给输入框添加内容变化监听
         textFieldChangeListener();
         // 窗口关闭时移除所有监听器

@@ -352,16 +352,24 @@ public class FileNameToExcelController extends RootController {
      * 给输入框添加内容变化监听
      */
     private void textFieldChangeListener() {
-        // 限制导出预留行只能输入自然数
-        integerRangeTextField(startRow_Name, 0, null, tip_startRow);
-        // 限制导出预留列只能输入自然数
-        integerRangeTextField(startCell_Name, 0, null, text_onlyNaturalNumber + defaultStartCell);
         // 鼠标悬留提示输入的需要识别的文件后缀名
         textFieldValueListener(sheetName_Name, tip_sheet);
         // 鼠标悬留提示输入的需要识别的文件后缀名
-        textFieldValueListener(excelName_Name, tip_excelName + defaultOutFileName);
-        // 鼠标悬留提示输入的需要识别的文件后缀名
         textFieldValueListener(filterFileType_Name, tip_filterFileType);
+        // 限制导出预留行只能输入自然数
+        integerRangeTextField(startRow_Name, 0, null, tip_startRow);
+        // 鼠标悬留提示输入的需要识别的文件后缀名
+        textFieldValueListener(excelName_Name, tip_excelName + defaultOutFileName);
+        // 限制导出预留列只能输入自然数
+        integerRangeTextField(startCell_Name, 0, null, text_onlyNaturalNumber + defaultStartCell);
+    }
+
+    /**
+     * 设置文本输入框提示
+     */
+    private void setPromptText() {
+        excelName_Name.setPromptText(defaultOutFileName);
+        startCell_Name.setPromptText(String.valueOf(defaultStartCell));
     }
 
     /**
@@ -375,6 +383,8 @@ public class FileNameToExcelController extends RootController {
         getConfig();
         // 设置鼠标悬停提示
         setToolTip();
+        // 设置文本输入框提示
+        setPromptText();
         // 设置javafx单元格宽度
         bindPrefWidthProperty();
         // 给输入框添加内容变化监听

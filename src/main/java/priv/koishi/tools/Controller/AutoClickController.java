@@ -840,6 +840,15 @@ public class AutoClickController extends RootController implements MousePosition
     }
 
     /**
+     * 设置文本输入框提示
+     */
+    private void setPromptText() {
+        outFileName_Click.setPromptText(defaultOutFileName);
+        preparationRunTime_Click.setPromptText(String.valueOf(preparationRunTimeDefault));
+        preparationRecordTime_Click.setPromptText(String.valueOf(preparationRecordTimeDefault));
+    }
+
+    /**
      * 设置鼠标悬停提示
      */
     private void setToolTip() {
@@ -1115,6 +1124,8 @@ public class AutoClickController extends RootController implements MousePosition
         initFloatingWindow();
         // 设置鼠标悬停提示
         setToolTip();
+        // 设置文本输入框提示
+        setPromptText();
         // 给输入框添加内容变化监听
         textFieldChangeListener();
         // 设置初始配置值为上次配置值

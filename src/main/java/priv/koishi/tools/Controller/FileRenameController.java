@@ -713,12 +713,22 @@ public class FileRenameController extends RootController {
         if (text_specifyIndex.equals(targetStr_Re.getValue())) {
             integerRangeTextField(renameValue_Re, 0, null, tip_renameValue);
         }
+        // 给目标字符串右侧替换或插入输入框添加鼠标悬停提示
+        textFieldValueListener(leftValue_Re, tip_leftValue);
+        // 指定字符串所替换的字符串鼠标悬停提示
+        textFieldValueListener(renameStr_Re, tip_renameStr);
+        // 鼠标悬留提示输入的导出excel表名称
+        textFieldValueListener(sheetName_Re, tip_sheetName);
+        // 给目标字符串左侧替换或插入输入框添加鼠标悬停提示
+        textFieldValueListener(rightValue_Re, tip_rightValue);
         // 限制相同编号文件起始尾缀输入框内容
         integerRangeTextField(tag_Re, 0, null, tip_tag);
         // 限制向左匹配字符位置输入框内容
         integerRangeTextField(left_Re, 0, null, tip_left);
         // 限制向右匹配字符位置输入框内容
         integerRangeTextField(right_Re, 0, null, tip_right);
+        // 鼠标悬留提示输入的需要识别的文件后缀名
+        textFieldValueListener(filterFileType_Re, tip_filterFileType);
         // 限制读取最大行数只能输入正整数
         integerRangeTextField(maxRow_Re, 1, null, tip_maxRow);
         // 鼠标悬留提示输入的相同编号文件数量
@@ -731,16 +741,16 @@ public class FileRenameController extends RootController {
         integerRangeTextField(readRow_Re, 0, null, text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row);
         // 限制读取起始列只能输入自然数
         integerRangeTextField(readCell_Re, 0, null, text_onlyNaturalNumber + defaultReadCell + text_formThe + (defaultReadCell + 1) + text_cell);
-        // 给目标字符串右侧替换或插入输入框添加鼠标悬停提示
-        textFieldValueListener(leftValue_Re, tip_leftValue);
-        // 指定字符串所替换的字符串鼠标悬停提示
-        textFieldValueListener(renameStr_Re, tip_renameStr);
-        // 鼠标悬留提示输入的导出excel表名称
-        textFieldValueListener(sheetName_Re, tip_sheetName);
-        // 给目标字符串左侧替换或插入输入框添加鼠标悬停提示
-        textFieldValueListener(rightValue_Re, tip_rightValue);
-        // 鼠标悬留提示输入的需要识别的文件后缀名
-        textFieldValueListener(filterFileType_Re, tip_filterFileType);
+
+    }
+
+    /**
+     * 设置文本输入框提示
+     */
+    private void setPromptText() {
+        readRow_Re.setPromptText(String.valueOf(defaultReadRow));
+        readCell_Re.setPromptText(String.valueOf(defaultReadCell));
+        startName_Re.setPromptText(String.valueOf(defaultStartNameNum));
     }
 
     /**
@@ -756,6 +766,8 @@ public class FileRenameController extends RootController {
         removeChildren(vbox_Re, strRenameVBox_Re, excelRenameVBox_Re);
         // 设置鼠标悬停提示
         setToolTip();
+        // 设置文本输入框提示
+        setPromptText();
         // 设置javafx单元格宽度
         bindPrefWidthProperty();
         // 给输入框添加内容变化监听

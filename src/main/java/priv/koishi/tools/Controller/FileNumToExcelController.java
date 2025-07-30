@@ -412,24 +412,34 @@ public class FileNumToExcelController extends RootController {
      * 给输入框添加内容变化监听
      */
     private void textFieldChangeListener() {
+        // 鼠标悬留提示输入的文件名称分割符
+        textFieldValueListener(subCode_Num, tip_subCode);
+        // 鼠标悬留提示输入的导出excel表名称
+        textFieldValueListener(sheetName_Num, tip_sheetName);
+        // 鼠标悬留提示输入的需要识别的文件后缀名
+        textFieldValueListener(filterFileType_Num, tip_filterFileType);
         // 限制读取最大行数只能输入正整数
         integerRangeTextField(maxRow_Num, 1, null, tip_maxRow);
         // 限制导出预留行只能输入自然数
-        integerRangeTextField(startRow_Num, 0, null, text_onlyNaturalNumber + defaultStartCell);
+        integerRangeTextField(startRow_Num, 0, null, tip_startReadRow);
+        // 鼠标悬留提示输入的导出excel文件名称
+        textFieldValueListener(excelName_Num, tip_excelName + defaultOutFileName);
         // 限制导出预留列只能输入自然数
         integerRangeTextField(startCell_Num, 0, null, text_onlyNaturalNumber + defaultStartCell);
         // 限制读取起始行只能输入自然数
         integerRangeTextField(readRow_Num, 0, null, text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row);
         // 限制读取起始列只能输入自然数
         integerRangeTextField(readCell_Num, 0, null, text_onlyNaturalNumber + defaultReadCell + text_formThe + (defaultReadCell + 1) + text_cell);
-        // 鼠标悬留提示输入的文件名称分割符
-        textFieldValueListener(subCode_Num, tip_subCode);
-        // 鼠标悬留提示输入的导出excel表名称
-        textFieldValueListener(sheetName_Num, tip_sheetName);
-        // 鼠标悬留提示输入的导出excel文件名称
-        textFieldValueListener(excelName_Num, tip_excelName + defaultOutFileName);
-        // 鼠标悬留提示输入的需要识别的文件后缀名
-        textFieldValueListener(filterFileType_Num, tip_filterFileType);
+    }
+
+    /**
+     * 设置文本输入框提示
+     */
+    private void setPromptText() {
+        excelName_Num.setPromptText(defaultOutFileName);
+        readRow_Num.setPromptText(String.valueOf(defaultReadRow));
+        readCell_Num.setPromptText(String.valueOf(defaultReadCell));
+        startCell_Num.setPromptText(String.valueOf(defaultStartCell));
     }
 
     /**
@@ -455,6 +465,8 @@ public class FileNumToExcelController extends RootController {
         getConfig();
         // 设置鼠标悬停提示
         setToolTip();
+        // 设置文本输入框提示
+        setPromptText();
         // 设置javafx单元格宽度
         tableViewAdaption();
         // 给输入框添加内容变化监听

@@ -511,6 +511,18 @@ public class ImgToExcelController extends RootController {
     }
 
     /**
+     * 设置文本输入框提示
+     */
+    private void setPromptText() {
+        excelName_Img.setPromptText(defaultOutFileName);
+        readRow_Img.setPromptText(String.valueOf(defaultReadRow));
+        readCell_Img.setPromptText(String.valueOf(defaultReadCell));
+        imgWidth_Img.setPromptText(String.valueOf(defaultImgWidth));
+        imgHeight_Img.setPromptText(String.valueOf(defaultImgHeight));
+        startCell_Img.setPromptText(String.valueOf(defaultStartCell));
+    }
+
+    /**
      * 校验匹配文件总大小是否能够正常导出
      *
      * @return 文件大小可以正常导出或无法正常导出时选择继续导出返回true，终止任务返回false
@@ -556,6 +568,35 @@ public class ImgToExcelController extends RootController {
     }
 
     /**
+     * 获取要识别的图片格式
+     *
+     * @return 需要识别的图片格式
+     * @throws Exception 未选择需要识别的图片格式
+     */
+    private List<String> getFilterExtension() throws Exception {
+        List<String> filterExtensionList = new ArrayList<>();
+        if (jpg_Img.isSelected()) {
+            filterExtensionList.add(jpg);
+        }
+        if (png_Img.isSelected()) {
+            filterExtensionList.add(png);
+        }
+        if (jpeg_Img.isSelected()) {
+            filterExtensionList.add(jpeg);
+        }
+        if (CollectionUtils.isEmpty(filterExtensionList)) {
+            throw new Exception("未选择需要识别的图片格式");
+        }
+        return filterExtensionList;
+    }
+
+    private void resetTasks() {
+        saveExcelTask = null;
+        buildExcelTask = null;
+        inFileList = null;
+    }
+
+    /**
      * 界面初始化
      *
      * @throws IOException io异常
@@ -566,6 +607,8 @@ public class ImgToExcelController extends RootController {
         getConfig();
         // 设置鼠标悬停提示
         setToolTip();
+        // 设置文本输入框提示
+        setPromptText();
         // 设置javafx单元格宽度
         tableViewAdaption();
         // 给输入框添加内容变化监听
@@ -598,35 +641,6 @@ public class ImgToExcelController extends RootController {
             // 读取文件数据
             addInFile(selectedFile, getFilterExtension());
         }
-    }
-
-    /**
-     * 获取要识别的图片格式
-     *
-     * @return 需要识别的图片格式
-     * @throws Exception 未选择需要识别的图片格式
-     */
-    private List<String> getFilterExtension() throws Exception {
-        List<String> filterExtensionList = new ArrayList<>();
-        if (jpg_Img.isSelected()) {
-            filterExtensionList.add(jpg);
-        }
-        if (png_Img.isSelected()) {
-            filterExtensionList.add(png);
-        }
-        if (jpeg_Img.isSelected()) {
-            filterExtensionList.add(jpeg);
-        }
-        if (CollectionUtils.isEmpty(filterExtensionList)) {
-            throw new Exception("未选择需要识别的图片格式");
-        }
-        return filterExtensionList;
-    }
-
-    private void resetTasks() {
-        saveExcelTask = null;
-        buildExcelTask = null;
-        inFileList = null;
     }
 
     /**

@@ -405,7 +405,7 @@ public class CommonFinals {
 
     public static final String tip_filterFileType = "填写后只会识别所填写的后缀名文件，多个文件后缀名用空格隔开，后缀名需带 '.'";
 
-    public static final String tip_left = "只能填自然数，不填 0 默认匹配目标字符串左侧所有字符，填写后匹配目标字符串左侧所填写个数的单个字符";
+    public static final String tip_left = "只能填自然数，不填为 0 默认匹配目标字符串左侧所有字符，填写后匹配目标字符串左侧所填写个数的单个字符";
 
     public static final String tip_right = "只能填自然数，不填为 0 默认匹配目标字符串右侧所有字符，填写后匹配目标字符串右侧所填写个数的单个字符";
 
@@ -415,7 +415,7 @@ public class CommonFinals {
 
     public static final String tip_subCode = "填写后会按所填写的字符串来分割文件名称，按照分割后的文件名称左侧字符串进行分组";
 
-    public static final String tip_startRow = "只能填自然数，不填默认为0，不预留行";
+    public static final String tip_startRow = "只能填自然数，不填默认为 0，不预留行";
 
     public static final String tip_startReadRow = "只能填自然数，不填默认与读取预留行相同";
 
