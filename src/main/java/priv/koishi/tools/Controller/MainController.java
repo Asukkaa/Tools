@@ -142,21 +142,35 @@ public class MainController extends RootController {
      */
     public void saveAllLastConfig() throws IOException {
         // 保存批量向excel功能插入图片最后设置
-        imgToExcelController.saveLastConfig();
+        if (imgToExcelController != null) {
+            imgToExcelController.saveLastConfig();
+        }
         // 保存分组统计文件信息导出到excel最后设置
-        fileNumToExcelController.saveLastConfig();
+        if (fileNumToExcelController != null) {
+            fileNumToExcelController.saveLastConfig();
+        }
         // 保存导出文件详细信息到excel最后设置
-        fileNameToExcelController.saveLastConfig();
+        if (fileNameToExcelController != null) {
+            fileNameToExcelController.saveLastConfig();
+        }
         // 保存文件批量重命名功能最后设置
-        fileRenameController.saveLastConfig();
+        if (fileRenameController != null) {
+            fileRenameController.saveLastConfig();
+        }
         // 保存自动操作工具功能最后设置
-        autoClickController.saveLastConfig();
+        if (autoClickController != null) {
+            autoClickController.saveLastConfig();
+        }
+        // 保存设置页面最后设置
+        if (settingController != null) {
+            settingController.saveLastConfig();
+        }
+        // 保存日志文件数量设置
+        if (aboutController != null) {
+            aboutController.saveLastConfig();
+        }
         // 保存关程序闭前页面状态设置
         saveLastConfig();
-        // 保存设置页面最后设置
-        settingController.saveLastConfig();
-        // 保存日志文件数量设置
-        aboutController.saveLastConfig();
     }
 
     /**
