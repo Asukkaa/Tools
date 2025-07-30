@@ -74,8 +74,10 @@ exports.main = async (event) => {
             version: serverVersion,
             buildDate: "2025.07.30",
             whatsNew: `版本2.4.0:
-        1.修复在 macOS 下更新应用后可能无法正常立刻重启的问题
-        2.更新对话框将会显示新版本的发布时间`,
+        1.新增自动更新功能
+        2.文件相关列表新增图片缩略图
+		3.调整部分 UI 逻辑与样式
+		4.修复若干 BUG`,
             aliyunFileLink: aliyunFileLink,
             alipayFileLink: alipayFileLink,
             fullUpdate: fullUpdate
