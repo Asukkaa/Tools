@@ -71,6 +71,24 @@
             </HBox>
 
             <HBox spacing="5">
+                <HBox styleClass="hBox-short">
+                    <Label prefHeight="25" text="检查更新："/>
+                    <Button fx:id="checkUpdate_Abt" onAction="#checkUpdate" style="-fx-cursor: hand"
+                            text="检查并下载更新"/>
+                </HBox>
+
+                <CheckBox fx:id="autoCheck_Abt" onAction="#autoCheckAction" styleClass="checkBox-short"
+                          text="应用启动后自动检测更新"/>
+
+                <Label prefHeight="25" textFill="red" text="自动更新功能因为每月流量有限，可能无法更新成功。"/>
+            </HBox>
+
+            <VBox>
+                <Label fx:id="checkMassage_Abt"/>
+                <Label fx:id="checkDate_Abt"/>
+            </VBox>
+
+            <HBox spacing="5">
                 <Label prefHeight="25" text="当前版本："/>
                 <Label fx:id="version_Abt" prefHeight="25" textFill="limegreen"/>
             </HBox>

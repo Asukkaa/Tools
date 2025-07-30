@@ -2,7 +2,6 @@ package priv.koishi.tools.Finals;
 
 import com.github.kwhat.jnativehook.mouse.NativeMouseEvent;
 import javafx.scene.input.MouseButton;
-import priv.koishi.tools.Utils.FileUtils;
 
 import java.io.File;
 import java.util.Arrays;
@@ -10,8 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static priv.koishi.tools.Utils.FileUtils.getCFGPath;
-import static priv.koishi.tools.Utils.FileUtils.getDesktopPath;
+import static priv.koishi.tools.Utils.FileUtils.*;
 
 /**
  * 通用常量类
@@ -26,6 +24,111 @@ public class CommonFinals {
      * 程序名称
      */
     public static final String appName = "Tools";
+
+    /**
+     * 程序版本
+     */
+    public static final String version = "2.4.0";
+
+    /**
+     * 程序构建日期
+     */
+    public static final String buildDate = "2025.07.30";
+
+    /**
+     * 文件后缀名：bat
+     */
+    public static final String bat = ".bat";
+
+    /**
+     * 文件后缀名：sh
+     */
+    public static final String sh = ".sh";
+
+    /**
+     * 文件后缀名：zip
+     */
+    public static final String zip = ".zip";
+
+    /**
+     * 文件后缀名：log
+     */
+    public static final String log = ".log";
+
+    /**
+     * 文件后缀名：cfg
+     */
+    public static final String cfg = ".cfg";
+
+    /**
+     * 文件后缀名：pmc
+     */
+    public static final String PMC = ".pmc";
+
+    /**
+     * 文件后缀名：exe
+     */
+    public static final String exe = ".exe";
+
+    /**
+     * 文件后缀名：app
+     */
+    public static final String app = ".app";
+
+    /**
+     * 文件后缀名：png
+     */
+    public static final String png = ".png";
+
+    /**
+     * 文件后缀名：jpg
+     */
+    public static final String jpg = ".jpg";
+
+    /**
+     * 文件后缀名：jpeg
+     */
+    public static final String jpeg = ".jpeg";
+
+    /**
+     * 文件后缀名：xlsx
+     */
+    public static final String xlsx = ".xlsx";
+
+    /**
+     * 文件后缀名：xls
+     */
+    public static final String xls = ".xls";
+
+    /**
+     * 文件大小单位：Byte
+     */
+    public static final String Byte = "Byte";
+
+    /**
+     * 文件大小单位：KB
+     */
+    public static final String KB = "KB";
+
+    /**
+     * 文件大小单位：MB
+     */
+    public static final String MB = "MB";
+
+    /**
+     * 文件大小单位：GB
+     */
+    public static final String GB = "GB";
+
+    /**
+     * 文件大小单位：TB
+     */
+    public static final String TB = "TB";
+
+    /**
+     * 文件大小单位：G
+     */
+    public static final String G = "G";
 
     /**
      * 程序logo
@@ -78,6 +181,54 @@ public class CommonFinals {
     public static final String configFile_Click = "config/autoClickConfig.properties";
 
     /**
+     * 操作系统当前用户名称
+     */
+    public static final String sysUerName = System.getProperty("user.name");
+
+    /**
+     * 操作系统临时目录
+     */
+    public static final String tmpdir = System.getProperty("java.io.tmpdir");
+
+    /**
+     * 更新临时文件目录
+     */
+    public static final String ToolsTemp = File.separator + ".ToolsTemp";
+
+    /**
+     * 更新临时文件目录完整地址
+     */
+    public static final String ToolsTempPath = tmpdir + ToolsTemp;
+
+    /**
+     * 更新临时文件解压目录
+     */
+    public static final String ToolsUpdateUnzipped = File.separator + "ToolsUpdateUnzipped";
+
+    /**
+     * 更新脚本名称
+     */
+    public static final String updateScript = "tools_update";
+
+    /**
+     * 更新服务阿里云 uniCloud 地址
+     */
+    public static final String uniCloudCheckUpdateURL_aliyun = "https://fc-mp-f42cc448-2bf2-4edf-9bb8-8f060ec60dd6.next.bspapp.com/ToolsUpdate";
+
+    /**
+     * 更新服务支付宝云 uniCloud 地址
+     */
+    public static final String uniCloudCheckUpdateURL_alipay = "https://env-00jxtp3qdq80.dev-hz.cloudbasefunction.cn/ToolsUpdate";
+
+    /**
+     * 检测更新URL数组
+     */
+    public static final String[] urls = {
+            uniCloudCheckUpdateURL_aliyun,
+            uniCloudCheckUpdateURL_alipay
+    };
+
+    /**
      * 百度网盘地址
      */
     public static final String baiduLink = "https://pan.baidu.com/s/1q4nwoz-ABjZLIwuBep09ZA?pwd=ju2b";
@@ -123,9 +274,14 @@ public class CommonFinals {
     public static final String contentsDirectory = "/Contents";
 
     /**
-     * 桌面名称
+     * 判断程序是否打包运行(在jar环境运为true，其他环境为false)
      */
-    public static final String desktop = "Desktop";
+    public static final boolean isRunningFromJar = isRunningFromJar();
+
+    /**
+     * cfg文件路径
+     */
+    public static final String cfgFilePath = getCFGPath();
 
     /**
      * 当前程序运行位置
@@ -133,24 +289,29 @@ public class CommonFinals {
     public static final String userDir = System.getProperty("user.dir");
 
     /**
-     * 判断程序是否打包运行(在jar环境运为true，其他环境为false)
-     */
-    public static final boolean isRunningFromJar = FileUtils.isRunningFromJar();
-
-    /**
      * 当前程序运行操作系统
      */
     public static final String systemName = System.getProperty("os.name").toLowerCase();
 
     /**
-     * win操作系统
+     * win操作系统简称
      */
-    public static final boolean isWin = systemName.contains("win");
+    public static final String win = "win";
 
     /**
-     * mac操作系统
+     * mac操作系统简称
      */
-    public static final boolean isMac = systemName.contains("mac");
+    public static final String mac = "mac";
+
+    /**
+     * 是否为win操作系统（true-win系统，false-非win系统）
+     */
+    public static final boolean isWin = systemName.contains(win);
+
+    /**
+     * 是否为mac操作系统（true-mac系统，false-非mac系统）
+     */
+    public static final boolean isMac = systemName.contains(mac);
 
     /**
      * java home目录
@@ -163,9 +324,19 @@ public class CommonFinals {
     public static final String rootDir = new File(javaHome).getParent();
 
     /**
-     * cfg文件路径
+     * 程序启动路径(win-exe 文件路径，mac-app 文件路径)
      */
-    public static final String cfgFilePath = getCFGPath();
+    public static final String appLaunchPath = getAppLaunchPath();
+
+    /**
+     * 获取应用根目录(win为应用名目录，mac为应用程序目录)
+     */
+    public static final String appRootPath = new File(appLaunchPath).getParent();
+
+    /**
+     * 桌面名称
+     */
+    public static final String desktop = "Desktop";
 
     /**
      * 桌面目录
@@ -206,38 +377,6 @@ public class CommonFinals {
      * cfg文件jvm参数头
      */
     public static final String javaOptions = "java-options=";
-
-    public static final String cfg = ".cfg";
-
-    public static final String xlsx = ".xlsx";
-
-    public static final String xls = ".xls";
-
-    public static final String jpg = ".jpg";
-
-    public static final String png = ".png";
-
-    public static final String jpeg = ".jpeg";
-
-    public static final String log = ".log";
-
-    public static final String PMC = ".pmc";
-
-    public static final String exe = ".exe";
-
-    public static final String app = ".app";
-
-    public static final String Byte = "Byte";
-
-    public static final String KB = "KB";
-
-    public static final String MB = "MB";
-
-    public static final String GB = "GB";
-
-    public static final String TB = "TB";
-
-    public static final String G = "G";
 
     public static final String tip_startSize = "只能填自然数，0为不限制编号位数，不填默认为0";
 
@@ -446,10 +585,6 @@ public class CommonFinals {
              添加到允许列表中
             6. 重启\s""" + appName + app;
 
-    public static final String version = "2.3.2";
-
-    public static final String buildDate = "2025.07.16";
-
     public static final String tip_version = """
             版本：%s
             构建日期：%s""".formatted(version, buildDate);
@@ -621,6 +756,20 @@ public class CommonFinals {
     public static final String text_isAdd = " (添加)";
 
     public static final String text_isRecord = " (录制)";
+
+    public static final String text_downloadFailed = "下载更新失败";
+
+    public static final String text_findNewVersion = "发现新版本：";
+
+    public static final String text_scriptNotFind = "找不到更新脚本";
+
+    public static final String text_checkFailed = "检查更新失败";
+
+    public static final String text_creatDirErr = "无法创建目录：";
+
+    public static final String text_creatFatherDirErr = "无法创建父目录：";
+
+    public static final String text_deleteErr = "无法删除文件或目录：";
 
     public static final String id_settingTab = "settingTab";
 
@@ -803,6 +952,8 @@ public class CommonFinals {
     public static final String key_defaultPreparationRecordTime = "defaultPreparationRecordTime";
 
     public static final String key_defaultPreparationRunTime = "defaultPreparationRunTime";
+
+    public static final String key_autoCheck = "autoCheck";
 
     public static final String mouseButton_primary = "鼠标左键点击";
 

@@ -289,7 +289,7 @@ public class FileNumToExcelController extends RootController {
                 readExcelTask = null;
             });
             // 绑定带进度条的线程
-            bindingProgressBarTask(readExcelTask, taskBean);
+            bindingTaskNode(readExcelTask, taskBean);
             if (!readExcelTask.isRunning()) {
                 Thread.ofVirtual()
                         .name("readExcelTask-vThread" + tabId)

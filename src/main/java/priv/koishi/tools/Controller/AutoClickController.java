@@ -40,7 +40,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import priv.koishi.tools.Bean.AutoClickTaskBean;
 import priv.koishi.tools.Bean.ClickPositionBean;
-import priv.koishi.tools.EditingCell.EditingCell;
+import priv.koishi.tools.CustomUI.EditingCell.EditingCell;
 import priv.koishi.tools.Listener.MousePositionListener;
 import priv.koishi.tools.Listener.MousePositionUpdater;
 import priv.koishi.tools.MainApplication;
@@ -570,7 +570,7 @@ public class AutoClickController extends RootController implements MousePosition
             Robot robot = new Robot();
             autoClickTask = autoClick(taskBean, robot);
             // 绑定带进度条的线程
-            bindingProgressBarTask(autoClickTask, taskBean);
+            bindingTaskNode(autoClickTask, taskBean);
             Label massageLabel = taskBean.getMassageLabel();
             autoClickTask.setOnSucceeded(event -> {
                 taskUnbind(taskBean);
@@ -1089,6 +1089,15 @@ public class AutoClickController extends RootController implements MousePosition
         }
         err_Click.setText(errorMessage);
         err_Click.setTooltip(creatTooltip(tip_NativeHookException));
+    }
+
+    /**
+     * 判断程序是否为空闲状态
+     *
+     * @return true表示为空闲状态，false表示非空闲状态
+     */
+    public boolean isFree() {
+        return !runClicking && !recordClicking;
     }
 
     /**

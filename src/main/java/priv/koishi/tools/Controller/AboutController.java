@@ -1,10 +1,19 @@
 package priv.koishi.tools.Controller;
 
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import priv.koishi.tools.Bean.CheckUpdateBean;
+import priv.koishi.tools.Bean.TaskBean;
+import priv.koishi.tools.CustomUI.ProgressDialog.ProgressDialog;
 
 import java.awt.*;
 import java.io.File;
@@ -12,12 +21,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
+import static priv.koishi.tools.Controller.MainController.autoClickController;
 import static priv.koishi.tools.Finals.CommonFinals.*;
+import static priv.koishi.tools.Service.CheckUpdateService.*;
 import static priv.koishi.tools.Utils.FileUtils.*;
+import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
 /**
@@ -29,14 +45,37 @@ import static priv.koishi.tools.Utils.UiUtils.*;
  */
 public class AboutController extends RootController {
 
+    /**
+     * 日志记录器
+     */
+    private static final Logger logger = LogManager.getLogger(AboutController.class);
+
+    /**
+     * 更新时间格式
+     */
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss");
+
+    /**
+     * 要防重复点击的组件
+     */
+    private static final List<Node> disableNodes = new ArrayList<>();
+
+    /**
+     * 下载更新任务
+     */
+    private Task<Void> downloadedUpdateTask;
+
     @FXML
     public TextField logsNum_Abt;
 
     @FXML
-    public Label logsPath_Abt, mail_Abt, version_Abt, title_Abt;
+    public CheckBox autoCheck_Abt;
 
     @FXML
-    public Button openBaiduLinkBtn_Abt, openQuarkLinkBtn_Abt, openXunleiLinkBtn_Abt;
+    public Label logsPath_Abt, mail_Abt, version_Abt, title_Abt, checkMassage_Abt, checkDate_Abt;
+
+    @FXML
+    public Button openBaiduLinkBtn_Abt, openQuarkLinkBtn_Abt, openXunleiLinkBtn_Abt, checkUpdate_Abt;
 
     /**
      * 读取配置文件
@@ -119,6 +158,25 @@ public class AboutController extends RootController {
     }
 
     /**
+     * 取消更新
+     */
+    public void cancelUpdate() {
+        if (downloadedUpdateTask != null && downloadedUpdateTask.isRunning()) {
+            downloadedUpdateTask.cancel();
+        }
+    }
+
+    /**
+     * 更新最后检查日期
+     *
+     * @param color 文字颜色
+     */
+    private void updateCheckDate(Color color) {
+        checkDate_Abt.setText("最后检查时间：" + LocalDateTime.now().format(formatter));
+        checkDate_Abt.setTextFill(color);
+    }
+
+    /**
      * 界面初始化
      *
      * @throws IOException io异常
@@ -139,6 +197,12 @@ public class AboutController extends RootController {
         setLogsPath();
         // 清理多余log文件
         deleteLogs();
+        // 检查更新
+        Platform.runLater(() -> {
+            if (autoCheck_Abt.isSelected()) {
+                checkUpdate();
+            }
+        });
     }
 
     /**
@@ -169,6 +233,82 @@ public class AboutController extends RootController {
     @FXML
     private void openXunleiLink() throws Exception {
         Desktop.getDesktop().browse(new URI(xunleiLink));
+    }
+
+    /**
+     * 检查更新
+     */
+    @FXML
+    public void checkUpdate() {
+        checkDate_Abt.setText("");
+        TaskBean<?> taskBean = new TaskBean<>();
+        taskBean.setMassageLabel(checkMassage_Abt)
+                .setDisableNodes(disableNodes)
+                .setBindingMassageLabel(true);
+        Task<CheckUpdateBean> task = checkLatestVersion();
+        bindingTaskNode(task, taskBean);
+        task.setOnSucceeded(event -> {
+            taskUnbind(taskBean);
+            CheckUpdateBean updateInfo = task.getValue();
+            // 检查是否有新版本
+            if (isNewVersionAvailable(updateInfo)) {
+                checkMassage_Abt.setText(text_findNewVersion + updateInfo.getVersion());
+                //更新最后检查日期
+                updateCheckDate(Color.BLUE);
+                checkMassage_Abt.setTextFill(Color.BLUE);
+                if (autoClickController == null || autoClickController.isFree()) {
+                    // 弹出更新对话框
+                    Optional<ButtonType> result = showUpdateDialog(updateInfo);
+                    if (result.isPresent() && result.get().getButtonData() != ButtonBar.ButtonData.CANCEL_CLOSE) {
+                        ProgressDialog progressDialog = new ProgressDialog();
+                        // 用户选择更新
+                        downloadedUpdateTask = downloadAndInstallUpdate(updateInfo, progressDialog);
+                        Thread.ofVirtual()
+                                .name("task-downloadedUpdate-vThread")
+                                .start(downloadedUpdateTask);
+                        downloadedUpdateTask.setOnFailed(workerStateEvent -> {
+                            try {
+                                logger.info("任务失败，删除临时文件夹： {}", ToolsTempPath);
+                                deleteDirectoryRecursively(Path.of(ToolsTempPath));
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                            taskNotSuccess(taskBean, text_downloadFailed);
+                            progressDialog.close();
+                            Throwable ex = downloadedUpdateTask.getException();
+                            downloadedUpdateTask = null;
+                            throw new RuntimeException(text_downloadFailed, ex);
+                        });
+                        downloadedUpdateTask.setOnCancelled(workerStateEvent ->
+                                downloadedUpdateTask = null);
+                    }
+                }
+            } else {
+                checkMassage_Abt.setText("当前版本为最新版本");
+                //更新最后检查日期
+                updateCheckDate(Color.GREEN);
+                checkMassage_Abt.setTextFill(Color.GREEN);
+            }
+        });
+        task.setOnFailed(event -> {
+            taskNotSuccess(taskBean, text_checkFailed);
+            //更新最后检查日期
+            updateCheckDate(Color.RED);
+            throw new RuntimeException(task.getException());
+        });
+        Thread.ofVirtual()
+                .name("task-checkUpdate-vThread")
+                .start(task);
+    }
+
+    /**
+     * 自动检测更新开关
+     *
+     * @throws IOException 配置文件打开失败
+     */
+    @FXML
+    public void autoCheckAction() throws IOException {
+        setLoadLastConfigCheckBox(autoCheck_Abt, configFile, key_autoCheck);
     }
 
 }

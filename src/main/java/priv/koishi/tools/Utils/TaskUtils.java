@@ -1,5 +1,6 @@
 package priv.koishi.tools.Utils;
 
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -13,11 +14,11 @@ import priv.koishi.tools.Configuration.ExcelConfig;
 import java.io.IOException;
 
 import static priv.koishi.tools.Finals.CommonFinals.text_saveSuccess;
-import static priv.koishi.tools.Finals.CommonFinals.text_taskFailed;
 import static priv.koishi.tools.Utils.ExcelUtils.saveExcel;
 import static priv.koishi.tools.Utils.FileUtils.openDirectory;
 import static priv.koishi.tools.Utils.FileUtils.openFile;
 import static priv.koishi.tools.Utils.UiUtils.changeDisableNodes;
+import static priv.koishi.tools.Utils.UiUtils.updateLabel;
 
 /**
  * 多线程任务工具的方法
@@ -34,9 +35,10 @@ public class TaskUtils {
      * @param task     要绑定的线程任务
      * @param taskBean 绑定线程任务所需参数
      */
-    public static void bindingProgressBarTask(Task<?> task, TaskBean<?> taskBean) {
+    public static void bindingTaskNode(Task<?> task, TaskBean<?> taskBean) {
+        // 设置防重复点击按钮不可点击限制
+        changeDisableNodes(taskBean, true);
         ProgressBar progressBar = taskBean.getProgressBar();
-        Label massageLabel = taskBean.getMassageLabel();
         if (progressBar != null) {
             // 绑定进度条的值属性
             progressBar.progressProperty().unbind();
@@ -45,13 +47,13 @@ public class TaskUtils {
             progressBar.setProgress(0);
             progressBar.progressProperty().bind(task.progressProperty());
         }
-        if (massageLabel != null) {
+        Label massageLabel = taskBean.getMassageLabel();
+        if (massageLabel != null && taskBean.isBindingMassageLabel()) {
             // 绑定TextField的值属性
             massageLabel.textProperty().unbind();
+            updateLabel(massageLabel, "");
             massageLabel.textProperty().bind(task.messageProperty());
         }
-        throwTaskException(task, taskBean);
-        System.gc();
     }
 
     /**
@@ -68,12 +70,12 @@ public class TaskUtils {
      */
     public static Task<Workbook> saveExcelOnSucceeded(ExcelConfig excelConfig, TaskBean<?> taskBean, Task<? extends Workbook> buildExcelTask,
                                                       CheckBox openDirectory, CheckBox openFile, String tabId) {
-        bindingProgressBarTask(buildExcelTask, taskBean);
+        bindingTaskNode(buildExcelTask, taskBean);
         Label massageLabel = taskBean.getMassageLabel();
         buildExcelTask.setOnSucceeded(event -> {
             Workbook workbook = buildExcelTask.getValue();
             Task<String> saveExcelTask = saveExcelTask(excelConfig, workbook);
-            bindingProgressBarTask(saveExcelTask, taskBean);
+            bindingTaskNode(saveExcelTask, taskBean);
             saveExcelTask.setOnSucceeded(s -> {
                 String excelPath = saveExcelTask.getValue();
                 try {
@@ -103,22 +105,6 @@ public class TaskUtils {
                     .start(buildExcelTask);
         }
         return null;
-    }
-
-    /**
-     * 抛出task异常
-     *
-     * @param task     有异常的线程任务
-     * @param taskBean 线程任务所需参数
-     * @throws RuntimeException 线程的异常
-     */
-    public static void throwTaskException(Task<?> task, TaskBean<?> taskBean) {
-        task.setOnFailed(event -> {
-            taskNotSuccess(taskBean, text_taskFailed);
-            // 获取抛出的异常
-            Throwable ex = task.getException();
-            throw new RuntimeException(ex);
-        });
     }
 
     /**
@@ -174,8 +160,10 @@ public class TaskUtils {
     public static void taskNotSuccess(TaskBean<?> taskBean, String log) {
         taskUnbind(taskBean);
         Label massageLabel = taskBean.getMassageLabel();
-        massageLabel.setTextFill(Color.RED);
-        massageLabel.setText(log);
+        Platform.runLater(() -> {
+            massageLabel.setTextFill(Color.RED);
+            massageLabel.setText(log);
+        });
     }
 
 }

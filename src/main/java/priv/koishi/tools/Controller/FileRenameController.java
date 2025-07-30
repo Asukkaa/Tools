@@ -21,7 +21,7 @@ import priv.koishi.tools.Bean.FileBean;
 import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.*;
-import priv.koishi.tools.EditingCell.EditingCell;
+import priv.koishi.tools.CustomUI.EditingCell.EditingCell;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,7 +38,7 @@ import static priv.koishi.tools.Service.FileRenameService.*;
 import static priv.koishi.tools.Service.ReadDataService.readExcel;
 import static priv.koishi.tools.Service.ReadDataService.readFile;
 import static priv.koishi.tools.Utils.FileUtils.*;
-import static priv.koishi.tools.Utils.TaskUtils.bindingProgressBarTask;
+import static priv.koishi.tools.Utils.TaskUtils.bindingTaskNode;
 import static priv.koishi.tools.Utils.TaskUtils.taskUnbind;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
@@ -301,7 +301,7 @@ public class FileRenameController extends RootController {
             // 获取Task任务
             readFileTask = readFile(taskBean);
             // 绑定带进度条的线程
-            bindingProgressBarTask(readFileTask, taskBean);
+            bindingTaskNode(readFileTask, taskBean);
             readFileTask.setOnSucceeded(event -> {
                 if (text_excelRename.equals(renameType_Re.getValue()) && StringUtils.isNotBlank(excelPath_Re.getText())) {
                     readExcelRename();
@@ -345,7 +345,7 @@ public class FileRenameController extends RootController {
                 readExcelTask = null;
             });
             // 绑定带进度条的线程
-            bindingProgressBarTask(readExcelTask, taskBean);
+            bindingTaskNode(readExcelTask, taskBean);
             // 使用新线程启动
             if (!readExcelTask.isRunning()) {
                 Thread.ofVirtual()
@@ -905,7 +905,7 @@ public class FileRenameController extends RootController {
                 // 获取Task任务
                 renameTask = fileRename(taskBean);
                 // 绑定带进度条的线程
-                bindingProgressBarTask(renameTask, taskBean);
+                bindingTaskNode(renameTask, taskBean);
                 renameTask.setOnSucceeded(event -> {
                     taskUnbind(taskBean);
                     if (openDirectory_Re.isSelected()) {

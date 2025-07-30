@@ -217,7 +217,7 @@ public class FileNameToExcelController extends RootController {
             // 获取Task任务
             readFileTask = readFile(taskBean);
             // 绑定带进度条的线程
-            bindingProgressBarTask(readFileTask, taskBean);
+            bindingTaskNode(readFileTask, taskBean);
             readFileTask.setOnSucceeded(event -> {
                 taskUnbind(taskBean);
                 readFileTask = null;
@@ -504,7 +504,7 @@ public class FileNameToExcelController extends RootController {
             // 获取Task任务
             buildExcelTask = buildFileNameExcel(excelConfig, taskBean);
             // 绑定带进度条的线程
-            bindingProgressBarTask(buildExcelTask, taskBean);
+            bindingTaskNode(buildExcelTask, taskBean);
             if (!buildExcelTask.isRunning()) {
                 Thread.ofVirtual()
                         .name("buildExcelTask-vThread" + tabId)

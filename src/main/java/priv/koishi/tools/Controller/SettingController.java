@@ -191,7 +191,7 @@ public class SettingController extends RootController {
      */
     private void getJVMConfig() throws IOException {
         // 获取当前运行路径
-        setPathLabel(thisPath_Set, getAppPath());
+        setPathLabel(thisPath_Set, getAppLaunchPath());
         long maxMemory = Runtime.getRuntime().maxMemory();
         runningMemory_Set.setText(getUnitSize(maxMemory, false));
         OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
@@ -478,9 +478,9 @@ public class SettingController extends RootController {
         if (!isRunningFromJar) {
             ProcessBuilder processBuilder = null;
             if (isWin) {
-                processBuilder = new ProcessBuilder(getAppPath());
+                processBuilder = new ProcessBuilder(getAppLaunchPath());
             } else if (isMac) {
-                processBuilder = new ProcessBuilder("open", "-n", getAppPath());
+                processBuilder = new ProcessBuilder("open", "-n", getAppLaunchPath());
             }
             if (processBuilder != null) {
                 processBuilder.start();

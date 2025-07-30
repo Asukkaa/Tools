@@ -17,6 +17,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.input.*;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -33,9 +34,9 @@ import org.apache.logging.log4j.Logger;
 import priv.koishi.tools.Bean.*;
 import priv.koishi.tools.Bean.Vo.FileNumVo;
 import priv.koishi.tools.Configuration.FileConfig;
+import priv.koishi.tools.CustomUI.MessageBubble.MessageBubble;
 import priv.koishi.tools.Enum.SelectItemsEnums;
 import priv.koishi.tools.MainApplication;
-import priv.koishi.tools.MessageBubble.MessageBubble;
 
 import java.awt.*;
 import java.io.File;
@@ -1631,6 +1632,37 @@ public class UiUtils {
      */
     public static void setWindowCss(Scene scene, String stylesCss) {
         scene.getStylesheets().add(Objects.requireNonNull(MainApplication.class.getResource(stylesCss)).toExternalForm());
+    }
+
+    /**
+     * 显示更新提示框
+     *
+     * @param updateInfo 更新信息
+     * @return 用户选择的按钮类型
+     */
+    public static Optional<ButtonType> showUpdateDialog(CheckUpdateBean updateInfo) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("检查并下载更新");
+        alert.setHeaderText(text_findNewVersion + updateInfo.getVersion() + "        " +
+                "发布日期：" + updateInfo.getBuildDate());
+        // 创建包含更新信息的文本区域
+        TextArea textArea = new TextArea(updateInfo.getWhatsNew());
+        textArea.setEditable(false);
+        textArea.setWrapText(true);
+        textArea.setMaxWidth(Double.MAX_VALUE);
+        textArea.setMaxHeight(Double.MAX_VALUE);
+        GridPane expContent = new GridPane();
+        expContent.setMaxWidth(Double.MAX_VALUE);
+        expContent.add(textArea, 0, 0);
+        alert.getDialogPane().setContent(expContent);
+        ButtonType updateButton = new ButtonType("现在更新");
+        ButtonType laterButton = new ButtonType("稍后更新",
+                ButtonBar.ButtonData.CANCEL_CLOSE);
+        alert.getButtonTypes().setAll(updateButton, laterButton);
+        // 设置窗口图标
+        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+        setWindowLogo(stage, logoPath);
+        return alert.showAndWait();
     }
 
 }

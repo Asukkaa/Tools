@@ -341,7 +341,7 @@ public class ImgToExcelController extends RootController {
             // 获取Task任务
             readExcelTask = readExcel(excelConfig, taskBean);
             // 绑定带进度条的线程
-            bindingProgressBarTask(readExcelTask, taskBean);
+            bindingTaskNode(readExcelTask, taskBean);
             readExcelTask.setOnSucceeded(event -> {
                 taskUnbind(taskBean);
                 readExcelTask = null;
@@ -721,11 +721,11 @@ public class ImgToExcelController extends RootController {
                 if (checkFileSize()) {
                     // 组装excel任务
                     buildExcelTask = buildImgGroupExcel(taskBean, excelConfig);
-                    bindingProgressBarTask(buildExcelTask, taskBean);
+                    bindingTaskNode(buildExcelTask, taskBean);
                     buildExcelTask.setOnSucceeded(e -> {
                         // 保存excel任务
                         saveExcelTask = saveExcelTask(excelConfig, buildExcelTask.getValue());
-                        bindingProgressBarTask(saveExcelTask, taskBean);
+                        bindingTaskNode(saveExcelTask, taskBean);
                         saveExcelTask.setOnSucceeded(s -> {
                             String excelPath = saveExcelTask.getValue();
                             try {
