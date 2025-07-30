@@ -76,8 +76,8 @@ exports.main = async (event) => {
             whatsNew: `版本2.4.0:
         1.新增自动更新功能
         2.文件相关列表新增图片缩略图
-		3.调整部分 UI 逻辑与样式
-		4.修复若干 BUG`,
+        3.调整部分 UI 逻辑与样式
+        4.修复若干 BUG`,
             aliyunFileLink: aliyunFileLink,
             alipayFileLink: alipayFileLink,
             fullUpdate: fullUpdate
