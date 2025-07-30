@@ -282,7 +282,7 @@ public class FileNameToExcelController extends RootController {
             String excelPath = prop.getProperty(key_lastExcelPath);
             if (StringUtils.isNotBlank(excelPath)) {
                 removeExcelButton_Name.setVisible(true);
-                excelType_Name.setValue(getExistsFileType(new File(excelPath)));
+                excelType_Name.setValue(getFileType(new File(excelPath)));
                 excelType_Name.setDisable(true);
             }
         }
@@ -564,7 +564,7 @@ public class FileNameToExcelController extends RootController {
             // 更新所选文件路径显示
             excelInPath = updatePathLabel(selectedFile.getPath(), excelInPath, key_excelInPath, excelPath_Name, configFile_Name);
             removeExcelButton_Name.setVisible(true);
-            String excelType = getExistsFileType(selectedFile);
+            String excelType = getFileType(selectedFile);
             excelType_Name.setValue(excelType);
             excelType_Name.setDisable(true);
         }

@@ -41,12 +41,8 @@ public class FileUtils {
      *
      * @param file 文件
      * @return 文件类型
-     * @throws IOException 文件不存在
      */
-    public static String getExistsFileType(File file) throws IOException {
-        if (!file.exists()) {
-            throw new IOException(text_fileNotExists);
-        }
+    public static String getFileType(File file) {
         if (file.isDirectory()) {
             return extension_folder;
         }
@@ -171,9 +167,8 @@ public class FileUtils {
      *
      * @param fileConfig 文件查询设置
      * @return 查询到的文件列表
-     * @throws IOException 文件不存在
      */
-    public static List<File> readAllFiles(FileConfig fileConfig) throws IOException {
+    public static List<File> readAllFiles(FileConfig fileConfig) {
         List<File> fileList = new ArrayList<>();
         readFiles(fileConfig, fileList, fileConfig.getInFile());
         return fileList;
@@ -185,9 +180,8 @@ public class FileUtils {
      * @param fileConfig 文件查询设置
      * @param fileList   上层文件夹查询的文件列表
      * @param directory  最外层文件夹
-     * @throws IOException 文件不存在
      */
-    public static void readFiles(FileConfig fileConfig, List<? super File> fileList, File directory) throws IOException {
+    public static void readFiles(FileConfig fileConfig, List<? super File> fileList, File directory) {
         File[] files = directory.listFiles();
         String showHideFile = fileConfig.getShowHideFile();
         String showDirectoryName = fileConfig.getShowDirectoryName();
@@ -200,7 +194,7 @@ public class FileUtils {
                         continue;
                     }
                     if (text_onlyFile.equals(showDirectoryName) || text_fileDirectory.equals(showDirectoryName) || StringUtils.isEmpty(showDirectoryName)) {
-                        String extension = getExistsFileType(file);
+                        String extension = getFileType(file);
                         if (CollectionUtils.isEmpty(filterExtensionList) || filterExtensionList.contains(extension)) {
                             fileList.add(file);
                         }
@@ -487,7 +481,7 @@ public class FileUtils {
         }
         String parentDir = file.getParent();
         String fileName = getFileName(file);
-        String extension = getExistsFileType(file);
+        String extension = getFileType(file);
         if (extension_file.equals(extension) || extension_folder.equals(extension)) {
             extension = "";
         }
@@ -673,12 +667,11 @@ public class FileUtils {
         if (isRunningFromJar) {
             cfgPath = appName + cfg;
         } else {
-            String appPath = getAppLaunchPath();
             String cfgFileName = "/" + appName + cfg;
             if (isWin) {
-                cfgPath = new File(appPath).getParent() + appDirectory + cfgFileName;
+                cfgPath = appRootPath + appDirectory + cfgFileName;
             } else {
-                cfgPath = appPath + contentsDirectory + appDirectory + cfgFileName;
+                cfgPath = appLaunchPath + contentsDirectory + appDirectory + cfgFileName;
             }
         }
         return cfgPath;
@@ -815,7 +808,7 @@ public class FileUtils {
         if (!file.exists()) {
             return false;
         }
-        return imageType.contains(getExistsFileType(file));
+        return imageType.contains(getFileType(file));
     }
 
 }

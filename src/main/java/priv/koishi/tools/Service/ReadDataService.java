@@ -146,7 +146,7 @@ public class ReadDataService {
      * @throws Exception 文件格式不支持、文件不存在
      */
     private static Workbook getWorkbook(String excelInPath) throws Exception {
-        String excelType = getExistsFileType(new File(excelInPath));
+        String excelType = getFileType(new File(excelInPath));
         Workbook workbook = null;
         try (InputStream inputStream = Files.newInputStream(Paths.get(excelInPath))) {
             if (xlsx.equals(excelType)) {
@@ -247,7 +247,7 @@ public class ReadDataService {
                     fileBean.setTableView(taskBean.getTableView())
                             .setUpdateDate(getFileUpdateTime(f))
                             .setCreatDate(getFileCreatTime(f))
-                            .setFileType(getExistsFileType(f))
+                            .setFileType(getFileType(f))
                             .setSize(getFileUnitSize(f))
                             .setPath(f.getPath());
                     fileBeans.add(fileBean);
@@ -300,19 +300,14 @@ public class ReadDataService {
      *
      * @param fileList    要排序的文件
      * @param reverseSort 是否倒序标识，true倒序，false为正序
-     * @throws RuntimeException 文件不存在
      */
     private static void comparingByType(List<? extends File> fileList, boolean reverseSort) {
         fileList.sort((o1, o2) -> {
             // 比较文件后缀名
             String ext1;
             String ext2;
-            try {
-                ext1 = getExistsFileType(o1);
-                ext2 = getExistsFileType(o2);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            ext1 = getFileType(o1);
+            ext2 = getFileType(o2);
             if (reverseSort) {
                 return ext2.compareTo(ext1);
             } else {

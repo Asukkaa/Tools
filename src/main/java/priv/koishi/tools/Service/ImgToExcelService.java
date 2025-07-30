@@ -20,7 +20,7 @@ import java.util.List;
 import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.Utils.ExcelUtils.*;
 import static priv.koishi.tools.Utils.FileUtils.checkFileExists;
-import static priv.koishi.tools.Utils.FileUtils.getExistsFileType;
+import static priv.koishi.tools.Utils.FileUtils.getFileType;
 import static priv.koishi.tools.Utils.UiUtils.changeDisableNodes;
 
 /**
@@ -169,7 +169,7 @@ public class ImgToExcelService {
                 anchor.setRow2(rowNum + 1);
                 anchor.setAnchorType(ClientAnchor.AnchorType.MOVE_DONT_RESIZE);
                 File imgFile = new File(i);
-                String extension = getExistsFileType(imgFile);
+                String extension = getFileType(imgFile);
                 // 读取图片文件
                 try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(imgFile.toPath()))) {
                     // 分块读取
