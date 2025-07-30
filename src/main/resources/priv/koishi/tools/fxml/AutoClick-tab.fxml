@@ -47,11 +47,11 @@
         <HBox fx:id="fileNumberHBox_Click" spacing="10">
             <Label prefHeight="25" text="录制自动操作前准备时间："/>
             <TextField fx:id="preparationRecordTime_Click" prefWidth="50"/>
-            <Button fx:id="recordClick_Click" onAction="#recordClick" style="-fx-cursor: hand" text="录制自动操作"/>
+            <Button fx:id="recordClick_Click" onAction="#recordClick" styleClass="cadetblue-button" text="录制自动操作"/>
 
             <Label prefHeight="25" text="运行自动操作前准备时间："/>
             <TextField fx:id="preparationRunTime_Click" prefWidth="50"/>
-            <Button fx:id="runClick_Click" onAction="#runClick" style="-fx-cursor: hand" text="运行自动操作"/>
+            <Button fx:id="runClick_Click" onAction="#runClick" styleClass="cornflowerblue-button" text="运行自动操作"/>
 
             <Label prefHeight="25" text="循环次数："/>
             <TextField fx:id="loopTime_Click" prefWidth="80"/>
