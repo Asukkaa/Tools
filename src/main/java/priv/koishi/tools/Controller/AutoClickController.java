@@ -1293,16 +1293,21 @@ public class AutoClickController extends RootController implements MousePosition
      * 拖拽中行为
      *
      * @param dragEvent 拖拽事件
+     * @throws RuntimeException 文件不存在
      */
     @FXML
     private void acceptDrop(DragEvent dragEvent) {
         if (autoClickTask == null && !recordClicking) {
             List<File> files = dragEvent.getDragboard().getFiles();
             files.forEach(file -> {
-                if (PMC.equals(getFileType(file))) {
-                    // 接受拖放
-                    dragEvent.acceptTransferModes(TransferMode.COPY);
-                    dragEvent.consume();
+                try {
+                    if (PMC.equals(getExistsFileType(file))) {
+                        // 接受拖放
+                        dragEvent.acceptTransferModes(TransferMode.COPY);
+                        dragEvent.consume();
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
             });
         }

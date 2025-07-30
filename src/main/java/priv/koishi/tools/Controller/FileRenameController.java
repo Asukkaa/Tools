@@ -7,6 +7,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
@@ -30,6 +31,7 @@ import java.io.OutputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static priv.koishi.tools.Controller.MainController.settingController;
 import static priv.koishi.tools.Enum.SelectItemsEnums.*;
 import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.MainApplication.mainScene;
@@ -112,6 +114,9 @@ public class FileRenameController extends RootController {
 
     @FXML
     public TableColumn<FileBean, Integer> id_Re, index_Re;
+
+    @FXML
+    public TableColumn<FileBean, ImageView> thumb_Re;
 
     @FXML
     public TableColumn<FileBean, String> name_Re, rename_Re, path_Re, size_Re, fileType_Re,
@@ -282,9 +287,9 @@ public class FileRenameController extends RootController {
             if (inFileList.isEmpty()) {
                 throw new Exception(text_selectNull);
             }
-            ChoiceBox<?> sort = (ChoiceBox<?>) mainScene.lookup("#sort_Set");
-            CheckBox reverseSort = (CheckBox) mainScene.lookup("#reverseSort_Set");
-            String sortValue = (String) sort.getValue();
+            ChoiceBox<String> sort = settingController.sort_Set;
+            CheckBox reverseSort = settingController.reverseSort_Set;
+            String sortValue = sort.getValue();
             TaskBean<FileBean> taskBean = new TaskBean<>();
             taskBean.setReverseSort(reverseSort.isSelected())
                     .setDisableNodes(disableNodes)
@@ -633,16 +638,17 @@ public class FileRenameController extends RootController {
      * 设置javafx单元格宽度
      */
     private void bindPrefWidthProperty() {
-        index_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.04));
-        id_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.04));
+        index_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.03));
+        id_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.03));
+        thumb_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.1));
         name_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.12));
         rename_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.12));
         fileType_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.06));
-        path_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.2));
+        path_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.14));
         size_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.08));
         showStatus_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.06));
-        creatDate_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.14));
-        updateDate_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.14));
+        creatDate_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.13));
+        updateDate_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.13));
     }
 
     /**
@@ -692,6 +698,7 @@ public class FileRenameController extends RootController {
         disableNodes.add(clearButton_Re);
         disableNodes.add(renameButton_Re);
         disableNodes.add(reselectButton_Re);
+        disableNodes.add(updateSameCode_Re);
         disableNodes.add(excelPathButton_Re);
         disableNodes.add(updateRenameButton_Re);
         Node autoClickTab = mainScene.lookup("#autoClickTab");
@@ -877,6 +884,10 @@ public class FileRenameController extends RootController {
                 String rename = fileBean.getFullRename();
                 if (!isValidFileName(rename)) {
                     String errString = "序号为: " + fileBean.getId() + " 的文件 " + fileBean.getFullName() + " 非法重命名为 " + fileBean.getFullRename();
+                    errNameList.add(errString);
+                }
+                if (!new File(fileBean.getPath()).exists()) {
+                    String errString = "序号为: " + fileBean.getId() + " 的文件 " + fileBean.getFullName() + " 不存在";
                     errNameList.add(errString);
                 }
             });
@@ -1192,25 +1203,28 @@ public class FileRenameController extends RootController {
             startTag++;
         }
         // 未选中的数据按照之前设置更新编号
-        int unSelectStartIndex = endSelectIndex + 1;
-        FileBean firstUnSelectFileBean = tableViewItems.get(unSelectStartIndex);
-        CodeRenameConfig unSelectCodeRenameConfig = firstUnSelectFileBean.getCodeRenameConfig();
-        int nameNum = 1;
-        int startName = startCode + 1;
-        int unSelectStartTag = unSelectCodeRenameConfig.getTag();
-        int maxNameNum = unSelectCodeRenameConfig.getNameNum();
-        for (int i = unSelectStartIndex; i < tableViewItems.size(); i++) {
-            FileBean fileBean = tableViewItems.get(i);
-            fileBean.setRename(getCodeRename(unSelectCodeRenameConfig, fileBean, startName, unSelectStartTag));
-            if (nameNum < maxNameNum) {
-                unSelectStartTag++;
-                nameNum++;
-            } else {
-                startName++;
-                unSelectStartTag = unSelectCodeRenameConfig.getTag();
-                nameNum = 1;
+        if (endSelectIndex < tableViewItems.size() - 1) {
+            int unSelectStartIndex = endSelectIndex + 1;
+            FileBean firstUnSelectFileBean = tableViewItems.get(unSelectStartIndex);
+            CodeRenameConfig unSelectCodeRenameConfig = firstUnSelectFileBean.getCodeRenameConfig();
+            int nameNum = 1;
+            int startName = startCode + 1;
+            int unSelectStartTag = unSelectCodeRenameConfig.getTag();
+            int maxNameNum = unSelectCodeRenameConfig.getNameNum();
+            for (int i = unSelectStartIndex; i < tableViewItems.size(); i++) {
+                FileBean fileBean = tableViewItems.get(i);
+                fileBean.setRename(getCodeRename(unSelectCodeRenameConfig, fileBean, startName, unSelectStartTag));
+                if (nameNum < maxNameNum) {
+                    unSelectStartTag++;
+                    nameNum++;
+                } else {
+                    startName++;
+                    unSelectStartTag = unSelectCodeRenameConfig.getTag();
+                    nameNum = 1;
+                }
             }
         }
+        tableView_Re.refresh();
         updateLabel(log_Re, "");
     }
 

@@ -229,8 +229,9 @@ public class FileNumToExcelController extends RootController {
      * @param selectedFile        要读取的文件
      * @param filterExtensionList 要过滤的文件格式
      * @return 文件读取设置
+     * @throws IOException 文件不存在
      */
-    private FileConfig getInFileList(File selectedFile, List<String> filterExtensionList) {
+    private FileConfig getInFileList(File selectedFile, List<String> filterExtensionList) throws IOException {
         FileConfig fileConfig = new FileConfig();
         fileConfig.setShowDirectoryName(directoryNameType_Num.getValue())
                 .setShowFileType(showFileType_Num.isSelected())
@@ -245,8 +246,10 @@ public class FileNumToExcelController extends RootController {
 
     /**
      * 更新要处理的文件
+     *
+     * @throws IOException 文件不存在
      */
-    private void updateInFileList() {
+    private void updateInFileList() throws IOException {
         String selectedFilePath = inPath_Num.getText();
         if (StringUtils.isNotBlank(selectedFilePath)) {
             getInFileList(new File(selectedFilePath), getFilterExtensionList(filterFileType_Num));
@@ -257,14 +260,15 @@ public class FileNumToExcelController extends RootController {
      * 添加数据渲染列表
      *
      * @return 读取excel任务线程
+     * @throws IOException 文件不存在
      */
-    private Task<List<FileNumBean>> addInData() {
+    private Task<List<FileNumBean>> addInData() throws IOException {
         if (readExcelTask == null) {
             removeAll();
             // 渲染表格前需要更新一下读取的文件
             updateInFileList();
             String excelPath = excelPath_Num.getText();
-            excelType_Num.setText(getFileType(new File(excelPath)));
+            excelType_Num.setText(getExistsFileType(new File(excelPath)));
             // 组装数据
             ExcelConfig excelConfig = new ExcelConfig();
             excelConfig.setReadCellNum(setDefaultIntValue(readCell_Num, defaultReadCell, 0, null))
@@ -352,7 +356,7 @@ public class FileNumToExcelController extends RootController {
             setControlLastConfig(directoryNameType_Num, prop, key_lastDirectoryNameType);
             String excelPath = prop.getProperty(key_lastExcelPath);
             if (StringUtils.isNotBlank(excelPath)) {
-                excelType_Num.setText(getFileType(new File(excelPath)));
+                excelType_Num.setText(getExistsFileType(new File(excelPath)));
             }
         }
         input.close();
@@ -489,9 +493,10 @@ public class FileNumToExcelController extends RootController {
      * 拖拽释放行为
      *
      * @param dragEvent 拖拽释放事件
+     * @throws IOException 文件不存在
      */
     @FXML
-    private void handleDrop(DragEvent dragEvent) {
+    private void handleDrop(DragEvent dragEvent) throws IOException {
         List<File> files = dragEvent.getDragboard().getFiles();
         File file = files.getFirst();
         excelPath_Num.setText(file.getPath());
@@ -502,15 +507,20 @@ public class FileNumToExcelController extends RootController {
      * 拖拽中行为
      *
      * @param dragEvent 拖拽中事件
+     * @throws RuntimeException 文件不存在
      */
     @FXML
     private void acceptDrop(DragEvent dragEvent) {
         List<File> files = dragEvent.getDragboard().getFiles();
         files.forEach(file -> {
-            if (file.isFile() && (xlsx.equals(getFileType(file)) || xls.equals(getFileType(file)))) {
-                // 接受拖放
-                dragEvent.acceptTransferModes(TransferMode.COPY);
-                dragEvent.consume();
+            try {
+                if (file.isFile() && (xlsx.equals(getExistsFileType(file)) || xls.equals(getExistsFileType(file)))) {
+                    // 接受拖放
+                    dragEvent.acceptTransferModes(TransferMode.COPY);
+                    dragEvent.consume();
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
         });
     }

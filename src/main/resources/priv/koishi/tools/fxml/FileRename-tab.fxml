@@ -242,6 +242,7 @@
             <columns>
                 <TableColumn fx:id="index_Re" text="行号" sortable="false"/>
                 <TableColumn fx:id="id_Re" text="序号"/>
+                <TableColumn fx:id="thumb_Re" text="缩略图" sortable="false"/>
                 <TableColumn fx:id="name_Re" text="原始文件名称"/>
                 <TableColumn fx:id="rename_Re" text="修改后文件名称"/>
                 <TableColumn fx:id="fileType_Re" text="文件类型"/>

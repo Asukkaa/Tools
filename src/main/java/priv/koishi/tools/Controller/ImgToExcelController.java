@@ -272,7 +272,7 @@ public class ImgToExcelController extends RootController {
      * @param filterExtensionList 要过滤的文件格式
      * @return 文件读取设置
      */
-    private FileConfig getInFileList(File selectedFile, List<String> filterExtensionList) {
+    private FileConfig getInFileList(File selectedFile, List<String> filterExtensionList) throws IOException {
         FileConfig fileConfig = new FileConfig();
         String maxImgValue = maxImgNum_Img.getText();
         int maxImgNum = 0;
@@ -314,7 +314,7 @@ public class ImgToExcelController extends RootController {
             // 渲染表格前需要更新一下读取的文件
             updateInFileList();
             String excelPath = excelPath_Img.getText();
-            excelType_Img.setText(getFileType(new File(excelPath)));
+            excelType_Img.setText(getExistsFileType(new File(excelPath)));
             // 组装数据
             String maxImgValue = maxImgNum_Img.getText();
             int maxImgNum = 0;
@@ -426,7 +426,7 @@ public class ImgToExcelController extends RootController {
             }
             String excelPath = prop.getProperty(key_lastExcelPath);
             if (StringUtils.isNotBlank(excelPath)) {
-                excelType_Img.setText(getFileType(new File(excelPath)));
+                excelType_Img.setText(getExistsFileType(new File(excelPath)));
             }
         }
         input.close();
@@ -647,15 +647,20 @@ public class ImgToExcelController extends RootController {
      * 拖拽中行为
      *
      * @param dragEvent 拖拽中事件
+     * @throws RuntimeException 文件不存在
      */
     @FXML
     private void acceptDrop(DragEvent dragEvent) {
         List<File> files = dragEvent.getDragboard().getFiles();
         files.forEach(file -> {
-            if (file.isFile() && xlsx.equals(getFileType(file))) {
-                // 接受拖放
-                dragEvent.acceptTransferModes(TransferMode.COPY);
-                dragEvent.consume();
+            try {
+                if (file.isFile() && xlsx.equals(getExistsFileType(file))) {
+                    // 接受拖放
+                    dragEvent.acceptTransferModes(TransferMode.COPY);
+                    dragEvent.consume();
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
         });
     }

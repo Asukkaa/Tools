@@ -2,6 +2,8 @@ package priv.koishi.tools.Service;
 
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
+import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -142,15 +144,7 @@ public class FileNameToExcelService {
                     autoSizeExcelCell(sheet, startCellNum);
                 } else {
                     List<String> titles = new ArrayList<>();
-                    List<String> ids = new ArrayList<>();
-                    // 获取属性顺序与名称
-                    ObservableList<? extends TableColumn<?, ?>> columns = taskBean.getTableView().getColumns();
-                    columns.forEach(c -> {
-                        titles.add(c.getText());
-                        String id = c.getId();
-                        id = id.substring(0, id.lastIndexOf(taskBean.getTabId()));
-                        ids.add(id);
-                    });
+                    List<String> ids = getIds(titles);
                     // 创建表头
                     if (excelConfig.isExportTitle()) {
                         startRowNum = buildExcelTitle(sheet, startRowNum, titles, startCellNum);
@@ -186,6 +180,28 @@ public class FileNameToExcelService {
                 }
                 updateMessage(text_printDown);
                 return workbook;
+            }
+
+            // 获取属性顺序与名称
+            private List<String> getIds(List<String> titles) {
+                List<String> ids = new ArrayList<>();
+                // 获取属性顺序与名称
+                ObservableList<? extends TableColumn<?, ?>> columns = taskBean.getTableView().getColumns();
+                columns.forEach(c -> {
+                    String id = c.getId();
+                    id = id.substring(0, id.lastIndexOf(taskBean.getTabId()));
+                    // 排除索引列和缩略图列
+                    if (!"index".equals(id) && !"thumb".equals(id)) {
+                        ids.add(id);
+                        Node graphic = c.getGraphic();
+                        if (graphic instanceof Label label) {
+                            titles.add(label.getText());
+                        } else {
+                            titles.add("");
+                        }
+                    }
+                });
+                return ids;
             }
         };
     }

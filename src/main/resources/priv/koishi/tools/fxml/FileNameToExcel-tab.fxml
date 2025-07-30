@@ -117,6 +117,7 @@
             <columns>
                 <TableColumn fx:id="index_Name" text="行号" sortable="false"/>
                 <TableColumn fx:id="id_Name" text="序号"/>
+                <TableColumn fx:id="thumb_Name" text="缩略图" sortable="false"/>
                 <TableColumn fx:id="name_Name" text="文件名称"/>
                 <TableColumn fx:id="fileType_Name" text="文件类型"/>
                 <TableColumn fx:id="path_Name" text="文件路径"/>

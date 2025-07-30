@@ -91,6 +91,11 @@ public class CommonFinals {
     public static final String jpeg = ".jpeg";
 
     /**
+     * 图片格式后缀名列表
+     */
+    public static final List<String> imageType = Arrays.asList(png, jpg, jpeg);
+
+    /**
      * 文件后缀名：xlsx
      */
     public static final String xlsx = ".xlsx";
@@ -770,6 +775,10 @@ public class CommonFinals {
     public static final String text_creatFatherDirErr = "无法创建父目录：";
 
     public static final String text_deleteErr = "无法删除文件或目录：";
+
+    public static final String text_noImg = "无图片";
+
+    public static final String text_imgPath = "图片地址：";
 
     public static final String id_settingTab = "settingTab";
 

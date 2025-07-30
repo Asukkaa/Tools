@@ -7,6 +7,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
@@ -108,6 +109,9 @@ public class FileNameToExcelController extends RootController {
 
     @FXML
     public TableView<FileBean> tableView_Name;
+
+    @FXML
+    public TableColumn<FileBean, ImageView> thumb_Name;
 
     @FXML
     public TableColumn<FileBean, Integer> id_Name, index_Name;
@@ -278,7 +282,7 @@ public class FileNameToExcelController extends RootController {
             String excelPath = prop.getProperty(key_lastExcelPath);
             if (StringUtils.isNotBlank(excelPath)) {
                 removeExcelButton_Name.setVisible(true);
-                excelType_Name.setValue(getFileType(new File(excelPath)));
+                excelType_Name.setValue(getExistsFileType(new File(excelPath)));
                 excelType_Name.setDisable(true);
             }
         }
@@ -291,9 +295,10 @@ public class FileNameToExcelController extends RootController {
     private void bindPrefWidthProperty() {
         index_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.04));
         id_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.04));
+        thumb_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.1));
         name_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.14));
         fileType_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.06));
-        path_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.3));
+        path_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.2));
         size_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.08));
         showStatus_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.06));
         creatDate_Name.prefWidthProperty().bind(tableView_Name.widthProperty().multiply(0.14));
@@ -549,7 +554,7 @@ public class FileNameToExcelController extends RootController {
             // 更新所选文件路径显示
             excelInPath = updatePathLabel(selectedFile.getPath(), excelInPath, key_excelInPath, excelPath_Name, configFile_Name);
             removeExcelButton_Name.setVisible(true);
-            String excelType = getFileType(selectedFile);
+            String excelType = getExistsFileType(selectedFile);
             excelType_Name.setValue(excelType);
             excelType_Name.setDisable(true);
         }

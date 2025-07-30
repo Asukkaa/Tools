@@ -1,5 +1,6 @@
 package priv.koishi.tools.Utils;
 
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -166,17 +167,27 @@ public class ExcelUtils {
      * @param workbook    excel工作簿
      * @param excelConfig excel设置
      * @return excel保存路径
-     * @throws RuntimeException io异常
-     * @throws Exception        io异常
+     * @throws Exception io异常
      */
     public static String saveExcel(Workbook workbook, ExcelConfig excelConfig) throws Exception {
-        String filePath;
-        try (SXSSFWorkbook sxssfWorkbook = (workbook instanceof SXSSFWorkbook) ? (SXSSFWorkbook) workbook :
-                new SXSSFWorkbook((XSSFWorkbook) workbook, 100, true, true)) {
-            filePath = excelConfig.getOutPath() + File.separator + excelConfig.getOutName() + excelConfig.getOutExcelType();
+        String filePath = excelConfig.getOutPath() + File.separator + excelConfig.getOutName() + excelConfig.getOutExcelType();
+        Path path = Paths.get(filePath);
+        // 处理HSSFWorkbook
+        if (workbook instanceof HSSFWorkbook) {
+            // 直接保存HSSFWorkbook
             checkDirectory(new File(filePath).getParent());
             try (BufferedOutputStream bos = new BufferedOutputStream(
-                    Files.newOutputStream(Paths.get(filePath)), 65536)) {
+                    Files.newOutputStream(path), 65536)) {
+                workbook.write(bos);
+            }
+            return filePath;
+        }
+        // 处理SXSSFWorkbook和XSSFWorkbook
+        try (SXSSFWorkbook sxssfWorkbook = (workbook instanceof SXSSFWorkbook) ? (SXSSFWorkbook) workbook :
+                new SXSSFWorkbook((XSSFWorkbook) workbook, 100, true, true)) {
+            checkDirectory(new File(filePath).getParent());
+            try (BufferedOutputStream bos = new BufferedOutputStream(
+                    Files.newOutputStream(path), 65536)) {
                 sxssfWorkbook.write(bos);
             }
         }

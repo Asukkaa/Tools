@@ -122,13 +122,14 @@ public class AboutController extends RootController {
      * 清理多余log文件
      *
      * @throws RuntimeException 删除日志文件失败
+     * @throws IOException      文件不存在
      */
-    private void deleteLogs() {
+    private void deleteLogs() throws IOException {
         File[] files = new File(logsPath_Abt.getText()).listFiles();
         if (files != null) {
             List<File> logList = new ArrayList<>();
             for (File file : files) {
-                if (log.equals(getFileType(file))) {
+                if (log.equals(getExistsFileType(file))) {
                     logList.add(file);
                 }
             }

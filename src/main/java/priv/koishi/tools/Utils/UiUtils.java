@@ -1,9 +1,12 @@
 package priv.koishi.tools.Utils;
 
 import javafx.application.Platform;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -16,6 +19,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -31,6 +35,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import priv.koishi.tools.Annotate.UsedByReflection;
 import priv.koishi.tools.Bean.*;
 import priv.koishi.tools.Bean.Vo.FileNumVo;
 import priv.koishi.tools.Configuration.FileConfig;
@@ -42,8 +47,10 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static priv.koishi.tools.Finals.CommonFinals.*;
@@ -477,6 +484,7 @@ public class UiUtils {
      * @param indexColumn 序号列
      * @param <T>         要处理的javafx表格的数据bean类
      */
+    @SuppressWarnings("unchecked")
     public static <T> void autoBuildTableViewData(TableView<T> tableView, Class<?> beanClass, String tabId, TableColumn<T, Integer> indexColumn) {
         // 递归获取类及其父类的所有字段
         List<Field> fields = getAllFields(beanClass);
@@ -494,13 +502,104 @@ public class UiUtils {
             matched.ifPresent(m -> {
                 // 添加列名Tooltip
                 addTableColumnToolTip(m);
-                if (indexColumn != null && m.getId().equals(indexColumn.getId())) {
-                    buildIndexCellValue(indexColumn);
+                if (f.getType() == Image.class) {
+                    try {
+                        Method getter = beanClass.getMethod("loadThumb");
+                        // 显式标记方法调用（解决IDE误报）
+                        if (getter.isAnnotationPresent(UsedByReflection.class)) {
+                            Function<T, Image> supplier = bean -> {
+                                try {
+                                    return (Image) getter.invoke(bean);
+                                } catch (Exception e) {
+                                    return null;
+                                }
+                            };
+                            // 创建图片表格
+                            buildThumbnailCell((TableColumn<T, Image>) m, supplier);
+                        }
+                    } catch (NoSuchMethodException e) {
+                        throw new RuntimeException(e);
+                    }
                 } else {
-                    buildCellValue(m, fieldName);
+                    if (indexColumn != null && m.getId().equals(indexColumn.getId())) {
+                        // 设置列为序号列
+                        buildIndexCellValue(indexColumn);
+                    } else {
+                        // 为javafx单元格赋值并添加鼠标悬停提示
+                        buildCellValue(m, fieldName);
+                    }
                 }
             });
         });
+    }
+
+    /**
+     * 创建图片表格
+     *
+     * @param column        要创建图片表格的列
+     * @param thumbSupplier 获取图片的函数
+     * @param <T>           列对应的数据类型
+     */
+    public static <T> void buildThumbnailCell(TableColumn<T, Image> column, Function<? super T, ? extends Image> thumbSupplier) {
+        column.setCellValueFactory(cellData ->
+                new SimpleObjectProperty<>(thumbSupplier.apply(cellData.getValue())));
+        column.setCellFactory(col -> new TableCell<>() {
+            private final ImageView imageView = new ImageView();
+
+            {
+                imageView.setFitWidth(100);
+                imageView.setFitHeight(100);
+                imageView.setPreserveRatio(true);
+            }
+
+            @Override
+            protected void updateItem(Image image, boolean empty) {
+                super.updateItem(image, empty);
+                setTextFill(Color.BLACK);
+                if (empty) {
+                    setText(null);
+                    setGraphic(null);
+                } else if (image == null) {
+                    setText(text_noImg);
+                    setTooltip(creatTooltip(text_noImg));
+                    setGraphic(null);
+                } else {
+                    setText(null);
+                    imageView.setImage(image);
+                    setGraphic(imageView);
+                    setTooltip(creatTooltip(image.getUrl().replace("file:", text_imgPath)));
+                }
+            }
+        });
+    }
+
+    /**
+     * 获取表格中的缩略图
+     *
+     * @param path 缩略图路径
+     * @return 表格中的缩略图对象
+     */
+    public static Service<Image> tableViewImageService(String path) {
+        return new Service<>() {
+            @Override
+            protected Task<Image> createTask() {
+                return new Task<>() {
+                    @Override
+                    protected Image call() {
+                        if (StringUtils.isNotBlank(path)) {
+                            return new Image("file:" + path,
+                                    200,
+                                    200,
+                                    true,
+                                    true,
+                                    true);
+                        } else {
+                            return null;
+                        }
+                    }
+                };
+            }
+        };
     }
 
     /**

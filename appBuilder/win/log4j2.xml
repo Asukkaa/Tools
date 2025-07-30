@@ -19,6 +19,11 @@
     </Appenders>
 
     <Loggers>
+        <Logger name="org.apache.poi.POIDocument" level="ERROR" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="RollingFile"/>
+        </Logger>
+
         <Root level="info">
             <AppenderRef ref="Console"/>
             <AppenderRef ref="RollingFile"/>

@@ -143,10 +143,10 @@ public class ReadDataService {
      *
      * @param excelInPath excel模板路径
      * @return 根据不同格式excel创建的作簿
-     * @throws Exception 文件格式不支持
+     * @throws Exception 文件格式不支持、文件不存在
      */
     private static Workbook getWorkbook(String excelInPath) throws Exception {
-        String excelType = getFileType(new File(excelInPath));
+        String excelType = getExistsFileType(new File(excelInPath));
         Workbook workbook = null;
         try (InputStream inputStream = Files.newInputStream(Paths.get(excelInPath))) {
             if (xlsx.equals(excelType)) {
@@ -190,7 +190,7 @@ public class ReadDataService {
      * @param taskBean 读取文件线程任务参数
      * @return 无参数线程任务
      */
-    public static Task<Void> readFile(TaskBean<? super FileBean> taskBean) {
+    public static Task<Void> readFile(TaskBean<FileBean> taskBean) {
         return new Task<>() {
             @Override
             protected Void call() throws IOException {
@@ -244,9 +244,10 @@ public class ReadDataService {
                         }
                     }
                     // 组装文件基础数据
-                    fileBean.setUpdateDate(getFileUpdateTime(f))
+                    fileBean.setTableView(taskBean.getTableView())
+                            .setUpdateDate(getFileUpdateTime(f))
                             .setCreatDate(getFileCreatTime(f))
-                            .setFileType(getFileType(f))
+                            .setFileType(getExistsFileType(f))
                             .setSize(getFileUnitSize(f))
                             .setPath(f.getPath());
                     fileBeans.add(fileBean);
@@ -299,12 +300,19 @@ public class ReadDataService {
      *
      * @param fileList    要排序的文件
      * @param reverseSort 是否倒序标识，true倒序，false为正序
+     * @throws RuntimeException 文件不存在
      */
     private static void comparingByType(List<? extends File> fileList, boolean reverseSort) {
         fileList.sort((o1, o2) -> {
             // 比较文件后缀名
-            String ext1 = getFileType(o1);
-            String ext2 = getFileType(o2);
+            String ext1;
+            String ext2;
+            try {
+                ext1 = getExistsFileType(o1);
+                ext2 = getExistsFileType(o2);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
             if (reverseSort) {
                 return ext2.compareTo(ext1);
             } else {
