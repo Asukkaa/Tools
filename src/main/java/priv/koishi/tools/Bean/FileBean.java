@@ -1,10 +1,20 @@
 package priv.koishi.tools.Bean;
 
+import javafx.application.Platform;
+import javafx.concurrent.Service;
+import javafx.scene.control.TableView;
+import javafx.scene.image.Image;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import org.apache.commons.lang3.StringUtils;
+import priv.koishi.tools.Annotate.UsedByReflection;
 import priv.koishi.tools.Configuration.CodeRenameConfig;
 
 import java.io.File;
+import java.io.IOException;
+
+import static priv.koishi.tools.Utils.FileUtils.isImgFile;
+import static priv.koishi.tools.Utils.UiUtils.tableViewImageService;
 
 /**
  * javafx列表展示文件信息类
@@ -91,6 +101,62 @@ public class FileBean implements Indexable {
      * 根据按编号规则重命名文件重命名设置
      */
     CodeRenameConfig codeRenameConfig;
+
+    /**
+     * 缩略图
+     */
+    Image thumb;
+
+    /**
+     * 要显示缩略图的列表
+     */
+    TableView<FileBean> tableView;
+
+    /**
+     * 加载缩略图线程
+     */
+    private transient Service<Image> currentThumbService;
+
+    /**
+     * 获取缩略图
+     *
+     * @return 当前图片表格的缩略图
+     */
+    @UsedByReflection
+    public Image loadThumb() {
+        if (StringUtils.isBlank(getPath())) {
+            return null;
+        }
+        if (thumb == null) {
+            // 异步加载缩略图（防止阻塞UI）
+            loadThumbnailAsync();
+        }
+        return thumb;
+    }
+
+    /**
+     * 异步加载并更新缩略图
+     */
+    private void loadThumbnailAsync() {
+        try {
+            if (isImgFile(new File(getPath()))) {
+                // 终止进行中的服务
+                if (currentThumbService != null && currentThumbService.isRunning()) {
+                    currentThumbService.cancel();
+                }
+                currentThumbService = tableViewImageService(getPath());
+                currentThumbService.setOnSucceeded(e -> {
+                    thumb = currentThumbService.getValue();
+                    Platform.runLater(() -> tableView.refresh());
+                });
+                currentThumbService.start();
+            } else {
+                thumb = null;
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     /**
      * 获取完整重命名
