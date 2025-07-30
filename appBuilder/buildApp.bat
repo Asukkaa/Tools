@@ -11,6 +11,10 @@ set "appMainClass=priv.koishi.tools/priv.koishi.tools.MainApplication"
 set "runtimeImage=app"
 set "appPath=%target%\%appName%"
 
+::关闭正在运行的程序
+echo 关闭正在运行的程序...
+taskkill /f /im "%appName%.exe" >nul 2>&1
+
 :: 解析版本号
 set "javaFile=%src%\main\java\priv\koishi\tools\Finals\CommonFinals.java"
 for /f "delims=" %%i in ('powershell -Command "(Select-String -Path '%javaFile%' -Pattern 'public static final String version = \x22(.*?)\x22;').Matches.Groups[1].Value"') do (
