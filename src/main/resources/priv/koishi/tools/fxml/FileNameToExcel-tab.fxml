@@ -11,7 +11,7 @@
     <VBox spacing="10" AnchorPane.topAnchor="10" AnchorPane.leftAnchor="30">
         <HBox spacing="10">
             <Label prefHeight="25" text="文件夹查询设置:"/>
-            <ChoiceBox fx:id="directoryNameType_Name" prefHeight="25" prefWidth="140">
+            <ChoiceBox fx:id="directoryNameType_Name" prefHeight="25" prefWidth="140" style="-fx-cursor: hand">
                 <items>
                     <FXCollections fx:factory="observableArrayList">
                         <String fx:value="只查询文件"/>
@@ -25,7 +25,7 @@
             </ChoiceBox>
 
             <Label prefHeight="25" text="隐藏文件查询设置:"/>
-            <ChoiceBox fx:id="hideFileType_Name" prefHeight="20" prefWidth="120">
+            <ChoiceBox fx:id="hideFileType_Name" prefHeight="20" prefWidth="120" style="-fx-cursor: hand">
                 <items>
                     <FXCollections fx:factory="observableArrayList">
                         <String fx:value="不查询隐藏文件"/>
@@ -52,7 +52,7 @@
             <TextField fx:id="sheetName_Name" prefHeight="20" prefWidth="160"/>
 
             <Label fx:id="excelTypeLabel_Name" prefHeight="25" text="导出excel文件类型:"/>
-            <ChoiceBox fx:id="excelType_Name" prefHeight="20" prefWidth="60">
+            <ChoiceBox fx:id="excelType_Name" prefHeight="20" prefWidth="60" style="-fx-cursor: hand">
                 <items>
                     <FXCollections fx:factory="observableArrayList">
                         <String fx:value=".xlsx"/>

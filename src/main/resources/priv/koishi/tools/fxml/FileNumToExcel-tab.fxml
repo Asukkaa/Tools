@@ -10,7 +10,7 @@
     <VBox spacing="10" AnchorPane.topAnchor="10">
         <HBox spacing="10">
             <Label prefHeight="25" text="文件夹查询设置:"/>
-            <ChoiceBox fx:id="directoryNameType_Num" prefHeight="25" prefWidth="140">
+            <ChoiceBox fx:id="directoryNameType_Num" prefHeight="25" prefWidth="140" style="-fx-cursor: hand">
                 <items>
                     <FXCollections fx:factory="observableArrayList">
                         <String fx:value="只查询文件"/>
@@ -24,7 +24,7 @@
             </ChoiceBox>
 
             <Label prefHeight="25" text="隐藏文件查询设置:"/>
-            <ChoiceBox fx:id="hideFileType_Num" prefHeight="25" prefWidth="120">
+            <ChoiceBox fx:id="hideFileType_Num" prefHeight="25" prefWidth="120" style="-fx-cursor: hand">
                 <items>
                     <FXCollections fx:factory="observableArrayList">
                         <String fx:value="不查询隐藏文件"/>

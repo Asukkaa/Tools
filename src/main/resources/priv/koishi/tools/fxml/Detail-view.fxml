@@ -15,7 +15,7 @@
 
             <HBox spacing="5" prefWidth="240">
                 <Label prefHeight="25" text="操作类型:"/>
-                <ChoiceBox fx:id="clickType_Det" prefHeight="25" prefWidth="120">
+                <ChoiceBox fx:id="clickType_Det" prefHeight="25" prefWidth="120" style="-fx-cursor: hand">
                     <items>
                         <FXCollections fx:factory="observableArrayList">
                             <String fx:value="鼠标左键点击"/>

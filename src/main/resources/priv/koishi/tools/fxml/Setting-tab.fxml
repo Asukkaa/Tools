@@ -43,7 +43,8 @@
         <HBox spacing="10">
             <HBox prefWidth="360">
                 <Label prefHeight="25" text="文件查询默认排序设置："/>
-                <ChoiceBox fx:id="sort_Set" onAction="#sortAction" prefHeight="25" prefWidth="150">
+                <ChoiceBox fx:id="sort_Set" onAction="#sortAction" style="-fx-cursor: hand"
+                           prefHeight="25" prefWidth="150">
                     <items>
                         <FXCollections fx:factory="observableArrayList">
                             <String fx:value="不排序"/>
@@ -61,8 +62,8 @@
             </HBox>
 
             <HBox spacing="30">
-                <CheckBox fx:id="reverseSort_Set" onAction="#reverseSorAction" prefHeight="25" style="-fx-cursor: hand"
-                          text="文件查询默认倒序排序"/>
+                <CheckBox fx:id="reverseSort_Set" onAction="#reverseSorAction" style="-fx-cursor: hand"
+                          prefHeight="25" text="文件查询默认倒序排序"/>
             </HBox>
         </HBox>
 
@@ -100,7 +101,8 @@
 
             <HBox spacing="5" prefWidth="350">
                 <Label prefHeight="25" text="下次启动时垃圾回收(GC)类型:"/>
-                <ChoiceBox fx:id="nextGcType_Set" onAction="#nextGcTypeAction" prefHeight="25" prefWidth="150">
+                <ChoiceBox fx:id="nextGcType_Set" onAction="#nextGcTypeAction" style="-fx-cursor: hand"
+                           prefHeight="25" prefWidth="150">
                     <items>
                         <FXCollections fx:factory="observableArrayList">
                             <String fx:value="G1GC"/>
