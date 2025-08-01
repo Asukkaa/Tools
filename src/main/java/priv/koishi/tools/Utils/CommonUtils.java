@@ -161,7 +161,7 @@ public class CommonUtils {
                 bean1.setGroupNumber(matched.getGroupNumber());
                 bean1.setFileNameList(matched.getFileNameList());
                 bean1.setFilePathList(matched.getFilePathList());
-                bean1.setFileUnitSize(getUnitSize(matched.getFileSize(), true));
+                bean1.setFileUnitSize(getUnitSize(matched.getFileSize()));
                 totalFileSize.addAndGet(matched.getFileSize());
                 imgNum.addAndGet(matched.getFilePathList().size());
             });
@@ -169,7 +169,7 @@ public class CommonUtils {
         FileNumVo fileNumVo = new FileNumVo();
         fileNumVo.setImgNum(imgNum.get())
                 .setDataNum(fileNumBeans.size())
-                .setImgSize(getUnitSize(totalFileSize.get(), true));
+                .setImgSize(getUnitSize(totalFileSize.get()));
         return fileNumVo;
     }
 

@@ -72,7 +72,7 @@ exports.main = async (event) => {
         // 构造响应对象
         const latestVersionInfo = {
             version: serverVersion,
-            buildDate: "2025.07.30",
+            buildDate: "2025.08.01",
             whatsNew: `版本2.4.0:
         1.新增自动更新功能
         2.文件相关列表新增图片缩略图

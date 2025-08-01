@@ -60,7 +60,17 @@ public class FileUtils {
      * @return 带单位的文件大小
      */
     public static String getFileUnitSize(File file) {
-        return getUnitSize(file.length(), true);
+        return getUnitSize(file.length());
+    }
+
+    /**
+     * 根据操作系统将数值转换为文件大小
+     *
+     * @param size          没带单位的文件大小
+     * @return 带单位的文件大小
+     */
+    public static String getUnitSize(long size) {
+        return getUnitSize(size, true);
     }
 
     /**
