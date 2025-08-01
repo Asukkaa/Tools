@@ -172,10 +172,10 @@ public class FileRenameController extends RootController {
         thumb_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.1));
         name_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.1));
         rename_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.1));
-        fileType_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.06));
-        newFileType_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.1));
-        path_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.11));
-        size_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.07));
+        fileType_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.07));
+        newFileType_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.11));
+        path_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.1));
+        size_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.06));
         showStatus_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.06));
         creatDate_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.12));
         updateDate_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.12));
