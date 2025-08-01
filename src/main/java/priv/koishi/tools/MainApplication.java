@@ -167,7 +167,11 @@ public class MainApplication extends Application {
         // 卸载全局输入监听钩子
         GlobalScreen.unregisterNativeHook();
         // 保存设置
-        mainController.saveAllLastConfig();
+        if (mainController != null) {
+            mainController.saveAllLastConfig();
+        }
+        // 停止 javafx ui 线程
+        Platform.exit();
         logger.info("==============程序退出中====================");
         System.exit(0);
     }
