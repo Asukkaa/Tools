@@ -13,6 +13,8 @@ import priv.koishi.tools.Configuration.CodeRenameConfig;
 import java.io.File;
 import java.io.IOException;
 
+import static priv.koishi.tools.Finals.CommonFinals.extension_file;
+import static priv.koishi.tools.Finals.CommonFinals.extension_folder;
 import static priv.koishi.tools.Utils.FileUtils.isImgFile;
 import static priv.koishi.tools.Utils.UiUtils.tableViewImageService;
 
@@ -53,9 +55,14 @@ public class FileBean implements Indexable {
     String path;
 
     /**
-     * 文件列表展示文件类型
+     * 文件列表展示文件拓展名
      */
     String fileType;
+
+    /**
+     * 文件列表展示修改后的文件拓展名
+     */
+    String newFileType;
 
     /**
      * 文件列表展示文件大小
@@ -160,16 +167,24 @@ public class FileBean implements Indexable {
 
     /**
      * 获取完整重命名
+     *
+     * @return 完整重命名
      */
     public String getFullRename() {
-        return getRename() + getFileType();
+        return getRename() + getNewFileType();
     }
 
     /**
      * 获取完整文件名
+     *
+     * @return 完整文件名
      */
     public String getFullName() {
-        return getName() + getFileType();
+        String type = getFileType();
+        if (extension_folder.equals(type) || extension_file.equals(type)) {
+            type = "";
+        }
+        return getName() + type;
     }
 
     /**

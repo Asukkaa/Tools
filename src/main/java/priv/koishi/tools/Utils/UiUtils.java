@@ -1016,7 +1016,7 @@ public class UiUtils {
      * @param tableView   要添加右键菜单的列表
      * @param contextMenu 右键菜单集合
      */
-    private static void buildFilePathItem(TableView<FileBean> tableView, ContextMenu contextMenu) {
+    public static void buildFilePathItem(TableView<FileBean> tableView, ContextMenu contextMenu) {
         Menu menu = new Menu("查看文件");
         // 创建二级菜单项
         MenuItem openFile = new MenuItem("打开所选文件");

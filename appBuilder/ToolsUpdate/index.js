@@ -73,11 +73,9 @@ exports.main = async (event) => {
         const latestVersionInfo = {
             version: serverVersion,
             buildDate: "2025.08.01",
-            whatsNew: `版本2.4.0:
-        1.新增自动更新功能
-        2.文件相关列表新增图片缩略图
-        3.调整部分 UI 逻辑与样式
-        4.修复若干 BUG`,
+            whatsNew: `版本2.4.1:
+        1.新增批量修改文件拓展名功能
+        2.自动更新功能将会显示下载文件大小进度`,
             aliyunFileLink: aliyunFileLink,
             alipayFileLink: alipayFileLink,
             fullUpdate: fullUpdate

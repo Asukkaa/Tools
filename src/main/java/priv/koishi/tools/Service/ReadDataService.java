@@ -243,13 +243,20 @@ public class ReadDataService {
                             nameNum = 1;
                         }
                     }
+                    String fileType = getFileType(f);
                     // 组装文件基础数据
                     fileBean.setTableView(taskBean.getTableView())
                             .setUpdateDate(getFileUpdateTime(f))
                             .setCreatDate(getFileCreatTime(f))
-                            .setFileType(getFileType(f))
                             .setSize(getFileUnitSize(f))
+                            .setNewFileType(fileType)
+                            .setFileType(fileType)
                             .setPath(f.getPath());
+                    if (extension_folder.equals(fileType) || extension_file.equals(fileType)) {
+                        fileBean.setNewFileType("");
+                    } else if (!fileType.startsWith(".")) {
+                        fileBean.setNewFileType("." + fileType);
+                    }
                     fileBeans.add(fileBean);
                     updateProgress(i + 1, inFileSize);
                 }

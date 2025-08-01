@@ -119,7 +119,7 @@ public class FileRenameController extends RootController {
     public TableColumn<FileBean, ImageView> thumb_Re;
 
     @FXML
-    public TableColumn<FileBean, String> name_Re, rename_Re, path_Re, size_Re, fileType_Re,
+    public TableColumn<FileBean, String> name_Re, rename_Re, path_Re, size_Re, fileType_Re, newFileType_Re,
             creatDate_Re, updateDate_Re, showStatus_Re;
 
     @FXML
@@ -136,7 +136,7 @@ public class FileRenameController extends RootController {
 
     @FXML
     public Button fileButton_Re, clearButton_Re, renameButton_Re, reselectButton_Re, updateRenameButton_Re,
-            excelPathButton_Re, updateSameCode_Re;
+            excelPathButton_Re, updateSameCode_Re, updateFileType_Re, removeFileType_Re;
 
     @FXML
     public ChoiceBox<String> hideFileType_Re, directoryNameType_Re, renameType_Re, subCode_Re, differenceCode_Re,
@@ -144,7 +144,8 @@ public class FileRenameController extends RootController {
 
     @FXML
     public TextField sheetName_Re, filterFileType_Re, readRow_Re, readCell_Re, maxRow_Re, startName_Re, nameNum_Re,
-            startSize_Re, left_Re, right_Re, renameStr_Re, leftValue_Re, rightValue_Re, renameValue_Re, tag_Re;
+            startSize_Re, left_Re, right_Re, renameStr_Re, leftValue_Re, rightValue_Re, renameValue_Re, tag_Re,
+            renameFileType_Re;
 
     /**
      * 组件自适应宽高
@@ -163,6 +164,24 @@ public class FileRenameController extends RootController {
     }
 
     /**
+     * 设置javafx单元格宽度
+     */
+    private void bindPrefWidthProperty() {
+        index_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.03));
+        id_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.03));
+        thumb_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.1));
+        name_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.1));
+        rename_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.1));
+        fileType_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.06));
+        newFileType_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.1));
+        path_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.11));
+        size_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.07));
+        showStatus_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.06));
+        creatDate_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.12));
+        updateDate_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.12));
+    }
+
+    /**
      * 保存最后一次配置的值
      *
      * @throws IOException io异常
@@ -172,12 +191,13 @@ public class FileRenameController extends RootController {
             InputStream input = checkRunningInputStream(configFile_Rename);
             Properties prop = new Properties();
             prop.load(input);
-            prop.put(key_lastDirectoryNameType, directoryNameType_Re.getValue());
+            prop.put(key_lastInPath, inPath_Re.getText());
             prop.put(key_lastHideFileType, hideFileType_Re.getValue());
+            prop.put(key_lastFilterFileType, filterFileType_Re.getText());
+            prop.put(key_lastRenameFileType, renameFileType_Re.getText());
+            prop.put(key_lastDirectoryNameType, directoryNameType_Re.getValue());
             String openDirectoryValue = openDirectory_Re.isSelected() ? activation : unActivation;
             prop.put(key_lastOpenDirectory, openDirectoryValue);
-            prop.put(key_lastFilterFileType, filterFileType_Re.getText());
-            prop.put(key_lastInPath, inPath_Re.getText());
             String renameTypeValue = renameType_Re.getValue();
             prop.put(key_lastRenameType, renameTypeValue);
             // 根据文件重命名依据设置保存配置信息
@@ -500,12 +520,14 @@ public class FileRenameController extends RootController {
         InputStream input = checkRunningInputStream(configFile_Rename);
         prop.load(input);
         if (activation.equals(prop.getProperty(key_loadLastConfig))) {
+            setControlLastConfig(inPath_Re, prop, key_lastInPath);
             setControlLastConfig(renameType_Re, prop, key_lastRenameType);
             setControlLastConfig(hideFileType_Re, prop, key_lastHideFileType);
             setControlLastConfig(openDirectory_Re, prop, key_lastOpenDirectory);
-            setControlLastConfig(inPath_Re, prop, key_lastInPath);
             setControlLastConfig(filterFileType_Re, prop, key_lastFilterFileType);
+            setControlLastConfig(renameFileType_Re, prop, key_lastRenameFileType);
             setControlLastConfig(directoryNameType_Re, prop, key_lastDirectoryNameType);
+
             // 根据重命名类型设置上次配置值
             setLastConfigByRenameType(prop);
         }
@@ -635,23 +657,6 @@ public class FileRenameController extends RootController {
     }
 
     /**
-     * 设置javafx单元格宽度
-     */
-    private void bindPrefWidthProperty() {
-        index_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.03));
-        id_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.03));
-        thumb_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.1));
-        name_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.12));
-        rename_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.12));
-        fileType_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.06));
-        path_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.14));
-        size_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.08));
-        showStatus_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.06));
-        creatDate_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.13));
-        updateDate_Re.prefWidthProperty().bind(tableView_Re.widthProperty().multiply(0.13));
-    }
-
-    /**
      * 设置鼠标悬停提示
      */
     private void setToolTip() {
@@ -681,6 +686,9 @@ public class FileRenameController extends RootController {
         addToolTip(tip_reselectButton, reselectButton_Re);
         addToolTip(tip_renameBehavior, renameBehavior_Re);
         addToolTip(tip_updateSameCode, updateSameCode_Re);
+        addToolTip(tip_updateFileType, updateFileType_Re);
+        addToolTip(tip_reNameFileType, renameFileType_Re);
+        addToolTip(tip_removeFileType, removeFileType_Re);
         addToolTip(tip_excelPathButton, excelPathButton_Re);
         addToolTip(tip_directoryNameType, directoryNameType_Re);
         addToolTip(tip_updateRenameButton, updateRenameButton_Re);
@@ -729,6 +737,8 @@ public class FileRenameController extends RootController {
         integerRangeTextField(right_Re, 0, null, tip_right);
         // 鼠标悬留提示输入的需要识别的文件后缀名
         textFieldValueListener(filterFileType_Re, tip_filterFileType);
+        // 给更新文件拓展名输入框添加鼠标悬停提示
+        textFieldValueListener(renameFileType_Re, tip_reNameFileType);
         // 限制读取最大行数只能输入正整数
         integerRangeTextField(maxRow_Re, 1, null, tip_maxRow);
         // 鼠标悬留提示输入的相同编号文件数量
@@ -741,7 +751,6 @@ public class FileRenameController extends RootController {
         integerRangeTextField(readRow_Re, 0, null, text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row);
         // 限制读取起始列只能输入自然数
         integerRangeTextField(readCell_Re, 0, null, text_onlyNaturalNumber + defaultReadCell + text_formThe + (defaultReadCell + 1) + text_cell);
-
     }
 
     /**
@@ -751,6 +760,107 @@ public class FileRenameController extends RootController {
         readRow_Re.setPromptText(String.valueOf(defaultReadRow));
         readCell_Re.setPromptText(String.valueOf(defaultReadCell));
         startName_Re.setPromptText(String.valueOf(defaultStartNameNum));
+    }
+
+    /**
+     * 构建右键菜单
+     */
+    private void setTableViewContextMenu() {
+        // 添加右键菜单
+        ContextMenu contextMenu = new ContextMenu();
+        // 移动所选行选项
+        buildMoveDataMenu(tableView_Re, contextMenu);
+        // 查看文件选项
+        buildFilePathItem(tableView_Re, contextMenu);
+        // 设置所选数据为同一编号
+        updateSameCodeMenu(contextMenu);
+        // 批量修改文件拓展名
+        updateFileTypeMenu(contextMenu);
+        // 批量删除文件拓展名
+        removeFileTypeMenu(contextMenu);
+        // 取消选中选项
+        buildClearSelectedData(tableView_Re, contextMenu);
+        // 删除所选数据选项
+        buildDeleteDataMenuItem(tableView_Re, fileNumber_Re, contextMenu, text_file);
+        // 为列表添加右键菜单并设置可选择多行
+        setContextMenu(contextMenu, tableView_Re);
+    }
+
+    /**
+     * 设置所选数据为同一编号
+     *
+     * @param contextMenu 右键菜单
+     */
+    private void updateSameCodeMenu(ContextMenu contextMenu) {
+        MenuItem menuItem = new MenuItem("设置所选数据为同一编号");
+        menuItem.setOnAction(event -> {
+            try {
+                updateSameCode();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+        contextMenu.getItems().add(menuItem);
+    }
+
+    /**
+     * 批量修改文件拓展名
+     *
+     * @param contextMenu 右键菜单
+     */
+    private void updateFileTypeMenu(ContextMenu contextMenu) {
+        MenuItem menuItem = new MenuItem("批量修改文件拓展名");
+        menuItem.setOnAction(event -> {
+            ObservableList<FileBean> selectedItems = tableView_Re.getSelectionModel().getSelectedItems();
+            updateFileType(selectedItems);
+        });
+        contextMenu.getItems().add(menuItem);
+    }
+
+    /**
+     * 批量删除文件拓展名
+     *
+     * @param contextMenu 右键菜单
+     */
+    private void removeFileTypeMenu(ContextMenu contextMenu) {
+        MenuItem menuItem = new MenuItem("批量删除文件拓展名");
+        menuItem.setOnAction(event -> {
+            ObservableList<FileBean> selectedItems = tableView_Re.getSelectionModel().getSelectedItems();
+            removeFileType(selectedItems);
+        });
+        contextMenu.getItems().add(menuItem);
+    }
+
+    /**
+     * 批量修改文件拓展名
+     *
+     * @param fileBeans 文件列表
+     */
+    private void updateFileType(ObservableList<FileBean> fileBeans) {
+        String fileType = renameFileType_Re.getText();
+        if (StringUtils.isNotBlank(fileType)) {
+            if (!fileType.startsWith(".")) {
+                fileType = "." + fileType;
+            }
+            for (FileBean fileBean : fileBeans) {
+                fileBean.setNewFileType(fileType);
+            }
+        }
+        tableView_Re.refresh();
+        updateLabel(log_Re, "");
+    }
+
+    /**
+     * 批量删除文件拓展名
+     *
+     * @param fileBeans 文件列表
+     */
+    private void removeFileType(ObservableList<FileBean> fileBeans) {
+        for (FileBean fileBean : fileBeans) {
+            fileBean.setNewFileType("");
+        }
+        tableView_Re.refresh();
+        updateLabel(log_Re, "");
     }
 
     /**
@@ -784,10 +894,11 @@ public class FileRenameController extends RootController {
             // 表格设置为可编辑
             tableView_Re.setEditable(true);
             rename_Re.setCellFactory((tableColumn) -> new EditingCell<>(FileBean::setRename));
+            newFileType_Re.setCellFactory((tableColumn) -> new EditingCell<>(FileBean::setNewFileType));
             // 设置列表通过拖拽排序行
             tableViewDragRow(tableView_Re);
             // 构建右键菜单
-            tableViewContextMenu(tableView_Re, fileNumber_Re);
+            setTableViewContextMenu();
         });
     }
 
@@ -1238,6 +1349,35 @@ public class FileRenameController extends RootController {
         }
         tableView_Re.refresh();
         updateLabel(log_Re, "");
+    }
+
+    /**
+     * 批量修改文件拓展名
+     *
+     * @throws Exception 要读取的文件列表为空
+     */
+    @FXML
+    private void updateFileType() throws Exception {
+        ObservableList<FileBean> fileBeans = tableView_Re.getItems();
+        if (CollectionUtils.isEmpty(fileBeans)) {
+            throw new Exception(text_fileListNull);
+        }
+        // 批量修改文件拓展名
+        updateFileType(fileBeans);
+    }
+
+    /**
+     * 批量删除文件拓展名
+     *
+     * @throws Exception 要读取的文件列表为空
+     */
+    @FXML
+    private void removeFileType() throws Exception {
+        ObservableList<FileBean> fileBeans = tableView_Re.getItems();
+        if (CollectionUtils.isEmpty(fileBeans)) {
+            throw new Exception(text_fileListNull);
+        }
+        removeFileType(fileBeans);
     }
 
 }

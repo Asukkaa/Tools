@@ -59,6 +59,10 @@
 
             <Label prefHeight="25" text="需要识别的文件后缀名:"/>
             <TextField fx:id="filterFileType_Re" prefHeight="20" prefWidth="300"/>
+
+            <Button fx:id="updateFileType_Re" onAction="#updateFileType" text="更新文件拓展名"/>
+            <TextField fx:id="renameFileType_Re" prefHeight="20" prefWidth="100"/>
+            <Button fx:id="removeFileType_Re" onAction="#removeFileType" text="删除文件拓展名"/>
         </HBox>
 
         <VBox fx:id="codeRenameVBox_Re" spacing="10">
@@ -245,7 +249,8 @@
                 <TableColumn fx:id="thumb_Re" text="缩略图" sortable="false"/>
                 <TableColumn fx:id="name_Re" text="原始文件名称"/>
                 <TableColumn fx:id="rename_Re" text="修改后文件名称"/>
-                <TableColumn fx:id="fileType_Re" text="文件类型"/>
+                <TableColumn fx:id="fileType_Re" text="文件拓展名"/>
+                <TableColumn fx:id="newFileType_Re" text="修改后文件拓展名"/>
                 <TableColumn fx:id="path_Re" text="文件路径"/>
                 <TableColumn fx:id="size_Re" sortType="DESCENDING" text="文件大小"/>
                 <TableColumn fx:id="showStatus_Re" text="是否隐藏"/>

@@ -42,9 +42,9 @@ public class FileRenameService {
                 int fileBeanListSize = fileBeanList.size();
                 for (int i = 0; i < fileBeanListSize; i++) {
                     FileBean fileBean = fileBeanList.get(i);
-                    String ext = fileBean.getFileType();
-                    if ("文件夹".equals(ext) || "文件".equals(ext)) {
-                        ext = "";
+                    String ext = fileBean.getNewFileType();
+                    if (StringUtils.isNotBlank(ext) && !ext.startsWith(".")) {
+                        ext = "." + ext;
                     }
                     String tempName = UUID.randomUUID() + ext;
                     fileBean.setTempFile(tempRename(fileBean, tempName));
@@ -57,9 +57,9 @@ public class FileRenameService {
                 for (int i = 0; i < fileBeanListSize; i++) {
                     FileBean fileBean = taskBean.getBeanList().get(i);
                     File tempFile = fileBean.getTempFile();
-                    String ext = fileBean.getFileType();
-                    if ("文件夹".equals(ext) || "文件".equals(ext)) {
-                        ext = "";
+                    String ext = fileBean.getNewFileType();
+                    if (StringUtils.isNotBlank(ext) && !ext.startsWith(".")) {
+                        ext = "." + ext;
                     }
                     String newName = fileBean.getRename() + ext;
                     File newFile = new File(tempFile.getParent(), newName);
