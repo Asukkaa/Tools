@@ -5,16 +5,16 @@ script_dir=$(cd "$(dirname "$0")" || exit 1; pwd)
 cd "$script_dir" || exit 1
 source="$script_dir/mac"
 target="$script_dir/../target"
-appIcon="$script_dir/PMC.icns"
+appIcon="$script_dir/Tools.icns"
 bin="$target/app/bin"
-appName="Perfect Mouse Control"
+appName="Tools"
 appFile="$appName.app"
 appFullPath="$target/$appFile"
 appContents="$appFullPath/Contents"
 app="$appContents/app"
 appBin="$appContents/runtime/Contents/Home/bin"
 InfoPlist="$appContents/Info.plist"
-appMainClass="priv.koishi.pmc/priv.koishi.pmc.MainApplication"
+appMainClass="priv.koishi.tools/priv.koishi.tools.MainApplication"
 runtimeImage="app"
 language="zh_CN"
 
@@ -24,7 +24,7 @@ pkill -9 -f "$appName" && echo "已强制终止 $appName" || echo "未检测到 
 
 # 从 Java 文件提取版本号
 src="$script_dir/../src"
-javaFile="$src/main/java/priv/koishi/pmc/Finals/CommonFinals.java"
+javaFile="$src/main/java/priv/koishi/tools/Finals/CommonFinals.java"
 
 # 检查含有版本号信息的Java文件存在性
 if [ ! -f "$javaFile" ]; then
