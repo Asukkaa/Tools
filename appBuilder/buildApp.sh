@@ -5,16 +5,16 @@ script_dir=$(cd "$(dirname "$0")" || exit 1; pwd)
 cd "$script_dir" || exit 1
 source="$script_dir/mac"
 target="$script_dir/../target"
-appIcon="$script_dir/Tools.icns"
+appIcon="$script_dir/PMC.icns"
 bin="$target/app/bin"
-appName="Tools"
+appName="Perfect Mouse Control"
 appFile="$appName.app"
 appFullPath="$target/$appFile"
 appContents="$appFullPath/Contents"
 app="$appContents/app"
 appBin="$appContents/runtime/Contents/Home/bin"
 InfoPlist="$appContents/Info.plist"
-appMainClass="priv.koishi.tools/priv.koishi.tools.MainApplication"
+appMainClass="priv.koishi.pmc/priv.koishi.pmc.MainApplication"
 runtimeImage="app"
 language="zh_CN"
 
@@ -24,7 +24,7 @@ pkill -9 -f "$appName" && echo "已强制终止 $appName" || echo "未检测到 
 
 # 从 Java 文件提取版本号
 src="$script_dir/../src"
-javaFile="$src/main/java/priv/koishi/tools/Finals/CommonFinals.java"
+javaFile="$src/main/java/priv/koishi/pmc/Finals/CommonFinals.java"
 
 # 检查含有版本号信息的Java文件存在性
 if [ ! -f "$javaFile" ]; then
@@ -85,6 +85,30 @@ else
     echo "错误：找不到 Info.plist 文件" >&2
     exit 1
 fi
+
+# 创建更新需要的app压缩包
+appZipFile="$target/${appName}-${appVersion}-mac.zip"
+echo "正在创建 app zip 文件：$appZipFile"
+# 清理旧文件
+rm -f "$appZipFile" 2>/dev/null
+# 执行压缩（保留符号链接和权限）
+(cd "$target" && zip -r -y "$appZipFile" "$appFile") || {
+    echo "错误：app zip 压缩失败" >&2
+    exit 1
+}
+echo "成功生成 app zip 文件：$appZipFile"
+
+# 创建更新需要的lib压缩包
+libZipFile="$target/lib-${appVersion}-mac.zip"
+echo "正在创建 lib zip 文件：$libZipFile"
+# 清理旧文件
+rm -f "$libZipFile" 2>/dev/null
+# 执行压缩（保留符号链接和权限）
+(cd "$target/app" && zip -r -y "$libZipFile" "lib") || {
+    echo "错误：lib zip 压缩失败" >&2
+    exit 1
+}
+echo "成功生成 lib zip 文件：$libZipFile"
 
 dmgName="${appName} ${appVersion}"
 volumeName="${appName}"
@@ -193,9 +217,9 @@ tell application "Finder"
 
             -- 定位应用程序图标
             set appItem to (first item of targetDisk whose name ends with ".app")
-            set position of appItem to {190, 200}
+            set position of appItem to {180, 200}
             set applicationsAlias to (first item of targetDisk whose name is "Applications")
-            set position of applicationsAlias to {650, 200}
+            set position of applicationsAlias to {630, 200}
 
             -- 成功标志
             set success to true
@@ -235,6 +259,6 @@ tell application "Finder"
     set targetFolder to (POSIX file "$target") as alias
     open targetFolder -- 打开目录
     delay 1 -- 等待目录加载
-    select {POSIX file "$appFullPath" as alias, POSIX file "$dmgFinal" as alias} -- 多选文件
+    select {POSIX file "$appFullPath" as alias, POSIX file "$dmgFinal" as alias, POSIX file "$appZipFile" as alias, POSIX file "$libZipFile" as alias} -- 多选文件
 end tell
 EOL
