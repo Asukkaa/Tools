@@ -6,9 +6,9 @@ set "target=..\target"
 set "src=..\src"
 set "bin=%target%\app\bin"
 set "lib=%target%\app\lib"
-set "appIcon=..\appBuilder\PMC.ico"
-set "appName=Perfect Mouse Control"
-set "appMainClass=priv.koishi.pmc/priv.koishi.pmc.MainApplication"
+set "appIcon=..\appBuilder\Tools.ico"
+set "appName=Tools"
+set "appMainClass=priv.koishi.tools/priv.koishi.tools.MainApplication"
 set "runtimeImage=app"
 set "appPath=%target%\%appName%"
 
@@ -17,7 +17,7 @@ echo 关闭正在运行的程序...
 taskkill /f /im "%appName%.exe" >nul 2>&1
 
 :: 解析版本号
-set "javaFile=%src%\main\java\priv\koishi\pmc\Finals\CommonFinals.java"
+set "javaFile=%src%\main\java\priv\koishi\tools\Finals\CommonFinals.java"
 for /f "delims=" %%i in ('powershell -Command "(Select-String -Path '%javaFile%' -Pattern 'public static final String version = \x22(.*?)\x22;').Matches.Groups[1].Value"') do (
     set "appVersion=%%i"
 )
