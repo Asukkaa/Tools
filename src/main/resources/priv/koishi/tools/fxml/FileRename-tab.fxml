@@ -10,7 +10,7 @@
     <VBox fx:id="vbox_Re" spacing="10" AnchorPane.topAnchor="10">
         <HBox fx:id="warnHBox_Re" spacing="10">
             <Label prefHeight="25" text="文件夹查询设置:"/>
-            <ChoiceBox fx:id="directoryNameType_Re" prefHeight="25" prefWidth="140">
+            <ChoiceBox fx:id="directoryNameType_Re" prefHeight="25" prefWidth="140" style="-fx-cursor: hand">
                 <items>
                     <FXCollections fx:factory="observableArrayList">
                         <String fx:value="只查询文件"/>
@@ -24,7 +24,7 @@
             </ChoiceBox>
 
             <Label prefHeight="25" text="隐藏文件查询设置:"/>
-            <ChoiceBox fx:id="hideFileType_Re" prefHeight="25" prefWidth="120">
+            <ChoiceBox fx:id="hideFileType_Re" prefHeight="25" prefWidth="120" style="-fx-cursor: hand">
                 <items>
                     <FXCollections fx:factory="observableArrayList">
                         <String fx:value="不查询隐藏文件"/>
@@ -44,7 +44,8 @@
 
         <HBox fx:id="renameTypeHBox_Re" spacing="10">
             <Label prefHeight="25" text="文件重命名依据设置:"/>
-            <ChoiceBox fx:id="renameType_Re" prefHeight="25" prefWidth="130" onAction="#renameTypeAction">
+            <ChoiceBox fx:id="renameType_Re" prefHeight="25" prefWidth="130" style="-fx-cursor: hand"
+                       onAction="#renameTypeAction">
                 <items>
                     <FXCollections fx:factory="observableArrayList">
                         <String fx:value="按编号规则重命名"/>
@@ -58,11 +59,25 @@
             </ChoiceBox>
 
             <Label prefHeight="25" text="需要识别的文件后缀名:"/>
-            <TextField fx:id="filterFileType_Re" prefHeight="20" prefWidth="300"/>
+            <TextField fx:id="filterFileType_Re" prefHeight="20" prefWidth="200"/>
 
-            <Button fx:id="updateFileType_Re" onAction="#updateFileType" text="更新文件拓展名"/>
-            <TextField fx:id="renameFileType_Re" prefHeight="20" prefWidth="100"/>
-            <Button fx:id="removeFileType_Re" onAction="#removeFileType" text="删除文件拓展名"/>
+            <Button fx:id="updateFileType_Re" onAction="#updateFileTypes" style="-fx-cursor: hand" text="更新文件拓展名"/>
+            <ChoiceBox fx:id="renameFileType_Re" prefHeight="25" prefWidth="160" style="-fx-cursor: hand"
+                       onAction="#renameFileTypeAction">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="替换所有字符为:"/>
+                        <String fx:value="移除所有字符"/>
+                        <String fx:value="全部英文字符转为大写"/>
+                        <String fx:value="全部英文字符转为小写"/>
+                        <String fx:value="全部英文字符大小写互换"/>
+                    </FXCollections>
+                </items>
+                <value>
+                    <String fx:value="替换所有字符为:"/>
+                </value>
+            </ChoiceBox>
+            <TextField visible="false" fx:id="renameFileTypeText_Re" prefHeight="20" prefWidth="100"/>
         </HBox>
 
         <VBox fx:id="codeRenameVBox_Re" spacing="10">
@@ -85,7 +100,8 @@
 
             <HBox spacing="10">
                 <Label prefHeight="25" text="区分编码类型:"/>
-                <ChoiceBox onAction="#differenceCodeAction" fx:id="differenceCode_Re" prefHeight="25" prefWidth="150">
+                <ChoiceBox onAction="#differenceCodeAction" fx:id="differenceCode_Re" style="-fx-cursor: hand"
+                           prefHeight="25" prefWidth="150">
                     <items>
                         <FXCollections fx:factory="observableArrayList">
                             <String fx:value="阿拉伯数字：123"/>
@@ -100,7 +116,7 @@
                 </ChoiceBox>
 
                 <Label prefHeight="25" text="分隔符:"/>
-                <ChoiceBox fx:id="subCode_Re" prefHeight="25" prefWidth="150">
+                <ChoiceBox fx:id="subCode_Re" prefHeight="25" prefWidth="150" style="-fx-cursor: hand">
                     <items>
                         <FXCollections fx:factory="observableArrayList">
                             <String fx:value="英文括号：01 (1).xx"/>
@@ -119,7 +135,8 @@
         <VBox fx:id="strRenameVBox_Re" spacing="10">
             <HBox spacing="10">
                 <Label prefHeight="25" text="匹配字符规则:"/>
-                <ChoiceBox onAction="#targetStrAction" fx:id="targetStr_Re" prefHeight="25" prefWidth="160">
+                <ChoiceBox onAction="#targetStrAction" fx:id="targetStr_Re" style="-fx-cursor: hand"
+                           prefHeight="25" prefWidth="160">
                     <items>
                         <FXCollections fx:factory="observableArrayList">
                             <String fx:value="指定字符串"/>
@@ -139,7 +156,8 @@
                     <TextField fx:id="renameValue_Re" prefHeight="20" prefWidth="100"/>
 
                     <Label prefHeight="25" text="重命名方法:"/>
-                    <ChoiceBox onAction="#behaviorAction" fx:id="renameBehavior_Re" prefHeight="25" prefWidth="120">
+                    <ChoiceBox onAction="#behaviorAction" fx:id="renameBehavior_Re" style="-fx-cursor: hand"
+                               prefHeight="25" prefWidth="120">
                         <items>
                             <FXCollections fx:factory="observableArrayList">
                                 <String fx:value="替换所有字符为:"/>
@@ -159,7 +177,8 @@
                 <Label prefHeight="25" text="左侧:"/>
                 <TextField fx:id="left_Re" prefHeight="20" prefWidth="50" promptText="0"/>
 
-                <ChoiceBox onAction="#leftBehaviorAction" fx:id="leftBehavior_Re" prefHeight="25" prefWidth="160">
+                <ChoiceBox onAction="#leftBehaviorAction" fx:id="leftBehavior_Re" style="-fx-cursor: hand"
+                           prefHeight="25" prefWidth="160">
                     <items>
                         <FXCollections fx:factory="observableArrayList">
                             <String fx:value="插入字符串为:"/>
@@ -181,7 +200,8 @@
                 <Label prefHeight="25" text="右侧:"/>
                 <TextField fx:id="right_Re" prefHeight="20" prefWidth="50" promptText="0"/>
 
-                <ChoiceBox onAction="#rightBehaviorAction" fx:id="rightBehavior_Re" prefHeight="25" prefWidth="160">
+                <ChoiceBox onAction="#rightBehaviorAction" fx:id="rightBehavior_Re" style="-fx-cursor: hand"
+                           prefHeight="25" prefWidth="160">
                     <items>
                         <FXCollections fx:factory="observableArrayList">
                             <String fx:value="插入字符串为:"/>

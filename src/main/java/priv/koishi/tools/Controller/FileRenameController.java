@@ -39,6 +39,7 @@ import static priv.koishi.tools.MainApplication.mainStage;
 import static priv.koishi.tools.Service.FileRenameService.*;
 import static priv.koishi.tools.Service.ReadDataService.readExcel;
 import static priv.koishi.tools.Service.ReadDataService.readFile;
+import static priv.koishi.tools.Utils.CommonUtils.swapCase;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.TaskUtils.bindingTaskNode;
 import static priv.koishi.tools.Utils.TaskUtils.taskUnbind;
@@ -136,16 +137,16 @@ public class FileRenameController extends RootController {
 
     @FXML
     public Button fileButton_Re, clearButton_Re, renameButton_Re, reselectButton_Re, updateRenameButton_Re,
-            excelPathButton_Re, updateSameCode_Re, updateFileType_Re, removeFileType_Re;
+            excelPathButton_Re, updateSameCode_Re, updateFileType_Re;
 
     @FXML
     public ChoiceBox<String> hideFileType_Re, directoryNameType_Re, renameType_Re, subCode_Re, differenceCode_Re,
-            targetStr_Re, leftBehavior_Re, rightBehavior_Re, renameBehavior_Re;
+            targetStr_Re, leftBehavior_Re, rightBehavior_Re, renameBehavior_Re, renameFileType_Re;
 
     @FXML
     public TextField sheetName_Re, filterFileType_Re, readRow_Re, readCell_Re, maxRow_Re, startName_Re, nameNum_Re,
             startSize_Re, left_Re, right_Re, renameStr_Re, leftValue_Re, rightValue_Re, renameValue_Re, tag_Re,
-            renameFileType_Re;
+            renameFileTypeText_Re;
 
     /**
      * 组件自适应宽高
@@ -193,8 +194,9 @@ public class FileRenameController extends RootController {
             prop.load(input);
             prop.put(key_lastInPath, inPath_Re.getText());
             prop.put(key_lastHideFileType, hideFileType_Re.getValue());
+            prop.put(key_renameFileType, renameFileType_Re.getValue());
             prop.put(key_lastFilterFileType, filterFileType_Re.getText());
-            prop.put(key_lastRenameFileType, renameFileType_Re.getText());
+            prop.put(key_renameFileTypeText, renameFileTypeText_Re.getText());
             prop.put(key_lastDirectoryNameType, directoryNameType_Re.getValue());
             String openDirectoryValue = openDirectory_Re.isSelected() ? activation : unActivation;
             prop.put(key_lastOpenDirectory, openDirectoryValue);
@@ -523,11 +525,11 @@ public class FileRenameController extends RootController {
             setControlLastConfig(inPath_Re, prop, key_lastInPath);
             setControlLastConfig(renameType_Re, prop, key_lastRenameType);
             setControlLastConfig(hideFileType_Re, prop, key_lastHideFileType);
+            setControlLastConfig(renameFileType_Re, prop, key_renameFileType);
             setControlLastConfig(openDirectory_Re, prop, key_lastOpenDirectory);
             setControlLastConfig(filterFileType_Re, prop, key_lastFilterFileType);
-            setControlLastConfig(renameFileType_Re, prop, key_lastRenameFileType);
+            setControlLastConfig(renameFileTypeText_Re, prop, key_renameFileTypeText);
             setControlLastConfig(directoryNameType_Re, prop, key_lastDirectoryNameType);
-
             // 根据重命名类型设置上次配置值
             setLastConfigByRenameType(prop);
         }
@@ -688,11 +690,11 @@ public class FileRenameController extends RootController {
         addToolTip(tip_updateSameCode, updateSameCode_Re);
         addToolTip(tip_updateFileType, updateFileType_Re);
         addToolTip(tip_reNameFileType, renameFileType_Re);
-        addToolTip(tip_removeFileType, removeFileType_Re);
         addToolTip(tip_excelPathButton, excelPathButton_Re);
         addToolTip(tip_directoryNameType, directoryNameType_Re);
         addToolTip(tip_updateRenameButton, updateRenameButton_Re);
         addToolTip(tip_option, leftBehavior_Re, rightBehavior_Re);
+        addToolTip(tip_reNameFileTypeText, renameFileTypeText_Re);
         addToolTip(text_onlyNaturalNumber + defaultStartNameNum, startName_Re);
         addToolTip(text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row, readRow_Re);
         addToolTip(text_onlyNaturalNumber + defaultReadCell + text_formThe + (defaultReadCell + 1) + text_cell, readCell_Re);
@@ -738,7 +740,7 @@ public class FileRenameController extends RootController {
         // 鼠标悬留提示输入的需要识别的文件后缀名
         textFieldValueListener(filterFileType_Re, tip_filterFileType);
         // 给更新文件拓展名输入框添加鼠标悬停提示
-        textFieldValueListener(renameFileType_Re, tip_reNameFileType);
+        textFieldValueListener(renameFileTypeText_Re, tip_reNameFileTypeText);
         // 限制读取最大行数只能输入正整数
         integerRangeTextField(maxRow_Re, 1, null, tip_maxRow);
         // 鼠标悬留提示输入的相同编号文件数量
@@ -776,8 +778,6 @@ public class FileRenameController extends RootController {
         updateSameCodeMenu(contextMenu);
         // 批量修改文件拓展名
         updateFileTypeMenu(contextMenu);
-        // 批量删除文件拓展名
-        removeFileTypeMenu(contextMenu);
         // 取消选中选项
         buildClearSelectedData(tableView_Re, contextMenu);
         // 删除所选数据选项
@@ -809,35 +809,62 @@ public class FileRenameController extends RootController {
      * @param contextMenu 右键菜单
      */
     private void updateFileTypeMenu(ContextMenu contextMenu) {
-        MenuItem menuItem = new MenuItem("批量修改文件拓展名");
-        menuItem.setOnAction(event -> {
-            ObservableList<FileBean> selectedItems = tableView_Re.getSelectionModel().getSelectedItems();
-            updateFileType(selectedItems);
-        });
-        contextMenu.getItems().add(menuItem);
-    }
-
-    /**
-     * 批量删除文件拓展名
-     *
-     * @param contextMenu 右键菜单
-     */
-    private void removeFileTypeMenu(ContextMenu contextMenu) {
-        MenuItem menuItem = new MenuItem("批量删除文件拓展名");
-        menuItem.setOnAction(event -> {
-            ObservableList<FileBean> selectedItems = tableView_Re.getSelectionModel().getSelectedItems();
-            removeFileType(selectedItems);
-        });
-        contextMenu.getItems().add(menuItem);
+        Menu menu = new Menu("修改选中文件拓展名");
+        // 创建二级菜单项
+        MenuItem removeAll = new MenuItem(text_removeAll);
+        MenuItem toUpperCase = new MenuItem(text_toUpperCase);
+        MenuItem toLowerCase = new MenuItem(text_toLowerCase);
+        MenuItem swapCase = new MenuItem(text_swapCase);
+        ObservableList<FileBean> selectedItems = tableView_Re.getSelectionModel().getSelectedItems();
+        removeAll.setOnAction(event -> updateFileTypes(selectedItems, text_removeAll));
+        toUpperCase.setOnAction(event -> updateFileTypes(selectedItems, text_toUpperCase));
+        toLowerCase.setOnAction(event -> updateFileTypes(selectedItems, text_toLowerCase));
+        swapCase.setOnAction(event -> updateFileTypes(selectedItems, text_swapCase));
+        // 将菜单添加到菜单列表
+        menu.getItems().addAll(removeAll, toUpperCase, toLowerCase, swapCase);
+        contextMenu.getItems().add(menu);
     }
 
     /**
      * 批量修改文件拓展名
      *
+     * @param fileBeans      文件列表
+     * @param reNameFileType 修改方式
+     */
+    private void updateFileTypes(ObservableList<FileBean> fileBeans, String reNameFileType) {
+        switch (reNameFileType) {
+            case text_replace: {
+                updateFileType(fileBeans);
+                break;
+            }
+            case text_removeAll: {
+                removeFileType(fileBeans);
+                break;
+            }
+            case text_toUpperCase: {
+                fileTypeToUpperCase(fileBeans);
+                break;
+            }
+            case text_toLowerCase: {
+                fileTypeToLowerCase(fileBeans);
+                break;
+            }
+            case text_swapCase: {
+                swapCaseFileType(fileBeans);
+                break;
+            }
+        }
+        tableView_Re.refresh();
+        updateLabel(log_Re, "");
+    }
+
+    /**
+     * 文件拓展名替换所有字符为
+     *
      * @param fileBeans 文件列表
      */
     private void updateFileType(ObservableList<FileBean> fileBeans) {
-        String fileType = renameFileType_Re.getText();
+        String fileType = renameFileTypeText_Re.getText();
         if (StringUtils.isNotBlank(fileType)) {
             if (!fileType.startsWith(".")) {
                 fileType = "." + fileType;
@@ -851,13 +878,52 @@ public class FileRenameController extends RootController {
     }
 
     /**
-     * 批量删除文件拓展名
+     * 文件拓展名移除所有字符
      *
      * @param fileBeans 文件列表
      */
     private void removeFileType(ObservableList<FileBean> fileBeans) {
         for (FileBean fileBean : fileBeans) {
             fileBean.setNewFileType("");
+        }
+        tableView_Re.refresh();
+        updateLabel(log_Re, "");
+    }
+
+    /**
+     * 文件拓展名全部英文字符转为小写
+     *
+     * @param fileBeans 文件列表
+     */
+    private void fileTypeToLowerCase(ObservableList<FileBean> fileBeans) {
+        for (FileBean fileBean : fileBeans) {
+            fileBean.setNewFileType(fileBean.getFileType().toLowerCase());
+        }
+        tableView_Re.refresh();
+        updateLabel(log_Re, "");
+    }
+
+    /**
+     * 文件拓展名全部英文字符转为大写
+     *
+     * @param fileBeans 文件列表
+     */
+    private void fileTypeToUpperCase(ObservableList<FileBean> fileBeans) {
+        for (FileBean fileBean : fileBeans) {
+            fileBean.setNewFileType(fileBean.getFileType().toUpperCase());
+        }
+        tableView_Re.refresh();
+        updateLabel(log_Re, "");
+    }
+
+    /**
+     * 文件拓展名全部英文字符大小写互换
+     *
+     * @param fileBeans 文件列表
+     */
+    private void swapCaseFileType(ObservableList<FileBean> fileBeans) {
+        for (FileBean fileBean : fileBeans) {
+            fileBean.setNewFileType(swapCase(fileBean.getFileType()));
         }
         tableView_Re.refresh();
         updateLabel(log_Re, "");
@@ -1357,27 +1423,21 @@ public class FileRenameController extends RootController {
      * @throws Exception 要读取的文件列表为空
      */
     @FXML
-    private void updateFileType() throws Exception {
+    private void updateFileTypes() throws Exception {
         ObservableList<FileBean> fileBeans = tableView_Re.getItems();
         if (CollectionUtils.isEmpty(fileBeans)) {
             throw new Exception(text_fileListNull);
         }
         // 批量修改文件拓展名
-        updateFileType(fileBeans);
+        updateFileTypes(fileBeans, renameFileType_Re.getValue());
     }
 
     /**
-     * 批量删除文件拓展名
-     *
-     * @throws Exception 要读取的文件列表为空
+     * 更新文件拓展名设置
      */
     @FXML
-    private void removeFileType() throws Exception {
-        ObservableList<FileBean> fileBeans = tableView_Re.getItems();
-        if (CollectionUtils.isEmpty(fileBeans)) {
-            throw new Exception(text_fileListNull);
-        }
-        removeFileType(fileBeans);
+    private void renameFileTypeAction() {
+        renameFileTypeText_Re.setVisible(text_replace.equals(renameFileType_Re.getValue()));
     }
 
 }

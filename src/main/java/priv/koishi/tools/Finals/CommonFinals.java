@@ -541,11 +541,11 @@ public class CommonFinals {
 
     public static final String tip_checkUpdate = "点击即可查询最新版本，查询失败可点击上方对应的网盘按钮查询";
 
-    public static final String tip_updateFileType = "点击将按照右侧文本框设置值修改列表中的文件拓展名";
+    public static final String tip_updateFileType = "点击将按照右侧设置修改列表中的文件拓展名";
 
-    public static final String tip_reNameFileType = "将会按照此设置修改列表中的文件拓展名，为空则不修改";
+    public static final String tip_reNameFileTypeText = "将会按照此设置修改列表中的文件拓展名，为空则不修改";
 
-    public static final String tip_removeFileType = "点击将会去掉列表中的文件拓展名";
+    public static final String tip_reNameFileType = "用来设置文件拓展名修改逻辑";
 
     public static final String tip_nextGcType = """
             下次启动程序将会按照此设置项设置垃圾回收（GC）方式
@@ -950,7 +950,9 @@ public class CommonFinals {
 
     public static final String key_lastPreparationRunTime = "lastPreparationRunTime";
 
-    public static final String key_lastRenameFileType = "lastRenameFileType";
+    public static final String key_renameFileTypeText = "renameFileTypeText";
+
+    public static final String key_renameFileType = "renameFileType";
 
     public static final String key_defaultOutFileName = "defaultOutFileName";
 
