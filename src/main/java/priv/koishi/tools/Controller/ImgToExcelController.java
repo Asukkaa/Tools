@@ -186,8 +186,8 @@ public class ImgToExcelController extends RootController {
         double stageWidth = mainStage.getWidth();
         double tableWidth = stageWidth * 0.94;
         tableView_Img.setMaxWidth(tableWidth);
-        nodeRightAlignment(fileNumberHBox_Img, tableWidth, fileNumber_Img);
-        nodeRightAlignment(tipHBox_Img, tableWidth, tip_Img);
+        regionRightAlignment(fileNumberHBox_Img, tableWidth, fileNumber_Img);
+        regionRightAlignment(tipHBox_Img, tableWidth, tip_Img);
     }
 
     /**

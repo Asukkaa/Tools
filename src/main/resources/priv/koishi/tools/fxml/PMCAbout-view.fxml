@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<AnchorPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            stylesheets="@../css/Styles.css" fx:controller="priv.koishi.tools.Controller.PMCAboutController">
+    <VBox spacing="10" AnchorPane.topAnchor="10" AnchorPane.leftAnchor="30">
+        <Label prefHeight="25" text="关于 PMC 项目："/>
+
+        <HBox spacing="10">
+            <ImageView fx:id="logo_PMC" fitWidth="140" fitHeight="140" preserveRatio="true">
+                <Image url="@../icon/PMC.png"/>
+            </ImageView>
+
+            <VBox spacing="10">
+                <HBox>
+                    <Label prefHeight="20" fx:id="title_PMC" text="Perfect Mouse Control" textFill="hotpink"/>
+                    <Label prefHeight="20" text=" 是一个由 javafx 实现的按照设置流程进行自动操作的跨平台开源工具"/>
+                </HBox>
+
+                <Label prefHeight="20" text="自动操作功能目前支持鼠标左右键、鼠标中键、鼠标前后侧键点击长按、曲线拖拽、记录鼠标移动轨迹等功能。"/>
+
+                <Label prefHeight="20" text="可以编辑操作流程或直接录制操作流程，可在操作步骤中设置图形识别逻辑，设置完毕后自动流程可进行循环操作。"/>
+
+                <Label prefHeight="20" text="程序除了支持运行自动操作，还可以导出导入操作流程，并设置定时任务定时运行自动操作。"/>
+
+                <Label prefHeight="20" text="可以点击下面的云盘链接下载最新版本的 Perfect Mouse Control 或查看下方 git 项目仓库。"/>
+            </VBox>
+        </HBox>
+
+        <Separator/>
+
+        <Label prefHeight="25" text="git 地址："/>
+
+        <HBox spacing="10">
+            <Label prefHeight="25" text="github 地址："/>
+            <Button fx:id="openGitHubLinkBtn_PMC" onAction="#openGitHubLink" style="-fx-cursor: hand"
+                    text="点击查看 PMC 项目 gitHub 主页"/>
+
+            <Label prefWidth="100"/>
+
+            <Label prefHeight="25" text="gitee 地址："/>
+            <Button fx:id="openGiteeLinkBtn_PMC" onAction="#openGiteeLink" style="-fx-cursor: hand"
+                    text="点击查看 PMC 项目 gitee 主页"/>
+        </HBox>
+
+        <Separator/>
+
+        <VBox spacing="15">
+            <Label prefHeight="25" text="下载最新版本："/>
+            <Label prefHeight="25" text="目前主要下载渠道为网盘下载，最新版本将会在下列网盘发布，点击查看最新版本即可跳转对应网盘分享页面。"/>
+
+            <HBox spacing="5">
+                <HBox styleClass="hBox-short">
+                    <Label prefHeight="25" text="百度网盘："/>
+                    <Button fx:id="openBaiduLinkBtn_PMC" onAction="#openBaiduLink" style="-fx-cursor: hand"
+                            text="点击查看最新版本"/>
+                </HBox>
+
+                <HBox styleClass="hBox-short">
+                    <Label prefHeight="25" text="夸克网盘："/>
+                    <Button fx:id="openQuarkLinkBtn_PMC" onAction="#openQuarkLink" style="-fx-cursor: hand"
+                            text="点击查看最新版本"/>
+                </HBox>
+
+                <HBox styleClass="hBox-short">
+                    <Label prefHeight="25" text="迅雷网盘："/>
+                    <Button fx:id="openXunleiLinkBtn_PMC" onAction="#openXunleiLink" style="-fx-cursor: hand"
+                            text="点击查看最新版本"/>
+                </HBox>
+            </HBox>
+        </VBox>
+    </VBox>
+</AnchorPane>

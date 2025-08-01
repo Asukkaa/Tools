@@ -159,7 +159,7 @@ public class FileNumToExcelController extends RootController {
         double stageWidth = mainStage.getWidth();
         double tableWidth = stageWidth * 0.94;
         tableView_Num.setMaxWidth(tableWidth);
-        nodeRightAlignment(fileNumberHBox_Num, tableWidth, fileNumber_Num);
+        regionRightAlignment(fileNumberHBox_Num, tableWidth, fileNumber_Num);
     }
 
     /**

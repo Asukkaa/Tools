@@ -28,7 +28,7 @@ public class CommonFinals {
     /**
      * 程序版本
      */
-    public static final String version = "2.4.1";
+    public static final String version = "2.4.2";
 
     /**
      * 程序构建日期
@@ -249,6 +249,31 @@ public class CommonFinals {
     public static final String xunleiLink = "https://pan.xunlei.com/s/VOGTX2MnWwCrqIwhUV6GEVOyA1?pwd=7pau#";
 
     /**
+     * PMC项目 百度网盘地址
+     */
+    public static final String baiduLinkPMC = "https://pan.baidu.com/s/1UbQx3XdUAtLBPJ6thd-H5A?pwd=3efe";
+
+    /**
+     * PMC项目 夸克网盘地址
+     */
+    public static final String quarkLinkPMC = "https://pan.quark.cn/s/987130e1f360";
+
+    /**
+     * PMC项目 迅雷网盘地址
+     */
+    public static final String xunleiLinkPMC = "https://pan.xunlei.com/s/VOKjQlqFxTDbJNN7yRA_DLVgA1?pwd=gx3q#";
+
+    /**
+     * PMC项目 github地址
+     */
+    public static final String githubLinkPMC = "https://github.com/Asukkaa/PMC";
+
+    /**
+     * PMC项目 gitee地址
+     */
+    public static final String giteeLinkPMC = "https://gitee.com/wowxqt/pmc";
+
+    /**
      * log4j配置文件名称
      */
     public static String log4j2 = "log4j2.xml";
@@ -382,6 +407,10 @@ public class CommonFinals {
      * cfg文件jvm参数头
      */
     public static final String javaOptions = "java-options=";
+
+    public static final String tip_appreciate = "感谢你的赞赏！";
+
+    public static final String tip_openGitLink = "点击即可跳转对应 git 仓库，如果喜欢本项目可以给作者一个 star";
 
     public static final String tip_startSize = "只能填自然数，0为不限制编号位数，不填默认为0";
 
@@ -975,6 +1004,14 @@ public class CommonFinals {
     public static final String key_defaultPreparationRunTime = "defaultPreparationRunTime";
 
     public static final String key_autoCheck = "autoCheck";
+
+    public static final String key_appreciateWidth = "appreciateWidth";
+
+    public static final String key_appreciateHeight = "appreciateHeight";
+
+    public static final String key_PMCWidth = "PMCWidth";
+
+    public static final String key_PMCHeight = "PMCHeight";
 
     public static final String mouseButton_primary = "鼠标左键点击";
 

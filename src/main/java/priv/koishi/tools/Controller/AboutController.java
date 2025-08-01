@@ -3,12 +3,17 @@ package priv.koishi.tools.Controller;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import priv.koishi.tools.Bean.CheckUpdateBean;
@@ -21,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.net.URL;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -35,6 +41,7 @@ import static priv.koishi.tools.Service.CheckUpdateService.*;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
+import static priv.koishi.tools.Utils.UiUtils.addToolTip;
 
 /**
  * 关于页面控制器
@@ -75,7 +82,7 @@ public class AboutController extends RootController {
     public Label logsPath_Abt, mail_Abt, version_Abt, title_Abt, checkMassage_Abt, checkDate_Abt;
 
     @FXML
-    public Button openBaiduLinkBtn_Abt, openQuarkLinkBtn_Abt, openXunleiLinkBtn_Abt, checkUpdate_Abt;
+    public Button openBaiduLinkBtn_Abt, openQuarkLinkBtn_Abt, openXunleiLinkBtn_Abt, checkUpdate_Abt, appreciate_Abt;
 
     /**
      * 读取配置文件
@@ -90,8 +97,6 @@ public class AboutController extends RootController {
         setControlLastConfig(logsNum_Abt, prop, key_logsNum);
         // 获取自动检查更新配置
         setControlLastConfig(autoCheck_Abt, prop, key_autoCheck);
-        title_Abt.setTextFill(Color.DEEPSKYBLUE);
-        title_Abt.setText(appName);
         input.close();
     }
 
@@ -153,6 +158,8 @@ public class AboutController extends RootController {
     private void setToolTip() {
         // 版本号鼠标悬停提示
         addToolTip(tip_version, version_Abt);
+        // 添加赞赏按钮鼠标悬停提示
+        addToolTip(tip_appreciate, appreciate_Abt);
         // 检查更新按钮添加鼠标悬停提示
         addToolTip(tip_checkUpdate, checkUpdate_Abt);
         // 自动检查更新开关添加鼠标悬停提示
@@ -187,6 +194,8 @@ public class AboutController extends RootController {
      */
     @FXML
     private void initialize() throws IOException {
+        // 设置应用名称
+        title_Abt.setText(appName);
         // 设置版本号
         version_Abt.setText(version);
         // 添加右键菜单
@@ -313,6 +322,32 @@ public class AboutController extends RootController {
     @FXML
     public void autoCheckAction() throws IOException {
         setLoadLastConfigCheckBox(autoCheck_Abt, configFile, key_autoCheck);
+    }
+
+    /**
+     * 赞赏界面人口
+     *
+     * @throws IOException 界面打开失败
+     */
+    @FXML
+    private void appreciate() throws IOException {
+        URL fxmlLocation = getClass().getResource(resourcePath + "fxml/Appreciate-view.fxml");
+        FXMLLoader loader = new FXMLLoader(fxmlLocation);
+        Parent root = loader.load();
+        Stage detailStage = new Stage();
+        Properties prop = new Properties();
+        InputStream input = checkRunningInputStream(configFile);
+        prop.load(input);
+        double with = Double.parseDouble(prop.getProperty(key_appreciateWidth, "450"));
+        double height = Double.parseDouble(prop.getProperty(key_appreciateHeight, "450"));
+        input.close();
+        Scene scene = new Scene(root, with, height);
+        detailStage.setScene(scene);
+        detailStage.setTitle(tip_appreciate);
+        detailStage.initModality(Modality.APPLICATION_MODAL);
+        detailStage.setResizable(false);
+        setWindowLogo(detailStage, logoPath);
+        detailStage.show();
     }
 
 }

@@ -95,7 +95,7 @@
         </HBox>
 
         <HBox fx:id="fileNumberHBox_Num" spacing="10">
-            <Button fx:id="reselectButton_Num" onAction="#reselect" style="-fx-cursor: hand" text="重新查询"/>
+            <Button fx:id="reselectButton_Num" onAction="#reselect" styleClass="cadetblue-button" text="重新查询"/>
             <Button fx:id="clearButton_Num" onAction="#removeAll" style="-fx-cursor: hand" text="清空列表"/>
             <Button fx:id="exportButton_Num" onAction="#exportAll" styleClass="cornflowerblue-button" text="开始导出"/>
 

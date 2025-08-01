@@ -66,6 +66,7 @@ import static priv.koishi.tools.Utils.CommonUtils.removeNativeListener;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
+import static priv.koishi.tools.Utils.UiUtils.regionRightAlignment;
 
 /**
  * 自动点击工具页面控制器
@@ -210,7 +211,8 @@ public class AutoClickController extends RootController implements MousePosition
     public AnchorPane anchorPane_Click;
 
     @FXML
-    public HBox fileNumberHBox_Click, tipHBox_Click, cancelTipHBox_Click, logHBox_Click;
+    public HBox fileNumberHBox_Click, tipHBox_Click, cancelTipHBox_Click, logHBox_Click, buttonsHBox_Click,
+            showPMCHBox_Click;
 
     @FXML
     public ProgressBar progressBar_Click;
@@ -225,7 +227,7 @@ public class AutoClickController extends RootController implements MousePosition
 
     @FXML
     public Button clearButton_Click, runClick_Click, clickTest_Click, addPosition_Click, loadAutoClick_Click,
-            exportAutoClick_Click, addOutPath_Click, recordClick_Click;
+            exportAutoClick_Click, addOutPath_Click, recordClick_Click, showPMC_Click;
 
     @FXML
     public TextField loopTime_Click, outFileName_Click, preparationRecordTime_Click, preparationRunTime_Click;
@@ -251,11 +253,12 @@ public class AutoClickController extends RootController implements MousePosition
         double stageWidth = mainStage.getWidth();
         double tableWidth = stageWidth * 0.95;
         tableView_Click.setMaxWidth(tableWidth);
-        nodeRightAlignment(fileNumberHBox_Click, tableWidth, dataNumber_Click);
-        nodeRightAlignment(tipHBox_Click, tableWidth, tip_Click);
-        nodeRightAlignment(cancelTipHBox_Click, tableWidth, cancelTip_Click);
+        regionRightAlignment(tipHBox_Click, tableWidth, tip_Click);
+        regionRightAlignment(buttonsHBox_Click, tableWidth, showPMCHBox_Click);
+        regionRightAlignment(cancelTipHBox_Click, tableWidth, cancelTip_Click);
+        regionRightAlignment(fileNumberHBox_Click, tableWidth, dataNumber_Click);
         if (err_Click != null) {
-            nodeRightAlignment(logHBox_Click, tableWidth, err_Click);
+            regionRightAlignment(logHBox_Click, tableWidth, err_Click);
         }
     }
 
@@ -855,6 +858,7 @@ public class AutoClickController extends RootController implements MousePosition
         addToolTip(tip_runClick, runClick_Click);
         addToolTip(tip_loopTime, loopTime_Click);
         addToolTip(tip_clickTest, clickTest_Click);
+        addToolTip(tip_Click.getText(), tip_Click);
         addToolTip(tip_firstClick, firstClick_Click);
         addToolTip(tip_learButton, clearButton_Click);
         addToolTip(tip_addPosition, addPosition_Click);
@@ -1181,19 +1185,6 @@ public class AutoClickController extends RootController implements MousePosition
     }
 
     /**
-     * 点击测试按钮
-     */
-    @FXML
-    private void clickTest() throws IOException {
-        // 获取步骤设置
-        List<ClickPositionBean> clickPositionBeans = new ArrayList<>();
-        ClickPositionBean clickPositionBean = getClickSetting(-1);
-        clickPositionBeans.add(clickPositionBean);
-        // 启动自动操作流程
-        launchClickTask(clickPositionBeans);
-    }
-
-    /**
      * 添加点击步骤
      */
     @FXML
@@ -1325,6 +1316,27 @@ public class AutoClickController extends RootController implements MousePosition
     @FXML
     private void recordClick() {
         startRecord(append);
+    }
+
+    @FXML
+    private void showPMC() throws IOException {
+        URL fxmlLocation = getClass().getResource(resourcePath + "fxml/PMCAbout-view.fxml");
+        FXMLLoader loader = new FXMLLoader(fxmlLocation);
+        Parent root = loader.load();
+        Stage detailStage = new Stage();
+        Properties prop = new Properties();
+        InputStream input = checkRunningInputStream(configFile);
+        prop.load(input);
+        double with = Double.parseDouble(prop.getProperty(key_PMCWidth, "1000"));
+        double height = Double.parseDouble(prop.getProperty(key_PMCHeight, "450"));
+        input.close();
+        Scene scene = new Scene(root, with, height);
+        detailStage.setScene(scene);
+        detailStage.setTitle("关于 PMC 项目");
+        detailStage.initModality(Modality.APPLICATION_MODAL);
+        detailStage.setResizable(false);
+        setWindowLogo(detailStage, logoPath);
+        detailStage.show();
     }
 
 }

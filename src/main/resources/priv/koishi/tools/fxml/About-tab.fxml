@@ -11,13 +11,13 @@
         <Label prefHeight="25" text="关于："/>
 
         <HBox spacing="10">
-            <ImageView fitWidth="128" fitHeight="128" preserveRatio="true">
+            <ImageView fitWidth="140" fitHeight="140" preserveRatio="true">
                 <Image url="@../icon/Tools.png"/>
             </ImageView>
 
             <VBox spacing="5">
                 <HBox>
-                    <Label prefHeight="25" fx:id="title_Abt"/>
+                    <Label prefHeight="25" fx:id="title_Abt" textFill="deepskyblue"/>
                     <Label prefHeight="25" text=" 是一个由 javafx 实现的文件处理小工具，可以用来获取文件信息、批量修改文件名称、按照设置流程进行自动操作。"/>
                 </HBox>
 
@@ -45,6 +45,17 @@
             <Label fx:id="mail_Abt" prefHeight="25" textFill="blue" text="csolxqt@foxmail.com"/>
         </HBox>
 
+        <HBox spacing="5">
+            <Label prefHeight="45" text="如果喜欢本应用的话可以点击此按钮后扫描微信赞赏码给作者一个赞赏 —>"/>
+            <Button fx:id="appreciate_Abt" onAction="#appreciate" styleClass="img-button-style" prefHeight="20">
+                <graphic>
+                    <ImageView>
+                        <Image url="@../icon/Gift.png"/>
+                    </ImageView>
+                </graphic>
+            </Button>
+        </HBox>
+
         <Separator/>
 
         <VBox spacing="15">
@@ -53,21 +64,23 @@
                    text="目前主要下载渠道为网盘下载，最新版本将会在下列网盘发布，点击查看最新版本即可跳转对应网盘分享页面。"/>
 
             <HBox spacing="5">
-                <Label prefHeight="25" text="百度网盘："/>
-                <Button fx:id="openBaiduLinkBtn_Abt" onAction="#openBaiduLink" style="-fx-cursor: hand"
-                        text="点击查看最新版本"/>
-            </HBox>
+                <HBox styleClass="hBox-short">
+                    <Label prefHeight="25" text="百度网盘："/>
+                    <Button fx:id="openBaiduLinkBtn_Abt" onAction="#openBaiduLink" style="-fx-cursor: hand"
+                            text="点击查看最新版本"/>
+                </HBox>
 
-            <HBox spacing="5">
-                <Label prefHeight="25" text="夸克网盘："/>
-                <Button fx:id="openQuarkLinkBtn_Abt" onAction="#openQuarkLink" style="-fx-cursor: hand"
-                        text="点击查看最新版本"/>
-            </HBox>
+                <HBox styleClass="hBox-short">
+                    <Label prefHeight="25" text="夸克网盘："/>
+                    <Button fx:id="openQuarkLinkBtn_Abt" onAction="#openQuarkLink" style="-fx-cursor: hand"
+                            text="点击查看最新版本"/>
+                </HBox>
 
-            <HBox spacing="5">
-                <Label prefHeight="25" text="迅雷网盘："/>
-                <Button fx:id="openXunleiLinkBtn_Abt" onAction="#openXunleiLink" style="-fx-cursor: hand"
-                        text="点击查看最新版本"/>
+                <HBox styleClass="hBox-short">
+                    <Label prefHeight="25" text="迅雷网盘："/>
+                    <Button fx:id="openXunleiLinkBtn_Abt" onAction="#openXunleiLink" style="-fx-cursor: hand"
+                            text="点击查看最新版本"/>
+                </HBox>
             </HBox>
 
             <HBox spacing="5">

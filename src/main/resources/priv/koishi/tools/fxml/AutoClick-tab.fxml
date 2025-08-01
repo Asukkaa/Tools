@@ -36,12 +36,15 @@
             <CheckBox fx:id="showWindowRecord_Click" prefHeight="25" style="-fx-cursor: hand" text="录制自动流程结束后弹出本程序" selected="true"/>
         </HBox>
 
-        <HBox spacing="10">
+        <HBox fx:id="buttonsHBox_Click" spacing="10">
             <Button fx:id="addPosition_Click" onAction="#addPosition" style="-fx-cursor: hand" text="添加操作流程"/>
-            <Button fx:id="clickTest_Click" onAction="#clickTest" style="-fx-cursor: hand" text="测试操作流程"/>
             <Button fx:id="loadAutoClick_Click" onAction="#loadAutoClick" style="-fx-cursor: hand" text="导入操作流程"/>
             <Button fx:id="exportAutoClick_Click" onAction="#exportAutoClick" style="-fx-cursor: hand" text="导出操作流程"/>
             <Button fx:id="clearButton_Click" onAction="#removeAll" style="-fx-cursor: hand" text="清空操作列表"/>
+
+            <HBox fx:id="showPMCHBox_Click" alignment="CENTER_RIGHT">
+                <Button fx:id="showPMC_Click" onAction="#showPMC" styleClass="hotpink-button" text="查看完整的自动操作工具"/>
+            </HBox>
         </HBox>
 
         <HBox fx:id="fileNumberHBox_Click" spacing="10">
@@ -82,7 +85,7 @@
         <HBox fx:id="tipHBox_Click" spacing="10">
             <ProgressBar fx:id="progressBar_Click" visible="false" prefWidth="200.0" progress="0.0"/>
             <Label fx:id="tip_Click" prefHeight="20" textFill="red" alignment="CENTER_RIGHT"
-                   text="设置操作步骤后上下拖拽数据行可调整数据顺序，右键点击数据行可进行调整操作，双击单元格可进行编辑"/>
+                   text="设置操作步骤后上下拖拽数据行可调整数据顺序，右键点击数据行可进行调整操作，双击单元格可进行编辑，按住shift可多选"/>
         </HBox>
 
         <HBox fx:id="logHBox_Click" spacing="10">

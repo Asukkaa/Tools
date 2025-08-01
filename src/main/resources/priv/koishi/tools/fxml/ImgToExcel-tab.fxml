@@ -90,7 +90,7 @@
         </HBox>
 
         <HBox fx:id="fileNumberHBox_Img" spacing="10">
-            <Button fx:id="reselectButton_Img" onAction="#reselect" style="-fx-cursor: hand" text="重新查询"/>
+            <Button fx:id="reselectButton_Img" onAction="#reselect" styleClass="cadetblue-button" text="重新查询"/>
             <Button fx:id="clearButton_Img" onAction="#removeAll" style="-fx-cursor: hand" text="清空列表"/>
             <Button fx:id="exportButton_Img" onAction="#exportAll" styleClass="cornflowerblue-button" text="开始导出"/>
 

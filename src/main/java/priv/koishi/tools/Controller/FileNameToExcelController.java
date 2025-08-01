@@ -148,8 +148,8 @@ public class FileNameToExcelController extends RootController {
         double stageWidth = mainStage.getWidth();
         double tableWidth = stageWidth * 0.94;
         tableView_Name.setMaxWidth(tableWidth);
-        nodeRightAlignment(fileNumberHBox_Name, tableWidth, fileNumber_Name);
-        nodeRightAlignment(tipHBox_Name, tableWidth, tip_Name);
+        regionRightAlignment(fileNumberHBox_Name, tableWidth, fileNumber_Name);
+        regionRightAlignment(tipHBox_Name, tableWidth, tip_Name);
     }
 
     /**
@@ -314,7 +314,6 @@ public class FileNameToExcelController extends RootController {
         addToolTip(tip_startRow, startRow_Name);
         addToolTip(tip_Name.getText(), tip_Name);
         addToolTip(tip_recursion, recursion_Name);
-        addToolTip(tip_excelName + defaultOutFileName, excelName_Name);
         addToolTip(tip_fileButton, fileButton_Name);
         addToolTip(tip_learButton, clearButton_Name);
         addToolTip(tip_exportTitle, exportTitle_Name);
@@ -330,6 +329,7 @@ public class FileNameToExcelController extends RootController {
         addToolTip(tip_directoryNameType, directoryNameType_Name);
         addToolTip(tip_removeExcelButton, removeExcelButton_Name);
         addToolTip(tip_excelType, excelType_Name, excelTypeLabel_Name);
+        addToolTip(tip_excelName + defaultOutFileName, excelName_Name);
         addToolTip(text_onlyNaturalNumber + defaultStartCell, startCell_Name);
     }
 

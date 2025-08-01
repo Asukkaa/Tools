@@ -249,7 +249,7 @@
         </HBox>
 
         <HBox fx:id="fileNumberHBox_Re" spacing="10">
-            <Button fx:id="reselectButton_Re" onAction="#reselect" style="-fx-cursor: hand" text="重新查询"/>
+            <Button fx:id="reselectButton_Re" onAction="#reselect" styleClass="cadetblue-button" text="重新查询"/>
             <Button fx:id="updateRenameButton_Re" onAction="#updateRename" style="-fx-cursor: hand" text="更新重命名"/>
             <Button fx:id="clearButton_Re" onAction="#removeAll" style="-fx-cursor: hand" text="清空列表"/>
             <Button fx:id="updateSameCode_Re" onAction="#updateSameCode" style="-fx-cursor: hand" text="设置所选数据为同一编号"/>
@@ -282,7 +282,7 @@
         <HBox fx:id="tipHBox_Re" spacing="10">
             <ProgressBar fx:id="progressBar_Re" visible="false" prefWidth="200.0" progress="0.0"/>
             <Label fx:id="tip_Re" prefHeight="20" textFill="red" alignment="CENTER_RIGHT"
-                   text="读取数据后上下拖拽数据行可调整数据顺序，右键点击数据行可进行调整操作，双击 修改后文件名称 下的单元格可进行编辑"/>
+                   text="读取数据后上下拖拽数据行可调整数据顺序，右键点击数据行可进行调整操作，按住shift可多选"/>
         </HBox>
 
         <Label fx:id="log_Re" prefHeight="20"/>

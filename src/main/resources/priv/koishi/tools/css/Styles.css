@@ -45,6 +45,14 @@
     -fx-cursor: hand;
 }
 
+.cadetblue-button:focused {
+    -fx-border-color: #039ED3;
+    -fx-border-width: 2px;
+    -fx-border-insets: -2px;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+}
+
 .cadetblue-button:hover {
     -fx-background-color: derive(cadetblue, 20%);
 }
@@ -55,6 +63,42 @@
     -fx-cursor: hand;
 }
 
+.cornflowerblue-button:focused {
+    -fx-border-color: #039ED3;
+    -fx-border-width: 2px;
+    -fx-border-insets: -2px;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+}
+
 .cornflowerblue-button:hover {
     -fx-background-color: derive(cornflowerblue, 20%);
+}
+
+.hotpink-button {
+    -fx-background-color: hotpink;
+    -fx-text-fill: white;
+    -fx-cursor: hand;
+}
+
+.hotpink-button:focused {
+    -fx-border-color: #039ED3;
+    -fx-border-width: 2px;
+    -fx-border-insets: -2px;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+}
+
+.hotpink-button:hover {
+    -fx-background-color: derive(hotpink, 20%);
+}
+
+.img-button-style {
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-padding: 0;
+    -fx-border-radius: 0;
+    -fx-background-insets: 0;
 }
