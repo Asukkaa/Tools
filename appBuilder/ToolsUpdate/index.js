@@ -16,7 +16,7 @@ exports.main = async (event) => {
     // 客户端当前版本
     const clientVersion = requestBody.version;
     // 服务端最新版本
-    const serverVersion = "2.4.0";
+    const serverVersion = "2.4.1";
     // 版本号对比逻辑
     let fullUpdate = false;
     if (clientVersion) {
