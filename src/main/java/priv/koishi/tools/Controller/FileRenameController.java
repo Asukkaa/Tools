@@ -811,17 +811,19 @@ public class FileRenameController extends RootController {
     private void updateFileTypeMenu(ContextMenu contextMenu) {
         Menu menu = new Menu("修改选中文件拓展名");
         // 创建二级菜单项
+        MenuItem replace = new MenuItem(text_replace);
         MenuItem removeAll = new MenuItem(text_removeAll);
         MenuItem toUpperCase = new MenuItem(text_toUpperCase);
         MenuItem toLowerCase = new MenuItem(text_toLowerCase);
         MenuItem swapCase = new MenuItem(text_swapCase);
         ObservableList<FileBean> selectedItems = tableView_Re.getSelectionModel().getSelectedItems();
+        replace.setOnAction(event -> updateFileTypes(selectedItems, text_replace));
         removeAll.setOnAction(event -> updateFileTypes(selectedItems, text_removeAll));
         toUpperCase.setOnAction(event -> updateFileTypes(selectedItems, text_toUpperCase));
         toLowerCase.setOnAction(event -> updateFileTypes(selectedItems, text_toLowerCase));
         swapCase.setOnAction(event -> updateFileTypes(selectedItems, text_swapCase));
         // 将菜单添加到菜单列表
-        menu.getItems().addAll(removeAll, toUpperCase, toLowerCase, swapCase);
+        menu.getItems().addAll(replace, removeAll, toUpperCase, toLowerCase, swapCase);
         contextMenu.getItems().add(menu);
     }
 
