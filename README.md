@@ -5,7 +5,7 @@
 可以编辑自动操作流程或录制自动操作流程，支持导入导出自动操作流程，支持循环自动操作。
 自动流程文件为 .pmc 文件，本质为 json 文件，更改文件拓展名只为方便过滤可导入的文件。
 其中 excel 相关功能是使用 apache poi 实现的， json 文件解析与封装为 jackson 实现，自动流程录制相关监听为 jnativehook 实现。
-打包工具为 maven javafx:jlink 插件 + jpackage ，使用 jdk 版本为 Amazon Corretto 21.0.7 。
+打包工具为 maven javafx:jlink 插件 + jpackage ，使用 jdk 版本为 Amazon Corretto 21.0.8 。
 
 ## 项目背景
 开发这个项目主要目的是为了辅助资产审计业务中统计资产时资产信息归档的工作，目前遇到的资产审计业务需要给资产贴上资产标签并拍照归档。
