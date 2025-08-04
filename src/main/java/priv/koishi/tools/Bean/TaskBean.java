@@ -103,6 +103,6 @@ public class TaskBean<T> {
     /**
      * 是否绑定线程信息栏（true 绑定，false 不绑定）
      */
-    boolean bindingMassageLabel;
+    boolean bindingMassageLabel = true;
 
 }
