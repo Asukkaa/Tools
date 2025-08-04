@@ -186,8 +186,6 @@ public class DetailController extends RootController {
         selectedItem.setClickNum(String.valueOf(setDefaultIntValue(clickNumBer_Det, 1, 1, null)));
         selectedItem.setClickInterval(String.valueOf(setDefaultIntValue(interval_Det, 0, 0, null)));
         selectedItem.setType(clickType_Det.getValue());
-        // 关闭当前窗口
-        Stage stage = (Stage) anchorPane_Det.getScene().getWindow();
         stage.close();
         // 触发列表刷新（通过回调）
         if (refreshCallback != null) {

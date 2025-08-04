@@ -1022,6 +1022,10 @@ public class CommonFinals {
 
     public static final String key_PMCHeight = "PMCHeight";
 
+    public static final String key_fileChooserWidth = "fileChooserWidth";
+
+    public static final String key_fileChooserHeight = "fileChooserHeight";
+
     public static final String key_insertImgType = "insertImgType";
 
     public static final String mouseButton_primary = "鼠标左键点击";

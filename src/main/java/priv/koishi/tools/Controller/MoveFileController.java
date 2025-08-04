@@ -4,24 +4,29 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.apache.commons.collections4.CollectionUtils;
 import priv.koishi.tools.Bean.FileBean;
 import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.FileConfig;
-import priv.koishi.tools.CustomUI.FileTreeItem.FileTreeChooser;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -46,9 +51,9 @@ import static priv.koishi.tools.Utils.UiUtils.*;
 public class MoveFileController extends RootController {
 
     /**
-     * 导出文件路径
+     * 目标文件路径
      */
-    private static String outFilePath;
+    public static String outFilePath;
 
     /**
      * 页面标识符
@@ -265,7 +270,7 @@ public class MoveFileController extends RootController {
      * @param files 文件列表
      * @throws IOException io异常
      */
-    private void addFile(List<File> files, boolean isAllDirectory) throws IOException {
+    public static void addFile(List<File> files, boolean isAllDirectory, TableView<FileBean> tableView) throws IOException {
         if (CollectionUtils.isNotEmpty(files)) {
             List<FileBean> fileBeans = new ArrayList<>();
             // 如果是所有都是目录，只保留顶层目录
@@ -280,15 +285,15 @@ public class MoveFileController extends RootController {
                             .setCreatDate(getFileCreatTime(file))
                             .setSize(getFileUnitSize(file))
                             .setFileType(getFileType(file))
-                            .setTableView(tableView_MV)
                             .setShowStatus(showStatus)
                             .setName(file.getName())
-                            .setPath(file.getPath());
+                            .setPath(file.getPath())
+                            .setTableView(tableView);
                     fileBeans.add(fileBean);
                 }
             }
-            tableView_MV.getItems().addAll(fileBeans);
-            tableView_MV.refresh();
+            tableView.getItems().addAll(fileBeans);
+            tableView.refresh();
         }
     }
 
@@ -299,7 +304,7 @@ public class MoveFileController extends RootController {
      * @param child  子目录
      * @throws IOException 获取文件属性异常
      */
-    private boolean isSubdirectory(File parent, File child) throws IOException {
+    private static boolean isSubdirectory(File parent, File child) throws IOException {
         // 判断 child 是否是 parent 的子目录
         return !parent.getCanonicalPath().equals(child.getCanonicalPath()) &&
                 child.getCanonicalPath().startsWith(parent.getCanonicalPath() + File.separator);
@@ -311,7 +316,7 @@ public class MoveFileController extends RootController {
      * @param directories 要筛选的目录
      * @throws IOException 获取文件属性异常
      */
-    private List<File> filterTopDirectories(List<File> directories) throws IOException {
+    private static List<File> filterTopDirectories(List<File> directories) throws IOException {
         List<File> topDirs = new ArrayList<>();
         for (File dir : directories) {
             if (!isPath(dir.getPath())) {
@@ -443,12 +448,38 @@ public class MoveFileController extends RootController {
         String addFileType = addFileType_MV.getValue();
         if ("添加文件".equals(addFileType)) {
             List<File> files = creatFilesChooser(window, outFilePath, null, text_selectFile);
-            addFile(files, false);
+            addFile(files, false, tableView_MV);
         } else if ("添加文件夹".equals(addFileType)) {
-            FileTreeChooser fileTreeChooser = new FileTreeChooser(window);
-            fileTreeChooser.setTitle(text_selectDirectory);
-            fileTreeChooser.setOkText("选择");
-            fileTreeChooser.setSelectionListener(files -> addFile(files, true));
+            URL fxmlLocation = getClass().getResource(resourcePath + "fxml/FileChooser-view.fxml");
+            FXMLLoader loader = new FXMLLoader(fxmlLocation);
+            Parent root = loader.load();
+            FileChooserController controller = loader.getController();
+            controller.initData(outFilePath);
+            // 设置保存后的回调
+            controller.setRefreshCallback(() -> {
+                // 刷新列表
+                tableView_MV.refresh();
+                updateTableViewSizeText(tableView_MV, fileNumber_MV, text_process);
+            });
+            Stage detailStage = new Stage();
+            Properties prop = new Properties();
+            InputStream input = checkRunningInputStream(configFile);
+            prop.load(input);
+            double with = Double.parseDouble(prop.getProperty(key_fileChooserWidth, "1000"));
+            double height = Double.parseDouble(prop.getProperty(key_fileChooserHeight, "450"));
+            input.close();
+            Scene scene = new Scene(root, with, height);
+            detailStage.setScene(scene);
+            detailStage.setTitle(text_onlyDirectory);
+            detailStage.initModality(Modality.APPLICATION_MODAL);
+            setWindowLogo(detailStage, logoPath);
+            detailStage.show();
+            // 监听窗口面板宽度变化
+            detailStage.widthProperty().addListener((v1, v2, v3) ->
+                    Platform.runLater(controller::adaption));
+            // 监听窗口面板高度变化
+            detailStage.heightProperty().addListener((v1, v2, v3) ->
+                    Platform.runLater(controller::adaption));
         }
     }
 
