@@ -43,6 +43,7 @@ import static priv.koishi.tools.Service.ReadDataService.readExcel;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
+import static priv.koishi.tools.Utils.UiUtils.setControlLastConfig;
 
 /**
  * 将图片与excel匹配并插入页面控制器
@@ -142,13 +143,13 @@ public class ImgToExcelController extends RootController {
     public AnchorPane anchorPane_Img;
 
     @FXML
+    public HBox fileNumberHBox_Img, tipHBox_Img;
+
+    @FXML
     public ProgressBar progressBar_Img;
 
     @FXML
-    public ChoiceBox<String> hideFileType_Img;
-
-    @FXML
-    public HBox fileNumberHBox_Img, tipHBox_Img;
+    public ChoiceBox<String> hideFileType_Img, insertImgType_Img;
 
     @FXML
     public TableView<FileNumBean> tableView_Img;
@@ -186,6 +187,7 @@ public class ImgToExcelController extends RootController {
         double stageWidth = mainStage.getWidth();
         double tableWidth = stageWidth * 0.94;
         tableView_Img.setMaxWidth(tableWidth);
+        tableView_Img.setPrefWidth(tableWidth);
         regionRightAlignment(fileNumberHBox_Img, tableWidth, fileNumber_Img);
         regionRightAlignment(tipHBox_Img, tableWidth, tip_Img);
     }
@@ -231,6 +233,7 @@ public class ImgToExcelController extends RootController {
             prop.put(key_lastExportFileSize, exportFileSizeValue);
             String exportTitleValue = exportTitle_Img.isSelected() ? activation : unActivation;
             prop.put(key_lastExportTitle, exportTitleValue);
+            prop.put(key_insertImgType, insertImgType_Img.getValue());
             List<String> lastFilterFileTypes = new ArrayList<>();
             if (jpg_Img.isSelected()) {
                 lastFilterFileTypes.add(jpg);
@@ -330,10 +333,10 @@ public class ImgToExcelController extends RootController {
             TaskBean<FileNumBean> taskBean = new TaskBean<>();
             taskBean.setShowFileType(showFileType_Img.isSelected())
                     .setComparatorTableColumn(fileUnitSize_Img)
-                    .setDisableNodes(disableNodes)
                     .setSubCode(subCode_Img.getText())
                     .setMassageLabel(fileNumber_Img)
                     .setProgressBar(progressBar_Img)
+                    .setDisableNodes(disableNodes)
                     .setTableView(tableView_Img)
                     .setInFileList(inFileList)
                     .setMaxImgNum(maxImgNum)
@@ -418,6 +421,7 @@ public class ImgToExcelController extends RootController {
             setControlLastConfig(subCode_Img, prop, key_lastSubCode, true);
             setControlLastConfig(outPath_Img, prop, key_lastOutPath);
             setControlLastConfig(excelPath_Img, prop, key_lastExcelPath);
+            setControlLastConfig(insertImgType_Img, prop, key_insertImgType);
             String lastFilterFileTypes = prop.getProperty(key_lastFilterFileType);
             if (StringUtils.isNotBlank(lastFilterFileTypes)) {
                 jpg_Img.setSelected(lastFilterFileTypes.contains(jpg));
@@ -712,8 +716,9 @@ public class ImgToExcelController extends RootController {
                     .setSheetName(setDefaultStrValue(sheetName_Img, defaultSheetName))
                     .setExportFileSize(exportFileSize_Img.isSelected())
                     .setExportFileNum(exportFileNum_Img.isSelected())
-                    .setOutExcelType(excelType_Img.getText())
+                    .setInsertImgType(insertImgType_Img.getValue())
                     .setExportTitle(exportTitle_Img.isSelected())
+                    .setOutExcelType(excelType_Img.getText())
                     .setInPath(excelPath_Img.getText())
                     .setNoImg(noImg_Img.isSelected())
                     .setOutPath(outFilePath);

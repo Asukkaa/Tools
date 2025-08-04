@@ -3,6 +3,7 @@ package priv.koishi.tools.Service;
 import javafx.concurrent.Task;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
@@ -157,41 +158,103 @@ public class ImgToExcelService {
             }
             maxCellNum = Math.max(maxCellNum, cellNum);
         } else {
-            CreationHelper helper = sxssfWorkbook.getCreationHelper();
-            Drawing<?> drawing = sheet.createDrawingPatriarch();
-            for (String i : imgList) {
-                // 将图片插入Excel单元格
-                ClientAnchor anchor = helper.createClientAnchor();
-                // 设置图片的起始位置以及大小
-                anchor.setCol1(cellNum);
-                anchor.setRow1(rowNum);
-                anchor.setCol2(cellNum + 1);
-                anchor.setRow2(rowNum + 1);
-                anchor.setAnchorType(ClientAnchor.AnchorType.MOVE_DONT_RESIZE);
-                File imgFile = new File(i);
-                String extension = getFileType(imgFile);
-                // 读取图片文件
-                try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(imgFile.toPath()))) {
-                    // 分块读取
-                    ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-                    byte[] chunk = new byte[8192];
-                    int bytesRead;
-                    while ((bytesRead = inputStream.read(chunk)) != -1) {
-                        buffer.write(chunk, 0, bytesRead);
-                    }
-                    buffer.flush();
-                    if (jpg.equals(extension) || jpeg.equals(extension)) {
-                        drawing.createPicture(anchor, sxssfWorkbook.addPicture(buffer.toByteArray(), Workbook.PICTURE_TYPE_JPEG));
-                    } else if (png.equals(extension)) {
-                        drawing.createPicture(anchor, sxssfWorkbook.addPicture(buffer.toByteArray(), Workbook.PICTURE_TYPE_PNG));
-                    }
-                    buffer.close();
-                }
-                sheet.setColumnWidth(cellNum, 256 * excelConfig.getImgWidth());
-                sheet.getRow(rowNum).setHeightInPoints(excelConfig.getImgHeight());
-                cellNum++;
-                maxCellNum = Math.max(maxCellNum, cellNum);
+            String insertImgType = excelConfig.getInsertImgType();
+            if (insertType_img.equals(insertImgType)) {
+                maxCellNum = insertImg(imgList, excelConfig, cellNum, rowNum, sheet, maxCellNum);
+            } else if (insertType_link.equals(insertImgType)) {
+                maxCellNum = insertImgLink(imgList, excelConfig, cellNum, rowNum, sheet, maxCellNum);
             }
+        }
+        return maxCellNum;
+    }
+
+    /**
+     * 插入图片
+     *
+     * @param imgList     图片路径
+     * @param excelConfig excel导出设置
+     * @param cellNum     图片起始列号
+     * @param rowNum      图片的起始行号
+     * @param sheet       当前表
+     * @param maxCellNum  最大列号
+     * @return 插入图片后的最大列号
+     */
+    private static int insertImg(List<String> imgList, ExcelConfig excelConfig, int cellNum, int rowNum, Sheet sheet, int maxCellNum) throws IOException {
+        CreationHelper helper = sxssfWorkbook.getCreationHelper();
+        Drawing<?> drawing = sheet.createDrawingPatriarch();
+        for (String i : imgList) {
+            // 将图片插入Excel单元格
+            ClientAnchor anchor = helper.createClientAnchor();
+            // 设置图片的起始位置以及大小
+            anchor.setCol1(cellNum);
+            anchor.setRow1(rowNum);
+            anchor.setCol2(cellNum + 1);
+            anchor.setRow2(rowNum + 1);
+            anchor.setAnchorType(ClientAnchor.AnchorType.MOVE_DONT_RESIZE);
+            File imgFile = new File(i);
+            String extension = getFileType(imgFile);
+            // 读取图片文件
+            try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(imgFile.toPath()))) {
+                // 分块读取
+                ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+                byte[] chunk = new byte[8192];
+                int bytesRead;
+                while ((bytesRead = inputStream.read(chunk)) != -1) {
+                    buffer.write(chunk, 0, bytesRead);
+                }
+                buffer.flush();
+                if (jpg.equals(extension) || jpeg.equals(extension)) {
+                    drawing.createPicture(anchor, sxssfWorkbook.addPicture(buffer.toByteArray(), Workbook.PICTURE_TYPE_JPEG));
+                } else if (png.equals(extension)) {
+                    drawing.createPicture(anchor, sxssfWorkbook.addPicture(buffer.toByteArray(), Workbook.PICTURE_TYPE_PNG));
+                }
+                buffer.close();
+            }
+            sheet.setColumnWidth(cellNum, 256 * excelConfig.getImgWidth());
+            sheet.getRow(rowNum).setHeightInPoints(excelConfig.getImgHeight());
+            cellNum++;
+            maxCellNum = Math.max(maxCellNum, cellNum);
+        }
+        return maxCellNum;
+    }
+
+    /**
+     * 插入图片超链接
+     *
+     * @param imgList     图片路径
+     * @param excelConfig excel导出设置
+     * @param cellNum     图片起始列号
+     * @param rowNum      图片的起始行号
+     * @param sheet       当前表
+     * @param maxCellNum  最大列号
+     * @return 插入图片后的最大列号
+     */
+    private static int insertImgLink(List<String> imgList, ExcelConfig excelConfig, int cellNum, int rowNum, Sheet sheet, int maxCellNum){
+        CreationHelper helper = sxssfWorkbook.getCreationHelper();
+        for (String imgPath : imgList) {
+            // 创建超链接单元格
+            Cell cell = getOrCreateCell(cellNum, sheet.getRow(rowNum));
+            // 创建文件超链接
+            Hyperlink hyperlink = helper.createHyperlink(HyperlinkType.FILE);
+            // 路径转换为URI格式
+            String uriPath = String.valueOf(new File(imgPath).toURI());
+            // 设置超链接路径
+            hyperlink.setAddress(uriPath);
+            // 应用超链接到单元格
+            cell.setHyperlink(hyperlink);
+            // 设置单元格样式
+            CellStyle style = sxssfWorkbook.createCellStyle();
+            Font font = sxssfWorkbook.createFont();
+            font.setUnderline(Font.U_SINGLE);
+            font.setColor(IndexedColors.BLUE.getIndex());
+            style.setFont(font);
+            cell.setCellStyle(style);
+            // 设置列宽
+            sheet.setColumnWidth(cellNum, 256 * (excelConfig.getImgWidth() * 2));
+            // 更新单元格位置
+            cell.setCellValue("查看图片: " + new File(imgPath).getName());
+            cellNum++;
+            maxCellNum = Math.max(maxCellNum, cellNum);
         }
         return maxCellNum;
     }
