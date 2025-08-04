@@ -63,11 +63,17 @@ public class MainController extends RootController {
      */
     public static FileRenameController fileRenameController;
 
+    /**
+     * 移动文件工具页面控制器
+     */
+    public static MoveFileController moveFileController;
+
     @FXML
     public TabPane tabPane;
 
     @FXML
-    public Tab fileNumToExcelTab, fileNameToExcelTab, imgToExcelTab, fileRenameTab, settingTab, aboutTab, autoClickTab;
+    public Tab fileNumToExcelTab, fileNameToExcelTab, moveFileTab, imgToExcelTab, fileRenameTab, settingTab,
+            aboutTab, autoClickTab;
 
     /**
      * 页面初始化
@@ -79,6 +85,7 @@ public class MainController extends RootController {
         Platform.runLater(() -> {
             aboutController = getController(AboutController.class);
             settingController = getController(SettingController.class);
+            moveFileController = getController(MoveFileController.class);
             autoClickController = getController(AutoClickController.class);
             imgToExcelController = getController(ImgToExcelController.class);
             fileRenameController = getController(FileRenameController.class);
@@ -131,6 +138,11 @@ public class MainController extends RootController {
                         autoClickController.adaption();
                     }
                     break;
+                    case id_moveFileTab:
+                    if (isActivation) {
+                        moveFileController.adaption();
+                    }
+                    break;
             }
         });
     }
@@ -168,6 +180,10 @@ public class MainController extends RootController {
         // 保存日志文件数量设置
         if (aboutController != null) {
             aboutController.saveLastConfig();
+        }
+        // 移动文件功能保存最后设置
+        if (moveFileController != null) {
+            moveFileController.saveLastConfig();
         }
         // 保存关程序闭前页面状态设置
         saveLastConfig();

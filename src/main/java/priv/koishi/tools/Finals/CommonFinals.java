@@ -176,6 +176,11 @@ public class CommonFinals {
     public static final String configFile_Name = "config/fileNameToExcelConfig.properties";
 
     /**
+     * 批量移动文件功能配置文件路径
+     */
+    public static final String configFile_MV = "config/moveFileConfig.properties";
+
+    /**
      * app配置文件路径
      */
     public static final String configFile = "config/config.properties";
@@ -641,6 +646,8 @@ public class CommonFinals {
 
     public static final String text_cell = " 列读取";
 
+    public static final String text_selectFile = "选择文件";
+
     public static final String text_selectDirectory = "选择文件夹";
 
     public static final String text_dataListNull = "列表为空";
@@ -830,6 +837,8 @@ public class CommonFinals {
     public static final String id_imgToExcelTab = "imgToExcelTab";
 
     public static final String id_fileRenameTab = "fileRenameTab";
+
+    public static final String id_moveFileTab = "moveFileTab";
 
     public static final String key_sort = "sort";
 
@@ -1054,6 +1063,10 @@ public class CommonFinals {
     public static final String insertType_img = "插入图片";
 
     public static final String insertType_link = "插入图片超链接";
+
+    public static final String hidden = "隐藏";
+
+    public static final String unhidden = "非隐藏";
 
     /**
      * 默认点击时长

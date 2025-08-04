@@ -14,6 +14,14 @@
             </ScrollPane>
         </Tab>
 
+        <Tab style="-fx-cursor: hand" fx:id="moveFileTab" text="移动文件工具">
+            <ScrollPane fitToWidth="true" fitToHeight="true">
+                <AnchorPane>
+                    <fx:include source="MoveFile-tab.fxml"/>
+                </AnchorPane>
+            </ScrollPane>
+        </Tab>
+
         <Tab style="-fx-cursor: hand" fx:id="imgToExcelTab" text="将图片与excel匹配并插入">
             <ScrollPane fitToWidth="true" fitToHeight="true">
                 <AnchorPane>

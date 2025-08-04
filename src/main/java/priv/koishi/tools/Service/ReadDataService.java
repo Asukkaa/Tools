@@ -229,7 +229,7 @@ public class ReadDataService {
                     } else {
                         fileBean.setName(fileName);
                     }
-                    String showStatus = f.isHidden() ? "隐藏" : "非隐藏";
+                    String showStatus = f.isHidden() ? hidden : unhidden;
                     fileBean.setShowStatus(showStatus);
                     // 组装文件重命名数据
                     buildRename(codeRenameConfig, fileBean, stringRenameConfig, startName, tag);

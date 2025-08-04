@@ -12,6 +12,8 @@ import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.Utils.UiUtils.addToolTip;
 
 /**
+ * PMC关于界面控制器
+ *
  * @author KOISHI
  * Date:2025-08-01
  * Time:18:53
@@ -40,7 +42,6 @@ public class PMCAboutController {
 
     /**
      * 界面初始化
-     *
      */
     @FXML
     private void initialize() {

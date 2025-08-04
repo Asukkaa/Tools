@@ -174,13 +174,12 @@ public class UiUtils {
     /**
      * 创建一个文件选择器
      *
-     * @param window           文件选择器窗口
      * @param path             文件选择器初始路径
      * @param extensionFilters 要过滤的文件格式
      * @param title            文件选择器标题
      * @return 文件选择器选择的文件
      */
-    public static File creatFileChooser(Window window, String path, List<FileChooser.ExtensionFilter> extensionFilters, String title) {
+    public static FileChooser creatFileChooser(String path, List<FileChooser.ExtensionFilter> extensionFilters, String title) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle(title);
         // 设置初始目录
@@ -196,7 +195,35 @@ public class UiUtils {
         if (CollectionUtils.isNotEmpty(extensionFilters)) {
             fileChooser.getExtensionFilters().addAll(extensionFilters);
         }
+        return fileChooser;
+    }
+
+    /**
+     * 创建一个单文件选择器
+     *
+     * @param window           文件选择器窗口
+     * @param path             文件选择器初始路径
+     * @param extensionFilters 要过滤的文件格式
+     * @param title            文件选择器标题
+     * @return 文件选择器选择的文件
+     */
+    public static File creatFileChooser(Window window, String path, List<FileChooser.ExtensionFilter> extensionFilters, String title) {
+        FileChooser fileChooser = creatFileChooser(path, extensionFilters, title);
         return fileChooser.showOpenDialog(window);
+    }
+
+    /**
+     * 创建一个多文件选择器
+     *
+     * @param window           文件选择器窗口
+     * @param path             文件选择器初始路径
+     * @param extensionFilters 要过滤的文件格式
+     * @param title            文件选择器标题
+     * @return 文件选择器选择的文件
+     */
+    public static List<File> creatFilesChooser(Window window, String path, List<FileChooser.ExtensionFilter> extensionFilters, String title) {
+        FileChooser fileChooser = creatFileChooser(path, extensionFilters, title);
+        return fileChooser.showOpenMultipleDialog(window);
     }
 
     /**
@@ -1577,7 +1604,7 @@ public class UiUtils {
      *
      * @param hBox           组件所在hBox
      * @param alignmentWidth 右对齐参考组件宽度
-     * @param region        要设置右对齐的组件
+     * @param region         要设置右对齐的组件
      */
     public static void regionRightAlignment(HBox hBox, double alignmentWidth, Region region) {
         ObservableList<Node> nodes = hBox.getChildren();
@@ -1759,6 +1786,16 @@ public class UiUtils {
         Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
         setWindowLogo(stage, logoPath);
         return alert.showAndWait();
+    }
+
+    /**
+     * 判断路径是否合法
+     *
+     * @param path 路径
+     * @return true-合法，false非法
+     */
+    public static boolean isPath(String path) {
+        return FilenameUtils.getPrefixLength(path) != -1;
     }
 
 }
