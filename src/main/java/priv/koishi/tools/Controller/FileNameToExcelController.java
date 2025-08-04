@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import static priv.koishi.tools.Controller.MainController.settingController;
 import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.MainApplication.mainScene;
 import static priv.koishi.tools.MainApplication.mainStage;
@@ -205,9 +206,9 @@ public class FileNameToExcelController extends RootController {
             if (inFileList.isEmpty()) {
                 throw new Exception(text_selectNull);
             }
-            ChoiceBox<?> sort = (ChoiceBox<?>) mainScene.lookup("#sort_Set");
-            String sortValue = (String) sort.getValue();
-            CheckBox reverseSort = (CheckBox) mainScene.lookup("#reverseSort_Set");
+            ChoiceBox<String> sort = settingController.sort_Set;
+            String sortValue = sort.getValue();
+            CheckBox reverseSort = settingController.reverseSort_Set;
             TaskBean<FileBean> taskBean = new TaskBean<>();
             taskBean.setShowFileType(showFileType_Name.isSelected())
                     .setReverseSort(reverseSort.isSelected())
