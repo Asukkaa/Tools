@@ -159,6 +159,7 @@ public class FileRenameController extends RootController {
         double stageWidth = mainStage.getWidth();
         double tableWidth = stageWidth * 0.94;
         tableView_Re.setMaxWidth(tableWidth);
+        tableView_Re.setPrefWidth(tableWidth);
         regionRightAlignment(fileNumberHBox_Re, tableWidth, fileNumber_Re);
         regionRightAlignment(tipHBox_Re, tableWidth, tip_Re);
         regionRightAlignment(warnHBox_Re, tableWidth, warn_Re);
@@ -314,10 +315,10 @@ public class FileRenameController extends RootController {
             String sortValue = sort.getValue();
             TaskBean<FileBean> taskBean = new TaskBean<>();
             taskBean.setReverseSort(reverseSort.isSelected())
-                    .setDisableNodes(disableNodes)
                     .setComparatorTableColumn(size_Re)
                     .setProgressBar(progressBar_Re)
                     .setMassageLabel(fileNumber_Re)
+                    .setDisableNodes(disableNodes)
                     .setTableView(tableView_Re)
                     .setInFileList(inFileList)
                     .setSortType(sortValue)

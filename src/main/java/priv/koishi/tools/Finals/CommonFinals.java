@@ -28,12 +28,12 @@ public class CommonFinals {
     /**
      * 程序版本
      */
-    public static final String version = "2.4.2";
+    public static final String version = "2.5.0";
 
     /**
      * 程序构建日期
      */
-    public static final String buildDate = "2025.08.01";
+    public static final String buildDate = "2025.08.04";
 
     /**
      * 文件后缀名：bat
@@ -1013,6 +1013,8 @@ public class CommonFinals {
 
     public static final String key_PMCHeight = "PMCHeight";
 
+    public static final String key_insertImgType = "insertImgType";
+
     public static final String mouseButton_primary = "鼠标左键点击";
 
     public static final String mouseButton_secondary = "鼠标右键点击";
@@ -1045,9 +1047,13 @@ public class CommonFinals {
 
     public static final String menuItem_topCopy = "复制所选数据到列表顶部";
 
-    public static String extension_file = "文件";
+    public static final String extension_file = "文件";
 
     public static final String extension_folder = "文件夹";
+
+    public static final String insertType_img = "插入图片";
+
+    public static final String insertType_link = "插入图片超链接";
 
     /**
      * 默认点击时长

@@ -253,6 +253,7 @@ public class AutoClickController extends RootController implements MousePosition
         double stageWidth = mainStage.getWidth();
         double tableWidth = stageWidth * 0.95;
         tableView_Click.setMaxWidth(tableWidth);
+        tableView_Click.setPrefWidth(tableWidth);
         regionRightAlignment(tipHBox_Click, tableWidth, tip_Click);
         regionRightAlignment(buttonsHBox_Click, tableWidth, showPMCHBox_Click);
         regionRightAlignment(cancelTipHBox_Click, tableWidth, cancelTip_Click);

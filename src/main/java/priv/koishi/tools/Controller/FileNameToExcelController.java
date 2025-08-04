@@ -148,6 +148,7 @@ public class FileNameToExcelController extends RootController {
         double stageWidth = mainStage.getWidth();
         double tableWidth = stageWidth * 0.94;
         tableView_Name.setMaxWidth(tableWidth);
+        tableView_Name.setPrefWidth(tableWidth);
         regionRightAlignment(fileNumberHBox_Name, tableWidth, fileNumber_Name);
         regionRightAlignment(tipHBox_Name, tableWidth, tip_Name);
     }

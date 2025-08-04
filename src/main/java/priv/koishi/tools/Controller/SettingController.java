@@ -84,6 +84,7 @@ public class SettingController extends RootController {
         double stageWidth = mainStage.getWidth();
         double tableWidth = stageWidth * 0.5;
         tableView_Set.setMaxWidth(tableWidth);
+        tableView_Set.setPrefWidth(tableWidth);
     }
 
     /**

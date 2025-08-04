@@ -99,4 +99,9 @@ public class ExcelConfig {
      */
     boolean exportFileSize;
 
+    /**
+     * 图片插入类型
+     */
+    String insertImgType;
+
 }

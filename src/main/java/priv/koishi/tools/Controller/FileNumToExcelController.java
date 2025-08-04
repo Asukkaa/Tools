@@ -159,6 +159,7 @@ public class FileNumToExcelController extends RootController {
         double stageWidth = mainStage.getWidth();
         double tableWidth = stageWidth * 0.94;
         tableView_Num.setMaxWidth(tableWidth);
+        tableView_Num.setPrefWidth(tableWidth);
         regionRightAlignment(fileNumberHBox_Num, tableWidth, fileNumber_Num);
     }
 
@@ -442,7 +443,7 @@ public class FileNumToExcelController extends RootController {
      * 设置javafx单元格宽度
      */
     private void tableViewAdaption() {
-        groupId_Num.prefWidthProperty().bind(tableView_Num.widthProperty().multiply(0.1));
+        index_Num.prefWidthProperty().bind(tableView_Num.widthProperty().multiply(0.1));
         groupId_Num.prefWidthProperty().bind(tableView_Num.widthProperty().multiply(0.1));
         groupName_Num.prefWidthProperty().bind(tableView_Num.widthProperty().multiply(0.1));
         groupNumber_Num.prefWidthProperty().bind(tableView_Num.widthProperty().multiply(0.1));

@@ -256,8 +256,7 @@ public class AboutController extends RootController {
         checkDate_Abt.setText("");
         TaskBean<?> taskBean = new TaskBean<>();
         taskBean.setMassageLabel(checkMassage_Abt)
-                .setDisableNodes(disableNodes)
-                .setBindingMassageLabel(true);
+                .setDisableNodes(disableNodes);
         Task<CheckUpdateBean> task = checkLatestVersion();
         bindingTaskNode(task, taskBean);
         task.setOnSucceeded(event -> {
