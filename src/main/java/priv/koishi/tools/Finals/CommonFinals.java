@@ -746,6 +746,10 @@ public class CommonFinals {
 
     public static final String text_readData = "正在读取数据";
 
+    public static final String text_addFile = "添加文件";
+
+    public static final String text_addDirectory = "添加文件夹";
+
     public static final String text_noHideFile = "不查询隐藏文件";
 
     public static final String text_onlyHideFile = "只查询隐藏文件";
@@ -1028,6 +1032,8 @@ public class CommonFinals {
 
     public static final String key_insertImgType = "insertImgType";
 
+    public static final String key_onlyMoveFile = "onlyMoveFile";
+
     public static final String mouseButton_primary = "鼠标左键点击";
 
     public static final String mouseButton_secondary = "鼠标右键点击";
@@ -1063,6 +1069,14 @@ public class CommonFinals {
     public static final String extension_file = "文件";
 
     public static final String extension_folder = "文件夹";
+
+    public static final String name_contain = "文件名包含";
+
+    public static final String name_is = "文件名为";
+
+    public static final String name_start = "文件名起始于";
+
+    public static final String name_end = "文件名结束于";
 
     public static final String insertType_img = "插入图片";
 

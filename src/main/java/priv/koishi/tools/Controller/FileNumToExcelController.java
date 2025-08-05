@@ -231,7 +231,7 @@ public class FileNumToExcelController extends RootController {
      * @param filterExtensionList 要过滤的文件格式
      * @return 文件读取设置
      */
-    private FileConfig getInFileList(File selectedFile, List<String> filterExtensionList) {
+    private FileConfig getInFileList(File selectedFile, List<String> filterExtensionList) throws IOException {
         FileConfig fileConfig = new FileConfig();
         fileConfig.setShowDirectoryName(directoryNameType_Num.getValue())
                 .setShowFileType(showFileType_Num.isSelected())
@@ -246,8 +246,10 @@ public class FileNumToExcelController extends RootController {
 
     /**
      * 更新要处理的文件
+     *
+     * @throws IOException 读取文件失败、文件不存在
      */
-    private void updateInFileList() {
+    private void updateInFileList() throws IOException {
         String selectedFilePath = inPath_Num.getText();
         if (StringUtils.isNotBlank(selectedFilePath)) {
             getInFileList(new File(selectedFilePath), getFilterExtensionList(filterFileType_Num));
@@ -258,8 +260,9 @@ public class FileNumToExcelController extends RootController {
      * 添加数据渲染列表
      *
      * @return 读取excel任务线程
+     * @throws IOException 读取文件失败、文件不存在
      */
-    private Task<List<FileNumBean>> addInData() {
+    private Task<List<FileNumBean>> addInData() throws IOException {
         if (readExcelTask == null) {
             removeAll();
             // 渲染表格前需要更新一下读取的文件
@@ -502,9 +505,10 @@ public class FileNumToExcelController extends RootController {
      * 拖拽释放行为
      *
      * @param dragEvent 拖拽释放事件
+     * @throws IOException 读取文件失败、文件不存在
      */
     @FXML
-    private void handleDrop(DragEvent dragEvent) {
+    private void handleDrop(DragEvent dragEvent) throws IOException {
         List<File> files = dragEvent.getDragboard().getFiles();
         File file = files.getFirst();
         excelPath_Num.setText(file.getPath());

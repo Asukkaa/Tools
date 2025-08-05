@@ -40,6 +40,9 @@ public class DetailController extends RootController {
      */
     private ClickPositionBean selectedItem;
 
+    /**
+     * 回调函数
+     */
     @Setter
     private Runnable refreshCallback;
 

@@ -1,24 +1,76 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.collections.FXCollections?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import java.lang.String?>
 <AnchorPane fx:id="anchorPane_FC" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" stylesheets="@../css/Styles.css"
             fx:controller="priv.koishi.tools.Controller.FileChooserController">
     <VBox spacing="10" AnchorPane.topAnchor="10" AnchorPane.leftAnchor="30">
         <HBox spacing="10">
             <Button fx:id="outPathButton_FC" onAction="#selectFilePath" style="-fx-cursor: hand" text="选择要查询的文件夹"/>
-            <Label fx:id="outPath_FC" prefHeight="25" style="-fx-font-size: 15px;"/>
+            <Label fx:id="filePath_FC" prefHeight="25" style="-fx-font-size: 15px;"/>
+        </HBox>
+
+        <HBox spacing="10">
+            <Label prefHeight="25" text="查询条件："/>
+            <ChoiceBox fx:id="fileFilter_FC" prefHeight="25" prefWidth="150" onAction="#fileFilterAction"
+                       style="-fx-cursor: hand">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="只查询文件"/>
+                        <String fx:value="文件和文件夹都查询"/>
+                        <String fx:value="只查询文件夹"/>
+                    </FXCollections>
+                </items>
+                <value>
+                    <String fx:value="文件和文件夹都查询"/>
+                </value>
+            </ChoiceBox>
+
+            <Label prefHeight="25" text="隐藏文件查询设置:"/>
+            <ChoiceBox fx:id="hideFileType_FC" prefHeight="25" prefWidth="120" onAction="#hideFileTypeAction"
+                       style="-fx-cursor: hand">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="不查询隐藏文件"/>
+                        <String fx:value="是否隐藏都查询"/>
+                        <String fx:value="只查询隐藏文件"/>
+                    </FXCollections>
+                </items>
+                <value>
+                    <String fx:value="不查询隐藏文件"/>
+                </value>
+            </ChoiceBox>
+
+            <Label prefHeight="25" text="文件名查询设置:"/>
+            <ChoiceBox fx:id="fileNameType_FC" prefHeight="25" prefWidth="120" onAction="#fileNameTypeAction"
+                       style="-fx-cursor: hand">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="文件名包含"/>
+                        <String fx:value="文件名为"/>
+                        <String fx:value="文件名起始于"/>
+                        <String fx:value="文件名结束于"/>
+                    </FXCollections>
+                </items>
+                <value>
+                    <String fx:value="文件名包含"/>
+                </value>
+            </ChoiceBox>
+            <TextField fx:id="fileNameFilter_FC" prefHeight="25" prefWidth="120"/>
         </HBox>
 
         <HBox fx:id="fileNumberHBox_FC" spacing="10">
-            <Button fx:id="addFileButton_FC" onAction="#gotoParent" styleClass="cadetblue-button" text="前往上级文件夹"/>
+            <Button fx:id="addFileButton_FC" onAction="#gotoParent" styleClass="cornflowerblue-button" text="前往上级文件夹"/>
+            <Button fx:id="refreshButton_FC" onAction="#refreshTable" styleClass="cadetblue-button" text="刷新列表"/>
 
             <Label fx:id="fileNumber_FC" alignment="CENTER_RIGHT" prefHeight="20" text="列表为空"/>
         </HBox>
 
         <TableView fx:id="tableView_FC" onDragDropped="#handleDrop" onDragOver="#acceptDrop">
             <placeholder>
-                <Label text="拖拽 或点击 选择要读取的文件夹 按钮向列表添加文件"/>
+                <Label text="无符合条件的文件或文件，拖拽文件或文件夹可跳转至所在目录"/>
             </placeholder>
 
             <columns>
@@ -36,8 +88,8 @@
 
         <HBox spacing="10">
             <Label prefWidth="400"/>
-            <Button text="确认选择" onAction="#selectFile"/>
-            <Button text="取消" style="-fx-cursor: hand" onAction="#cancelSelect"/>
+            <Button text="确认选择" onAction="#confirmSelect"/>
+            <Button text="取消" style="-fx-cursor: hand" onAction="#closeWindow"/>
         </HBox>
     </VBox>
 </AnchorPane>

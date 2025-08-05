@@ -274,8 +274,9 @@ public class ImgToExcelController extends RootController {
      * @param selectedFile        要读取的文件
      * @param filterExtensionList 要过滤的文件格式
      * @return 文件读取设置
+     * @throws IOException 文件不存在
      */
-    private FileConfig getInFileList(File selectedFile, List<String> filterExtensionList) {
+    private FileConfig getInFileList(File selectedFile, List<String> filterExtensionList) throws IOException {
         FileConfig fileConfig = new FileConfig();
         String maxImgValue = maxImgNum_Img.getText();
         int maxImgNum = 0;

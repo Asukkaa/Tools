@@ -260,7 +260,7 @@
 
         <TableView fx:id="tableView_Re" onDragDropped="#handleDrop" onDragOver="#acceptDrop">
             <placeholder>
-                <Label text="拖拽 或点击 选择要读取的文件夹 按钮向列表添加文件"/>
+                <Label text="拖拽或点击选择要读取的文件夹按钮向列表添加文件"/>
             </placeholder>
 
             <columns>

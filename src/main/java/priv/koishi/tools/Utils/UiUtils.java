@@ -7,8 +7,11 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
+import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Dialog;
@@ -35,7 +38,10 @@ import org.apache.logging.log4j.Logger;
 import priv.koishi.tools.Annotate.UsedByReflection;
 import priv.koishi.tools.Bean.*;
 import priv.koishi.tools.Bean.Vo.FileNumVo;
+import priv.koishi.tools.Configuration.FileChooserConfig;
 import priv.koishi.tools.Configuration.FileConfig;
+import priv.koishi.tools.Controller.FileChooserController;
+import priv.koishi.tools.Controller.MoveFileController;
 import priv.koishi.tools.CustomUI.MessageBubble.MessageBubble;
 import priv.koishi.tools.Enum.SelectItemsEnums;
 import priv.koishi.tools.MainApplication;
@@ -43,8 +49,10 @@ import priv.koishi.tools.MainApplication;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.net.URL;
 import java.util.*;
 import java.util.List;
 import java.util.function.Function;
@@ -850,8 +858,19 @@ public class UiUtils {
      * @param tableView 要处理的列表
      * @param <T>       列表数据类型
      */
-    @SuppressWarnings("unchecked")
     public static <T> void tableViewDragRow(TableView<T> tableView) {
+        tableViewDragRow(tableView, null);
+    }
+
+    /**
+     * 设置列表通过拖拽排序行
+     *
+     * @param tableView          要处理的列表
+     * @param doubleClickHandler 列表双击事件处理器
+     * @param <T>                列表数据类型
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> void tableViewDragRow(TableView<T> tableView, EventHandler<MouseEvent> doubleClickHandler) {
         tableView.setRowFactory(tv -> {
             TableRow<T> row = new TableRow<>();
             ObservableList<Integer> draggedIndices = FXCollections.observableArrayList();
@@ -909,6 +928,14 @@ public class UiUtils {
                     }
                 }
             });
+            // 列表双击事件处理
+            if (doubleClickHandler != null) {
+                row.setOnMouseClicked(event -> {
+                    if (event.getClickCount() == 2 && !row.isEmpty()) {
+                        doubleClickHandler.handle(event);
+                    }
+                });
+            }
             return row;
         });
     }
@@ -1791,13 +1818,110 @@ public class UiUtils {
     }
 
     /**
-     * 判断路径是否合法
+     * 向列表添加文件
      *
-     * @param path 路径
-     * @return true-合法，false非法
+     * @param files 文件列表
+     * @throws IOException io异常
      */
-    public static boolean isPath(String path) {
-        return FilenameUtils.getPrefixLength(path) != -1;
+    public static void addFile(List<File> files, boolean isAllDirectory, TableView<FileBean> tableView) throws IOException {
+        if (CollectionUtils.isNotEmpty(files)) {
+            List<FileBean> fileBeans = new ArrayList<>();
+            // 如果是所有都是目录，只保留顶层目录
+            if (isAllDirectory) {
+                files = filterTopDirectories(files);
+            }
+            for (File file : files) {
+                if (isPath(file.getPath()) && file.exists()) {
+                    FileBean fileBean = creatFileBean(tableView, file);
+                    fileBeans.add(fileBean);
+                }
+            }
+            // 根据文件路径去重
+            removeSameFilePath(tableView, fileBeans);
+        }
+    }
+
+    /**
+     * 根据文件路径去重
+     *
+     * @param tableView 列表对象
+     * @param fileBeans 要去重的文件列表
+     */
+    public static void removeSameFilePath(TableView<FileBean> tableView, List<FileBean> fileBeans) {
+        List<FileBean> currentItems = new ArrayList<>(tableView.getItems());
+        List<FileBean> filteredList = fileBeans.stream()
+                .filter(fileBean -> currentItems.stream()
+                        .noneMatch(current -> current.getPath().equals(fileBean.getPath())))
+                .toList();
+        tableView.getItems().addAll(filteredList);
+        tableView.refresh();
+    }
+
+    /**
+     * 创建一个文件信息类
+     *
+     * @param tableView 列表对象
+     * @param file      要获取信息的文件
+     */
+    public static FileBean creatFileBean(TableView<FileBean> tableView, File file) throws IOException {
+        String showStatus = file.isHidden() ? hidden : unhidden;
+        return new FileBean()
+                .setUpdateDate(getFileUpdateTime(file))
+                .setCreatDate(getFileCreatTime(file))
+                .setSize(getFileUnitSize(file))
+                .setFileType(getFileType(file))
+                .setShowStatus(showStatus)
+                .setName(file.getName())
+                .setPath(file.getPath())
+                .setTableView(tableView);
+    }
+
+    /**
+     * 使用自定义文件选择器选择文件
+     *
+     * @param fileChooserConfig 文件查询配置
+     * @return 文件选择器控制器
+     * @throws IOException io异常
+     */
+    public static FileChooserController chooserFiles(FileChooserConfig fileChooserConfig) throws IOException {
+        URL fxmlLocation = MoveFileController.class.getResource(resourcePath + "fxml/FileChooser-view.fxml");
+        FXMLLoader loader = new FXMLLoader(fxmlLocation);
+        Parent root = loader.load();
+        FileChooserController controller = loader.getController();
+        controller.initData(fileChooserConfig);
+        Stage detailStage = new Stage();
+        Properties prop = new Properties();
+        InputStream input = checkRunningInputStream(configFile);
+        prop.load(input);
+        double with = Double.parseDouble(prop.getProperty(key_fileChooserWidth, "1000"));
+        double height = Double.parseDouble(prop.getProperty(key_fileChooserHeight, "450"));
+        input.close();
+        Scene scene = new Scene(root, with, height);
+        detailStage.setScene(scene);
+        detailStage.setTitle(fileChooserConfig.getTitle());
+        detailStage.initModality(Modality.APPLICATION_MODAL);
+        setWindowLogo(detailStage, logoPath);
+        detailStage.show();
+        // 监听窗口面板宽度变化
+        detailStage.widthProperty().addListener((v1, v2, v3) ->
+                Platform.runLater(controller::adaption));
+        // 监听窗口面板高度变化
+        detailStage.heightProperty().addListener((v1, v2, v3) ->
+                Platform.runLater(controller::adaption));
+        return controller;
+    }
+
+    /**
+     * 关闭窗口
+     *
+     * @param stage 要关闭的窗口
+     */
+    public static void closeStage(Stage stage) {
+        WindowEvent closeEvent = new WindowEvent(stage, WindowEvent.WINDOW_CLOSE_REQUEST);
+        stage.fireEvent(closeEvent);
+        if (!closeEvent.isConsumed()) {
+            stage.close();
+        }
     }
 
 }

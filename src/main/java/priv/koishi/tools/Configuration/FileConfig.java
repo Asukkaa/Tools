@@ -57,4 +57,14 @@ public class FileConfig {
      */
     String subCode;
 
+    /**
+     * 文件名称筛选类型
+     */
+    String fileNameType;
+
+    /**
+     * 文件名称筛选字符串
+     */
+    String fileNameFilter;
+
 }

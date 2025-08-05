@@ -5,10 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.TransferMode;
@@ -17,17 +14,19 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import lombok.Setter;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import priv.koishi.tools.Bean.FileBean;
+import priv.koishi.tools.Configuration.FileChooserConfig;
 import priv.koishi.tools.Configuration.FileConfig;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
-import static priv.koishi.tools.Controller.MainController.moveFileController;
-import static priv.koishi.tools.Controller.MoveFileController.addFile;
 import static priv.koishi.tools.Finals.CommonFinals.*;
-import static priv.koishi.tools.Utils.FileUtils.readAllFiles;
+import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
 /**
@@ -42,8 +41,16 @@ public class FileChooserController extends RootController {
      */
     private static final String tabId = "_FC";
 
+    /**
+     * 文件查询设置
+     */
+    private FileChooserConfig fileChooserConfig;
+
+    /**
+     * 回调函数
+     */
     @Setter
-    private Runnable refreshCallback;
+    private FileChooserCallback fileChooserCallback;
 
     /**
      * 文件选择页面舞台
@@ -57,10 +64,16 @@ public class FileChooserController extends RootController {
     public HBox fileNumberHBox_FC;
 
     @FXML
-    public Label outPath_FC, fileNumber_FC;
+    public TextField fileNameFilter_FC;
 
     @FXML
-    public Button outPathButton_FC, addFileButton_FC;
+    public Label filePath_FC, fileNumber_FC;
+
+    @FXML
+    public Button outPathButton_FC, addFileButton_FC, refreshButton_FC;
+
+    @FXML
+    public ChoiceBox<String> fileFilter_FC, hideFileType_FC, fileNameType_FC;
 
     @FXML
     public TableView<FileBean> tableView_FC;
@@ -78,21 +91,40 @@ public class FileChooserController extends RootController {
     /**
      * 初始化数据
      *
-     * @param outFilePath 列表选中的数据
+     * @param fileChooserConfig 文件查询设置
+     * @throws IOException io异常
      */
-    public void initData(String outFilePath) throws IOException {
-        setPathLabel(outPath_FC, outFilePath);
+    public void initData(FileChooserConfig fileChooserConfig) throws IOException {
+        String path = fileChooserConfig.getInFile().getPath();
+        if (StringUtils.isBlank(path)) {
+            path = defaultFileChooserPath;
+        }
+        this.fileChooserConfig = fileChooserConfig;
+        fileFilter_FC.setValue(fileChooserConfig.getShowDirectoryName());
+        hideFileType_FC.setValue(fileChooserConfig.getShowHideFile());
         // 设置鼠标悬停提示
         setToolTip();
-        selectFile(new File(outFilePath));
+        selectFile(new File(path));
     }
 
-    private void selectFile(File outFilePath) throws IOException {
+    /**
+     * 选择文件
+     *
+     * @param file 列表选中的数据
+     * @throws IOException io异常
+     */
+    private void selectFile(File file) throws IOException {
         removeAll();
-        FileConfig fileConfig = new FileConfig()
-                .setShowDirectoryName(text_onlyDirectory)
-                .setInFile(outFilePath);
-        addInData(readAllFiles(fileConfig));
+        FileConfig fileConfig = new FileConfig();
+        fileConfig.setShowDirectoryName(fileFilter_FC.getValue())
+                .setFileNameFilter(fileNameFilter_FC.getText())
+                .setShowHideFile(hideFileType_FC.getValue())
+                .setFileNameType(fileNameType_FC.getValue())
+                .setInFile(file);
+        addFile(readAllFiles(fileConfig), false, tableView_FC);
+        // 获取所选文件路径
+        setPathLabel(filePath_FC, file.getPath());
+        updateTableViewSizeText(tableView_FC, fileNumber_FC, text_file);
     }
 
     /**
@@ -134,21 +166,28 @@ public class FileChooserController extends RootController {
     }
 
     /**
-     * 添加数据渲染列表
-     *
-     * @param files 查询到的文件list
-     * @throws IOException 未查询到符合条件的数据
-     */
-    private void addInData(List<File> files) throws IOException {
-        addFile(files, false, tableView_FC);
-    }
-
-    /**
      * 设置鼠标悬停提示
      */
     private void setToolTip() {
         addToolTip(tip_outPathButton, outPathButton_FC);
         addToolTip(tip_reselectButton, addFileButton_FC);
+    }
+
+    /**
+     * 双击列表数据进入点击的目录
+     *
+     * @param fileBean 列表数据
+     * @throws IOException io异常
+     */
+    private void handleFileDoubleClick(FileBean fileBean) throws IOException {
+        if (fileBean != null) {
+            // 双击文件夹时进入下级目录
+            if (new File(fileBean.getPath()).isDirectory()) {
+                selectFile(new File(fileBean.getPath()));
+            } else {
+                openDirectory(fileBean.getPath());
+            }
+        }
     }
 
     /**
@@ -158,14 +197,30 @@ public class FileChooserController extends RootController {
     private void initialize() {
         Platform.runLater(() -> {
             stage = (Stage) anchorPane_FC.getScene().getWindow();
+            stage.setOnCloseRequest(e -> {
+                try {
+                    updateProperties(fileChooserConfig.getConfigFile(), fileChooserConfig.getPathKey(), filePath_FC.getText());
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            });
             // 组件自适应宽高
             adaption();
             // 绑定表格数据
             autoBuildTableViewData(tableView_FC, FileBean.class, tabId, index_FC);
             // 设置文件大小排序
             fileSizeColum(size_FC);
-            // 设置列表通过拖拽排序行
-            tableViewDragRow(tableView_FC);
+            // 设置列表通过拖拽排序行（带双击事件）
+            tableViewDragRow(tableView_FC, event -> {
+                if (event.getClickCount() == 2 && !tableView_FC.getSelectionModel().isEmpty()) {
+                    FileBean selectedFileBean = tableView_FC.getSelectionModel().getSelectedItem();
+                    try {
+                        handleFileDoubleClick(selectedFileBean);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            });
             // 构建右键菜单
             tableViewContextMenu(tableView_FC, fileNumber_FC);
         });
@@ -175,13 +230,17 @@ public class FileChooserController extends RootController {
      * 拖拽释放行为
      *
      * @param dragEvent 拖拽事件
+     * @throws IOException io异常
      */
     @FXML
     private void handleDrop(DragEvent dragEvent) throws IOException {
-        removeAll();
         List<File> files = dragEvent.getDragboard().getFiles();
         File file = files.getFirst();
-        selectFile(file);
+        if (file.isFile()) {
+            selectFile(file.getParentFile());
+        } else if (file.isDirectory()) {
+            selectFile(file);
+        }
     }
 
     /**
@@ -191,14 +250,9 @@ public class FileChooserController extends RootController {
      */
     @FXML
     private void acceptDrop(DragEvent dragEvent) {
-        List<File> files = dragEvent.getDragboard().getFiles();
-        files.forEach(file -> {
-            if (file.isDirectory()) {
-                // 接受拖放
-                dragEvent.acceptTransferModes(TransferMode.COPY);
-                dragEvent.consume();
-            }
-        });
+        // 接受拖放
+        dragEvent.acceptTransferModes(TransferMode.COPY);
+        dragEvent.consume();
     }
 
     /**
@@ -207,42 +261,111 @@ public class FileChooserController extends RootController {
      * @param actionEvent 点击事件
      */
     @FXML
-    public void selectFilePath(ActionEvent actionEvent) throws IOException {
+    private void selectFilePath(ActionEvent actionEvent) throws IOException {
         Window window = ((Node) actionEvent.getSource()).getScene().getWindow();
-        File selectedFile = creatDirectoryChooser(window, outPath_FC.getText(), text_selectDirectory);
+        File selectedFile = creatDirectoryChooser(window, filePath_FC.getText(), text_selectDirectory);
         if (selectedFile != null) {
-            // 获取所选文件路径
-            setPathLabel(outPath_FC, selectedFile.getPath());
             selectFile(selectedFile);
         }
     }
 
     /**
      * 前往上级文件夹
+     *
+     * @throws IOException io异常
      */
     @FXML
-    public void gotoParent() throws IOException {
-        File file = new File(outPath_FC.getText());
+    private void gotoParent() throws IOException {
+        File file = new File(filePath_FC.getText());
         File parentFile = file.getParentFile();
         selectFile(parentFile);
-        setPathLabel(outPath_FC, parentFile.getPath());
     }
 
+    /**
+     * 确认选择的文件按钮
+     *
+     * @throws IOException io异常
+     */
     @FXML
-    public void selectFile() {
+    private void confirmSelect() throws IOException {
         ObservableList<FileBean> selectedItems = tableView_FC.getSelectionModel().getSelectedItems();
-        moveFileController.tableView_MV.getItems().addAll(selectedItems);
-        MoveFileController.outFilePath = outPath_FC.getText();
-        stage.close();
-        // 触发列表刷新（通过回调）
-        if (refreshCallback != null) {
-            refreshCallback.run();
+        List<FileBean> fileBeanList = new ArrayList<>();
+        String showDirectory = fileChooserConfig.getShowDirectoryName();
+        if (CollectionUtils.isNotEmpty(selectedItems)) {
+            for (FileBean fileBean : selectedItems) {
+                String fileType = fileBean.getFileType();
+                if (text_onlyDirectory.equals(showDirectory)) {
+                    if (extension_folder.equals(fileType)) {
+                        fileBeanList.add(fileBean);
+                    }
+                } else if (text_onlyFile.equals(showDirectory)) {
+                    if (!extension_folder.equals(fileType)) {
+                        List<String> filterExtensionList = fileChooserConfig.getFilterExtensionList();
+                        if (CollectionUtils.isEmpty(filterExtensionList) || filterExtensionList.contains(fileType)) {
+                            fileBeanList.add(fileBean);
+                        }
+                    }
+                }
+            }
+        } else {
+            // 列表为空时，选择当前目录
+            File file = new File(filePath_FC.getText());
+            FileBean fileBean = creatFileBean(tableView_FC, file);
+            fileBeanList.add(fileBean);
+        }
+        closeStage(stage);
+        // 触发列表刷新
+        if (fileChooserCallback != null) {
+            fileChooserCallback.onFileChooser(fileBeanList);
         }
     }
 
+    /**
+     * 取消按钮
+     */
     @FXML
-    public void cancelSelect() {
-        stage.close();
+    private void closeWindow() {
+        closeStage(stage);
+    }
+
+    /**
+     * 刷新列表按钮
+     *
+     * @throws IOException io异常
+     */
+    @FXML
+    private void refreshTable() throws IOException {
+        selectFile(new File(filePath_FC.getText()));
+    }
+
+    /**
+     * 过滤条件单选框监听
+     *
+     * @throws IOException io异常
+     */
+    @FXML
+    private void fileFilterAction() throws IOException {
+        refreshTable();
+    }
+
+    /**
+     * 隐藏文件查询设置单选框监听
+     *
+     * @throws IOException io异常
+     */
+    @FXML
+    private void hideFileTypeAction() throws IOException {
+        refreshTable();
+    }
+
+    /**
+     * 文件名查询设置单选框监听
+     *
+     * @throws IOException io异常
+     */
+    @FXML
+    private void fileNameTypeAction() throws IOException {
+        refreshTable();
     }
 
 }

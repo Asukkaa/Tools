@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
+import javafx.scene.control.TableView;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -174,12 +175,13 @@ public class ReadDataService {
         }
         // 渲染数据
         Platform.runLater(() -> {
+            TableView<FileNumBean> tableView = taskBean.getTableView();
             // 创建新列表避免直接操作原始集合
-            ObservableList<FileNumBean> newItems = FXCollections.observableArrayList(taskBean.getTableView().getItems());
+            ObservableList<FileNumBean> newItems = FXCollections.observableArrayList(tableView.getItems());
             newItems.addAll(fileBeans);
             // 直接替换整个列表而不是修改原列表
-            taskBean.getTableView().setItems(FXCollections.observableArrayList(newItems));
-            taskBean.getTableView().refresh();
+            tableView.setItems(FXCollections.observableArrayList(newItems));
+            tableView.refresh();
         });
         return fileBeans;
     }
@@ -219,6 +221,7 @@ public class ReadDataService {
                 comparingData(taskBean, inFileList);
                 List<FileBean> fileBeans = new ArrayList<>();
                 int inFileSize = inFileList.size();
+                TableView<FileBean> tableView = taskBean.getTableView();
                 for (int i = 0; i < inFileSize; i++) {
                     FileBean fileBean = new FileBean();
                     fileBean.setId(i + 1);
@@ -245,7 +248,7 @@ public class ReadDataService {
                     }
                     String fileType = getFileType(f);
                     // 组装文件基础数据
-                    fileBean.setTableView(taskBean.getTableView())
+                    fileBean.setTableView(tableView)
                             .setUpdateDate(getFileUpdateTime(f))
                             .setCreatDate(getFileCreatTime(f))
                             .setSize(getFileUnitSize(f))
@@ -262,7 +265,10 @@ public class ReadDataService {
                 }
                 updateMessage(text_allHave + inFileSize + text_file);
                 // 渲染数据
-                Platform.runLater(() -> taskBean.getTableView().getItems().addAll(fileBeans));
+                Platform.runLater(() -> {
+                    tableView.getItems().addAll(fileBeans);
+                    tableView.refresh();
+                });
                 return null;
             }
         };

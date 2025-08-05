@@ -1,6 +1,7 @@
 package priv.koishi.tools.Utils;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import priv.koishi.tools.Configuration.FileConfig;
 
@@ -66,7 +67,7 @@ public class FileUtils {
     /**
      * 根据操作系统将数值转换为文件大小
      *
-     * @param size          没带单位的文件大小
+     * @param size 没带单位的文件大小
      * @return 带单位的文件大小
      */
     public static String getUnitSize(long size) {
@@ -177,8 +178,9 @@ public class FileUtils {
      *
      * @param fileConfig 文件查询设置
      * @return 查询到的文件列表
+     * @throws IOException 读取文件失败、文件不存在
      */
-    public static List<File> readAllFiles(FileConfig fileConfig) {
+    public static List<File> readAllFiles(FileConfig fileConfig) throws IOException {
         List<File> fileList = new ArrayList<>();
         readFiles(fileConfig, fileList, fileConfig.getInFile());
         return fileList;
@@ -190,8 +192,9 @@ public class FileUtils {
      * @param fileConfig 文件查询设置
      * @param fileList   上层文件夹查询的文件列表
      * @param directory  最外层文件夹
+     * @throws IOException 读取文件失败、文件不存在
      */
-    public static void readFiles(FileConfig fileConfig, List<? super File> fileList, File directory) {
+    public static void readFiles(FileConfig fileConfig, List<? super File> fileList, File directory) throws IOException {
         File[] files = directory.listFiles();
         String showHideFile = fileConfig.getShowHideFile();
         String showDirectoryName = fileConfig.getShowDirectoryName();
@@ -206,7 +209,7 @@ public class FileUtils {
                     if (text_onlyFile.equals(showDirectoryName) || text_fileDirectory.equals(showDirectoryName) || StringUtils.isEmpty(showDirectoryName)) {
                         String extension = getFileType(file);
                         if (CollectionUtils.isEmpty(filterExtensionList) || filterExtensionList.contains(extension)) {
-                            fileList.add(file);
+                            filterFileName(fileConfig, fileList, file);
                         }
                     }
                     if (recursion) {
@@ -218,13 +221,56 @@ public class FileUtils {
                         continue;
                     }
                     if (text_onlyDirectory.equals(showDirectoryName) || text_fileDirectory.equals(showDirectoryName)) {
-                        fileList.add(file);
+                        filterFileName(fileConfig, fileList, file);
                     }
                     if (recursion) {
                         readFiles(fileConfig, fileList, file);
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * 筛选文件名称
+     *
+     * @param fileConfig 文件查询设置
+     * @param fileList   上层文件夹查询的文件列表
+     * @param file       文件
+     * @throws IOException 文件不存在
+     */
+    private static void filterFileName(FileConfig fileConfig, List<? super File> fileList, File file) throws IOException {
+        String fileNameFilter = fileConfig.getFileNameFilter();
+        if (StringUtils.isNotBlank(fileNameFilter) && file.exists()) {
+            String fileName = getFileName(file);
+            switch (fileConfig.getFileNameType()) {
+                case name_contain: {
+                    if (fileName.contains(fileNameFilter)) {
+                        fileList.add(file);
+                    }
+                    break;
+                }
+                case name_is: {
+                    if (fileNameFilter.equals(fileName)) {
+                        fileList.add(file);
+                    }
+                    break;
+                }
+                case name_start: {
+                    if (fileName.startsWith(fileNameFilter)) {
+                        fileList.add(file);
+                    }
+                    break;
+                }
+                case name_end: {
+                    if (fileName.endsWith(fileNameFilter)) {
+                        fileList.add(file);
+                    }
+                    break;
+                }
+            }
+        } else {
+            fileList.add(file);
         }
     }
 
@@ -237,7 +283,7 @@ public class FileUtils {
      */
     public static String getFileName(File file) throws IOException {
         if (!file.exists()) {
-            throw new IOException(text_fileNotExists);
+            throw new IOException(text_fileNotExists + ":" + file.getPath());
         }
         String fileName = file.getName();
         if (!file.isDirectory() && fileName.contains(".")) {
@@ -819,6 +865,79 @@ public class FileUtils {
             return false;
         }
         return imageType.contains(getFileType(file));
+    }
+
+    /**
+     * 筛选出顶级目录
+     *
+     * @param directories 要筛选的目录
+     * @throws IOException 获取文件属性异常
+     */
+    public static List<File> filterTopDirectories(List<File> directories) throws IOException {
+        List<File> topDirs = new ArrayList<>();
+        for (File dir : directories) {
+            if (!isPath(dir.getPath())) {
+                continue;
+            }
+            if (dir.isFile()) {
+                continue;
+            }
+            boolean isTop = true;
+            for (File other : directories) {
+                if (isSubdirectory(other, dir)) {
+                    isTop = false;
+                    break;
+                }
+            }
+            if (isTop && !topDirs.contains(dir)) {
+                topDirs.add(dir);
+            }
+        }
+        return topDirs;
+    }
+
+    /**
+     * 判断文件是否是子目录
+     *
+     * @param parent 父目录
+     * @param child  子目录
+     * @throws IOException 获取文件属性异常
+     */
+    private static boolean isSubdirectory(File parent, File child) throws IOException {
+        // 判断 child 是否是 parent 的子目录
+        return !parent.getCanonicalPath().equals(child.getCanonicalPath()) &&
+                child.getCanonicalPath().startsWith(parent.getCanonicalPath() + File.separator);
+    }
+
+    /**
+     * 递归收集指定目录下的所有文件（不包括目录本身）
+     *
+     * @param directory 当前目录
+     * @param files     收集到的文件列表
+     */
+    public static void collectFilesRecursively(File directory, List<File> files) {
+        if (directory.isDirectory()) {
+            File[] subFiles = directory.listFiles();
+            if (subFiles != null) {
+                for (File subFile : subFiles) {
+                    if (subFile.isFile()) {
+                        files.add(subFile);
+                    } else if (subFile.isDirectory()) {
+                        collectFilesRecursively(subFile, files);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * 判断路径是否合法
+     *
+     * @param path 路径
+     * @return true-合法，false非法
+     */
+    public static boolean isPath(String path) {
+        return FilenameUtils.getPrefixLength(path) != -1;
     }
 
 }

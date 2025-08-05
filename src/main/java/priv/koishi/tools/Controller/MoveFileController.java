@@ -1,32 +1,29 @@
 package priv.koishi.tools.Controller;
 
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
+import javafx.scene.paint.Color;
 import javafx.stage.Window;
-import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import priv.koishi.tools.Bean.FileBean;
 import priv.koishi.tools.Bean.TaskBean;
+import priv.koishi.tools.Configuration.FileChooserConfig;
 import priv.koishi.tools.Configuration.FileConfig;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -35,6 +32,7 @@ import static priv.koishi.tools.Controller.MainController.settingController;
 import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.MainApplication.mainScene;
 import static priv.koishi.tools.MainApplication.mainStage;
+import static priv.koishi.tools.Service.MoveFileService.moveFile;
 import static priv.koishi.tools.Service.ReadDataService.readFile;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.TaskUtils.bindingTaskNode;
@@ -54,6 +52,11 @@ public class MoveFileController extends RootController {
      * 目标文件路径
      */
     public static String outFilePath;
+
+    /**
+     * 上次选择的文件路径
+     */
+    public static String inFilePath;
 
     /**
      * 页面标识符
@@ -77,7 +80,7 @@ public class MoveFileController extends RootController {
     public ProgressBar progressBar_MV;
 
     @FXML
-    public HBox fileNumberHBox_MV, tipHBox_MV;
+    public HBox fileNumberHBox_MV, tipHBox_MV, filterHBox_MV;
 
     @FXML
     public TableView<FileBean> tableView_MV;
@@ -96,10 +99,10 @@ public class MoveFileController extends RootController {
     public TextField filterFileType_MV;
 
     @FXML
-    public CheckBox openDirectory_MV;
+    public Label outPath_MV, fileNumber_MV, log_MV;
 
     @FXML
-    public Label outPath_MV, fileNumber_MV, log_MV;
+    public CheckBox openDirectory_MV, onlyMoveFile_MV;
 
     @FXML
     public ChoiceBox<String> addFileType_MV, oldFileType_MV;
@@ -120,6 +123,23 @@ public class MoveFileController extends RootController {
         tableView_MV.setMaxWidth(tableWidth);
         tableView_MV.setPrefWidth(tableWidth);
         regionRightAlignment(fileNumberHBox_MV, tableWidth, fileNumber_MV);
+        // 设置javafx单元格宽度
+        bindPrefWidthProperty();
+    }
+
+    /**
+     * 设置列表各列宽度
+     */
+    private void bindPrefWidthProperty() {
+        index_MV.prefWidthProperty().bind(tableView_MV.widthProperty().multiply(0.04));
+        thumb_MV.prefWidthProperty().bind(tableView_MV.widthProperty().multiply(0.1));
+        name_MV.prefWidthProperty().bind(tableView_MV.widthProperty().multiply(0.14));
+        fileType_MV.prefWidthProperty().bind(tableView_MV.widthProperty().multiply(0.08));
+        path_MV.prefWidthProperty().bind(tableView_MV.widthProperty().multiply(0.2));
+        size_MV.prefWidthProperty().bind(tableView_MV.widthProperty().multiply(0.08));
+        showStatus_MV.prefWidthProperty().bind(tableView_MV.widthProperty().multiply(0.08));
+        creatDate_MV.prefWidthProperty().bind(tableView_MV.widthProperty().multiply(0.14));
+        updateDate_MV.prefWidthProperty().bind(tableView_MV.widthProperty().multiply(0.14));
     }
 
     /**
@@ -137,11 +157,79 @@ public class MoveFileController extends RootController {
             prop.put(key_lastOpenDirectory, openDirectoryValue);
             prop.put(key_lastFilterFileType, filterFileType_MV.getText());
             prop.put(key_lastOutPath, outPath_MV.getText());
+            String onlyMoveFileValue = onlyMoveFile_MV.isSelected() ? activation : unActivation;
+            prop.put(key_onlyMoveFile, onlyMoveFileValue);
             OutputStream output = checkRunningOutputStream(configFile_MV);
             prop.store(output, null);
             input.close();
             output.close();
         }
+    }
+
+    /**
+     * 读取配置文件
+     *
+     * @throws IOException io异常
+     */
+    private void getConfig() throws IOException {
+        Properties prop = new Properties();
+        InputStream input = checkRunningInputStream(configFile_MV);
+        prop.load(input);
+        outFilePath = prop.getProperty(key_outFilePath);
+        inFilePath = prop.getProperty(key_inFilePath);
+        input.close();
+    }
+
+    /**
+     * 设置初始配置值为上次配置值
+     *
+     * @throws IOException io异常
+     */
+    private void setLastConfig() throws IOException {
+        Properties prop = new Properties();
+        InputStream input = checkRunningInputStream(configFile_MV);
+        prop.load(input);
+        if (activation.equals(prop.getProperty(key_loadLastConfig))) {
+            setControlLastConfig(outPath_MV, prop, key_lastOutPath);
+            setControlLastConfig(onlyMoveFile_MV, prop, key_onlyMoveFile);
+            setControlLastConfig(openDirectory_MV, prop, key_lastOpenDirectory);
+            setControlLastConfig(filterFileType_MV, prop, key_lastFilterFileType);
+            setControlLastConfig(addFileType_MV, prop, key_lastDirectoryNameType);
+        }
+        input.close();
+    }
+
+    /**
+     * 设置鼠标悬停提示
+     */
+    private void setToolTip() {
+        addToolTip(tip_learButton, clearButton_MV);
+        addToolTip(tip_exportButton, moveButton_MV);
+        addToolTip(tip_outPathButton, outPathButton_MV);
+        addToolTip(tip_openDirectory, openDirectory_MV);
+        addToolTip(tip_reselectButton, addFileButton_MV);
+        addToolTip(tip_filterFileType, filterFileType_MV);
+        addToolTip(tip_directoryNameType, addFileType_MV);
+    }
+
+    /**
+     * 设置javafx单元格宽度
+     */
+    private void setDisableNodes() {
+        disableNodes.add(clearButton_MV);
+        disableNodes.add(moveButton_MV);
+        disableNodes.add(outPathButton_MV);
+        disableNodes.add(addFileButton_MV);
+        Node autoClickTab = mainScene.lookup("#autoClickTab");
+        disableNodes.add(autoClickTab);
+    }
+
+    /**
+     * 给输入框添加内容变化监听
+     */
+    private void textFieldChangeListener() {
+        // 鼠标悬留提示输入的需要识别的文件后缀名
+        textFieldValueListener(filterFileType_MV, tip_filterFileType);
     }
 
     /**
@@ -186,160 +274,6 @@ public class MoveFileController extends RootController {
     }
 
     /**
-     * 读取配置文件
-     *
-     * @throws IOException io异常
-     */
-    private void getConfig() throws IOException {
-        Properties prop = new Properties();
-        InputStream input = checkRunningInputStream(configFile_MV);
-        prop.load(input);
-        outFilePath = prop.getProperty(key_outFilePath);
-        input.close();
-    }
-
-    /**
-     * 设置初始配置值为上次配置值
-     *
-     * @throws IOException io异常
-     */
-    private void setLastConfig() throws IOException {
-        Properties prop = new Properties();
-        InputStream input = checkRunningInputStream(configFile_MV);
-        prop.load(input);
-        if (activation.equals(prop.getProperty(key_loadLastConfig))) {
-            setControlLastConfig(openDirectory_MV, prop, key_lastOpenDirectory);
-            setControlLastConfig(filterFileType_MV, prop, key_lastFilterFileType);
-            setControlLastConfig(outPath_MV, prop, key_lastOutPath);
-            setControlLastConfig(addFileType_MV, prop, key_lastDirectoryNameType);
-        }
-        input.close();
-    }
-
-    /**
-     * 设置列表各列宽度
-     */
-    private void bindPrefWidthProperty() {
-        index_MV.prefWidthProperty().bind(tableView_MV.widthProperty().multiply(0.04));
-        thumb_MV.prefWidthProperty().bind(tableView_MV.widthProperty().multiply(0.1));
-        name_MV.prefWidthProperty().bind(tableView_MV.widthProperty().multiply(0.14));
-        fileType_MV.prefWidthProperty().bind(tableView_MV.widthProperty().multiply(0.08));
-        path_MV.prefWidthProperty().bind(tableView_MV.widthProperty().multiply(0.2));
-        size_MV.prefWidthProperty().bind(tableView_MV.widthProperty().multiply(0.08));
-        showStatus_MV.prefWidthProperty().bind(tableView_MV.widthProperty().multiply(0.08));
-        creatDate_MV.prefWidthProperty().bind(tableView_MV.widthProperty().multiply(0.14));
-        updateDate_MV.prefWidthProperty().bind(tableView_MV.widthProperty().multiply(0.14));
-    }
-
-    /**
-     * 设置鼠标悬停提示
-     */
-    private void setToolTip() {
-        addToolTip(tip_learButton, clearButton_MV);
-        addToolTip(tip_exportButton, moveButton_MV);
-        addToolTip(tip_outPathButton, outPathButton_MV);
-        addToolTip(tip_openDirectory, openDirectory_MV);
-        addToolTip(tip_reselectButton, addFileButton_MV);
-        addToolTip(tip_filterFileType, filterFileType_MV);
-        addToolTip(tip_directoryNameType, addFileType_MV);
-    }
-
-    /**
-     * 设置javafx单元格宽度
-     */
-    private void setDisableNodes() {
-        disableNodes.add(clearButton_MV);
-        disableNodes.add(moveButton_MV);
-        disableNodes.add(outPathButton_MV);
-        disableNodes.add(addFileButton_MV);
-        Node autoClickTab = mainScene.lookup("#autoClickTab");
-        disableNodes.add(autoClickTab);
-    }
-
-    /**
-     * 给输入框添加内容变化监听
-     */
-    private void textFieldChangeListener() {
-        // 鼠标悬留提示输入的需要识别的文件后缀名
-        textFieldValueListener(filterFileType_MV, tip_filterFileType);
-    }
-
-    /**
-     * 向列表添加文件
-     *
-     * @param files 文件列表
-     * @throws IOException io异常
-     */
-    public static void addFile(List<File> files, boolean isAllDirectory, TableView<FileBean> tableView) throws IOException {
-        if (CollectionUtils.isNotEmpty(files)) {
-            List<FileBean> fileBeans = new ArrayList<>();
-            // 如果是所有都是目录，只保留顶层目录
-            if (isAllDirectory) {
-                files = filterTopDirectories(files);
-            }
-            for (File file : files) {
-                if (isPath(file.getPath())) {
-                    String showStatus = file.isHidden() ? hidden : unhidden;
-                    FileBean fileBean = new FileBean()
-                            .setUpdateDate(getFileUpdateTime(file))
-                            .setCreatDate(getFileCreatTime(file))
-                            .setSize(getFileUnitSize(file))
-                            .setFileType(getFileType(file))
-                            .setShowStatus(showStatus)
-                            .setName(file.getName())
-                            .setPath(file.getPath())
-                            .setTableView(tableView);
-                    fileBeans.add(fileBean);
-                }
-            }
-            tableView.getItems().addAll(fileBeans);
-            tableView.refresh();
-        }
-    }
-
-    /**
-     * 判断文件是否是子目录
-     *
-     * @param parent 父目录
-     * @param child  子目录
-     * @throws IOException 获取文件属性异常
-     */
-    private static boolean isSubdirectory(File parent, File child) throws IOException {
-        // 判断 child 是否是 parent 的子目录
-        return !parent.getCanonicalPath().equals(child.getCanonicalPath()) &&
-                child.getCanonicalPath().startsWith(parent.getCanonicalPath() + File.separator);
-    }
-
-    /**
-     * 筛选出顶级目录
-     *
-     * @param directories 要筛选的目录
-     * @throws IOException 获取文件属性异常
-     */
-    private static List<File> filterTopDirectories(List<File> directories) throws IOException {
-        List<File> topDirs = new ArrayList<>();
-        for (File dir : directories) {
-            if (!isPath(dir.getPath())) {
-                continue;
-            }
-            if (dir.isFile()) {
-                continue;
-            }
-            boolean isTop = true;
-            for (File other : directories) {
-                if (isSubdirectory(other, dir)) {
-                    isTop = false;
-                    break;
-                }
-            }
-            if (isTop && !topDirs.contains(dir)) {
-                topDirs.add(dir);
-            }
-        }
-        return topDirs;
-    }
-
-    /**
      * 界面初始化
      *
      * @throws IOException io异常
@@ -350,13 +284,13 @@ public class MoveFileController extends RootController {
         getConfig();
         // 设置鼠标悬停提示
         setToolTip();
-        // 设置javafx单元格宽度
-        bindPrefWidthProperty();
         // 给输入框添加内容变化监听
         textFieldChangeListener();
         // 设置初始配置值为上次配置值
         setLastConfig();
         Platform.runLater(() -> {
+            // 组件自适应宽高
+            adaption();
             // 设置要防重复点击的组件
             setDisableNodes();
             // 绑定表格数据
@@ -374,7 +308,6 @@ public class MoveFileController extends RootController {
      * 拖拽释放行为
      *
      * @param dragEvent 拖拽事件
-     * @throws Exception io异常
      */
     @FXML
     private void handleDrop(DragEvent dragEvent) throws Exception {
@@ -416,19 +349,50 @@ public class MoveFileController extends RootController {
 
     /**
      * 移动文件按钮
+     *
+     * @throws IOException 获取文件属性异常、创建文件夹失败
      */
     @FXML
-    private void moveAll() {
-
+    private void moveAll() throws Exception {
+        String path = outPath_MV.getText();
+        if (StringUtils.isBlank(path)) {
+            throw new Exception("请选择目标文件夹");
+        }
+        File targetDirectory = new File(path);
+        if (!targetDirectory.exists()) {
+            if (!targetDirectory.mkdirs()) {
+                throw new Exception("创建文件夹 " + targetDirectory + " 失败");
+            }
+        }
+        ObservableList<FileBean> items = tableView_MV.getItems();
+        TaskBean<FileBean> taskBean = new TaskBean<>();
+        taskBean.setProgressBar(progressBar_MV)
+                .setDisableNodes(disableNodes)
+                .setTableView(tableView_MV)
+                .setMassageLabel(log_MV)
+                .setBeanList(items);
+        Task<Void> moveFileTask = moveFile(taskBean);
+        bindingTaskNode(moveFileTask, taskBean);
+        moveFileTask.setOnSucceeded(event -> {
+            taskUnbind(taskBean);
+            if (openDirectory_MV.isSelected()) {
+                openDirectory(path);
+            }
+            log_MV.setTextFill(Color.GREEN);
+        });
+        Thread.ofVirtual()
+                .name("task-moveFile-vThread")
+                .start(moveFileTask);
     }
 
     /**
      * 设置导出文件按钮
      *
+     * @param actionEvent 点击事件
      * @throws IOException io异常
      */
     @FXML
-    private void exportPath(ActionEvent actionEvent) throws IOException {
+    private void targetPath(ActionEvent actionEvent) throws IOException {
         getConfig();
         Window window = ((Node) actionEvent.getSource()).getScene().getWindow();
         File selectedFile = creatDirectoryChooser(window, outFilePath, text_selectDirectory);
@@ -439,48 +403,45 @@ public class MoveFileController extends RootController {
     }
 
     /**
-     * 重新查询按钮
+     * 添加文件按钮
+     *
+     * @param actionEvent 点击事件
+     * @throws IOException io异常
      */
     @FXML
     private void addFiles(ActionEvent actionEvent) throws IOException {
         getConfig();
         Window window = ((Node) actionEvent.getSource()).getScene().getWindow();
         String addFileType = addFileType_MV.getValue();
-        if ("添加文件".equals(addFileType)) {
-            List<File> files = creatFilesChooser(window, outFilePath, null, text_selectFile);
+        if (text_addFile.equals(addFileType)) {
+            List<File> files = creatFilesChooser(window, inFilePath, null, text_selectFile);
             addFile(files, false, tableView_MV);
-        } else if ("添加文件夹".equals(addFileType)) {
-            URL fxmlLocation = getClass().getResource(resourcePath + "fxml/FileChooser-view.fxml");
-            FXMLLoader loader = new FXMLLoader(fxmlLocation);
-            Parent root = loader.load();
-            FileChooserController controller = loader.getController();
-            controller.initData(outFilePath);
-            // 设置保存后的回调
-            controller.setRefreshCallback(() -> {
-                // 刷新列表
-                tableView_MV.refresh();
-                updateTableViewSizeText(tableView_MV, fileNumber_MV, text_process);
+            updateTableViewSizeText(tableView_MV, fileNumber_MV, text_file);
+        } else if (text_addDirectory.equals(addFileType)) {
+            FileChooserConfig fileConfig = new FileChooserConfig();
+            fileConfig.setPathKey(key_inFilePath)
+                    .setConfigFile(configFile_MV)
+                    .setTitle(text_selectDirectory)
+                    .setInFile(new File(inFilePath))
+                    .setShowHideFile(text_noHideFile)
+                    .setShowDirectoryName(text_onlyDirectory);
+            FileChooserController controller = chooserFiles(fileConfig);
+            // 设置回调
+            controller.setFileChooserCallback(fileBeanList -> {
+                // 根据文件路径去重
+                removeSameFilePath(tableView_MV, fileBeanList);
+                updateTableViewSizeText(tableView_MV, fileNumber_MV, text_file);
             });
-            Stage detailStage = new Stage();
-            Properties prop = new Properties();
-            InputStream input = checkRunningInputStream(configFile);
-            prop.load(input);
-            double with = Double.parseDouble(prop.getProperty(key_fileChooserWidth, "1000"));
-            double height = Double.parseDouble(prop.getProperty(key_fileChooserHeight, "450"));
-            input.close();
-            Scene scene = new Scene(root, with, height);
-            detailStage.setScene(scene);
-            detailStage.setTitle(text_onlyDirectory);
-            detailStage.initModality(Modality.APPLICATION_MODAL);
-            setWindowLogo(detailStage, logoPath);
-            detailStage.show();
-            // 监听窗口面板宽度变化
-            detailStage.widthProperty().addListener((v1, v2, v3) ->
-                    Platform.runLater(controller::adaption));
-            // 监听窗口面板高度变化
-            detailStage.heightProperty().addListener((v1, v2, v3) ->
-                    Platform.runLater(controller::adaption));
         }
+    }
+
+    /**
+     * 添加数据设置单选框监听
+     */
+    @FXML
+    private void ddFileTypeAction() {
+        String addFileType = addFileType_MV.getValue();
+        filterHBox_MV.setVisible(text_addDirectory.equals(addFileType));
     }
 
 }

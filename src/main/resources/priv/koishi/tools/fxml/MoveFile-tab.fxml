@@ -15,6 +15,8 @@
                         <String fx:value="保留源文件"/>
                         <String fx:value="将源文件放入回收站"/>
                         <String fx:value="删除源文件"/>
+                        <String fx:value="将源目录放入回收站"/>
+                        <String fx:value="删除源目录"/>
                     </FXCollections>
                 </items>
                 <value>
@@ -23,7 +25,8 @@
             </ChoiceBox>
 
             <Label prefHeight="25" text="添加数据设置:"/>
-            <ChoiceBox fx:id="addFileType_MV" prefHeight="25" prefWidth="100" style="-fx-cursor: hand">
+            <ChoiceBox fx:id="addFileType_MV" prefHeight="25" prefWidth="100" onAction="#ddFileTypeAction"
+                       style="-fx-cursor: hand">
                 <items>
                     <FXCollections fx:factory="observableArrayList">
                         <String fx:value="添加文件"/>
@@ -35,13 +38,14 @@
                 </value>
             </ChoiceBox>
 
-            <Label prefHeight="25" text="需要移动的文件后缀名:"/>
-            <TextField fx:id="filterFileType_MV" prefHeight="20" prefWidth="300"/>
+            <HBox fx:id="filterHBox_MV" spacing="10" visible="false">
+                <Label prefHeight="25" text="需要移动的文件后缀名:"/>
+                <TextField fx:id="filterFileType_MV" prefHeight="20" prefWidth="300"/>
+            </HBox>
         </HBox>
 
-
         <HBox spacing="10">
-            <Button fx:id="outPathButton_MV" onAction="#exportPath" style="-fx-cursor: hand" text="选择目标文件夹位置"/>
+            <Button fx:id="outPathButton_MV" onAction="#targetPath" style="-fx-cursor: hand" text="选择目标文件夹位置"/>
             <Label fx:id="outPath_MV" prefHeight="25" style="-fx-font-size: 15px;"/>
         </HBox>
 
@@ -49,6 +53,8 @@
             <Button fx:id="addFileButton_MV" onAction="#addFiles" styleClass="cadetblue-button" text="选择要移动的文件"/>
             <Button fx:id="clearButton_MV" onAction="#removeAll" style="-fx-cursor: hand" text="清空列表"/>
             <Button fx:id="moveButton_MV" onAction="#moveAll" styleClass="cornflowerblue-button" text="开始移动"/>
+            <CheckBox fx:id="onlyMoveFile_MV" prefHeight="25" selected="true"
+                      style="-fx-cursor: hand" text="仅移动文件"/>
             <CheckBox fx:id="openDirectory_MV" prefHeight="25" selected="true"
                       style="-fx-cursor: hand" text="移动后打开文件夹"/>
 
@@ -57,7 +63,7 @@
 
         <TableView fx:id="tableView_MV" onDragDropped="#handleDrop" onDragOver="#acceptDrop">
             <placeholder>
-                <Label text="拖拽 或点击 选择要读取的文件夹 按钮向列表添加文件"/>
+                <Label text="拖拽或点击选择要读取的文件夹按钮向列表添加文件"/>
             </placeholder>
 
             <columns>
