@@ -919,4 +919,17 @@ public class FileUtils {
         return FilenameUtils.getPrefixLength(path) != -1;
     }
 
+    /**
+     * 移动文件到回收站
+     *
+     * @param file 文件
+     * @throws IOException 移动文件时发生错误
+     */
+    public static void moveToTrash(File file) throws IOException {
+        com.sun.jna.platform.FileUtils fileUtils = com.sun.jna.platform.FileUtils.getInstance();
+        if (fileUtils.hasTrash()) {
+            fileUtils.moveToTrash(file);
+        }
+    }
+
 }

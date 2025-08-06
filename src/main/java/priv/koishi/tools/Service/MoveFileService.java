@@ -6,7 +6,6 @@ import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.CopyVisitor.CopyVisitor;
 import priv.koishi.tools.Enum.CopyMode;
 
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -89,7 +88,7 @@ public class MoveFileService {
                         if (sourceAction_deleteFile.equals(sourceAction)) {
                             Files.delete(file.toPath());
                         } else if (sourceAction_trashFile.equals(sourceAction)) {
-                            Desktop.getDesktop().moveToTrash(file);
+                            moveToTrash(file);
                         }
                         updateProgress(i + 1, fileListSize);
                     }
