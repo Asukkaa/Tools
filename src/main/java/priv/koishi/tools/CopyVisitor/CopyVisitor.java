@@ -189,7 +189,7 @@ public class CopyVisitor extends SimpleFileVisitor<Path> {
                         });
             }
         } else if (sourceAction.equals(sourceAction_trashFolder)) {
-            Desktop.getDesktop().moveToTrash(dir.toFile());
+            moveToTrash(dir.toFile());
         }
         return FileVisitResult.CONTINUE;
     }
