@@ -13,7 +13,6 @@ module priv.koishi.tools {
     requires org.apache.commons.collections4;
     requires org.apache.commons.io;
     requires java.net.http;
-    requires com.sun.jna.platform;
 
     opens priv.koishi.tools to javafx.fxml;
     exports priv.koishi.tools;
