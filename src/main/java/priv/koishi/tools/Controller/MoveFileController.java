@@ -14,6 +14,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Window;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import priv.koishi.tools.Bean.FileBean;
 import priv.koishi.tools.Bean.TaskBean;
@@ -102,13 +103,13 @@ public class MoveFileController extends RootController {
     public Label outPath_MV, fileNumber_MV, log_MV;
 
     @FXML
-    public CheckBox openDirectory_MV, onlyMoveFile_MV;
-
-    @FXML
-    public ChoiceBox<String> addFileType_MV, oldFileType_MV;
+    public CheckBox openDirectory_MV;
 
     @FXML
     public Button clearButton_MV, moveButton_MV, addFileButton_MV, outPathButton_MV;
+
+    @FXML
+    public ChoiceBox<String> addFileType_MV, sourceAction_MV, moveType_MV, hideFileType_MV;
 
     /**
      * 组件自适应宽高
@@ -116,7 +117,7 @@ public class MoveFileController extends RootController {
     public void adaption() {
         // 设置组件高度
         double stageHeight = mainStage.getHeight();
-        tableView_MV.setPrefHeight(stageHeight * 0.6);
+        tableView_MV.setPrefHeight(stageHeight * 0.55);
         // 设置组件宽度
         double stageWidth = mainStage.getWidth();
         double tableWidth = stageWidth * 0.94;
@@ -157,8 +158,7 @@ public class MoveFileController extends RootController {
             prop.put(key_lastOpenDirectory, openDirectoryValue);
             prop.put(key_lastFilterFileType, filterFileType_MV.getText());
             prop.put(key_lastOutPath, outPath_MV.getText());
-            String onlyMoveFileValue = onlyMoveFile_MV.isSelected() ? activation : unActivation;
-            prop.put(key_onlyMoveFile, onlyMoveFileValue);
+            prop.put(key_moveType, moveType_MV.getValue());
             OutputStream output = checkRunningOutputStream(configFile_MV);
             prop.store(output, null);
             input.close();
@@ -190,8 +190,8 @@ public class MoveFileController extends RootController {
         InputStream input = checkRunningInputStream(configFile_MV);
         prop.load(input);
         if (activation.equals(prop.getProperty(key_loadLastConfig))) {
+            setControlLastConfig(moveType_MV, prop, key_moveType);
             setControlLastConfig(outPath_MV, prop, key_lastOutPath);
-            setControlLastConfig(onlyMoveFile_MV, prop, key_onlyMoveFile);
             setControlLastConfig(openDirectory_MV, prop, key_lastOpenDirectory);
             setControlLastConfig(filterFileType_MV, prop, key_lastFilterFileType);
             setControlLastConfig(addFileType_MV, prop, key_lastDirectoryNameType);
@@ -216,8 +216,10 @@ public class MoveFileController extends RootController {
      * 设置javafx单元格宽度
      */
     private void setDisableNodes() {
-        disableNodes.add(clearButton_MV);
         disableNodes.add(moveButton_MV);
+        disableNodes.add(filterHBox_MV);
+        disableNodes.add(sourceAction_MV);
+        disableNodes.add(clearButton_MV);
         disableNodes.add(outPathButton_MV);
         disableNodes.add(addFileButton_MV);
         Node autoClickTab = mainScene.lookup("#autoClickTab");
@@ -365,6 +367,9 @@ public class MoveFileController extends RootController {
             }
         }
         ObservableList<FileBean> items = tableView_MV.getItems();
+        if (CollectionUtils.isEmpty(items)) {
+            throw new Exception("请选择要移动的文件或文件夹");
+        }
         TaskBean<FileBean> taskBean = new TaskBean<>();
         taskBean.setProgressBar(progressBar_MV)
                 .setDisableNodes(disableNodes)

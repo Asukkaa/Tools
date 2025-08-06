@@ -903,31 +903,10 @@ public class FileUtils {
      * @param child  子目录
      * @throws IOException 获取文件属性异常
      */
-    private static boolean isSubdirectory(File parent, File child) throws IOException {
+    public static boolean isSubdirectory(File parent, File child) throws IOException {
         // 判断 child 是否是 parent 的子目录
         return !parent.getCanonicalPath().equals(child.getCanonicalPath()) &&
                 child.getCanonicalPath().startsWith(parent.getCanonicalPath() + File.separator);
-    }
-
-    /**
-     * 递归收集指定目录下的所有文件（不包括目录本身）
-     *
-     * @param directory 当前目录
-     * @param files     收集到的文件列表
-     */
-    public static void collectFilesRecursively(File directory, List<File> files) {
-        if (directory.isDirectory()) {
-            File[] subFiles = directory.listFiles();
-            if (subFiles != null) {
-                for (File subFile : subFiles) {
-                    if (subFile.isFile()) {
-                        files.add(subFile);
-                    } else if (subFile.isDirectory()) {
-                        collectFilesRecursively(subFile, files);
-                    }
-                }
-            }
-        }
     }
 
     /**

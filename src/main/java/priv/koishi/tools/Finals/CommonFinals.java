@@ -1032,7 +1032,7 @@ public class CommonFinals {
 
     public static final String key_insertImgType = "insertImgType";
 
-    public static final String key_onlyMoveFile = "onlyMoveFile";
+    public static final String key_moveType = "moveType";
 
     public static final String mouseButton_primary = "鼠标左键点击";
 
@@ -1085,6 +1085,22 @@ public class CommonFinals {
     public static final String hidden = "隐藏";
 
     public static final String unhidden = "非隐藏";
+
+    public static final String moveType_file = "仅移动文件";
+
+    public static final String moveType_all = "保留目录结构移动文件";
+
+    public static final String moveType_folder = "保留目录结构复制文件夹";
+
+    public static final String moveType_noTopFolder = "不保留顶层目录复制文件夹";
+
+    public static final String sourceAction_deleteFile = "删除源文件";
+
+    public static final String sourceAction_trashFile = "将源文件放入回收站";
+
+    public static final String sourceAction_deleteFolder = "删除源目录";
+
+    public static final String sourceAction_trashFolder = "将源目录放入回收站";
 
     /**
      * 默认点击时长

@@ -3,18 +3,24 @@ package priv.koishi.tools.Service;
 import javafx.concurrent.Task;
 import priv.koishi.tools.Bean.FileBean;
 import priv.koishi.tools.Bean.TaskBean;
+import priv.koishi.tools.CopyVisitor.CopyVisitor;
+import priv.koishi.tools.Enum.CopyMode;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 
 import static priv.koishi.tools.Controller.MainController.moveFileController;
-import static priv.koishi.tools.Finals.CommonFinals.text_addDirectory;
+import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.changeDisableNodes;
+import static priv.koishi.tools.Utils.UiUtils.getFilterExtensionList;
 
 /**
  * 批量移动文件任务类
@@ -39,47 +45,93 @@ public class MoveFileService {
                 updateMessage("正在校验要处理的路径");
                 List<FileBean> fileBeanList = taskBean.getBeanList();
                 String targetDirectory = moveFileController.outPath_MV.getText();
-                if (text_addDirectory.equals(moveFileController.addFileType_MV.getValue())) {
-                    List<File> fileList = new ArrayList<>();
-                    for (FileBean fileBean : fileBeanList) {
-                        File file = new File(fileBean.getPath());
-                        fileList.add(file);
-                    }
-                    // 筛选出顶级目录
-                    fileList = filterTopDirectories(fileList);
-                    int fileListSize = fileList.size();
-                    updateProgress(0, fileListSize);
-                    // 收集所有文件（递归）
-                    List<File> allFiles = new ArrayList<>();
-                    for (int i = 0; i < fileListSize; i++) {
-                        File dir = fileList.get(i);
-                        collectFilesRecursively(dir, allFiles);
+                String moveType = moveFileController.moveType_MV.getValue();
+                String addFileType = moveFileController.addFileType_MV.getValue();
+                String sourceAction = moveFileController.sourceAction_MV.getValue();
+                List<String> filterExtensionList = getFilterExtensionList(moveFileController.filterFileType_MV);
+                List<File> fileList = new ArrayList<>();
+                for (FileBean fileBean : fileBeanList) {
+                    File file = new File(fileBean.getPath());
+                    fileList.add(file);
+                }
+                int fileListSize = fileList.size();
+                updateMessage("开始移动文件");
+                updateProgress(0, fileListSize);
+                if (text_addDirectory.equals(addFileType)) {
+                    // 筛选顶级目录
+                    List<File> topDirs = filterTopDirectories(fileList);
+                    CopyMode mode = determineCopyMode(moveType);
+                    int topDirsSize = topDirs.size();
+                    for (int i = 0; i < topDirsSize; i++) {
+                        File source = topDirs.get(i);
+                        updateMessage("正在移动：" + source.getPath());
+                        Path sourcePath = source.toPath();
+                        Path targetPath = determineTargetPath(source, targetDirectory, moveType);
+                        Files.walkFileTree(sourcePath,
+                                new CopyVisitor(sourcePath,
+                                        targetPath,
+                                        mode,
+                                        filterExtensionList,
+                                        sourceAction));
                         updateProgress(i + 1, fileListSize);
                     }
-                    int allFilesSize = allFiles.size();
-                    updateMessage("正在复制文件");
-                    updateProgress(0, allFilesSize);
-                    for (int i = 0; i < allFilesSize; i++) {
-                        File file = allFiles.get(i);
-                        try {
-                            // 构建目标文件路径（不保留目录结构）
-                            File targetFile = new File(targetDirectory, file.getName());
-                            updateMessage("正在复制文件：" + file.getPath());
-                            // 防止重名覆盖，自动重命名
-                            String safePath = notOverwritePath(targetFile.getAbsolutePath());
-                            File safeTargetFile = new File(safePath);
-                            // 复制文件，替换已有文件
-                            Files.copy(file.toPath(), safeTargetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
+                } else if (text_addFile.equals(addFileType)) {
+                    for (int i = 0; i < fileListSize; i++) {
+                        File file = fileList.get(i);
+                        updateMessage("正在移动：" + file.getPath());
+                        File targetFile = new File(targetDirectory, file.getName());
+                        // 防止重名覆盖，自动重命名
+                        String safePath = notOverwritePath(targetFile.getAbsolutePath());
+                        File safeTargetFile = new File(safePath);
+                        Files.copy(file.toPath(),
+                                safeTargetFile.toPath(),
+                                StandardCopyOption.COPY_ATTRIBUTES);
+                        if (sourceAction_deleteFile.equals(sourceAction)) {
+                            Files.delete(file.toPath());
+                        } else if (sourceAction_trashFile.equals(sourceAction)) {
+                            Desktop.getDesktop().moveToTrash(file);
                         }
-                        updateProgress(i + 1, allFilesSize);
+                        updateProgress(i + 1, fileListSize);
                     }
                 }
-                updateMessage("所有文件以复制到：" + targetDirectory);
+                updateMessage("所有文件以移动到：" + targetDirectory);
                 return null;
             }
         };
+    }
+
+    /**
+     * 根据移动类型确定移动模式
+     *
+     * @param moveType 指定的移动类型标识符
+     * @return 返回对应的CopyMode枚举值
+     */
+    private static CopyMode determineCopyMode(String moveType) {
+        if (moveType_file.equals(moveType)) {
+            return CopyMode.ONLY_FILES;
+        } else if (moveType_folder.equals(moveType) || moveType_noTopFolder.equals(moveType)) {
+            return CopyMode.STRUCTURE_ONLY_FOLDERS;
+        } else {
+            return CopyMode.STRUCTURE_WITH_FILES;
+        }
+    }
+
+    /**
+     * 确定目标路径的构建策略
+     *
+     * @param source    源文件对象
+     * @param targetDir 目标基础目录路径
+     * @param moveType  移动类型标识符
+     * @return 构建完成的目标路径对象
+     * @throws IOException 当路径操作失败时抛出异常
+     */
+    private static Path determineTargetPath(File source, String targetDir, String moveType) throws IOException {
+        Path targetPath = Paths.get(targetDir);
+        if (moveType_all.equals(moveType) || moveType_folder.equals(moveType)) {
+            String safeDir = notOverwritePath(targetDir + File.separator + source.getName());
+            return Paths.get(safeDir);
+        }
+        return targetPath;
     }
 
 }
