@@ -3,7 +3,6 @@ package priv.koishi.tools.CopyVisitor;
 import org.apache.commons.collections4.CollectionUtils;
 import priv.koishi.tools.Enum.CopyMode;
 
-import java.awt.*;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -157,7 +156,7 @@ public class CopyVisitor extends SimpleFileVisitor<Path> {
             if (sourceAction_deleteFile.equals(sourceAction)) {
                 Files.delete(path);
             } else if (sourceAction_trashFile.equals(sourceAction)) {
-                Desktop.getDesktop().moveToTrash(path.toFile());
+                moveToTrash(path.toFile());
             }
         }
         return FileVisitResult.CONTINUE;
