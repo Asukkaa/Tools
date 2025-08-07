@@ -37,6 +37,19 @@
                 </value>
             </ChoiceBox>
 
+            <Label prefHeight="25" text="添加数据设置:"/>
+            <ChoiceBox fx:id="addFileType_Re" prefHeight="25" prefWidth="100" style="-fx-cursor: hand">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="添加文件"/>
+                        <String fx:value="添加文件夹"/>
+                    </FXCollections>
+                </items>
+                <value>
+                    <String fx:value="添加文件夹"/>
+                </value>
+            </ChoiceBox>
+
             <CheckBox fx:id="openDirectory_Re" prefHeight="25" selected="true" style="-fx-cursor: hand" text="重命名后打开文件夹"/>
 
             <Label fx:id="warn_Re" text='注意：文件名不能包含 &lt;>:"/\|?*' prefHeight="25" textFill="red" alignment="CENTER_RIGHT"/>
@@ -244,7 +257,7 @@
         </VBox>
 
         <HBox spacing="10">
-            <Button fx:id="fileButton_Re" onAction="#inDirectoryButton" style="-fx-cursor: hand" text="选择要读取的文件夹"/>
+            <Button fx:id="fileButton_Re" onAction="#inDirectoryButton" style="-fx-cursor: hand" text="选择要读取的文件或文件夹"/>
             <Label fx:id="inPath_Re" prefHeight="25" prefWidth="300" style="-fx-font-size: 15px;"/>
         </HBox>
 

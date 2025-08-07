@@ -281,7 +281,7 @@ public class ReadDataService {
      * @param taskBean 带有排序类型与是否倒序的线程设置参数
      * @param fileList 要排序的文件
      */
-    private static void comparingData(TaskBean<?> taskBean, List<? extends File> fileList) {
+    private static void comparingData(TaskBean<?> taskBean, List<File> fileList) {
         String sortType = taskBean.getSortType();
         // 是否倒序排序
         boolean reverseSort = taskBean.isReverseSort();
@@ -315,19 +315,17 @@ public class ReadDataService {
      * @param fileList    要排序的文件
      * @param reverseSort 是否倒序标识，true倒序，false为正序
      */
-    private static void comparingByType(List<? extends File> fileList, boolean reverseSort) {
-        fileList.sort((o1, o2) -> {
-            // 比较文件后缀名
-            String ext1;
-            String ext2;
-            ext1 = getFileType(o1);
-            ext2 = getFileType(o2);
-            if (reverseSort) {
-                return ext2.compareTo(ext1);
-            } else {
-                return ext1.compareTo(ext2);
-            }
-        });
+    private static void comparingByType(List<File> fileList, boolean reverseSort) {
+        Comparator<File> comparator = (o1, o2) -> {
+            String ext1 = getFileType(o1);
+            String ext2 = getFileType(o2);
+            return ext1.compareTo(ext2);
+        };
+        List<File> sortedList = fileList.stream()
+                .sorted(reverseSort ? comparator.reversed() : comparator)
+                .toList();
+        fileList.clear();
+        fileList.addAll(sortedList);
     }
 
     /**
@@ -336,16 +334,13 @@ public class ReadDataService {
      * @param fileList    要排序的文件
      * @param reverseSort 是否倒序标识，true倒序，false为正序
      */
-    private static void comparingBySize(List<? extends File> fileList, boolean reverseSort) {
-        if (reverseSort) {
-            fileList.sort((o1, o2) -> {
-                long size1 = o1.length();
-                long size2 = o2.length();
-                return (int) (size2 - size1);
-            });
-        } else {
-            fileList.sort(Comparator.comparing(File::length));
-        }
+    private static void comparingBySize(List<File> fileList, boolean reverseSort) {
+        Comparator<File> comparator = Comparator.comparing(File::length);
+        List<File> sortedList = fileList.stream()
+                .sorted(reverseSort ? comparator.reversed() : comparator)
+                .toList();
+        fileList.clear();
+        fileList.addAll(sortedList);
     }
 
     /**
@@ -354,21 +349,16 @@ public class ReadDataService {
      * @param fileList    要排序的文件
      * @param reverseSort 是否倒序标识，true倒序，false为正序
      */
-    private static void comparingByUpdateTime(List<? extends File> fileList, boolean reverseSort) {
+    private static void comparingByUpdateTime(List<File> fileList, boolean reverseSort) {
+        Comparator<File> comparator = Comparator.comparing(File::lastModified);
         if (reverseSort) {
-            fileList.sort((f1, f2) -> {
-                long diff = f2.lastModified() - f1.lastModified();
-                if (diff > 0) {
-                    return 1;
-                } else if (diff == 0) {
-                    return 0;
-                } else {
-                    return -1;
-                }
-            });
-        } else {
-            fileList.sort(Comparator.comparing(File::lastModified));
+            comparator = comparator.reversed();
         }
+        List<File> sortedList = fileList.stream()
+                .sorted(comparator)
+                .toList();
+        fileList.clear();
+        fileList.addAll(sortedList);
     }
 
     /**
@@ -377,20 +367,21 @@ public class ReadDataService {
      * @param fileList    要排序的文件
      * @param reverseSort 是否倒序标识，true倒序，false为正序
      */
-    private static void comparingByCreatTime(List<? extends File> fileList, boolean reverseSort) {
-        fileList.sort((o1, o2) -> {
+    private static void comparingByCreatTime(List<File> fileList, boolean reverseSort) {
+        Comparator<File> comparator = (o1, o2) -> {
             try {
                 BasicFileAttributes attr1 = Files.readAttributes(o1.toPath(), BasicFileAttributes.class);
                 BasicFileAttributes attr2 = Files.readAttributes(o2.toPath(), BasicFileAttributes.class);
-                if (reverseSort) {
-                    return Long.compare(attr2.creationTime().toMillis(), attr1.creationTime().toMillis());
-                } else {
-                    return Long.compare(attr1.creationTime().toMillis(), attr2.creationTime().toMillis());
-                }
+                return Long.compare(attr1.creationTime().toMillis(), attr2.creationTime().toMillis());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        });
+        };
+        List<File> sortedList = fileList.stream()
+                .sorted(reverseSort ? comparator.reversed() : comparator)
+                .toList();
+        fileList.clear();
+        fileList.addAll(sortedList);
     }
 
     /**
@@ -399,12 +390,13 @@ public class ReadDataService {
      * @param fileList    要排序的文件
      * @param reverseSort 是否倒序标识，true倒序，false为正序
      */
-    private static void comparingByName(List<? extends File> fileList, boolean reverseSort) {
-        if (reverseSort) {
-            fileList.sort((o1, o2) -> o2.getName().compareTo(o1.getName()));
-        } else {
-            fileList.sort(Comparator.comparing(File::getName));
-        }
+    private static void comparingByName(List<File> fileList, boolean reverseSort) {
+        Comparator<File> comparator = Comparator.comparing(File::getName);
+        List<File> sortedList = fileList.stream()
+                .sorted(reverseSort ? comparator.reversed() : comparator)
+                .toList();
+        fileList.clear();
+        fileList.addAll(sortedList);
     }
 
 }

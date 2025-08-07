@@ -1,6 +1,7 @@
 package priv.koishi.tools.Controller;
 
 import javafx.application.Platform;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -141,7 +142,7 @@ public class FileRenameController extends RootController {
 
     @FXML
     public ChoiceBox<String> hideFileType_Re, directoryNameType_Re, renameType_Re, subCode_Re, differenceCode_Re,
-            targetStr_Re, leftBehavior_Re, rightBehavior_Re, renameBehavior_Re, renameFileType_Re;
+            targetStr_Re, leftBehavior_Re, rightBehavior_Re, renameBehavior_Re, renameFileType_Re, addFileType_Re;
 
     @FXML
     public TextField sheetName_Re, filterFileType_Re, readRow_Re, readCell_Re, maxRow_Re, startName_Re, nameNum_Re,
@@ -969,6 +970,9 @@ public class FileRenameController extends RootController {
             tableViewDragRow(tableView_Re);
             // 构建右键菜单
             setTableViewContextMenu();
+            // 监听列表数据变化
+            tableView_Re.getItems().addListener((ListChangeListener<FileBean>) change ->
+                    addFileType_Re.setDisable(!tableView_Re.getItems().isEmpty()));
         });
     }
 
@@ -983,19 +987,43 @@ public class FileRenameController extends RootController {
         getConfig();
         List<String> filterExtensionList = getFilterExtensionList(filterFileType_Re);
         Window window = ((Node) actionEvent.getSource()).getScene().getWindow();
-        // 显示文件选择器
-        File selectedFile = creatDirectoryChooser(window, inFilePath, text_selectDirectory);
-        FileConfig fileConfig = new FileConfig();
-        fileConfig.setShowDirectoryName(directoryNameType_Re.getValue())
-                .setShowHideFile(hideFileType_Re.getValue())
-                .setFilterExtensionList(filterExtensionList)
-                .setInFile(selectedFile);
-        if (selectedFile != null) {
-            // 更新所选文件路径显示
-            inFilePath = updatePathLabel(selectedFile.getAbsolutePath(), inFilePath, key_inFilePath, inPath_Re, configFile_Rename);
-            // 读取数据
-            List<File> inFileList = readAllFiles(fileConfig);
-            addInData(inFileList);
+        String addFileType = addFileType_Re.getValue();
+        if (text_addFile.equals(addFileType)) {
+            List<FileChooser.ExtensionFilter> extensionFilters = new ArrayList<>();
+            if (CollectionUtils.isNotEmpty(filterExtensionList)) {
+                List<String> filters = new ArrayList<>();
+                for (String filter : filterExtensionList) {
+                    if (filter.startsWith(".")) {
+                        String f = "*" + filter;
+                        filters.add(f);
+                        extensionFilters.add(new FileChooser.ExtensionFilter(filter + " 文件", f));
+                    }
+                }
+                extensionFilters.add(new FileChooser.ExtensionFilter("所有符合条件的文件格式", filters));
+            }
+            List<File> selectedFile = creatFilesChooser(window, inFilePath, extensionFilters, text_selectFile);
+            if (CollectionUtils.isNotEmpty(selectedFile)) {
+                inFilePath = selectedFile.getFirst().getParentFile().getPath();
+                updateProperties(configFile_Rename, key_inFilePath, inFilePath);
+                setPathLabel(inPath_Re, "");
+                // fileChooser.showOpenMultipleDialog(window) 返回的是一个不可编辑的 List<File>，无法进行排序
+                addInData(new ArrayList<>(selectedFile));
+            }
+        } else if (text_addDirectory.equals(addFileType)) {
+            // 显示文件选择器
+            File selectedFile = creatDirectoryChooser(window, inFilePath, text_selectDirectory);
+            FileConfig fileConfig = new FileConfig();
+            fileConfig.setShowDirectoryName(directoryNameType_Re.getValue())
+                    .setShowHideFile(hideFileType_Re.getValue())
+                    .setFilterExtensionList(filterExtensionList)
+                    .setInFile(selectedFile);
+            if (selectedFile != null) {
+                // 更新所选文件路径显示
+                inFilePath = updatePathLabel(selectedFile.getAbsolutePath(), inFilePath, key_inFilePath, inPath_Re, configFile_Rename);
+                // 读取数据
+                List<File> inFileList = readAllFiles(fileConfig);
+                addInData(inFileList);
+            }
         }
     }
 
