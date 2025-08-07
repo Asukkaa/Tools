@@ -19,7 +19,6 @@ import org.apache.commons.lang3.StringUtils;
 import priv.koishi.tools.Bean.FileBean;
 import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.FileChooserConfig;
-import priv.koishi.tools.Configuration.FileConfig;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,8 +32,7 @@ import static priv.koishi.tools.Controller.MainController.settingController;
 import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.MainApplication.mainScene;
 import static priv.koishi.tools.MainApplication.mainStage;
-import static priv.koishi.tools.Service.MoveFileService.moveFile;
-import static priv.koishi.tools.Service.ReadDataService.readFile;
+import static priv.koishi.tools.Service.MoveFileService.*;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.TaskUtils.bindingTaskNode;
 import static priv.koishi.tools.Utils.TaskUtils.taskUnbind;
@@ -68,11 +66,6 @@ public class MoveFileController extends RootController {
      * 要防重复点击的组件
      */
     private static final List<Node> disableNodes = new ArrayList<>();
-
-    /**
-     * 读取文件线程
-     */
-    private Task<Void> readFileTask;
 
     @FXML
     public AnchorPane anchorPane_MV;
@@ -235,44 +228,37 @@ public class MoveFileController extends RootController {
     }
 
     /**
-     * 添加数据渲染列表
-     *
-     * @param inFileList 查询到的文件list
-     * @throws Exception 未查询到符合条件的数据
+     * 更新UI状态
      */
-    private void addInData(List<File> inFileList) throws Exception {
-        if (readFileTask == null) {
-            removeAll();
-            if (inFileList.isEmpty()) {
-                throw new Exception(text_selectNull);
-            }
-            ChoiceBox<String> sort = settingController.sort_Set;
-            String sortValue = sort.getValue();
-            CheckBox reverseSort = settingController.reverseSort_Set;
-            TaskBean<FileBean> taskBean = new TaskBean<>();
-            taskBean.setReverseSort(reverseSort.isSelected())
-                    .setComparatorTableColumn(size_MV)
-                    .setProgressBar(progressBar_MV)
-                    .setMassageLabel(fileNumber_MV)
-                    .setDisableNodes(disableNodes)
-                    .setTableView(tableView_MV)
-                    .setInFileList(inFileList)
-                    .setSortType(sortValue)
-                    .setTabId(tabId);
-            // 获取Task任务
-            readFileTask = readFile(taskBean);
-            // 绑定带进度条的线程
-            bindingTaskNode(readFileTask, taskBean);
-            readFileTask.setOnSucceeded(event -> {
-                taskUnbind(taskBean);
-                readFileTask = null;
-            });
-            if (!readFileTask.isRunning()) {
-                Thread.ofVirtual()
-                        .name("readFileTask-vThread" + tabId)
-                        .start(readFileTask);
-            }
+    private void updateUI() {
+        // 更新文件数量
+        updateTableViewSizeText(tableView_MV, fileNumber_MV, text_file);
+        // 禁用添加类型选项
+        if (CollectionUtils.isNotEmpty(tableView_MV.getItems())) {
+            addFileType_MV.setDisable(true);
         }
+    }
+
+    /**
+     * 创建任务参数
+     *
+     * @param files 要处理的文件列表
+     */
+    private TaskBean<FileBean> creatTaskBean(List<File> files) {
+        ChoiceBox<String> sort = settingController.sort_Set;
+        String sortValue = sort.getValue();
+        CheckBox reverseSort = settingController.reverseSort_Set;
+        TaskBean<FileBean> taskBean = new TaskBean<>();
+        taskBean.setReverseSort(reverseSort.isSelected())
+                .setComparatorTableColumn(size_MV)
+                .setProgressBar(progressBar_MV)
+                .setMassageLabel(fileNumber_MV)
+                .setDisableNodes(disableNodes)
+                .setTableView(tableView_MV)
+                .setSortType(sortValue)
+                .setInFileList(files)
+                .setTabId(tabId);
+        return taskBean;
     }
 
     /**
@@ -312,16 +298,21 @@ public class MoveFileController extends RootController {
      * @param dragEvent 拖拽事件
      */
     @FXML
-    private void handleDrop(DragEvent dragEvent) throws Exception {
-        removeAll();
+    private void handleDrop(DragEvent dragEvent) {
         List<File> files = dragEvent.getDragboard().getFiles();
-        List<String> filterExtensionList = getFilterExtensionList(filterFileType_MV);
-        File file = files.getFirst();
-        FileConfig fileConfig = new FileConfig();
-        fileConfig.setShowDirectoryName(addFileType_MV.getValue())
-                .setFilterExtensionList(filterExtensionList)
-                .setInFile(file);
-        addInData(readAllFiles(fileConfig));
+        TaskBean<FileBean> taskBean = creatTaskBean(files);
+        Task<Void> readFileTask = readMoveFile(taskBean);
+        bindingTaskNode(readFileTask, taskBean);
+        readFileTask.setOnSucceeded(event -> {
+            taskUnbind(taskBean);
+            // 更新UI状态
+            updateUI();
+        });
+        if (!readFileTask.isRunning()) {
+            Thread.ofVirtual()
+                    .name("readFileTask-vThread" + tabId)
+                    .start(readFileTask);
+        }
     }
 
     /**
@@ -331,14 +322,8 @@ public class MoveFileController extends RootController {
      */
     @FXML
     private void acceptDrop(DragEvent dragEvent) {
-        List<File> files = dragEvent.getDragboard().getFiles();
-        files.forEach(file -> {
-            if (file.isDirectory()) {
-                // 接受拖放
-                dragEvent.acceptTransferModes(TransferMode.COPY);
-                dragEvent.consume();
-            }
-        });
+        dragEvent.acceptTransferModes(TransferMode.COPY);
+        dragEvent.consume();
     }
 
     /**
@@ -347,6 +332,7 @@ public class MoveFileController extends RootController {
     @FXML
     private void removeAll() {
         removeTableViewData(tableView_MV, fileNumber_MV, log_MV);
+        addFileType_MV.setDisable(false);
     }
 
     /**
@@ -386,7 +372,7 @@ public class MoveFileController extends RootController {
             log_MV.setTextFill(Color.GREEN);
         });
         Thread.ofVirtual()
-                .name("task-moveFile-vThread")
+                .name("moveFileTask-vThread" + tabId)
                 .start(moveFileTask);
     }
 
@@ -420,8 +406,16 @@ public class MoveFileController extends RootController {
         String addFileType = addFileType_MV.getValue();
         if (text_addFile.equals(addFileType)) {
             List<File> files = creatFilesChooser(window, inFilePath, null, text_selectFile);
-            addFile(files, false, tableView_MV);
-            updateTableViewSizeText(tableView_MV, fileNumber_MV, text_file);
+            TaskBean<FileBean> taskBean = creatTaskBean(files);
+            Task<Void> addFileTask = addMoveFile(taskBean, false);
+            bindingTaskNode(addFileTask, taskBean);
+            addFileTask.setOnSucceeded(event -> {
+                taskUnbind(taskBean);
+                updateUI();
+            });
+            Thread.ofVirtual()
+                    .name("addFileTask-vThread" + tabId)
+                    .start(addFileTask);
         } else if (text_addDirectory.equals(addFileType)) {
             FileChooserConfig fileConfig = new FileChooserConfig();
             fileConfig.setPathKey(key_inFilePath)
@@ -433,9 +427,17 @@ public class MoveFileController extends RootController {
             FileChooserController controller = chooserFiles(fileConfig);
             // 设置回调
             controller.setFileChooserCallback(fileBeanList -> {
-                // 根据文件路径去重
-                removeSameFilePath(tableView_MV, fileBeanList);
-                updateTableViewSizeText(tableView_MV, fileNumber_MV, text_file);
+                TaskBean<FileBean> taskBean = creatTaskBean(null);
+                taskBean.setBeanList(fileBeanList);
+                Task<Void> removeSameFileTask = removeSameMoveFile(taskBean);
+                bindingTaskNode(removeSameFileTask, taskBean);
+                removeSameFileTask.setOnSucceeded(event -> {
+                    taskUnbind(taskBean);
+                    updateUI();
+                });
+                Thread.ofVirtual()
+                        .name("removeSameFileTask-vThread" + tabId)
+                        .start(removeSameFileTask);
             });
         }
     }
@@ -446,7 +448,21 @@ public class MoveFileController extends RootController {
     @FXML
     private void ddFileTypeAction() {
         String addFileType = addFileType_MV.getValue();
-        filterHBox_MV.setVisible(text_addDirectory.equals(addFileType));
+        String sourceAction = sourceAction_MV.getValue();
+        if (text_addDirectory.equals(addFileType)) {
+            filterHBox_MV.setVisible(true);
+            ObservableList<String> items = sourceAction_MV.getItems();
+            if (!items.contains(sourceAction_deleteFolder) || !items.contains(sourceAction_trashFolder)) {
+                items.addAll(sourceAction_trashFolder, sourceAction_deleteFolder);
+            }
+        } else if (text_addFile.equals(addFileType)) {
+            filterHBox_MV.setVisible(false);
+            ObservableList<String> items = sourceAction_MV.getItems();
+            items.removeAll(sourceAction_deleteFolder, sourceAction_trashFolder);
+            if (sourceAction.equals(sourceAction_deleteFolder) || sourceAction.equals(sourceAction_trashFolder)) {
+                sourceAction_MV.setValue(sourceAction_saveFile);
+            }
+        }
     }
 
 }

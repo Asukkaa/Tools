@@ -21,7 +21,7 @@ import java.util.List;
 public class TaskBean<T> {
 
     /**
-     * 要处理的文件夹文件
+     * 要处理的文件
      */
     List<File> inFileList;
 

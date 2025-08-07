@@ -121,7 +121,7 @@ public class FileChooserController extends RootController {
                 .setShowHideFile(hideFileType_FC.getValue())
                 .setFileNameType(fileNameType_FC.getValue())
                 .setInFile(file);
-        addFile(readAllFiles(fileConfig), false, tableView_FC);
+        addRemoveSameFile(readAllFiles(fileConfig), false, tableView_FC);
         // 获取所选文件路径
         setPathLabel(filePath_FC, file.getPath());
         updateTableViewSizeText(tableView_FC, fileNumber_FC, text_file);

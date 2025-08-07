@@ -37,15 +37,29 @@
                     <String fx:value="添加文件"/>
                 </value>
             </ChoiceBox>
-        </HBox>
 
-        <HBox fx:id="filterHBox_MV" visible="false" spacing="10">
+            <Label prefHeight="25" text="隐藏文件查询设置:"/>
+            <ChoiceBox fx:id="hideFileType_MV" prefHeight="25" prefWidth="120" style="-fx-cursor: hand">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="不查询隐藏文件"/>
+                        <String fx:value="是否隐藏都查询"/>
+                        <String fx:value="只查询隐藏文件"/>
+                    </FXCollections>
+                </items>
+                <value>
+                    <String fx:value="是否隐藏都查询"/>
+                </value>
+            </ChoiceBox>
+
             <HBox spacing="10">
                 <Label prefHeight="25" text="需要移动的文件后缀名:"/>
                 <TextField fx:id="filterFileType_MV" prefHeight="20" prefWidth="250"/>
             </HBox>
+        </HBox>
 
-            <Label prefHeight="25" text="添加数据设置:"/>
+        <HBox fx:id="filterHBox_MV" visible="false" spacing="10">
+            <Label prefHeight="25" text="移动文件设置:"/>
             <ChoiceBox fx:id="moveType_MV" prefHeight="25" prefWidth="170" onAction="#ddFileTypeAction"
                        style="-fx-cursor: hand">
                 <items>
@@ -59,20 +73,6 @@
                 </items>
                 <value>
                     <String fx:value="仅移动文件"/>
-                </value>
-            </ChoiceBox>
-
-            <Label prefHeight="25" text="隐藏文件查询设置:"/>
-            <ChoiceBox fx:id="hideFileType_MV" prefHeight="25" prefWidth="120" style="-fx-cursor: hand">
-                <items>
-                    <FXCollections fx:factory="observableArrayList">
-                        <String fx:value="不查询隐藏文件"/>
-                        <String fx:value="是否隐藏都查询"/>
-                        <String fx:value="只查询隐藏文件"/>
-                    </FXCollections>
-                </items>
-                <value>
-                    <String fx:value="是否隐藏都查询"/>
                 </value>
             </ChoiceBox>
         </HBox>

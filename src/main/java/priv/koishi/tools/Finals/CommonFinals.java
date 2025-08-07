@@ -1094,6 +1094,8 @@ public class CommonFinals {
 
     public static final String moveType_noTopFolder = "不保留顶层目录复制文件夹";
 
+    public static final String sourceAction_saveFile = "保留源文件";
+
     public static final String sourceAction_deleteFile = "删除源文件";
 
     public static final String sourceAction_trashFile = "将源文件放入回收站";

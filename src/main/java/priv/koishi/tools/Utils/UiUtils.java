@@ -1818,12 +1818,12 @@ public class UiUtils {
     }
 
     /**
-     * 向列表添加文件
+     * 向列表添加文件并根据文件路径去重
      *
      * @param files 文件列表
      * @throws IOException io异常
      */
-    public static void addFile(List<File> files, boolean isAllDirectory, TableView<FileBean> tableView) throws IOException {
+    public static void addRemoveSameFile(List<File> files, boolean isAllDirectory, TableView<FileBean> tableView) throws IOException {
         if (CollectionUtils.isNotEmpty(files)) {
             List<FileBean> fileBeans = new ArrayList<>();
             // 如果是所有都是目录，只保留顶层目录

@@ -1,8 +1,11 @@
 package priv.koishi.tools.Service;
 
 import javafx.concurrent.Task;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.TableView;
 import priv.koishi.tools.Bean.FileBean;
 import priv.koishi.tools.Bean.TaskBean;
+import priv.koishi.tools.Configuration.FileConfig;
 import priv.koishi.tools.CopyVisitor.CopyVisitor;
 import priv.koishi.tools.Enum.CopyMode;
 
@@ -19,8 +22,7 @@ import java.util.List;
 import static priv.koishi.tools.Controller.MainController.moveFileController;
 import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.Utils.FileUtils.*;
-import static priv.koishi.tools.Utils.UiUtils.changeDisableNodes;
-import static priv.koishi.tools.Utils.UiUtils.getFilterExtensionList;
+import static priv.koishi.tools.Utils.UiUtils.*;
 
 /**
  * 批量移动文件任务类
@@ -30,6 +32,92 @@ import static priv.koishi.tools.Utils.UiUtils.getFilterExtensionList;
  * Time:18:46
  */
 public class MoveFileService {
+
+    /**
+     * 读取要处理的文件任务
+     *
+     * @param taskBean 读取文件任务设置
+     * @return 读取文件任务
+     */
+    public static Task<Void> readMoveFile(TaskBean<FileBean> taskBean) {
+        return new Task<>() {
+            @Override
+            protected Void call() throws IOException {
+                // 改变要防重复点击的组件状态
+                changeDisableNodes(taskBean, true);
+                updateMessage(text_readData);
+                List<File> inFileList = taskBean.getInFileList();
+                List<File> addFiles = new ArrayList<>();
+                ChoiceBox<String> addFileType = moveFileController.addFileType_MV;
+                String addType = addFileType.getValue();
+                TableView<FileBean> tableView = moveFileController.tableView_MV;
+                boolean isAllDirectory = false;
+                for (File file : inFileList) {
+                    if (text_addFile.equals(addType)) {
+                        if (file.isFile()) {
+                            addFiles.add(file);
+                        } else if (file.isDirectory()) {
+                            List<String> filterExtensionList = getFilterExtensionList(moveFileController.filterFileType_MV);
+                            FileConfig fileConfig = new FileConfig();
+                            fileConfig.setFilterExtensionList(filterExtensionList)
+                                    .setShowDirectoryName(text_onlyFile)
+                                    .setRecursion(true)
+                                    .setInFile(file);
+                            addFiles.addAll(readAllFiles(fileConfig));
+                        }
+                    } else if (text_addDirectory.equals(addType)) {
+                        isAllDirectory = true;
+                        if (file.isDirectory()) {
+                            addFiles.add(file);
+                        } else if (file.isFile()) {
+                            addFiles.add(file.getParentFile());
+                        }
+                    }
+                }
+                addRemoveSameFile(addFiles, isAllDirectory, tableView);
+                return null;
+            }
+        };
+    }
+
+    /**
+     * 添加文件任务
+     *
+     * @param taskBean       添加文件任务设置
+     * @param isAllDirectory 添加的文件是否为目录
+     */
+    public static Task<Void> addMoveFile(TaskBean<FileBean> taskBean, boolean isAllDirectory) {
+        return new Task<>() {
+            @Override
+            protected Void call() throws IOException {
+                // 改变要防重复点击的组件状态
+                changeDisableNodes(taskBean, true);
+                updateMessage(text_readData);
+                List<File> inFileList = taskBean.getInFileList();
+                addRemoveSameFile(inFileList, isAllDirectory, moveFileController.tableView_MV);
+                return null;
+            }
+        };
+    }
+
+    /**
+     * 根据文件路径去重任务
+     *
+     * @param taskBean 删除重复文件任务设置
+     */
+    public static Task<Void> removeSameMoveFile(TaskBean<FileBean> taskBean) {
+        return new Task<>() {
+            @Override
+            protected Void call() {
+                // 改变要防重复点击的组件状态
+                changeDisableNodes(taskBean, true);
+                updateMessage("正在校验要处理路径");
+                List<FileBean> fileBeanList = taskBean.getBeanList();
+                removeSameFilePath(moveFileController.tableView_MV, fileBeanList);
+                return null;
+            }
+        };
+    }
 
     /**
      * 移动文件任务
