@@ -28,12 +28,12 @@ public class CommonFinals {
     /**
      * 程序版本
      */
-    public static final String version = "2.5.0";
+    public static final String version = "2.5.1";
 
     /**
      * 程序构建日期
      */
-    public static final String buildDate = "2025.08.04";
+    public static final String buildDate = "2025.08.07";
 
     /**
      * 文件后缀名：bat
@@ -469,7 +469,7 @@ public class CommonFinals {
 
     public static final String tip_noImg = "勾选后导出文件时没有图片的数据将会在单元格中标记为 无图片";
 
-    public static final String tip_filterImgType = "只会识别勾选的图片格式，至少要勾选一种图片格式才能查询";
+    public static final String tip_filterImgType = "只会识别勾选的图片格式，不区分大小写，至少要勾选一种图片格式才能查询";
 
     public static final String tip_exportFullList = "勾选后将导出完整数据，不勾选只导出文件名称";
 
@@ -580,6 +580,12 @@ public class CommonFinals {
     public static final String tip_reNameFileTypeText = "将会按照此设置修改列表中的文件拓展名，为空则不修改";
 
     public static final String tip_reNameFileType = "用来设置文件拓展名修改逻辑";
+
+    public static final String tip_insertImgType = "用来选择插入图片还是图片超链接";
+
+    public static final String tip_linkNameType = "用来选择超链接命名方式";
+
+    public static final String tip_linkName = "填写后将会修改超链接名称，为空则默认使用文件名称";
 
     public static final String tip_nextGcType = """
             下次启动程序将会按照此设置项设置垃圾回收（GC）方式
@@ -1034,6 +1040,12 @@ public class CommonFinals {
 
     public static final String key_moveType = "moveType";
 
+    public static final String key_linkNameType = "linkNameType";
+
+    public static final String key_linkLeftName = "linkLeftName";
+
+    public static final String key_linkRightName = "linkRightName";
+
     public static final String mouseButton_primary = "鼠标左键点击";
 
     public static final String mouseButton_secondary = "鼠标右键点击";
@@ -1080,7 +1092,9 @@ public class CommonFinals {
 
     public static final String insertType_img = "插入图片";
 
-    public static final String insertType_link = "插入图片超链接";
+    public static final String insertType_relativePath = "插入图片相对路径超链接";
+
+    public static final String insertType_absolutePath = "插入图片绝对路径超链接";
 
     public static final String hidden = "隐藏";
 
@@ -1103,6 +1117,10 @@ public class CommonFinals {
     public static final String sourceAction_deleteFolder = "删除源目录";
 
     public static final String sourceAction_trashFolder = "将源目录放入回收站";
+
+    public static final String linkName_unified = "使用统一名称";
+
+    public static final String linkName_splice = "在文件名两侧拼接名称";
 
     /**
      * 默认点击时长

@@ -104,4 +104,19 @@ public class ExcelConfig {
      */
     String insertImgType;
 
+    /**
+     * 图片插入链接名称类型
+     */
+    String linkNameType;
+
+    /**
+     * 超链接左侧名称
+     */
+    String linkLeftName;
+
+    /**
+     * 超链接右侧名称
+     */
+    String linkRightName;
+
 }

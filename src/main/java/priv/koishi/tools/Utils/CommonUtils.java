@@ -203,6 +203,7 @@ public class CommonUtils {
                     throw new RuntimeException(e);
                 }
             }
+            names.sort(String.CASE_INSENSITIVE_ORDER);
             fileNumBean.setFileNameList(names);
             fileNumBean.setFileName(String.join("、", names));
             fileNumBean.setGroupNumber(v.size());

@@ -43,7 +43,7 @@ import static priv.koishi.tools.Service.ReadDataService.readExcel;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
-import static priv.koishi.tools.Utils.UiUtils.setControlLastConfig;
+import static priv.koishi.tools.Utils.UiUtils.textFieldValueListener;
 
 /**
  * 将图片与excel匹配并插入页面控制器
@@ -143,13 +143,13 @@ public class ImgToExcelController extends RootController {
     public AnchorPane anchorPane_Img;
 
     @FXML
-    public HBox fileNumberHBox_Img, tipHBox_Img;
-
-    @FXML
     public ProgressBar progressBar_Img;
 
     @FXML
-    public ChoiceBox<String> hideFileType_Img, insertImgType_Img;
+    public HBox fileNumberHBox_Img, tipHBox_Img, linkHBox_Img, linkRightHBox_Img;
+
+    @FXML
+    public ChoiceBox<String> hideFileType_Img, insertImgType_Img, linkNameType_Img;
 
     @FXML
     public TableView<FileNumBean> tableView_Img;
@@ -162,7 +162,7 @@ public class ImgToExcelController extends RootController {
 
     @FXML
     public Label inPath_Img, outPath_Img, excelPath_Img, fileNumber_Img, log_Img, tip_Img, excelType_Img,
-            excelTypeLabel_Img;
+            excelTypeLabel_Img, linkName_Img;
 
     @FXML
     public Button fileButton_Img, reselectButton_Img, clearButton_Img, exportButton_Img, cancel_Img,
@@ -170,7 +170,7 @@ public class ImgToExcelController extends RootController {
 
     @FXML
     public TextField imgWidth_Img, imgHeight_Img, excelName_Img, sheetName_Img, subCode_Img, startRow_Img,
-            startCell_Img, readRow_Img, readCell_Img, maxRow_Img, maxImgNum_Img;
+            startCell_Img, readRow_Img, readCell_Img, maxRow_Img, maxImgNum_Img, linkLeftName_Img, linkRightName_Img;
 
     @FXML
     public CheckBox jpg_Img, png_Img, jpeg_Img, recursion_Img, showFileType_Img, openDirectory_Img, openFile_Img,
@@ -182,7 +182,7 @@ public class ImgToExcelController extends RootController {
     public void adaption() {
         // 设置组件高度
         double stageHeight = mainStage.getHeight();
-        tableView_Img.setPrefHeight(stageHeight * 0.45);
+        tableView_Img.setPrefHeight(stageHeight * 0.4);
         // 设置组件宽度
         double stageWidth = mainStage.getWidth();
         double tableWidth = stageWidth * 0.94;
@@ -234,6 +234,9 @@ public class ImgToExcelController extends RootController {
             String exportTitleValue = exportTitle_Img.isSelected() ? activation : unActivation;
             prop.put(key_lastExportTitle, exportTitleValue);
             prop.put(key_insertImgType, insertImgType_Img.getValue());
+            prop.put(key_linkNameType, linkNameType_Img.getValue());
+            prop.put(key_linkLeftName, linkLeftName_Img.getText());
+            prop.put(key_linkRightName, linkRightName_Img.getText());
             List<String> lastFilterFileTypes = new ArrayList<>();
             if (jpg_Img.isSelected()) {
                 lastFilterFileTypes.add(jpg);
@@ -250,6 +253,79 @@ public class ImgToExcelController extends RootController {
             input.close();
             output.close();
         }
+    }
+
+    /**
+     * 读取配置文件
+     *
+     * @throws IOException io异常
+     */
+    private void getConfig() throws IOException {
+        Properties prop = new Properties();
+        InputStream input = checkRunningInputStream(configFile_Img);
+        prop.load(input);
+        inFilePath = prop.getProperty(key_inFilePath);
+        excelInPath = prop.getProperty(key_excelInPath);
+        outFilePath = prop.getProperty(key_outFilePath);
+        defaultSheetName = prop.getProperty(key_defaultSheetName);
+        defaultOutFileName = prop.getProperty(key_defaultOutFileName);
+        defaultReadRow = Integer.parseInt(prop.getProperty(key_defaultReadRow));
+        defaultReadCell = Integer.parseInt(prop.getProperty(key_defaultReadCell));
+        defaultImgWidth = Integer.parseInt(prop.getProperty(key_defaultImgWidth));
+        defaultImgHeight = Integer.parseInt(prop.getProperty(key_defaultImgHeight));
+        defaultStartCell = Integer.parseInt(prop.getProperty(key_defaultStartCell));
+        input.close();
+    }
+
+    /**
+     * 设置初始配置值为上次配置值
+     *
+     * @throws IOException io异常
+     */
+    private void setLastConfig() throws IOException {
+        Properties prop = new Properties();
+        InputStream input = checkRunningInputStream(configFile_Img);
+        prop.load(input);
+        if (activation.equals(prop.getProperty(key_loadLastConfig))) {
+            setControlLastConfig(noImg_Img, prop, key_lastNoImg);
+            setControlLastConfig(maxRow_Img, prop, key_lastMaxRow);
+            setControlLastConfig(readRow_Img, prop, key_lastReadRow);
+            setControlLastConfig(readCell_Img, prop, key_lastReadCell);
+            setControlLastConfig(openFile_Img, prop, key_lastOpenFile);
+            setControlLastConfig(imgWidth_Img, prop, key_lastImgWidth);
+            setControlLastConfig(startRow_Img, prop, key_lastStartRow);
+            setControlLastConfig(startCell_Img, prop, key_lastStartCell);
+            setControlLastConfig(imgHeight_Img, prop, key_lastImgHeight);
+            setControlLastConfig(maxImgNum_Img, prop, key_lastMaxImgNum);
+            setControlLastConfig(recursion_Img, prop, key_lastRecursion);
+            setControlLastConfig(excelName_Img, prop, key_lastExcelName);
+            setControlLastConfig(sheetName_Img, prop, key_lastSheetName);
+            setControlLastConfig(exportTitle_Img, prop, key_lastExportTitle);
+            setControlLastConfig(hideFileType_Img, prop, key_lastHideFileType);
+            setControlLastConfig(showFileType_Img, prop, key_lastShowFileType);
+            setControlLastConfig(openDirectory_Img, prop, key_lastOpenDirectory);
+            setControlLastConfig(exportFileNum_Img, prop, key_lastExportFileNum);
+            setControlLastConfig(inPath_Img, prop, key_lastInPath);
+            setControlLastConfig(exportFileSize_Img, prop, key_lastExportFileSize);
+            setControlLastConfig(subCode_Img, prop, key_lastSubCode, true);
+            setControlLastConfig(outPath_Img, prop, key_lastOutPath);
+            setControlLastConfig(excelPath_Img, prop, key_lastExcelPath);
+            setControlLastConfig(insertImgType_Img, prop, key_insertImgType);
+            setControlLastConfig(linkNameType_Img, prop, key_linkNameType);
+            setControlLastConfig(linkLeftName_Img, prop, key_linkLeftName);
+            setControlLastConfig(linkRightName_Img, prop, key_linkRightName);
+            String lastFilterFileTypes = prop.getProperty(key_lastFilterFileType);
+            if (StringUtils.isNotBlank(lastFilterFileTypes)) {
+                jpg_Img.setSelected(lastFilterFileTypes.contains(jpg));
+                png_Img.setSelected(lastFilterFileTypes.contains(png));
+                jpeg_Img.setSelected(lastFilterFileTypes.contains(jpeg));
+            }
+            String excelPath = prop.getProperty(key_lastExcelPath);
+            if (StringUtils.isNotBlank(excelPath)) {
+                excelType_Img.setText(getFileType(new File(excelPath)));
+            }
+        }
+        input.close();
     }
 
     /**
@@ -368,76 +444,6 @@ public class ImgToExcelController extends RootController {
     }
 
     /**
-     * 读取配置文件
-     *
-     * @throws IOException io异常
-     */
-    private void getConfig() throws IOException {
-        Properties prop = new Properties();
-        InputStream input = checkRunningInputStream(configFile_Img);
-        prop.load(input);
-        inFilePath = prop.getProperty(key_inFilePath);
-        excelInPath = prop.getProperty(key_excelInPath);
-        outFilePath = prop.getProperty(key_outFilePath);
-        defaultSheetName = prop.getProperty(key_defaultSheetName);
-        defaultOutFileName = prop.getProperty(key_defaultOutFileName);
-        defaultReadRow = Integer.parseInt(prop.getProperty(key_defaultReadRow));
-        defaultReadCell = Integer.parseInt(prop.getProperty(key_defaultReadCell));
-        defaultImgWidth = Integer.parseInt(prop.getProperty(key_defaultImgWidth));
-        defaultImgHeight = Integer.parseInt(prop.getProperty(key_defaultImgHeight));
-        defaultStartCell = Integer.parseInt(prop.getProperty(key_defaultStartCell));
-        input.close();
-    }
-
-    /**
-     * 设置初始配置值为上次配置值
-     *
-     * @throws IOException io异常
-     */
-    private void setLastConfig() throws IOException {
-        Properties prop = new Properties();
-        InputStream input = checkRunningInputStream(configFile_Img);
-        prop.load(input);
-        if (activation.equals(prop.getProperty(key_loadLastConfig))) {
-            setControlLastConfig(noImg_Img, prop, key_lastNoImg);
-            setControlLastConfig(maxRow_Img, prop, key_lastMaxRow);
-            setControlLastConfig(readRow_Img, prop, key_lastReadRow);
-            setControlLastConfig(readCell_Img, prop, key_lastReadCell);
-            setControlLastConfig(openFile_Img, prop, key_lastOpenFile);
-            setControlLastConfig(imgWidth_Img, prop, key_lastImgWidth);
-            setControlLastConfig(startRow_Img, prop, key_lastStartRow);
-            setControlLastConfig(startCell_Img, prop, key_lastStartCell);
-            setControlLastConfig(imgHeight_Img, prop, key_lastImgHeight);
-            setControlLastConfig(maxImgNum_Img, prop, key_lastMaxImgNum);
-            setControlLastConfig(recursion_Img, prop, key_lastRecursion);
-            setControlLastConfig(excelName_Img, prop, key_lastExcelName);
-            setControlLastConfig(sheetName_Img, prop, key_lastSheetName);
-            setControlLastConfig(exportTitle_Img, prop, key_lastExportTitle);
-            setControlLastConfig(hideFileType_Img, prop, key_lastHideFileType);
-            setControlLastConfig(showFileType_Img, prop, key_lastShowFileType);
-            setControlLastConfig(openDirectory_Img, prop, key_lastOpenDirectory);
-            setControlLastConfig(exportFileNum_Img, prop, key_lastExportFileNum);
-            setControlLastConfig(inPath_Img, prop, key_lastInPath);
-            setControlLastConfig(exportFileSize_Img, prop, key_lastExportFileSize);
-            setControlLastConfig(subCode_Img, prop, key_lastSubCode, true);
-            setControlLastConfig(outPath_Img, prop, key_lastOutPath);
-            setControlLastConfig(excelPath_Img, prop, key_lastExcelPath);
-            setControlLastConfig(insertImgType_Img, prop, key_insertImgType);
-            String lastFilterFileTypes = prop.getProperty(key_lastFilterFileType);
-            if (StringUtils.isNotBlank(lastFilterFileTypes)) {
-                jpg_Img.setSelected(lastFilterFileTypes.contains(jpg));
-                png_Img.setSelected(lastFilterFileTypes.contains(png));
-                jpeg_Img.setSelected(lastFilterFileTypes.contains(jpeg));
-            }
-            String excelPath = prop.getProperty(key_lastExcelPath);
-            if (StringUtils.isNotBlank(excelPath)) {
-                excelType_Img.setText(getFileType(new File(excelPath)));
-            }
-        }
-        input.close();
-    }
-
-    /**
      * 设置鼠标悬停提示
      */
     private void setToolTip() {
@@ -453,17 +459,20 @@ public class ImgToExcelController extends RootController {
         addToolTip(tip_fileButton, fileButton_Img);
         addToolTip(tip_learButton, clearButton_Img);
         addToolTip(tip_exportTitle, exportTitle_Img);
+        addToolTip(tip_linkNameType, linkNameType_Img);
         addToolTip(tip_showFileType, showFileType_Img);
         addToolTip(tip_hideFileType, hideFileType_Img);
         addToolTip(tip_exportButton, exportButton_Img);
         addToolTip(tip_outPathButton, outPathButton_Img);
         addToolTip(tip_openDirectory, openDirectory_Img);
         addToolTip(tip_exportFileNum, exportFileNum_Img);
+        addToolTip(tip_insertImgType, insertImgType_Img);
         addToolTip(tip_exportFileSize, exportFileSize_Img);
         addToolTip(tip_reselectButton, reselectButton_Img);
         addToolTip(tip_excelPathButton, excelPathButton_Img);
         addToolTip(tip_filterImgType, jpg_Img, png_Img, jpeg_Img);
         addToolTip(tip_excelType, excelType_Img, excelTypeLabel_Img);
+        addToolTip(tip_linkName, linkLeftName_Img, linkRightName_Img);
         addToolTip(tip_excelName + defaultOutFileName, excelName_Img);
         addToolTip(text_onlyNaturalNumber + defaultStartCell, startCell_Img);
         addToolTip(tip_imgHeightWidth + defaultImgWidth + tip_imgWidth, imgWidth_Img);
@@ -513,6 +522,10 @@ public class ImgToExcelController extends RootController {
         textFieldValueListener(sheetName_Img, tip_sheetName);
         // 鼠标悬留提示输入的导出excel文件名称
         textFieldValueListener(excelName_Img, tip_excelName + defaultOutFileName);
+        // 鼠标悬留提示输入的超链接左侧名称
+        textFieldValueListener(linkLeftName_Img, tip_linkName);
+        // 鼠标悬留提示输入的超链接右侧名称
+        textFieldValueListener(linkRightName_Img, tip_linkName);
     }
 
     /**
@@ -533,6 +546,9 @@ public class ImgToExcelController extends RootController {
      * @return 文件大小可以正常导出或无法正常导出时选择继续导出返回true，终止任务返回false
      */
     private boolean checkFileSize() {
+        if (!insertType_img.equals(insertImgType_Img.getValue())) {
+            return true;
+        }
         String fileNumberText = fileNumber_Img.getText();
         String totalFileSize = fileNumberText.substring(fileNumberText.lastIndexOf(text_totalFileSize) + text_totalFileSize.length());
         double totalFileSizeValue = fileSizeCompareValue(totalFileSize) * 2;
@@ -718,7 +734,10 @@ public class ImgToExcelController extends RootController {
                     .setExportFileSize(exportFileSize_Img.isSelected())
                     .setExportFileNum(exportFileNum_Img.isSelected())
                     .setInsertImgType(insertImgType_Img.getValue())
+                    .setLinkRightName(linkRightName_Img.getText())
+                    .setLinkNameType(linkNameType_Img.getValue())
                     .setExportTitle(exportTitle_Img.isSelected())
+                    .setLinkLeftName(linkLeftName_Img.getText())
                     .setOutExcelType(excelType_Img.getText())
                     .setInPath(excelPath_Img.getText())
                     .setNoImg(noImg_Img.isSelected())
@@ -901,6 +920,29 @@ public class ImgToExcelController extends RootController {
                 .setCancelButton(cancel_Img)
                 .setMassageLabel(log_Img);
         taskNotSuccess(taskBean, text_taskCancelled);
+    }
+
+    /**
+     * 插入图片类型选项监听
+     */
+    @FXML
+    private void insertImgTypAction() {
+        linkHBox_Img.setVisible(!insertType_img.equals(insertImgType_Img.getValue()));
+    }
+
+    /**
+     * 超链接名称类型选项监听
+     */
+    @FXML
+    private void linkNameType() {
+        String linkNameType = linkNameType_Img.getValue();
+        if (linkName_unified.equals(linkNameType)) {
+            linkName_Img.setText("超链接名称:");
+            linkRightHBox_Img.setVisible(false);
+        } else if (linkName_splice.equals(linkNameType)) {
+            linkName_Img.setText("超链接左侧名称:");
+            linkRightHBox_Img.setVisible(true);
+        }
     }
 
 }

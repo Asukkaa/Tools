@@ -14,14 +14,14 @@ import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.ExcelConfig;
 
 import java.io.*;
+import java.net.URI;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
 import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.Utils.ExcelUtils.*;
-import static priv.koishi.tools.Utils.FileUtils.checkFileExists;
-import static priv.koishi.tools.Utils.FileUtils.getFileType;
+import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.changeDisableNodes;
 
 /**
@@ -94,6 +94,7 @@ public class ImgToExcelService {
                     titles = buildTitles(exportFileNum, exportFileSize, true);
                     rowNum = buildExcelTitle(sheet, startRowNum, titles, startCellNum);
                 }
+                boolean showFileType = taskBean.isShowFileType();
                 for (int i = 0; i < fileNum; i++) {
                     if (isCancelled()) {
                         closeStream();
@@ -107,21 +108,21 @@ public class ImgToExcelService {
                     if (exportFileNum && !exportFileSize) {
                         // 附加项只导出文件数量
                         startCell.setCellValue(fileNumBean.getGroupNumber());
-                        maxCellNum = buildImgExcel(imgList, excelConfig, startCellNum + 1, rowNum, sheet, row, maxCellNum);
+                        maxCellNum = buildImgExcel(imgList, excelConfig, startCellNum + 1, rowNum, sheet, row, maxCellNum, showFileType);
                     } else if (!exportFileNum && exportFileSize) {
                         // 附加项只导出文件大小
                         startCell.setCellValue(fileNumBean.getFileUnitSize());
-                        maxCellNum = buildImgExcel(imgList, excelConfig, startCellNum + 1, rowNum, sheet, row, maxCellNum);
+                        maxCellNum = buildImgExcel(imgList, excelConfig, startCellNum + 1, rowNum, sheet, row, maxCellNum, showFileType);
                     } else if (exportFileNum) {
                         // 附加项导出文件数量和大小
                         startCell.setCellValue(fileNumBean.getGroupNumber());
                         int sizeCellNum = startCellNum + 1;
                         Cell sizeCell = row.createCell(sizeCellNum);
                         sizeCell.setCellValue(fileNumBean.getFileUnitSize());
-                        maxCellNum = buildImgExcel(imgList, excelConfig, sizeCellNum + 1, rowNum, sheet, row, maxCellNum);
+                        maxCellNum = buildImgExcel(imgList, excelConfig, sizeCellNum + 1, rowNum, sheet, row, maxCellNum, showFileType);
                     } else {
                         // 不导出附加项
-                        maxCellNum = buildImgExcel(imgList, excelConfig, startCellNum, rowNum, sheet, row, maxCellNum);
+                        maxCellNum = buildImgExcel(imgList, excelConfig, startCellNum, rowNum, sheet, row, maxCellNum, showFileType);
                     }
                     updateMessage(text_printing + (i + 1) + "/" + fileNum + text_data);
                     updateProgress(i + 1, fileNum);
@@ -150,7 +151,7 @@ public class ImgToExcelService {
      * @return 最大列号
      */
     private static int buildImgExcel(List<String> imgList, ExcelConfig excelConfig, int cellNum, int rowNum,
-                                     Sheet sheet, Row row, int maxCellNum) throws IOException {
+                                     Sheet sheet, Row row, int maxCellNum, boolean showFileType) throws IOException {
         if (CollectionUtils.isEmpty(imgList)) {
             Cell cell = getOrCreateCell(cellNum, row);
             if (excelConfig.isNoImg()) {
@@ -161,8 +162,8 @@ public class ImgToExcelService {
             String insertImgType = excelConfig.getInsertImgType();
             if (insertType_img.equals(insertImgType)) {
                 maxCellNum = insertImg(imgList, excelConfig, cellNum, rowNum, sheet, maxCellNum);
-            } else if (insertType_link.equals(insertImgType)) {
-                maxCellNum = insertImgLink(imgList, excelConfig, cellNum, rowNum, sheet, maxCellNum);
+            } else if (insertType_relativePath.equals(insertImgType) || insertType_absolutePath.equals(insertImgType)) {
+                maxCellNum = insertImgLink(imgList, excelConfig, cellNum, rowNum, sheet, maxCellNum, showFileType, insertImgType);
             }
         }
         return maxCellNum;
@@ -179,7 +180,8 @@ public class ImgToExcelService {
      * @param maxCellNum  最大列号
      * @return 插入图片后的最大列号
      */
-    private static int insertImg(List<String> imgList, ExcelConfig excelConfig, int cellNum, int rowNum, Sheet sheet, int maxCellNum) throws IOException {
+    private static int insertImg(List<String> imgList, ExcelConfig excelConfig, int cellNum, int rowNum, Sheet sheet,
+                                 int maxCellNum) throws IOException {
         CreationHelper helper = sxssfWorkbook.getCreationHelper();
         Drawing<?> drawing = sheet.createDrawingPatriarch();
         for (String i : imgList) {
@@ -221,24 +223,42 @@ public class ImgToExcelService {
     /**
      * 插入图片超链接
      *
-     * @param imgList     图片路径
-     * @param excelConfig excel导出设置
-     * @param cellNum     图片起始列号
-     * @param rowNum      图片的起始行号
-     * @param sheet       当前表
-     * @param maxCellNum  最大列号
+     * @param imgList       图片路径
+     * @param excelConfig   excel导出设置
+     * @param cellNum       图片起始列号
+     * @param rowNum        图片的起始行号
+     * @param sheet         当前表
+     * @param maxCellNum    最大列号
+     * @param showFileType  是否显示文件类型
+     * @param insertImgType 插入图片类型
      * @return 插入图片后的最大列号
      */
-    private static int insertImgLink(List<String> imgList, ExcelConfig excelConfig, int cellNum, int rowNum, Sheet sheet, int maxCellNum){
+    private static int insertImgLink(List<String> imgList, ExcelConfig excelConfig, int cellNum, int rowNum, Sheet sheet,
+                                     int maxCellNum, boolean showFileType, String insertImgType) throws IOException {
         CreationHelper helper = sxssfWorkbook.getCreationHelper();
+        String linkNameType = excelConfig.getLinkNameType();
+        String linkLeftName = excelConfig.getLinkLeftName();
+        String linkRightName = excelConfig.getLinkRightName();
+        String outPath = excelConfig.getOutPath();
         for (String imgPath : imgList) {
             // 创建超链接单元格
             Cell cell = getOrCreateCell(cellNum, sheet.getRow(rowNum));
             // 创建文件超链接
             Hyperlink hyperlink = helper.createHyperlink(HyperlinkType.FILE);
+            File imgFile = new File(imgPath);
             // 路径转换为URI格式
-            String uriPath = String.valueOf(new File(imgPath).toURI());
+            String uriPath;
             // 设置超链接路径
+            if (insertType_absolutePath.equals(insertImgType)) {
+                uriPath = String.valueOf(imgFile.toURI());
+            } else {
+                // 文件所在目录
+                URI excelUri = new File(outPath).toURI();
+                URI imgUri = imgFile.toURI();
+                // 计算相对路径
+                URI relativePath = excelUri.relativize(imgUri);
+                uriPath = String.valueOf(relativePath);
+            }
             hyperlink.setAddress(uriPath);
             // 应用超链接到单元格
             cell.setHyperlink(hyperlink);
@@ -251,8 +271,20 @@ public class ImgToExcelService {
             cell.setCellStyle(style);
             // 设置列宽
             sheet.setColumnWidth(cellNum, 256 * (excelConfig.getImgWidth() * 2));
-            // 更新单元格位置
-            cell.setCellValue("查看图片: " + new File(imgPath).getName());
+            String fileName;
+            if (showFileType) {
+                fileName = imgFile.getName();
+            } else {
+                fileName = getFileName(imgFile);
+            }
+            if (StringUtils.isNotBlank(linkLeftName)) {
+                if (linkName_unified.equals(linkNameType)) {
+                    fileName = linkLeftName;
+                } else if (linkName_splice.equals(linkNameType)) {
+                    fileName = linkLeftName + fileName + linkRightName;
+                }
+            }
+            cell.setCellValue(fileName);
             cellNum++;
             maxCellNum = Math.max(maxCellNum, cellNum);
         }

@@ -129,7 +129,8 @@ public class ReadDataService {
                             .setShowFileType(taskBean.isShowFileType())
                             .setSubCode(taskBean.getSubCode());
                     FileNumVo fileNumVo = matchGroupData(fileNumBeanList, inFileList, fileConfig);
-                    updateMessage(text_allHave + fileNumVo.getDataNum() + text_group + fileNumVo.getImgNum() + text_picture + text_totalFileSize + fileNumVo.getImgSize());
+                    updateMessage(text_allHave + fileNumVo.getDataNum() + text_group + fileNumVo.getImgNum() +
+                            text_picture + text_totalFileSize + fileNumVo.getImgSize());
                 } else {
                     updateMessage(text_allHave + fileNumBeanList.size() + text_data);
                 }

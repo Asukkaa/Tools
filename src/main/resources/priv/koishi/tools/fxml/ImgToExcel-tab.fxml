@@ -30,19 +30,6 @@
 
             <Label prefHeight="25" fx:id="excelTypeLabel_Img" text="导出excel文件类型:"/>
             <Label prefHeight="25" fx:id="excelType_Img" text="选取excel模板后决定"/>
-
-            <Label prefHeight="25" text="图片插入类型:"/>
-            <ChoiceBox fx:id="insertImgType_Img" prefHeight="25" prefWidth="120" style="-fx-cursor: hand">
-                <items>
-                    <FXCollections fx:factory="observableArrayList">
-                        <String fx:value="插入图片"/>
-                        <String fx:value="插入图片超链接"/>
-                    </FXCollections>
-                </items>
-                <value>
-                    <String fx:value="插入图片"/>
-                </value>
-            </ChoiceBox>
         </HBox>
 
         <HBox spacing="10">
@@ -100,6 +87,49 @@
             <CheckBox fx:id="exportTitle_Img" prefHeight="25" style="-fx-cursor: hand" text="导出表头"/>
             <CheckBox fx:id="exportFileNum_Img" prefHeight="25" style="-fx-cursor: hand" text="导出文件数量"/>
             <CheckBox fx:id="exportFileSize_Img" prefHeight="25" style="-fx-cursor: hand" text="导出每项数据的文件大小"/>
+        </HBox>
+
+        <HBox spacing="10">
+            <Label prefHeight="25" text="图片插入类型:"/>
+            <ChoiceBox fx:id="insertImgType_Img" prefHeight="25" prefWidth="160" onAction="#insertImgTypAction"
+                       style="-fx-cursor: hand">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="插入图片"/>
+                        <String fx:value="插入图片相对路径超链接"/>
+                        <String fx:value="插入图片绝对路径超链接"/>
+                    </FXCollections>
+                </items>
+                <value>
+                    <String fx:value="插入图片"/>
+                </value>
+            </ChoiceBox>
+
+            <HBox fx:id="linkHBox_Img" visible="false" spacing="10">
+                <Label prefHeight="25" text="超链接名称类型:"/>
+                <ChoiceBox fx:id="linkNameType_Img" prefHeight="25" prefWidth="160" onAction="#linkNameType"
+                           style="-fx-cursor: hand">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="使用统一名称"/>
+                            <String fx:value="在文件名两侧拼接名称"/>
+                        </FXCollections>
+                    </items>
+                    <value>
+                        <String fx:value="在文件名两侧拼接名称"/>
+                    </value>
+                </ChoiceBox>
+
+                <HBox spacing="10">
+                    <Label fx:id="linkName_Img" prefHeight="25" text="超链接左侧名称:"/>
+                    <TextField fx:id="linkLeftName_Img" prefHeight="20" prefWidth="120"/>
+                </HBox>
+
+                <HBox fx:id="linkRightHBox_Img" visible="false" spacing="10">
+                    <Label prefHeight="25" text="超链接右侧名称:"/>
+                    <TextField fx:id="linkRightName_Img" prefHeight="20" prefWidth="120"/>
+                </HBox>
+            </HBox>
         </HBox>
 
         <HBox fx:id="fileNumberHBox_Img" spacing="10">
