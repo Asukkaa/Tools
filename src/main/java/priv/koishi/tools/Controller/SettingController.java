@@ -85,6 +85,15 @@ public class SettingController extends RootController {
         double tableWidth = stageWidth * 0.5;
         tableView_Set.setMaxWidth(tableWidth);
         tableView_Set.setPrefWidth(tableWidth);
+        bindPrefWidthProperty();
+    }
+
+    /**
+     * 设置列表各列宽度
+     */
+    private void bindPrefWidthProperty() {
+        tabName_Set.prefWidthProperty().bind(tableView_Set.widthProperty().multiply(0.7));
+        activationCheckBox_Set.prefWidthProperty().bind(tableView_Set.widthProperty().multiply(0.3));
     }
 
     /**
@@ -229,14 +238,6 @@ public class SettingController extends RootController {
     }
 
     /**
-     * 设置列表各列宽度
-     */
-    private void bindPrefWidthProperty() {
-        tabName_Set.prefWidthProperty().bind(tableView_Set.widthProperty().multiply(0.7));
-        activationCheckBox_Set.prefWidthProperty().bind(tableView_Set.widthProperty().multiply(0.3));
-    }
-
-    /**
      * 初始化各功能页面入口
      */
     private void buildTabsData(MainLoadedEvent event) {
@@ -364,8 +365,6 @@ public class SettingController extends RootController {
      */
     @FXML
     private void initialize() throws IOException {
-        // 设置列表各列宽度
-        bindPrefWidthProperty();
         // 设置是否加载最后一次功能配置信息初始值
         setLoadLastConfigs();
         // 获取最大运行内存并展示
@@ -374,6 +373,7 @@ public class SettingController extends RootController {
         setToolTip();
         // 初始化各功能页面入口
         EventBus.subscribe(MainLoadedEvent.class, this::buildTabsData);
+        Platform.runLater(this::adaption);
     }
 
     /**

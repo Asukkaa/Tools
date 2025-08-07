@@ -163,6 +163,7 @@ public class FileRenameController extends RootController {
         regionRightAlignment(fileNumberHBox_Re, tableWidth, fileNumber_Re);
         regionRightAlignment(tipHBox_Re, tableWidth, tip_Re);
         regionRightAlignment(warnHBox_Re, tableWidth, warn_Re);
+        bindPrefWidthProperty();
     }
 
     /**
@@ -947,13 +948,13 @@ public class FileRenameController extends RootController {
         setToolTip();
         // 设置文本输入框提示
         setPromptText();
-        // 设置javafx单元格宽度
-        bindPrefWidthProperty();
         // 给输入框添加内容变化监听
         textFieldChangeListener();
         // 设置初始配置值为上次配置值
         setLastConfig();
         Platform.runLater(() -> {
+            // 组件自适应宽高
+            adaption();
             // 设置要防重复点击的组件
             setDisableNodes();
             // 绑定表格数据

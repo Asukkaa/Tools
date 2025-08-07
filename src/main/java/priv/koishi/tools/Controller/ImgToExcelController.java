@@ -190,6 +190,19 @@ public class ImgToExcelController extends RootController {
         tableView_Img.setPrefWidth(tableWidth);
         regionRightAlignment(fileNumberHBox_Img, tableWidth, fileNumber_Img);
         regionRightAlignment(tipHBox_Img, tableWidth, tip_Img);
+        bindPrefWidthProperty();
+    }
+
+    /**
+     * 设置javafx单元格宽度
+     */
+    private void bindPrefWidthProperty() {
+        index_Img.prefWidthProperty().bind(tableView_Img.widthProperty().multiply(0.1));
+        groupId_Img.prefWidthProperty().bind(tableView_Img.widthProperty().multiply(0.1));
+        groupName_Img.prefWidthProperty().bind(tableView_Img.widthProperty().multiply(0.1));
+        groupNumber_Img.prefWidthProperty().bind(tableView_Img.widthProperty().multiply(0.1));
+        fileName_Img.prefWidthProperty().bind(tableView_Img.widthProperty().multiply(0.5));
+        fileUnitSize_Img.prefWidthProperty().bind(tableView_Img.widthProperty().multiply(0.1));
     }
 
     /**
@@ -577,18 +590,6 @@ public class ImgToExcelController extends RootController {
     }
 
     /**
-     * 设置javafx单元格宽度
-     */
-    private void tableViewAdaption() {
-        index_Img.prefWidthProperty().bind(tableView_Img.widthProperty().multiply(0.1));
-        groupId_Img.prefWidthProperty().bind(tableView_Img.widthProperty().multiply(0.1));
-        groupName_Img.prefWidthProperty().bind(tableView_Img.widthProperty().multiply(0.1));
-        groupNumber_Img.prefWidthProperty().bind(tableView_Img.widthProperty().multiply(0.1));
-        fileName_Img.prefWidthProperty().bind(tableView_Img.widthProperty().multiply(0.5));
-        fileUnitSize_Img.prefWidthProperty().bind(tableView_Img.widthProperty().multiply(0.1));
-    }
-
-    /**
      * 获取要识别的图片格式
      *
      * @return 需要识别的图片格式
@@ -630,13 +631,13 @@ public class ImgToExcelController extends RootController {
         setToolTip();
         // 设置文本输入框提示
         setPromptText();
-        // 设置javafx单元格宽度
-        tableViewAdaption();
         // 给输入框添加内容变化监听
         textFieldChangeListener();
         // 设置初始配置值为上次配置值
         setLastConfig();
         Platform.runLater(() -> {
+            // 组件自适应宽高
+            adaption();
             // 设置要防重复点击的组件
             setDisableNodes();
             // 绑定表格数据

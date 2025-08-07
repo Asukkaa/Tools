@@ -261,6 +261,24 @@ public class AutoClickController extends RootController implements MousePosition
         if (err_Click != null) {
             regionRightAlignment(logHBox_Click, tableWidth, err_Click);
         }
+        bindPrefWidthProperty();
+    }
+
+    /**
+     * 设置javafx单元格宽度
+     */
+    private void bindPrefWidthProperty() {
+        index_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.05));
+        name_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.15));
+        startX_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.1));
+        startY_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.1));
+        endX_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.1));
+        endY_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.1));
+        clickTime_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.07));
+        clickNum_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.07));
+        clickInterval_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.07));
+        waitTime_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.1));
+        type_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.09));
     }
 
     /**
@@ -341,23 +359,6 @@ public class AutoClickController extends RootController implements MousePosition
         preparationRunTimeDefault = prop.getProperty(key_defaultPreparationRunTime);
         preparationRecordTimeDefault = prop.getProperty(key_defaultPreparationRecordTime);
         input.close();
-    }
-
-    /**
-     * 设置javafx单元格宽度
-     */
-    private void bindPrefWidthProperty() {
-        index_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.05));
-        name_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.15));
-        startX_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.1));
-        startY_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.1));
-        endX_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.1));
-        endY_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.1));
-        clickTime_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.07));
-        clickNum_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.07));
-        clickInterval_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.07));
-        waitTime_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.1));
-        type_Click.prefWidthProperty().bind(tableView_Click.widthProperty().multiply(0.09));
     }
 
     /**
@@ -1121,8 +1122,6 @@ public class AutoClickController extends RootController implements MousePosition
      */
     @FXML
     private void initialize() throws IOException {
-        // 设置javafx单元格宽度
-        bindPrefWidthProperty();
         // 读取配置文件
         getConfig();
         // 初始化浮窗
@@ -1145,6 +1144,8 @@ public class AutoClickController extends RootController implements MousePosition
             logHBox_Click.getChildren().remove(err_Click);
         }
         Platform.runLater(() -> {
+            // 组件自适应宽高
+            adaption();
             // 获取鼠标坐标监听器
             MousePositionListener.getInstance().addListener(this);
             // 设置要防重复点击的组件
@@ -1204,21 +1205,23 @@ public class AutoClickController extends RootController implements MousePosition
             getConfig();
             List<FileChooser.ExtensionFilter> extensionFilters = new ArrayList<>(Collections.singleton(new FileChooser.ExtensionFilter("Perfect Mouse Control", "*.pmc")));
             Window window = ((Node) actionEvent.getSource()).getScene().getWindow();
-            File selectedFile = creatFileChooser(window, inFilePath, extensionFilters, text_selectAutoFile);
+            List<File> selectedFile = creatFilesChooser(window, inFilePath, extensionFilters, text_selectAutoFile);
             if (selectedFile != null) {
-                inFilePath = selectedFile.getPath();
+                inFilePath = selectedFile.getFirst().getPath();
                 updateProperties(configFile_Click, key_inFilePath, new File(inFilePath).getParent());
-                // 读取 JSON 文件并转换为 List<ClickPositionBean>
-                ObjectMapper objectMapper = new ObjectMapper();
-                File jsonFile = new File(inFilePath);
-                List<ClickPositionBean> clickPositionBeans;
-                try {
-                    clickPositionBeans = objectMapper.readValue(jsonFile, objectMapper.getTypeFactory().constructCollectionType(List.class, ClickPositionBean.class));
-                } catch (MismatchedInputException | JsonParseException e) {
-                    throw new IOException(text_loadAutoClick + inFilePath + text_formatError);
+                for (File file : selectedFile) {
+                    // 读取 JSON 文件并转换为 List<ClickPositionBean>
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    File jsonFile = new File(file.getPath());
+                    List<ClickPositionBean> clickPositionBeans;
+                    try {
+                        clickPositionBeans = objectMapper.readValue(jsonFile, objectMapper.getTypeFactory().constructCollectionType(List.class, ClickPositionBean.class));
+                    } catch (MismatchedInputException | JsonParseException e) {
+                        throw new IOException(text_loadAutoClick + inFilePath + text_formatError);
+                    }
+                    // 将自动流程添加到列表中
+                    addAutoClickPositions(clickPositionBeans);
                 }
-                // 将自动流程添加到列表中
-                addAutoClickPositions(clickPositionBeans);
             }
         }
     }

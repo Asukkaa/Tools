@@ -161,6 +161,19 @@ public class FileNumToExcelController extends RootController {
         tableView_Num.setMaxWidth(tableWidth);
         tableView_Num.setPrefWidth(tableWidth);
         regionRightAlignment(fileNumberHBox_Num, tableWidth, fileNumber_Num);
+        bindPrefWidthProperty();
+    }
+
+    /**
+     * 设置javafx单元格宽度
+     */
+    private void bindPrefWidthProperty() {
+        index_Num.prefWidthProperty().bind(tableView_Num.widthProperty().multiply(0.1));
+        groupId_Num.prefWidthProperty().bind(tableView_Num.widthProperty().multiply(0.1));
+        groupName_Num.prefWidthProperty().bind(tableView_Num.widthProperty().multiply(0.1));
+        groupNumber_Num.prefWidthProperty().bind(tableView_Num.widthProperty().multiply(0.1));
+        fileName_Num.prefWidthProperty().bind(tableView_Num.widthProperty().multiply(0.5));
+        fileUnitSize_Num.prefWidthProperty().bind(tableView_Num.widthProperty().multiply(0.1));
     }
 
     /**
@@ -443,18 +456,6 @@ public class FileNumToExcelController extends RootController {
     }
 
     /**
-     * 设置javafx单元格宽度
-     */
-    private void tableViewAdaption() {
-        index_Num.prefWidthProperty().bind(tableView_Num.widthProperty().multiply(0.1));
-        groupId_Num.prefWidthProperty().bind(tableView_Num.widthProperty().multiply(0.1));
-        groupName_Num.prefWidthProperty().bind(tableView_Num.widthProperty().multiply(0.1));
-        groupNumber_Num.prefWidthProperty().bind(tableView_Num.widthProperty().multiply(0.1));
-        fileName_Num.prefWidthProperty().bind(tableView_Num.widthProperty().multiply(0.5));
-        fileUnitSize_Num.prefWidthProperty().bind(tableView_Num.widthProperty().multiply(0.1));
-    }
-
-    /**
      * 界面初始化
      *
      * @throws IOException io异常
@@ -468,12 +469,14 @@ public class FileNumToExcelController extends RootController {
         // 设置文本输入框提示
         setPromptText();
         // 设置javafx单元格宽度
-        tableViewAdaption();
+        bindPrefWidthProperty();
         // 给输入框添加内容变化监听
         textFieldChangeListener();
         // 设置初始配置值为上次配置值
         setLastConfig();
         Platform.runLater(() -> {
+            // 组件自适应宽高
+            adaption();
             // 设置要防重复点击的组件
             setDisableNodes();
             // 绑定表格数据
