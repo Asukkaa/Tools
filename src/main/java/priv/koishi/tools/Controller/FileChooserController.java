@@ -230,16 +230,19 @@ public class FileChooserController extends RootController {
      * 拖拽释放行为
      *
      * @param dragEvent 拖拽事件
-     * @throws IOException io异常
      */
     @FXML
-    private void handleDrop(DragEvent dragEvent) throws IOException {
+    private void handleDrop(DragEvent dragEvent) {
         List<File> files = dragEvent.getDragboard().getFiles();
         File file = files.getFirst();
-        if (file.isFile()) {
-            selectFile(file.getParentFile());
-        } else if (file.isDirectory()) {
-            selectFile(file);
+        try {
+            if (file.isFile()) {
+                selectFile(file.getParentFile());
+            } else if (file.isDirectory()) {
+                selectFile(file);
+            }
+        } catch (Exception e) {
+            showExceptionAlert(e);
         }
     }
 

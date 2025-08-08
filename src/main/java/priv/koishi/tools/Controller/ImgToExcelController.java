@@ -669,14 +669,17 @@ public class ImgToExcelController extends RootController {
      * 拖拽释放行为
      *
      * @param dragEvent 拖拽释放事件
-     * @throws Exception 未选择需要识别的图片格式
      */
     @FXML
-    private void handleDrop(DragEvent dragEvent) throws Exception {
+    private void handleDrop(DragEvent dragEvent) {
         List<File> files = dragEvent.getDragboard().getFiles();
         File file = files.getFirst();
         excelPath_Img.setText(file.getPath());
-        addInData();
+        try {
+            addInData();
+        } catch (Exception e) {
+            showExceptionAlert(e);
+        }
     }
 
     /**

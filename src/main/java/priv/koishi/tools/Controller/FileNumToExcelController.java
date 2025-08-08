@@ -508,14 +508,17 @@ public class FileNumToExcelController extends RootController {
      * 拖拽释放行为
      *
      * @param dragEvent 拖拽释放事件
-     * @throws IOException 读取文件失败、文件不存在
      */
     @FXML
-    private void handleDrop(DragEvent dragEvent) throws IOException {
+    private void handleDrop(DragEvent dragEvent) {
         List<File> files = dragEvent.getDragboard().getFiles();
         File file = files.getFirst();
         excelPath_Num.setText(file.getPath());
-        addInData();
+        try {
+            addInData();
+        } catch (IOException e) {
+            showExceptionAlert(e);
+        }
     }
 
     /**

@@ -1273,25 +1273,28 @@ public class AutoClickController extends RootController implements MousePosition
      * 拖拽释放行为
      *
      * @param dragEvent 拖拽事件
-     * @throws IOException 导入自动化流程文件内容格式不正确、导入文件缺少关键数据
      */
     @FXML
-    private void handleDrop(DragEvent dragEvent) throws IOException {
+    private void handleDrop(DragEvent dragEvent) {
         if (autoClickTask == null && !recordClicking) {
             List<File> files = dragEvent.getDragboard().getFiles();
             List<ClickPositionBean> clickPositionBeans = new ArrayList<>();
-            for (File file : files) {
-                // 读取 JSON 文件并转换为 List<ClickPositionBean>
-                ObjectMapper objectMapper = new ObjectMapper();
-                File jsonFile = new File(file.getPath());
-                try {
-                    clickPositionBeans.addAll(objectMapper.readValue(jsonFile, objectMapper.getTypeFactory().constructCollectionType(List.class, ClickPositionBean.class)));
-                } catch (IOException e) {
-                    throw new IOException(text_loadAutoClick + inFilePath + text_formatError);
+            try {
+                for (File file : files) {
+                    // 读取 JSON 文件并转换为 List<ClickPositionBean>
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    File jsonFile = new File(file.getPath());
+                    try {
+                        clickPositionBeans.addAll(objectMapper.readValue(jsonFile, objectMapper.getTypeFactory().constructCollectionType(List.class, ClickPositionBean.class)));
+                    } catch (IOException e) {
+                        throw new IOException(text_loadAutoClick + inFilePath + text_formatError);
+                    }
                 }
+                // 将自动流程添加到列表中
+                addAutoClickPositions(clickPositionBeans);
+            } catch (IOException e) {
+                showExceptionAlert(e);
             }
-            // 将自动流程添加到列表中
-            addAutoClickPositions(clickPositionBeans);
         }
     }
 

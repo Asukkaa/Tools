@@ -438,11 +438,9 @@ public class FileNameToExcelController extends RootController {
      * 拖拽释放行为
      *
      * @param dragEvent 拖拽事件
-     * @throws Exception io异常
      */
     @FXML
-    private void handleDrop(DragEvent dragEvent) throws Exception {
-        removeAll();
+    private void handleDrop(DragEvent dragEvent) {
         List<File> files = dragEvent.getDragboard().getFiles();
         List<String> filterExtensionList = getFilterExtensionList(filterFileType_Name);
         File file = files.getFirst();
@@ -455,7 +453,11 @@ public class FileNameToExcelController extends RootController {
         String filePath = file.getPath();
         inPath_Name.setText(filePath);
         addToolTip(filePath, inPath_Name);
-        addInData(readAllFiles(fileConfig));
+        try {
+            addInData(readAllFiles(fileConfig));
+        } catch (Exception e) {
+            showExceptionAlert(e);
+        }
     }
 
     /**
