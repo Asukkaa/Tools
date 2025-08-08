@@ -199,11 +199,11 @@ public class MoveFileController extends RootController {
     private void setToolTip() {
         addToolTip(tip_learButton, clearButton_MV);
         addToolTip(tip_exportButton, moveButton_MV);
+        addToolTip(tip_addFileType, addFileType_MV);
         addToolTip(tip_outPathButton, outPathButton_MV);
         addToolTip(tip_openDirectory, openDirectory_MV);
         addToolTip(tip_reselectButton, addFileButton_MV);
         addToolTip(tip_filterFileType, filterFileType_MV);
-        addToolTip(tip_directoryNameType, addFileType_MV);
     }
 
     /**

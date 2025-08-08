@@ -37,17 +37,17 @@
                 </value>
             </ChoiceBox>
 
-            <Label prefHeight="25" text="添加数据设置:"/>
+            <Label prefHeight="25" text="文件读取设置:"/>
             <ChoiceBox fx:id="addFileType_Re" prefHeight="25" prefWidth="100" onAction="#addFileTypeAction"
                        style="-fx-cursor: hand">
                 <items>
                     <FXCollections fx:factory="observableArrayList">
-                        <String fx:value="添加文件"/>
-                        <String fx:value="添加文件夹"/>
+                        <String fx:value="读取文件"/>
+                        <String fx:value="读取文件夹"/>
                     </FXCollections>
                 </items>
                 <value>
-                    <String fx:value="添加文件夹"/>
+                    <String fx:value="读取文件夹"/>
                 </value>
             </ChoiceBox>
 

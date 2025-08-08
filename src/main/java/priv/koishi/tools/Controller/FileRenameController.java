@@ -688,6 +688,7 @@ public class FileRenameController extends RootController {
         addToolTip(tip_subCodeSelect, subCode_Re);
         addToolTip(tip_learButton, clearButton_Re);
         addToolTip(tip_renameValue, renameValue_Re);
+        addToolTip(tip_addFileType, addFileType_Re);
         addToolTip(tip_hideFileType, hideFileType_Re);
         addToolTip(tip_openDirectory, openDirectory_Re);
         addToolTip(tip_differenceCode, differenceCode_Re);

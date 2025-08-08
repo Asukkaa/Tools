@@ -587,6 +587,8 @@ public class CommonFinals {
 
     public static final String tip_linkName = "填写后将会修改超链接名称，为空则默认使用文件名称";
 
+    public static final String tip_addFileType = "用来选择读取文件还是文件夹，列表为空时才能修改";
+
     public static final String tip_nextGcType = """
             下次启动程序将会按照此设置项设置垃圾回收（GC）方式
             G1GC：分区回收，低延迟与吞吐量平衡
@@ -752,9 +754,9 @@ public class CommonFinals {
 
     public static final String text_readData = "正在读取数据";
 
-    public static final String text_addFile = "添加文件";
+    public static final String text_addFile = "读取文件";
 
-    public static final String text_addDirectory = "添加文件夹";
+    public static final String text_addDirectory = "读取文件夹";
 
     public static final String text_noHideFile = "不查询隐藏文件";
 
