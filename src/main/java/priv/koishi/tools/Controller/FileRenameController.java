@@ -45,6 +45,7 @@ import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.TaskUtils.bindingTaskNode;
 import static priv.koishi.tools.Utils.TaskUtils.taskUnbind;
 import static priv.koishi.tools.Utils.UiUtils.*;
+import static priv.koishi.tools.Utils.UiUtils.setControlLastConfig;
 
 /**
  * 按指定规则批量重命名文件页面控制器
@@ -205,6 +206,7 @@ public class FileRenameController extends RootController {
             prop.put(key_lastOpenDirectory, openDirectoryValue);
             String renameTypeValue = renameType_Re.getValue();
             prop.put(key_lastRenameType, renameTypeValue);
+            prop.put(key_addFileType, addFileType_Re.getValue());
             // 根据文件重命名依据设置保存配置信息
             saveLastConfigByRenameType(prop, renameTypeValue);
             OutputStream output = checkRunningOutputStream(configFile_Rename);
@@ -301,6 +303,170 @@ public class FileRenameController extends RootController {
     }
 
     /**
+     * 读取配置文件
+     *
+     * @throws IOException io异常
+     */
+    private void getConfig() throws IOException {
+        Properties prop = new Properties();
+        InputStream input = checkRunningInputStream(configFile_Rename);
+        prop.load(input);
+        inFilePath = prop.getProperty(key_inFilePath);
+        excelInPath = prop.getProperty(key_excelInPath);
+        defaultReadRow = Integer.parseInt(prop.getProperty(key_defaultReadRow));
+        defaultReadCell = Integer.parseInt(prop.getProperty(key_defaultReadCell));
+        defaultStartNameNum = Integer.parseInt(prop.getProperty(key_defaultStartNameNum));
+        input.close();
+    }
+
+    /**
+     * 设置初始配置值为上次配置值
+     *
+     * @throws IOException io异常
+     */
+    private void setLastConfig() throws IOException {
+        Properties prop = new Properties();
+        InputStream input = checkRunningInputStream(configFile_Rename);
+        prop.load(input);
+        if (activation.equals(prop.getProperty(key_loadLastConfig))) {
+            setControlLastConfig(inPath_Re, prop, key_lastInPath);
+            setControlLastConfig(renameType_Re, prop, key_lastRenameType);
+            setControlLastConfig(hideFileType_Re, prop, key_lastHideFileType);
+            setControlLastConfig(renameFileType_Re, prop, key_renameFileType);
+            setControlLastConfig(openDirectory_Re, prop, key_lastOpenDirectory);
+            setControlLastConfig(filterFileType_Re, prop, key_lastFilterFileType);
+            setControlLastConfig(renameFileTypeText_Re, prop, key_renameFileTypeText);
+            setControlLastConfig(directoryNameType_Re, prop, key_lastDirectoryNameType);
+            // 根据重命名类型设置上次配置值
+            setLastConfigByRenameType(prop);
+        }
+        input.close();
+    }
+
+    /**
+     * 根据重命名类型设置上次配置值
+     *
+     * @param prop 配置文件
+     */
+    private void setLastConfigByRenameType(Properties prop) {
+        switch (prop.getProperty(key_lastRenameType)) {
+            case text_codeRename: {
+                // 按编号规则重命名设置上次配置值
+                setLastConfigByCodeRename(prop);
+                break;
+            }
+            case text_strRename: {
+                // 按指定字符重命名设置上次配置值
+                setLastConfigByStrRename(prop);
+                break;
+            }
+            case text_excelRename: {
+                // 根据excel重命名设置上次配置值
+                setLastConfigByExcelRename(prop);
+                break;
+            }
+        }
+    }
+
+    /**
+     * 按编号规则重命名设置上次配置值
+     *
+     * @param prop 配置文件
+     */
+    private void setLastConfigByCodeRename(Properties prop) {
+        setControlLastConfig(tag_Re, prop, key_lastTag);
+        setControlLastConfig(subCode_Re, prop, key_lastSubCode);
+        setControlLastConfig(nameNum_Re, prop, key_lastNameNum);
+        setControlLastConfig(addSpace_Re, prop, key_lastAddSpace);
+        setControlLastConfig(startName_Re, prop, key_lastStartName);
+        setControlLastConfig(startSize_Re, prop, key_lastStartSize);
+        setControlLastConfig(addFileType_Re, prop, key_addFileType);
+        setControlLastConfig(differenceCode_Re, prop, key_lastDifferenceCode);
+    }
+
+    /**
+     * 按指定字符重命名设置上次配置值
+     *
+     * @param prop 配置文件
+     */
+    private void setLastConfigByStrRename(Properties prop) {
+        setControlLastConfig(targetStr_Re, prop, key_lastTargetStr);
+        String lastTargetStr = prop.getProperty(key_lastTargetStr);
+        if (text_specifyString.equals(lastTargetStr)) {
+            // 指定字符串设置上次配置值
+            setLastConfigBySpecifyString(prop);
+        } else if (text_specifyIndex.equals(lastTargetStr)) {
+            // 指定字符位置设置上次配置值
+            setLastConfigBySpecifyIndex(prop);
+        }
+    }
+
+    /**
+     * 指定字符串设置上次配置值
+     *
+     * @param prop 配置文件
+     */
+    private void setLastConfigBySpecifyString(Properties prop) {
+        setControlLastConfig(renameValue_Re, prop, key_lastRenameValue);
+        setControlLastConfig(renameBehavior_Re, prop, key_lastRenameBehavior);
+        String lastRenameBehavior = prop.getProperty(key_lastRenameBehavior);
+        if (text_replace.equals(lastRenameBehavior)) {
+            setControlLastConfig(renameStr_Re, prop, key_lastRenameStr);
+        } else if (text_bothSides.equals(lastRenameBehavior)) {
+            // 处理左侧字符设置上次配置值
+            setLastConfigByOneSide(prop, left_Re, key_lastLeft, leftBehavior_Re, key_lastLeftBehavior, leftValue_Re, key_lastLeftValue);
+            // 处理右侧字符设置上次配置值
+            setLastConfigByOneSide(prop, right_Re, key_lastRight, rightBehavior_Re, key_lastRightBehavior, rightValue_Re, key_lastRightValue);
+        }
+    }
+
+    /**
+     * 处理单侧字符设置上次配置值
+     *
+     * @param prop            配置文件
+     * @param side            填写匹配方向设置参数的文本输入框
+     * @param sideKey         填写匹配方向设置参数的文本输入框上次填写值对应的key
+     * @param sideBehavior    当前侧重命名行为下拉框
+     * @param sideBehaviorKey 下拉框上次选项对应的key
+     * @param sideValue       当前侧替换或插入字符文本输入框
+     * @param valueKey        当前侧替换或插入字符文本输入框上次填写值对应的key
+     */
+    private void setLastConfigByOneSide(Properties prop, TextField side, String sideKey, ChoiceBox<String> sideBehavior, String sideBehaviorKey, TextField sideValue, String valueKey) {
+        setControlLastConfig(side, prop, sideKey);
+        setControlLastConfig(sideBehavior, prop, sideBehaviorKey);
+        String lastLeftBehavior = prop.getProperty(sideBehaviorKey);
+        if (text_insert.equals(lastLeftBehavior) || text_replace.equals(lastLeftBehavior)) {
+            setControlLastConfig(sideValue, prop, valueKey);
+        }
+    }
+
+    /**
+     * 指定字符位置设置上次配置值
+     *
+     * @param prop 配置文件
+     */
+    private void setLastConfigBySpecifyIndex(Properties prop) {
+        setControlLastConfig(renameValue_Re, prop, key_lastRenameValue);
+        setControlLastConfig(renameBehavior_Re, prop, key_lastRenameBehavior);
+        if (text_replace.equals(prop.getProperty(key_lastRenameBehavior))) {
+            setControlLastConfig(renameStr_Re, prop, key_lastRenameStr);
+        }
+    }
+
+    /**
+     * 根据excel重命名设置上次配置值
+     *
+     * @param prop 配置文件
+     */
+    private void setLastConfigByExcelRename(Properties prop) {
+        setControlLastConfig(maxRow_Re, prop, key_lastMaxRow);
+        setControlLastConfig(readRow_Re, prop, key_lastReadRow);
+        setControlLastConfig(readCell_Re, prop, key_lastReadCell);
+        setControlLastConfig(sheetName_Re, prop, key_lastSheetName);
+        setControlLastConfig(excelPath_Re, prop, key_lastExcelPath);
+    }
+
+    /**
      * 添加数据渲染列表
      *
      * @param inFileList 要读取的文件
@@ -340,6 +506,7 @@ public class FileRenameController extends RootController {
                 }
                 readFileTask = null;
             });
+            addFileType_Re.setDisable(true);
             if (!readFileTask.isRunning()) {
                 Thread.ofVirtual()
                         .name("readFileTask-vThread" + tabId)
@@ -496,169 +663,6 @@ public class FileRenameController extends RootController {
             }
         }
         taskBean.setConfiguration(stringRenameConfig);
-    }
-
-    /**
-     * 读取配置文件
-     *
-     * @throws IOException io异常
-     */
-    private void getConfig() throws IOException {
-        Properties prop = new Properties();
-        InputStream input = checkRunningInputStream(configFile_Rename);
-        prop.load(input);
-        inFilePath = prop.getProperty(key_inFilePath);
-        excelInPath = prop.getProperty(key_excelInPath);
-        defaultReadRow = Integer.parseInt(prop.getProperty(key_defaultReadRow));
-        defaultReadCell = Integer.parseInt(prop.getProperty(key_defaultReadCell));
-        defaultStartNameNum = Integer.parseInt(prop.getProperty(key_defaultStartNameNum));
-        input.close();
-    }
-
-    /**
-     * 设置初始配置值为上次配置值
-     *
-     * @throws IOException io异常
-     */
-    private void setLastConfig() throws IOException {
-        Properties prop = new Properties();
-        InputStream input = checkRunningInputStream(configFile_Rename);
-        prop.load(input);
-        if (activation.equals(prop.getProperty(key_loadLastConfig))) {
-            setControlLastConfig(inPath_Re, prop, key_lastInPath);
-            setControlLastConfig(renameType_Re, prop, key_lastRenameType);
-            setControlLastConfig(hideFileType_Re, prop, key_lastHideFileType);
-            setControlLastConfig(renameFileType_Re, prop, key_renameFileType);
-            setControlLastConfig(openDirectory_Re, prop, key_lastOpenDirectory);
-            setControlLastConfig(filterFileType_Re, prop, key_lastFilterFileType);
-            setControlLastConfig(renameFileTypeText_Re, prop, key_renameFileTypeText);
-            setControlLastConfig(directoryNameType_Re, prop, key_lastDirectoryNameType);
-            // 根据重命名类型设置上次配置值
-            setLastConfigByRenameType(prop);
-        }
-        input.close();
-    }
-
-    /**
-     * 根据重命名类型设置上次配置值
-     *
-     * @param prop 配置文件
-     */
-    private void setLastConfigByRenameType(Properties prop) {
-        switch (prop.getProperty(key_lastRenameType)) {
-            case text_codeRename: {
-                // 按编号规则重命名设置上次配置值
-                setLastConfigByCodeRename(prop);
-                break;
-            }
-            case text_strRename: {
-                // 按指定字符重命名设置上次配置值
-                setLastConfigByStrRename(prop);
-                break;
-            }
-            case text_excelRename: {
-                // 根据excel重命名设置上次配置值
-                setLastConfigByExcelRename(prop);
-                break;
-            }
-        }
-    }
-
-    /**
-     * 按编号规则重命名设置上次配置值
-     *
-     * @param prop 配置文件
-     */
-    private void setLastConfigByCodeRename(Properties prop) {
-        setControlLastConfig(tag_Re, prop, key_lastTag);
-        setControlLastConfig(subCode_Re, prop, key_lastSubCode);
-        setControlLastConfig(nameNum_Re, prop, key_lastNameNum);
-        setControlLastConfig(addSpace_Re, prop, key_lastAddSpace);
-        setControlLastConfig(startName_Re, prop, key_lastStartName);
-        setControlLastConfig(startSize_Re, prop, key_lastStartSize);
-        setControlLastConfig(differenceCode_Re, prop, key_lastDifferenceCode);
-    }
-
-    /**
-     * 按指定字符重命名设置上次配置值
-     *
-     * @param prop 配置文件
-     */
-    private void setLastConfigByStrRename(Properties prop) {
-        setControlLastConfig(targetStr_Re, prop, key_lastTargetStr);
-        String lastTargetStr = prop.getProperty(key_lastTargetStr);
-        if (text_specifyString.equals(lastTargetStr)) {
-            // 指定字符串设置上次配置值
-            setLastConfigBySpecifyString(prop);
-        } else if (text_specifyIndex.equals(lastTargetStr)) {
-            // 指定字符位置设置上次配置值
-            setLastConfigBySpecifyIndex(prop);
-        }
-    }
-
-    /**
-     * 指定字符串设置上次配置值
-     *
-     * @param prop 配置文件
-     */
-    private void setLastConfigBySpecifyString(Properties prop) {
-        setControlLastConfig(renameValue_Re, prop, key_lastRenameValue);
-        setControlLastConfig(renameBehavior_Re, prop, key_lastRenameBehavior);
-        String lastRenameBehavior = prop.getProperty(key_lastRenameBehavior);
-        if (text_replace.equals(lastRenameBehavior)) {
-            setControlLastConfig(renameStr_Re, prop, key_lastRenameStr);
-        } else if (text_bothSides.equals(lastRenameBehavior)) {
-            // 处理左侧字符设置上次配置值
-            setLastConfigByOneSide(prop, left_Re, key_lastLeft, leftBehavior_Re, key_lastLeftBehavior, leftValue_Re, key_lastLeftValue);
-            // 处理右侧字符设置上次配置值
-            setLastConfigByOneSide(prop, right_Re, key_lastRight, rightBehavior_Re, key_lastRightBehavior, rightValue_Re, key_lastRightValue);
-        }
-    }
-
-    /**
-     * 处理单侧字符设置上次配置值
-     *
-     * @param prop            配置文件
-     * @param side            填写匹配方向设置参数的文本输入框
-     * @param sideKey         填写匹配方向设置参数的文本输入框上次填写值对应的key
-     * @param sideBehavior    当前侧重命名行为下拉框
-     * @param sideBehaviorKey 下拉框上次选项对应的key
-     * @param sideValue       当前侧替换或插入字符文本输入框
-     * @param valueKey        当前侧替换或插入字符文本输入框上次填写值对应的key
-     */
-    private void setLastConfigByOneSide(Properties prop, TextField side, String sideKey, ChoiceBox<String> sideBehavior, String sideBehaviorKey, TextField sideValue, String valueKey) {
-        setControlLastConfig(side, prop, sideKey);
-        setControlLastConfig(sideBehavior, prop, sideBehaviorKey);
-        String lastLeftBehavior = prop.getProperty(sideBehaviorKey);
-        if (text_insert.equals(lastLeftBehavior) || text_replace.equals(lastLeftBehavior)) {
-            setControlLastConfig(sideValue, prop, valueKey);
-        }
-    }
-
-    /**
-     * 指定字符位置设置上次配置值
-     *
-     * @param prop 配置文件
-     */
-    private void setLastConfigBySpecifyIndex(Properties prop) {
-        setControlLastConfig(renameValue_Re, prop, key_lastRenameValue);
-        setControlLastConfig(renameBehavior_Re, prop, key_lastRenameBehavior);
-        if (text_replace.equals(prop.getProperty(key_lastRenameBehavior))) {
-            setControlLastConfig(renameStr_Re, prop, key_lastRenameStr);
-        }
-    }
-
-    /**
-     * 根据excel重命名设置上次配置值
-     *
-     * @param prop 配置文件
-     */
-    private void setLastConfigByExcelRename(Properties prop) {
-        setControlLastConfig(maxRow_Re, prop, key_lastMaxRow);
-        setControlLastConfig(readRow_Re, prop, key_lastReadRow);
-        setControlLastConfig(readCell_Re, prop, key_lastReadCell);
-        setControlLastConfig(sheetName_Re, prop, key_lastSheetName);
-        setControlLastConfig(excelPath_Re, prop, key_lastExcelPath);
     }
 
     /**
@@ -970,6 +974,9 @@ public class FileRenameController extends RootController {
             tableViewDragRow(tableView_Re);
             // 构建右键菜单
             setTableViewContextMenu();
+            if (text_addFile.equals(addFileType_Re.getValue())) {
+                setPathLabel(inPath_Re, "");
+            }
             // 监听列表数据变化
             tableView_Re.getItems().addListener((ListChangeListener<FileBean>) change ->
                     addFileType_Re.setDisable(!tableView_Re.getItems().isEmpty()));
@@ -1031,24 +1038,36 @@ public class FileRenameController extends RootController {
      * 拖拽释放行为
      *
      * @param dragEvent 拖拽释放事件
-     * @throws Exception 未选择需要识别的图片格式
      */
     @FXML
-    private void handleDrop(DragEvent dragEvent) throws Exception {
-        removeAll();
+    private void handleDrop(DragEvent dragEvent) {
         List<File> files = dragEvent.getDragboard().getFiles();
-        List<String> filterExtensionList = getFilterExtensionList(filterFileType_Re);
-        File file = files.getFirst();
-        FileConfig fileConfig = new FileConfig();
-        fileConfig.setShowDirectoryName(directoryNameType_Re.getValue())
-                .setShowHideFile(hideFileType_Re.getValue())
-                .setFilterExtensionList(filterExtensionList)
-                .setInFile(file);
-        List<File> inFileList = readAllFiles(fileConfig);
-        String filePath = file.getPath();
-        inPath_Re.setText(filePath);
-        addToolTip(filePath, inPath_Re);
-        addInData(inFileList);
+        File firstFile = files.getFirst();
+        List<File> inFileList = new ArrayList<>();
+        try {
+            for (File file : files) {
+                if (firstFile.isFile()) {
+                    if (file.isFile()) {
+                        addFileType_Re.setValue(text_addFile);
+                        inFileList.add(file);
+                    }
+                    setPathLabel(inPath_Re, "");
+                } else if (firstFile.isDirectory()) {
+                    addFileType_Re.setValue(text_addDirectory);
+                    List<String> filterExtensionList = getFilterExtensionList(filterFileType_Re);
+                    FileConfig fileConfig = new FileConfig();
+                    fileConfig.setShowDirectoryName(directoryNameType_Re.getValue())
+                            .setShowHideFile(hideFileType_Re.getValue())
+                            .setFilterExtensionList(filterExtensionList)
+                            .setInFile(file);
+                    inFileList = readAllFiles(fileConfig);
+                    setPathLabel(inPath_Re, file.getPath());
+                }
+            }
+            addInData(inFileList);
+        } catch (Exception e) {
+            showExceptionAlert(e);
+        }
     }
 
     /**
@@ -1058,14 +1077,9 @@ public class FileRenameController extends RootController {
      */
     @FXML
     private void acceptDrop(DragEvent dragEvent) {
-        List<File> files = dragEvent.getDragboard().getFiles();
-        files.forEach(file -> {
-            if (file.isDirectory()) {
-                // 接受拖放
-                dragEvent.acceptTransferModes(TransferMode.COPY);
-                dragEvent.consume();
-            }
-        });
+        // 接受拖放
+        dragEvent.acceptTransferModes(TransferMode.COPY);
+        dragEvent.consume();
     }
 
     /**
@@ -1470,6 +1484,23 @@ public class FileRenameController extends RootController {
     @FXML
     private void renameFileTypeAction() {
         renameFileTypeText_Re.setVisible(text_replace.equals(renameFileType_Re.getValue()));
+    }
+
+    /**
+     * 添加数据设置下拉框监听
+     */
+    @FXML
+    public void addFileTypeAction() {
+        if (text_addDirectory.equals(addFileType_Re.getValue())) {
+            reselectButton_Re.setVisible(true);
+            fileButton_Re.setText(text_selectReadFolder);
+            directoryNameType_Re.setDisable(false);
+        } else {
+            reselectButton_Re.setVisible(false);
+            fileButton_Re.setText(text_selectReadFile);
+            directoryNameType_Re.setValue(text_onlyFile);
+            directoryNameType_Re.setDisable(true);
+        }
     }
 
 }

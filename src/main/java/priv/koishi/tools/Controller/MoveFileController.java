@@ -1,6 +1,7 @@
 package priv.koishi.tools.Controller;
 
 import javafx.application.Platform;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -146,7 +147,7 @@ public class MoveFileController extends RootController {
             InputStream input = checkRunningInputStream(configFile_MV);
             Properties prop = new Properties();
             prop.load(input);
-            prop.put(key_lastDirectoryNameType, addFileType_MV.getValue());
+            prop.put(key_addFileType, addFileType_MV.getValue());
             String openDirectoryValue = openDirectory_MV.isSelected() ? activation : unActivation;
             prop.put(key_lastOpenDirectory, openDirectoryValue);
             prop.put(key_lastFilterFileType, filterFileType_MV.getText());
@@ -228,18 +229,6 @@ public class MoveFileController extends RootController {
     }
 
     /**
-     * 更新UI状态
-     */
-    private void updateUI() {
-        // 更新文件数量
-        updateTableViewSizeText(tableView_MV, fileNumber_MV, text_file);
-        // 禁用添加类型选项
-        if (CollectionUtils.isNotEmpty(tableView_MV.getItems())) {
-            addFileType_MV.setDisable(true);
-        }
-    }
-
-    /**
      * 创建任务参数
      *
      * @param files 要处理的文件列表
@@ -289,6 +278,9 @@ public class MoveFileController extends RootController {
             tableViewDragRow(tableView_MV);
             // 构建右键菜单
             tableViewContextMenu(tableView_MV, fileNumber_MV);
+            // 监听列表数据变化
+            tableView_MV.getItems().addListener((ListChangeListener<FileBean>) change ->
+                    addFileType_MV.setDisable(!tableView_MV.getItems().isEmpty()));
         });
     }
 
@@ -305,9 +297,10 @@ public class MoveFileController extends RootController {
         bindingTaskNode(readFileTask, taskBean);
         readFileTask.setOnSucceeded(event -> {
             taskUnbind(taskBean);
-            // 更新UI状态
-            updateUI();
+            // 更新文件数量
+            updateTableViewSizeText(tableView_MV, fileNumber_MV, text_file);
         });
+        addFileType_MV.setDisable(true);
         if (!readFileTask.isRunning()) {
             Thread.ofVirtual()
                     .name("readFileTask-vThread" + tabId)
@@ -332,7 +325,6 @@ public class MoveFileController extends RootController {
     @FXML
     private void removeAll() {
         removeTableViewData(tableView_MV, fileNumber_MV, log_MV);
-        addFileType_MV.setDisable(false);
     }
 
     /**
@@ -411,8 +403,10 @@ public class MoveFileController extends RootController {
             bindingTaskNode(addFileTask, taskBean);
             addFileTask.setOnSucceeded(event -> {
                 taskUnbind(taskBean);
-                updateUI();
+                // 更新文件数量
+                updateTableViewSizeText(tableView_MV, fileNumber_MV, text_file);
             });
+            addFileType_MV.setDisable(true);
             Thread.ofVirtual()
                     .name("addFileTask-vThread" + tabId)
                     .start(addFileTask);
@@ -433,8 +427,10 @@ public class MoveFileController extends RootController {
                 bindingTaskNode(removeSameFileTask, taskBean);
                 removeSameFileTask.setOnSucceeded(event -> {
                     taskUnbind(taskBean);
-                    updateUI();
+                    // 更新文件数量
+                    updateTableViewSizeText(tableView_MV, fileNumber_MV, text_file);
                 });
+                addFileType_MV.setDisable(true);
                 Thread.ofVirtual()
                         .name("removeSameFileTask-vThread" + tabId)
                         .start(removeSameFileTask);

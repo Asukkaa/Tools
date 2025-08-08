@@ -834,6 +834,10 @@ public class CommonFinals {
 
     public static final String text_imgPath = "图片地址：";
 
+    public static final String text_selectReadFile = "选择要读取的文件";
+
+    public static final String text_selectReadFolder = "选择要读取的文件夹";
+
     public static final String id_settingTab = "settingTab";
 
     public static final String id_aboutTab = "aboutTab";
@@ -1045,6 +1049,8 @@ public class CommonFinals {
     public static final String key_linkLeftName = "linkLeftName";
 
     public static final String key_linkRightName = "linkRightName";
+
+    public static final String key_addFileType = "addFileType";
 
     public static final String mouseButton_primary = "鼠标左键点击";
 
