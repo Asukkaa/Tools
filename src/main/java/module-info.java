@@ -26,4 +26,6 @@ module priv.koishi.tools {
     exports priv.koishi.tools.Configuration;
     exports priv.koishi.tools.Finals;
     exports priv.koishi.tools.Bean.Vo;
+    exports priv.koishi.tools.Callback;
+    opens priv.koishi.tools.Callback to javafx.fxml;
 }

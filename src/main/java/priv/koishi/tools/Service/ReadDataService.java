@@ -34,6 +34,7 @@ import static priv.koishi.tools.Service.FileRenameService.buildRename;
 import static priv.koishi.tools.Utils.CommonUtils.matchGroupData;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.changeDisableNodes;
+import static priv.koishi.tools.Utils.UiUtils.machGroup;
 
 /**
  * 读取数据线程任务类
@@ -50,13 +51,37 @@ public class ReadDataService {
      * @param fileConfig 文件读取设置
      * @return 文件列表
      */
-    public static Task<List<File>> readAllFilesTask(TaskBean<FileBean> taskBean, FileConfig fileConfig) {
+    public static Task<List<File>> readAllFilesTask(TaskBean<?> taskBean, FileConfig fileConfig) {
         return new Task<>() {
             @Override
             protected List<File> call() throws IOException {
                 changeDisableNodes(taskBean, true);
                 updateMessage(text_readData);
                 return readAllFiles(fileConfig);
+            }
+        };
+    }
+
+    /**
+     * 读取所有文件并匹配分组信息
+     *
+     * @param fileConfig 文件读取设置
+     * @return 文件列表
+     */
+    public static Task<List<File>> readMachGroup(TaskBean<FileNumBean> taskBean, FileConfig fileConfig) {
+        return new Task<>() {
+            @Override
+            protected List<File> call() throws Exception {
+                updateMessage(text_readData);
+                changeDisableNodes(taskBean, true);
+                List<FileNumBean> fileNumList = taskBean.getBeanList();
+                List<File> files = readAllFiles(fileConfig);
+                // 列表中有excel分组后再匹配数据
+                if (CollectionUtils.isNotEmpty(fileNumList)) {
+                    machGroup(fileConfig, fileNumList, files, taskBean.getTableView(),
+                            taskBean.getTabId(), taskBean.getMassageLabel(), taskBean.getComparatorTableColumn());
+                }
+                return files;
             }
         };
     }

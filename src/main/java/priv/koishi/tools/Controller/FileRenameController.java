@@ -965,7 +965,9 @@ public class FileRenameController extends RootController {
     private void startReadFilesTask(FileConfig fileConfig) {
         TaskBean<FileBean> taskBean = creatTaskBean(null);
         Task<List<File>> readFileTask = readAllFilesTask(taskBean, fileConfig);
+        bindingTaskNode(readFileTask, taskBean);
         readFileTask.setOnSucceeded(event -> {
+            taskUnbind(taskBean);
             try {
                 addInData(readFileTask.getValue());
             } catch (Exception e) {

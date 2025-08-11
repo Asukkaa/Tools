@@ -711,15 +711,17 @@ public class UiUtils {
      * @param comparatorTableColumn 需要设置排序规则的列
      * @throws Exception 未查询到符合条件的数据
      */
-    public static void machGroup(FileConfig fileConfig, ObservableList<FileNumBean> fileNumList, List<? extends File> inFileList, TableView<FileNumBean> tableView,
-                                 String tabId, Label fileNumber, TableColumn<FileNumBean, String> comparatorTableColumn) throws Exception {
+    public static void machGroup(FileConfig fileConfig, List<FileNumBean> fileNumList, List<? extends File> inFileList,
+                                 TableView<FileNumBean> tableView, String tabId, Label fileNumber, TableColumn<FileNumBean,
+                    String> comparatorTableColumn) throws Exception {
         FileNumVo fileNumVo = matchGroupData(fileNumList, inFileList, fileConfig);
         TaskBean<FileNumBean> taskBean = new TaskBean<>();
         taskBean.setComparatorTableColumn(comparatorTableColumn)
                 .setTableView(tableView)
                 .setTabId(tabId);
         showReadExcelData(fileNumList, taskBean);
-        fileNumber.setText(text_allHave + fileNumVo.getDataNum() + text_group + fileNumVo.getImgNum() + text_picture + text_totalFileSize + fileNumVo.getImgSize());
+        Platform.runLater(() -> fileNumber.setText(text_allHave + fileNumVo.getDataNum() + text_group +
+                fileNumVo.getImgNum() + text_picture + text_totalFileSize + fileNumVo.getImgSize()));
     }
 
     /**

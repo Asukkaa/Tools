@@ -32,6 +32,13 @@ import static priv.koishi.tools.Utils.UiUtils.*;
  */
 public class FileRenameService {
 
+    /**
+     * 读取拖拽的文件
+     *
+     * @param taskBean 线程任务参数
+     * @param files    拖拽的文件列表
+     * @return 读取到的文件列表
+     */
     public static Task<List<File>> readDropFiles(TaskBean<FileBean> taskBean, List<File> files) {
         return new Task<>() {
             @Override

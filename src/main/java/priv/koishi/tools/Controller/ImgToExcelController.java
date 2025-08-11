@@ -21,6 +21,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Bean.TaskBean;
+import priv.koishi.tools.Callback.ReadGroupFileCallback;
 import priv.koishi.tools.Configuration.ExcelConfig;
 import priv.koishi.tools.Configuration.FileConfig;
 import priv.koishi.tools.Service.ImgToExcelService;
@@ -39,7 +40,7 @@ import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.MainApplication.mainScene;
 import static priv.koishi.tools.MainApplication.mainStage;
 import static priv.koishi.tools.Service.ImgToExcelService.buildImgGroupExcel;
-import static priv.koishi.tools.Service.ReadDataService.readExcel;
+import static priv.koishi.tools.Service.ReadDataService.*;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
@@ -342,30 +343,13 @@ public class ImgToExcelController extends RootController {
     }
 
     /**
-     * 读取文件数据
-     *
-     * @param selectedFile        要读取的文件
-     * @param filterExtensionList 要过滤的文件格式
-     * @throws Exception 未查询到符合条件的数据
-     */
-    private void addInFile(File selectedFile, List<String> filterExtensionList) throws Exception {
-        FileConfig fileConfig = getInFileList(selectedFile, filterExtensionList);
-        // 列表中有excel分组后再匹配数据
-        ObservableList<FileNumBean> fileNumList = tableView_Img.getItems();
-        if (CollectionUtils.isNotEmpty(fileNumList)) {
-            machGroup(fileConfig, fileNumList, inFileList, tableView_Img, tabId, fileNumber_Img, fileUnitSize_Img);
-        }
-    }
-
-    /**
      * 查询要处理的文件
      *
      * @param selectedFile        要读取的文件
      * @param filterExtensionList 要过滤的文件格式
      * @return 文件读取设置
-     * @throws IOException 文件不存在
      */
-    private FileConfig getInFileList(File selectedFile, List<String> filterExtensionList) throws IOException {
+    private FileConfig creatFileConfig(File selectedFile, List<String> filterExtensionList) {
         FileConfig fileConfig = new FileConfig();
         String maxImgValue = maxImgNum_Img.getText();
         int maxImgNum = 0;
@@ -379,81 +363,109 @@ public class ImgToExcelController extends RootController {
                 .setSubCode(subCode_Img.getText())
                 .setMaxImgNum(maxImgNum)
                 .setInFile(selectedFile);
-        inFileList = readAllFiles(fileConfig);
         return fileConfig;
-    }
-
-    /**
-     * 更新要处理的文件
-     *
-     * @throws Exception 未选择需要识别的图片格式
-     */
-    private void updateInFileList() throws Exception {
-        String selectedFilePath = inPath_Img.getText();
-        if (StringUtils.isNotBlank(selectedFilePath)) {
-            getInFileList(new File(selectedFilePath), getFilterExtension());
-        }
     }
 
     /**
      * 添加数据渲染列表
      *
-     * @return 读取excel任务线程
+     * @param callback 读取文件回调
      * @throws Exception 未选择需要识别的图片格式
      */
-    private Task<List<FileNumBean>> addInData() throws Exception {
+    private void addInData(ReadGroupFileCallback callback) throws Exception {
         if (readExcelTask == null) {
             removeAll();
+            TaskBean<FileNumBean> taskBean = creatTaskBean();
             // 渲染表格前需要更新一下读取的文件
-            updateInFileList();
-            String excelPath = excelPath_Img.getText();
-            excelType_Img.setText(getFileType(new File(excelPath)));
-            // 组装数据
-            String maxImgValue = maxImgNum_Img.getText();
-            int maxImgNum = 0;
-            if (StringUtils.isNotBlank(maxImgValue)) {
-                maxImgNum = Integer.parseInt(maxImgValue);
+            Task<List<File>> readAllFilesTask;
+            if (StringUtils.isNotBlank(inFilePath)) {
+                FileConfig fileConfig = creatFileConfig(new File(inFilePath), getFilterExtension());
+                readAllFilesTask = readAllFilesTask(taskBean, fileConfig);
+            } else {
+                readAllFilesTask = null;
             }
-            ExcelConfig excelConfig = new ExcelConfig();
-            excelConfig.setReadCellNum(setDefaultIntValue(readCell_Img, defaultReadCell, 0, null))
-                    .setReadRowNum(setDefaultIntValue(readRow_Img, defaultReadRow, 0, null))
-                    .setMaxRowNum(setDefaultIntValue(maxRow_Img, -1, 1, null))
-                    .setSheetName(sheetName_Img.getText())
-                    .setInPath(excelPath_Img.getText());
-            TaskBean<FileNumBean> taskBean = new TaskBean<>();
-            taskBean.setShowFileType(showFileType_Img.isSelected())
-                    .setComparatorTableColumn(fileUnitSize_Img)
-                    .setSubCode(subCode_Img.getText())
-                    .setMassageLabel(fileNumber_Img)
-                    .setProgressBar(progressBar_Img)
-                    .setDisableNodes(disableNodes)
-                    .setTableView(tableView_Img)
-                    .setInFileList(inFileList)
-                    .setMaxImgNum(maxImgNum)
-                    .setTabId(tabId);
-            // 获取Task任务
-            readExcelTask = readExcel(excelConfig, taskBean);
-            // 绑定带进度条的线程
-            bindingTaskNode(readExcelTask, taskBean);
-            readExcelTask.setOnSucceeded(event -> {
-                taskUnbind(taskBean);
-                readExcelTask = null;
-            });
-            readExcelTask.setOnFailed(event -> {
-                taskUnbind(taskBean);
-                taskNotSuccess(taskBean, text_taskFailed);
-                // 获取抛出的异常
-                Throwable ex = readExcelTask.getException();
-                readExcelTask = null;
-                throw new RuntimeException(ex);
-            });
-            if (!readExcelTask.isRunning()) {
+            if (readAllFilesTask != null) {
+                bindingTaskNode(readAllFilesTask, taskBean);
+                readAllFilesTask.setOnSucceeded(event -> {
+                    inFileList = readAllFilesTask.getValue();
+                    taskUnbind(taskBean);
+                    startReadExcelTask(taskBean, callback);
+                });
                 Thread.ofVirtual()
-                        .name("readExcelTask-vThread" + tabId)
-                        .start(readExcelTask);
+                        .name("readAllFilesTask-vThread" + tabId)
+                        .start(readAllFilesTask);
+            } else {
+                startReadExcelTask(taskBean, callback);
             }
         }
-        return readExcelTask;
+    }
+
+    /**
+     * 执行读取excel任务
+     *
+     * @param taskBean 任务参数
+     * @param callback 读取成功后的回调函数
+     */
+    private void startReadExcelTask(TaskBean<FileNumBean> taskBean, ReadGroupFileCallback callback) {
+        excelType_Img.setText(getFileType(new File(excelInPath)));
+        // 组装数据
+        ExcelConfig excelConfig = new ExcelConfig();
+        excelConfig.setReadCellNum(setDefaultIntValue(readCell_Img, defaultReadCell, 0, null))
+                .setReadRowNum(setDefaultIntValue(readRow_Img, defaultReadRow, 0, null))
+                .setMaxRowNum(setDefaultIntValue(maxRow_Img, -1, 1, null))
+                .setSheetName(sheetName_Img.getText())
+                .setInPath(excelInPath);
+        taskBean.setInFileList(inFileList);
+        // 获取Task任务
+        readExcelTask = readExcel(excelConfig, taskBean);
+        // 绑定带进度条的线程
+        bindingTaskNode(readExcelTask, taskBean);
+        readExcelTask.setOnSucceeded(event -> {
+            taskUnbind(taskBean);
+            readExcelTask = null;
+            if (callback != null) {
+                callback.onComplete();
+            }
+        });
+        readExcelTask.setOnFailed(event -> {
+            taskUnbind(taskBean);
+            taskNotSuccess(taskBean, text_taskFailed);
+            // 获取抛出的异常
+            Throwable ex = readExcelTask.getException();
+            readExcelTask = null;
+            inFileList = null;
+            throw new RuntimeException(ex);
+        });
+        if (!readExcelTask.isRunning()) {
+            Thread.ofVirtual()
+                    .name("readExcelTask-vThread" + tabId)
+                    .start(readExcelTask);
+        }
+    }
+
+    /**
+     * 创建TaskBean
+     *
+     * @return TaskBean
+     */
+    private TaskBean<FileNumBean> creatTaskBean() {
+        String maxImgValue = maxImgNum_Img.getText();
+        int maxImgNum = 0;
+        if (StringUtils.isNotBlank(maxImgValue)) {
+            maxImgNum = Integer.parseInt(maxImgValue);
+        }
+        TaskBean<FileNumBean> taskBean = new TaskBean<>();
+        taskBean.setShowFileType(showFileType_Img.isSelected())
+                .setComparatorTableColumn(fileUnitSize_Img)
+                .setSubCode(subCode_Img.getText())
+                .setMassageLabel(fileNumber_Img)
+                .setProgressBar(progressBar_Img)
+                .setDisableNodes(disableNodes)
+                .setTableView(tableView_Img)
+                .setInFileList(inFileList)
+                .setMaxImgNum(maxImgNum)
+                .setTabId(tabId);
+        return taskBean;
     }
 
     /**
@@ -661,7 +673,19 @@ public class ImgToExcelController extends RootController {
             // 更新所选文件路径显示
             inFilePath = updatePathLabel(selectedFile.getPath(), inFilePath, key_inFilePath, inPath_Img, configFile_Img);
             // 读取文件数据
-            addInFile(selectedFile, getFilterExtension());
+            FileConfig fileConfig = creatFileConfig(selectedFile, getFilterExtension());
+            TaskBean<FileNumBean> taskBean = creatTaskBean();
+            taskBean.setBeanList(tableView_Img.getItems())
+                    .setBindingMassageLabel(false);
+            Task<List<File>> readMachGroupTask = readMachGroup(taskBean, fileConfig);
+            bindingTaskNode(readMachGroupTask, taskBean);
+            readMachGroupTask.setOnSucceeded(event -> {
+                taskUnbind(taskBean);
+                inFileList = readMachGroupTask.getValue();
+            });
+            Thread.ofVirtual()
+                    .name("readMachGroupTask-vThread" + tabId)
+                    .start(readMachGroupTask);
         }
     }
 
@@ -676,7 +700,7 @@ public class ImgToExcelController extends RootController {
         File file = files.getFirst();
         excelPath_Img.setText(file.getPath());
         try {
-            addInData();
+            addInData(null);
         } catch (Exception e) {
             showExceptionAlert(e);
         }
@@ -724,8 +748,12 @@ public class ImgToExcelController extends RootController {
             if (StringUtils.isEmpty(inPath_Img.getText())) {
                 throw new Exception(text_filePathNull);
             }
-            if (StringUtils.isEmpty(excelPath_Img.getText())) {
+            String inFilePath = excelPath_Img.getText();
+            if (StringUtils.isEmpty(inFilePath)) {
                 throw new Exception(text_excelPathNull);
+            }
+            if (!new File(inFilePath).exists()) {
+                throw new Exception(text_directoryNotExists);
             }
             int readRowValue = setDefaultIntValue(readRow_Img, defaultReadRow, 0, null);
             ExcelConfig excelConfig = new ExcelConfig();
@@ -743,23 +771,20 @@ public class ImgToExcelController extends RootController {
                     .setExportTitle(exportTitle_Img.isSelected())
                     .setLinkLeftName(linkLeftName_Img.getText())
                     .setOutExcelType(excelType_Img.getText())
-                    .setInPath(excelPath_Img.getText())
                     .setNoImg(noImg_Img.isSelected())
-                    .setOutPath(outFilePath);
+                    .setOutPath(outFilePath)
+                    .setInPath(inFilePath);
             TaskBean<FileNumBean> taskBean = new TaskBean<>();
             taskBean.setDisableNodes(disableNodes)
                     .setProgressBar(progressBar_Img)
                     .setMassageLabel(log_Img);
             // 重新查询任务
-            readExcelTask = reselect();
-            readExcelTask.setOnSucceeded(event -> {
+            addInData(() -> {
                 taskBean.setShowFileType(showFileType_Img.isSelected())
-                        .setBeanList(readExcelTask.getValue())
+                        .setBeanList(tableView_Img.getItems())
                         .setCancelButton(cancel_Img)
                         .setTableView(tableView_Img)
                         .setTabId(tabId);
-                taskUnbind(taskBean);
-                readExcelTask = null;
                 // 校验匹配文件总大小是否能够正常导出
                 if (checkFileSize()) {
                     // 组装excel任务
@@ -819,14 +844,6 @@ public class ImgToExcelController extends RootController {
                     }
                 }
             });
-            readExcelTask.setOnFailed(event -> {
-                taskNotSuccess(taskBean, text_taskFailed);
-                // 获取抛出的异常
-                Throwable ex = readExcelTask.getException();
-                readExcelTask = null;
-                inFileList = null;
-                throw new RuntimeException(ex);
-            });
         }
     }
 
@@ -865,18 +882,17 @@ public class ImgToExcelController extends RootController {
         if (selectedFile != null) {
             // 更新所选文件路径显示
             excelInPath = updatePathLabel(selectedFile.getPath(), excelInPath, key_excelInPath, excelPath_Img, configFile_Img);
-            addInData();
+            addInData(null);
         }
     }
 
     /**
      * 重新查询按钮
      *
-     * @return 读取excel任务线程
      * @throws Exception excel模板文件位置为空、要读取的文件夹不存在
      */
     @FXML
-    private Task<List<FileNumBean>> reselect() throws Exception {
+    private void reselect() throws Exception {
         String inFilePath = excelPath_Img.getText();
         if (StringUtils.isEmpty(inFilePath)) {
             throw new Exception(text_excelPathNull);
@@ -885,7 +901,7 @@ public class ImgToExcelController extends RootController {
             throw new Exception(text_directoryNotExists);
         }
         updateLabel(log_Img, "");
-        return addInData();
+        addInData(null);
     }
 
     /**

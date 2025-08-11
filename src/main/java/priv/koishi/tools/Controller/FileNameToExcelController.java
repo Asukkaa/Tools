@@ -35,6 +35,7 @@ import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.MainApplication.mainScene;
 import static priv.koishi.tools.MainApplication.mainStage;
 import static priv.koishi.tools.Service.FileNameToExcelService.buildFileNameExcel;
+import static priv.koishi.tools.Service.ReadDataService.readAllFilesTask;
 import static priv.koishi.tools.Service.ReadDataService.readFile;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.TaskUtils.*;
@@ -376,6 +377,50 @@ public class FileNameToExcelController extends RootController {
     }
 
     /**
+     * 创建TaskBean
+     *
+     * @return TaskBean
+     */
+    private TaskBean<FileBean> creatTaskBean() {
+        ChoiceBox<String> sort = settingController.sort_Set;
+        CheckBox reverseSort = settingController.reverseSort_Set;
+        String sortValue = sort.getValue();
+        TaskBean<FileBean> taskBean = new TaskBean<>();
+        taskBean.setReverseSort(reverseSort.isSelected())
+                .setComparatorTableColumn(size_Name)
+                .setProgressBar(progressBar_Name)
+                .setMassageLabel(fileNumber_Name)
+                .setDisableNodes(disableNodes)
+                .setTableView(tableView_Name)
+                .setSortType(sortValue)
+                .setShowFileType(false)
+                .setTabId(tabId);
+        return taskBean;
+    }
+
+    /**
+     * 启动读取文件任务
+     *
+     * @param fileConfig 读取文件任务配置
+     */
+    private void startReadFilesTask(FileConfig fileConfig) {
+        TaskBean<FileBean> taskBean = creatTaskBean();
+        Task<List<File>> readFileTask = readAllFilesTask(taskBean, fileConfig);
+        bindingTaskNode(readFileTask, taskBean);
+        readFileTask.setOnSucceeded(event -> {
+            taskUnbind(taskBean);
+            try {
+                addInData(readFileTask.getValue());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+        Thread.ofVirtual()
+                .name("readFileTask-vThread" + tabId)
+                .start(readFileTask);
+    }
+
+    /**
      * 界面初始化
      *
      * @throws IOException io异常
@@ -430,7 +475,7 @@ public class FileNameToExcelController extends RootController {
             // 更新所选文件路径显示
             inFilePath = updatePathLabel(selectedFile.getPath(), inFilePath, key_inFilePath, inPath_Name, configFile_Name);
             // 读取数据
-            addInData(readAllFiles(fileConfig));
+            startReadFilesTask(fileConfig);
         }
     }
 
@@ -454,7 +499,7 @@ public class FileNameToExcelController extends RootController {
         inPath_Name.setText(filePath);
         addToolTip(filePath, inPath_Name);
         try {
-            addInData(readAllFiles(fileConfig));
+            startReadFilesTask(fileConfig);
         } catch (Exception e) {
             showExceptionAlert(e);
         }
@@ -596,7 +641,7 @@ public class FileNameToExcelController extends RootController {
                 .setShowHideFile(hideFileType_Name.getValue())
                 .setRecursion(recursion_Name.isSelected())
                 .setInFile(new File(inFilePath));
-        addInData(readAllFiles(fileConfig));
+        startReadFilesTask(fileConfig);
     }
 
     /**

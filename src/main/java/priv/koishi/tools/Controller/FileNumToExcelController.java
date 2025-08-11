@@ -18,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Bean.TaskBean;
+import priv.koishi.tools.Callback.ReadGroupFileCallback;
 import priv.koishi.tools.Configuration.ExcelConfig;
 import priv.koishi.tools.Configuration.FileConfig;
 
@@ -33,6 +34,7 @@ import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.MainApplication.mainScene;
 import static priv.koishi.tools.MainApplication.mainStage;
 import static priv.koishi.tools.Service.FileNumToExcelService.buildNameGroupNumExcel;
+import static priv.koishi.tools.Service.ReadDataService.readAllFilesTask;
 import static priv.koishi.tools.Service.ReadDataService.readExcel;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.TaskUtils.*;
@@ -229,7 +231,7 @@ public class FileNumToExcelController extends RootController {
      * @throws Exception 未查询到符合条件的数据
      */
     private void addInFile(File selectedFile, List<String> filterExtensionList) throws Exception {
-        FileConfig fileConfig = getInFileList(selectedFile, filterExtensionList);
+        FileConfig fileConfig = creatFileConfig(selectedFile, filterExtensionList);
         // 列表中有excel分组后再匹配数据
         ObservableList<FileNumBean> fileNumList = tableView_Num.getItems();
         if (CollectionUtils.isNotEmpty(fileNumList)) {
@@ -244,7 +246,7 @@ public class FileNumToExcelController extends RootController {
      * @param filterExtensionList 要过滤的文件格式
      * @return 文件读取设置
      */
-    private FileConfig getInFileList(File selectedFile, List<String> filterExtensionList) throws IOException {
+    private FileConfig creatFileConfig(File selectedFile, List<String> filterExtensionList) {
         FileConfig fileConfig = new FileConfig();
         fileConfig.setShowDirectoryName(directoryNameType_Num.getValue())
                 .setShowFileType(showFileType_Num.isSelected())
@@ -253,67 +255,102 @@ public class FileNumToExcelController extends RootController {
                 .setRecursion(recursion_Num.isSelected())
                 .setSubCode(subCode_Num.getText())
                 .setInFile(selectedFile);
-        inFileList = readAllFiles(fileConfig);
         return fileConfig;
     }
 
     /**
-     * 更新要处理的文件
+     * 创建TaskBean
      *
-     * @throws IOException 读取文件失败、文件不存在
+     * @return TaskBean
      */
-    private void updateInFileList() throws IOException {
-        String selectedFilePath = inPath_Num.getText();
-        if (StringUtils.isNotBlank(selectedFilePath)) {
-            getInFileList(new File(selectedFilePath), getFilterExtensionList(filterFileType_Num));
-        }
+    private TaskBean<FileNumBean> creatTaskBean() {
+        TaskBean<FileNumBean> taskBean = new TaskBean<>();
+        taskBean.setShowFileType(showFileType_Num.isSelected())
+                .setComparatorTableColumn(fileUnitSize_Num)
+                .setSubCode(subCode_Num.getText())
+                .setMassageLabel(fileNumber_Num)
+                .setProgressBar(progressBar_Num)
+                .setDisableNodes(disableNodes)
+                .setTableView(tableView_Num)
+                .setInFileList(inFileList)
+                .setTabId(tabId);
+        return taskBean;
     }
 
     /**
      * 添加数据渲染列表
      *
-     * @return 读取excel任务线程
-     * @throws IOException 读取文件失败、文件不存在
+     * @param callback 读取文件回调
      */
-    private Task<List<FileNumBean>> addInData() throws IOException {
+    private void addInData(ReadGroupFileCallback callback) {
         if (readExcelTask == null) {
             removeAll();
+            TaskBean<FileNumBean> taskBean = creatTaskBean();
             // 渲染表格前需要更新一下读取的文件
-            updateInFileList();
-            String excelPath = excelPath_Num.getText();
-            excelType_Num.setText(getFileType(new File(excelPath)));
-            // 组装数据
-            ExcelConfig excelConfig = new ExcelConfig();
-            excelConfig.setReadCellNum(setDefaultIntValue(readCell_Num, defaultReadCell, 0, null))
-                    .setReadRowNum(setDefaultIntValue(readRow_Num, defaultReadRow, 0, null))
-                    .setMaxRowNum(setDefaultIntValue(maxRow_Num, -1, 1, null))
-                    .setInPath(excelPath_Num.getText())
-                    .setSheetName(sheetName_Num.getText());
-            TaskBean<FileNumBean> taskBean = new TaskBean<>();
-            taskBean.setShowFileType(showFileType_Num.isSelected())
-                    .setComparatorTableColumn(fileUnitSize_Num)
-                    .setDisableNodes(disableNodes)
-                    .setSubCode(subCode_Num.getText())
-                    .setProgressBar(progressBar_Num)
-                    .setMassageLabel(fileNumber_Num)
-                    .setTableView(tableView_Num)
-                    .setInFileList(inFileList)
-                    .setTabId(tabId);
-            // 获取Task任务
-            readExcelTask = readExcel(excelConfig, taskBean);
-            readExcelTask.setOnSucceeded(event -> {
-                taskUnbind(taskBean);
-                readExcelTask = null;
-            });
-            // 绑定带进度条的线程
-            bindingTaskNode(readExcelTask, taskBean);
-            if (!readExcelTask.isRunning()) {
+            Task<List<File>> readAllFilesTask;
+            if (StringUtils.isNotBlank(inFilePath)) {
+                FileConfig fileConfig = creatFileConfig(new File(inFilePath), getFilterExtensionList(filterFileType_Num));
+                readAllFilesTask = readAllFilesTask(taskBean, fileConfig);
+            } else {
+                readAllFilesTask = null;
+            }
+            if (readAllFilesTask != null) {
+                bindingTaskNode(readAllFilesTask, taskBean);
+                readAllFilesTask.setOnSucceeded(event -> {
+                    inFileList = readAllFilesTask.getValue();
+                    taskUnbind(taskBean);
+                    startReadExcelTask(taskBean, callback);
+                });
                 Thread.ofVirtual()
-                        .name("readExcelTask-vThread" + tabId)
-                        .start(readExcelTask);
+                        .name("readAllFilesTask-vThread" + tabId)
+                        .start(readAllFilesTask);
+            } else {
+                startReadExcelTask(taskBean, callback);
             }
         }
-        return readExcelTask;
+    }
+
+    /**
+     * 执行读取excel任务
+     *
+     * @param taskBean 任务参数
+     * @param callback 读取成功后的回调函数
+     */
+    private void startReadExcelTask(TaskBean<FileNumBean> taskBean, ReadGroupFileCallback callback) {
+        excelType_Num.setText(getFileType(new File(excelInPath)));
+        // 组装数据
+        ExcelConfig excelConfig = new ExcelConfig();
+        excelConfig.setReadCellNum(setDefaultIntValue(readCell_Num, defaultReadCell, 0, null))
+                .setReadRowNum(setDefaultIntValue(readRow_Num, defaultReadRow, 0, null))
+                .setMaxRowNum(setDefaultIntValue(maxRow_Num, -1, 1, null))
+                .setSheetName(sheetName_Num.getText())
+                .setInPath(excelInPath);
+        taskBean.setInFileList(inFileList);
+        // 获取Task任务
+        readExcelTask = readExcel(excelConfig, taskBean);
+        // 绑定带进度条的线程
+        bindingTaskNode(readExcelTask, taskBean);
+        readExcelTask.setOnSucceeded(event -> {
+            taskUnbind(taskBean);
+            readExcelTask = null;
+            if (callback != null) {
+                callback.onComplete();
+            }
+        });
+        readExcelTask.setOnFailed(event -> {
+            taskUnbind(taskBean);
+            taskNotSuccess(taskBean, text_taskFailed);
+            // 获取抛出的异常
+            Throwable ex = readExcelTask.getException();
+            readExcelTask = null;
+            inFileList = null;
+            throw new RuntimeException(ex);
+        });
+        if (!readExcelTask.isRunning()) {
+            Thread.ofVirtual()
+                    .name("readExcelTask-vThread" + tabId)
+                    .start(readExcelTask);
+        }
     }
 
     /**
@@ -514,11 +551,7 @@ public class FileNumToExcelController extends RootController {
         List<File> files = dragEvent.getDragboard().getFiles();
         File file = files.getFirst();
         excelPath_Num.setText(file.getPath());
-        try {
-            addInData();
-        } catch (IOException e) {
-            showExceptionAlert(e);
-        }
+        addInData(null);
     }
 
     /**
@@ -563,8 +596,12 @@ public class FileNumToExcelController extends RootController {
             if (StringUtils.isEmpty(inPath_Num.getText())) {
                 throw new Exception(text_filePathNull);
             }
-            if (StringUtils.isEmpty(excelPath_Num.getText())) {
+            String inFilePath = excelPath_Num.getText();
+            if (StringUtils.isEmpty(inFilePath)) {
                 throw new Exception(text_excelPathNull);
+            }
+            if (!new File(inFilePath).exists()) {
+                throw new Exception(text_directoryNotExists);
             }
             int readRowValue = setDefaultIntValue(readRow_Num, defaultReadRow, 0, null);
             ExcelConfig excelConfig = new ExcelConfig();
@@ -574,18 +611,17 @@ public class FileNumToExcelController extends RootController {
                     .setSheetName(setDefaultStrValue(sheetName_Num, defaultSheetName))
                     .setExportFileSize(exportFileSize_Num.isSelected())
                     .setExportFileNum(exportFileNum_Num.isSelected())
-                    .setOutExcelType(excelType_Num.getText())
                     .setExportTitle(exportTitle_Num.isSelected())
-                    .setInPath(excelPath_Num.getText())
-                    .setOutPath(outFilePath);
-            readExcelTask = reselect();
-            readExcelTask.setOnSucceeded(event -> {
+                    .setOutExcelType(excelType_Num.getText())
+                    .setOutPath(outFilePath)
+                    .setInPath(inFilePath);
+            addInData(() -> {
                 TaskBean<FileNumBean> taskBean = new TaskBean<>();
                 taskBean.setShowFileType(showFileType_Num.isSelected())
-                        .setBeanList(readExcelTask.getValue())
-                        .setDisableNodes(disableNodes)
+                        .setBeanList(tableView_Num.getItems())
                         .setSubCode(subCode_Num.getText())
                         .setProgressBar(progressBar_Num)
+                        .setDisableNodes(disableNodes)
                         .setTableView(tableView_Num)
                         .setInFileList(inFileList)
                         .setMassageLabel(log_Num)
@@ -594,13 +630,7 @@ public class FileNumToExcelController extends RootController {
                 buildExcelTask = buildNameGroupNumExcel(taskBean, excelConfig);
                 // 线程成功后保存excel
                 buildExcelTask = saveExcelOnSucceeded(excelConfig, taskBean, buildExcelTask, openDirectory_Num, openFile_Num, tabId);
-                readExcelTask = null;
             });
-            if (!readExcelTask.isRunning()) {
-                Thread.ofVirtual()
-                        .name("readExcelTask-vThread" + tabId)
-                        .start(readExcelTask);
-            }
         }
     }
 
@@ -642,18 +672,17 @@ public class FileNumToExcelController extends RootController {
         if (selectedFile != null) {
             // 更新所选文件路径显示
             excelInPath = updatePathLabel(selectedFile.getPath(), excelInPath, key_excelInPath, excelPath_Num, configFile_Num);
-            addInData();
+            addInData(null);
         }
     }
 
     /**
      * 重新查询按钮
      *
-     * @return 读取excel任务线程
      * @throws Exception excel模板文件位置为空、要读取的文件夹不存在
      */
     @FXML
-    private Task<List<FileNumBean>> reselect() throws Exception {
+    private void reselect() throws Exception {
         String inFilePath = excelPath_Num.getText();
         if (StringUtils.isEmpty(inFilePath)) {
             throw new Exception(text_excelPathNull);
@@ -662,7 +691,7 @@ public class FileNumToExcelController extends RootController {
             throw new Exception(text_directoryNotExists);
         }
         updateLabel(log_Num, "");
-        return addInData();
+        addInData(null);
     }
 
     /**
