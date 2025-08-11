@@ -45,6 +45,23 @@ import static priv.koishi.tools.Utils.UiUtils.changeDisableNodes;
 public class ReadDataService {
 
     /**
+     * 读取所有文件任务
+     *
+     * @param fileConfig 文件读取设置
+     * @return 文件列表
+     */
+    public static Task<List<File>> readAllFilesTask(TaskBean<FileBean> taskBean, FileConfig fileConfig) {
+        return new Task<>() {
+            @Override
+            protected List<File> call() throws IOException {
+                changeDisableNodes(taskBean, true);
+                updateMessage(text_readData);
+                return readAllFiles(fileConfig);
+            }
+        };
+    }
+
+    /**
      * 读取excel分组信息
      *
      * @param excelConfig excel读取设置

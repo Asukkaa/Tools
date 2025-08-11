@@ -1490,54 +1490,56 @@ public class UiUtils {
      * @throws RuntimeException io异常
      */
     public static void setPathLabel(Label pathLabel, String path) {
-        pathLabel.setText(path);
-        if (StringUtils.isBlank(path)) {
-            pathLabel.getStyleClass().removeAll("label-button-style", "label-err-style");
-            pathLabel.setOnMouseClicked(null);
-            pathLabel.setContextMenu(null);
-            pathLabel.setOnMousePressed(null);
-            Tooltip.uninstall(pathLabel, pathLabel.getTooltip());
-            return;
-        }
-        File file = new File(path);
-        String openText = "\n鼠标左键点击打开 ";
-        if (!file.exists()) {
-            pathLabel.getStyleClass().remove("label-button-style");
-            pathLabel.getStyleClass().add("label-err-style");
-            openText = "\n文件不存在，鼠标左键点击打开 ";
-        } else {
-            pathLabel.getStyleClass().remove("label-err-style");
-            pathLabel.getStyleClass().add("label-button-style");
-        }
-        String openPath;
-        // 判断打开方式
-        boolean openParentDirectory;
-        if (file.isDirectory()) {
-            if (isMac && file.getName().contains(app)) {
-                openPath = file.getParent();
-                openParentDirectory = true;
+        Platform.runLater(() -> {
+            pathLabel.setText(path);
+            if (StringUtils.isBlank(path)) {
+                pathLabel.getStyleClass().removeAll("label-button-style", "label-err-style");
+                pathLabel.setOnMouseClicked(null);
+                pathLabel.setContextMenu(null);
+                pathLabel.setOnMousePressed(null);
+                Tooltip.uninstall(pathLabel, pathLabel.getTooltip());
+                return;
+            }
+            File file = new File(path);
+            String openText = "\n鼠标左键点击打开 ";
+            if (!file.exists()) {
+                pathLabel.getStyleClass().remove("label-button-style");
+                pathLabel.getStyleClass().add("label-err-style");
+                openText = "\n文件不存在，鼠标左键点击打开 ";
             } else {
-                openParentDirectory = false;
-                openPath = path;
+                pathLabel.getStyleClass().remove("label-err-style");
+                pathLabel.getStyleClass().add("label-button-style");
             }
-        } else {
-            openParentDirectory = true;
-            openPath = file.getParent();
-        }
-        pathLabel.setOnMouseClicked(event -> {
-            // 只接受左键点击
-            if (event.getButton() == MouseButton.PRIMARY) {
-                // 判断是否打开文件
-                if (openParentDirectory) {
-                    openParentDirectory(path);
+            String openPath;
+            // 判断打开方式
+            boolean openParentDirectory;
+            if (file.isDirectory()) {
+                if (isMac && file.getName().contains(app)) {
+                    openPath = file.getParent();
+                    openParentDirectory = true;
                 } else {
-                    openDirectory(path);
+                    openParentDirectory = false;
+                    openPath = path;
                 }
+            } else {
+                openParentDirectory = true;
+                openPath = file.getParent();
             }
+            pathLabel.setOnMouseClicked(event -> {
+                // 只接受左键点击
+                if (event.getButton() == MouseButton.PRIMARY) {
+                    // 判断是否打开文件
+                    if (openParentDirectory) {
+                        openParentDirectory(path);
+                    } else {
+                        openDirectory(path);
+                    }
+                }
+            });
+            addToolTip(path + openText + openPath, pathLabel);
+            // 设置右键菜单
+            setPathLabelContextMenu(pathLabel);
         });
-        addToolTip(path + openText + openPath, pathLabel);
-        // 设置右键菜单
-        setPathLabelContextMenu(pathLabel);
     }
 
     /**

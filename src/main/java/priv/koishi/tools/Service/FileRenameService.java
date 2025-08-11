@@ -1,19 +1,27 @@
 package priv.koishi.tools.Service;
 
+import javafx.application.Platform;
 import javafx.concurrent.Task;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import org.apache.commons.lang3.StringUtils;
 import priv.koishi.tools.Bean.FileBean;
 import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.CodeRenameConfig;
+import priv.koishi.tools.Configuration.FileConfig;
 import priv.koishi.tools.Configuration.StringRenameConfig;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static priv.koishi.tools.Controller.MainController.fileRenameController;
 import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.Utils.CommonUtils.*;
-import static priv.koishi.tools.Utils.UiUtils.changeDisableNodes;
+import static priv.koishi.tools.Utils.FileUtils.readAllFiles;
+import static priv.koishi.tools.Utils.UiUtils.*;
 
 /**
  * 文件批量重命名线程任务类
@@ -23,6 +31,43 @@ import static priv.koishi.tools.Utils.UiUtils.changeDisableNodes;
  * Time:下午5:47
  */
 public class FileRenameService {
+
+    public static Task<List<File>> readDropFiles(TaskBean<FileBean> taskBean, List<File> files) {
+        return new Task<>() {
+            @Override
+            protected List<File> call() throws Exception {
+                changeDisableNodes(taskBean, true);
+                updateMessage(text_readData);
+                List<File> inFileList = new ArrayList<>();
+                File firstFile = files.getFirst();
+                ChoiceBox<String> addFileType_Re = fileRenameController.addFileType_Re;
+                Label inPath_Re = fileRenameController.inPath_Re;
+                TextField filterFileType_Re = fileRenameController.filterFileType_Re;
+                ChoiceBox<String> directoryNameType_Re = fileRenameController.directoryNameType_Re;
+                ChoiceBox<String> hideFileType_Re = fileRenameController.hideFileType_Re;
+                for (File file : files) {
+                    if (firstFile.isFile()) {
+                        if (file.isFile()) {
+                            Platform.runLater(() -> addFileType_Re.setValue(text_addFile));
+                            inFileList.add(file);
+                        }
+                        setPathLabel(inPath_Re, "");
+                    } else if (firstFile.isDirectory()) {
+                        Platform.runLater(() -> addFileType_Re.setValue(text_addDirectory));
+                        List<String> filterExtensionList = getFilterExtensionList(filterFileType_Re);
+                        FileConfig fileConfig = new FileConfig();
+                        fileConfig.setShowDirectoryName(directoryNameType_Re.getValue())
+                                .setShowHideFile(hideFileType_Re.getValue())
+                                .setFilterExtensionList(filterExtensionList)
+                                .setInFile(file);
+                        inFileList = readAllFiles(fileConfig);
+                        setPathLabel(inPath_Re, file.getPath());
+                    }
+                }
+                return inFileList;
+            }
+        };
+    }
 
     /**
      * 批量重命名

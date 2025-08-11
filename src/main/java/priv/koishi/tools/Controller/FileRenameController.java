@@ -38,14 +38,11 @@ import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.MainApplication.mainScene;
 import static priv.koishi.tools.MainApplication.mainStage;
 import static priv.koishi.tools.Service.FileRenameService.*;
-import static priv.koishi.tools.Service.ReadDataService.readExcel;
-import static priv.koishi.tools.Service.ReadDataService.readFile;
+import static priv.koishi.tools.Service.ReadDataService.*;
 import static priv.koishi.tools.Utils.CommonUtils.swapCase;
 import static priv.koishi.tools.Utils.FileUtils.*;
-import static priv.koishi.tools.Utils.TaskUtils.bindingTaskNode;
-import static priv.koishi.tools.Utils.TaskUtils.taskUnbind;
+import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
-import static priv.koishi.tools.Utils.UiUtils.setControlLastConfig;
 
 /**
  * 按指定规则批量重命名文件页面控制器
@@ -472,26 +469,13 @@ public class FileRenameController extends RootController {
      * @param inFileList 要读取的文件
      * @throws Exception 未查询到符合条件的数据
      */
-    private void addInData(List<File> inFileList) throws Exception {
+    public void addInData(List<File> inFileList) throws Exception {
         if (readFileTask == null) {
             removeAll();
             if (inFileList.isEmpty()) {
                 throw new Exception(text_selectNull);
             }
-            ChoiceBox<String> sort = settingController.sort_Set;
-            CheckBox reverseSort = settingController.reverseSort_Set;
-            String sortValue = sort.getValue();
-            TaskBean<FileBean> taskBean = new TaskBean<>();
-            taskBean.setReverseSort(reverseSort.isSelected())
-                    .setComparatorTableColumn(size_Re)
-                    .setProgressBar(progressBar_Re)
-                    .setMassageLabel(fileNumber_Re)
-                    .setDisableNodes(disableNodes)
-                    .setTableView(tableView_Re)
-                    .setInFileList(inFileList)
-                    .setSortType(sortValue)
-                    .setShowFileType(false)
-                    .setTabId(tabId);
+            TaskBean<FileBean> taskBean = creatTaskBean(inFileList);
             // 匹配重命名规则
             matchRenameConfig(taskBean);
             // 获取Task任务
@@ -506,6 +490,11 @@ public class FileRenameController extends RootController {
                 }
                 readFileTask = null;
             });
+            readFileTask.setOnFailed(event -> {
+                taskNotSuccess(taskBean, text_taskFailed);
+                readFileTask = null;
+                throw new RuntimeException(event.getSource().getException());
+            });
             addFileType_Re.setDisable(true);
             if (!readFileTask.isRunning()) {
                 Thread.ofVirtual()
@@ -513,6 +502,30 @@ public class FileRenameController extends RootController {
                         .start(readFileTask);
             }
         }
+    }
+
+    /**
+     * 创建TaskBean
+     *
+     * @param inFileList 要读取的文件
+     * @return TaskBean
+     */
+    private TaskBean<FileBean> creatTaskBean(List<File> inFileList) {
+        ChoiceBox<String> sort = settingController.sort_Set;
+        CheckBox reverseSort = settingController.reverseSort_Set;
+        String sortValue = sort.getValue();
+        TaskBean<FileBean> taskBean = new TaskBean<>();
+        taskBean.setReverseSort(reverseSort.isSelected())
+                .setComparatorTableColumn(size_Re)
+                .setProgressBar(progressBar_Re)
+                .setMassageLabel(fileNumber_Re)
+                .setDisableNodes(disableNodes)
+                .setTableView(tableView_Re)
+                .setInFileList(inFileList)
+                .setSortType(sortValue)
+                .setShowFileType(false)
+                .setTabId(tabId);
+        return taskBean;
     }
 
     /**
@@ -540,6 +553,11 @@ public class FileRenameController extends RootController {
                 ObservableList<FileBean> fileBeanList = tableView_Re.getItems();
                 showMatchExcelData(taskBean, fileBeanList, excelRenameList);
                 readExcelTask = null;
+            });
+            readExcelTask.setOnFailed(event -> {
+                taskNotSuccess(taskBean, text_taskFailed);
+                readExcelTask = null;
+                throw new RuntimeException(event.getSource().getException());
             });
             // 绑定带进度条的线程
             bindingTaskNode(readExcelTask, taskBean);
@@ -940,6 +958,26 @@ public class FileRenameController extends RootController {
     }
 
     /**
+     * 启动读取文件任务
+     *
+     * @param fileConfig 读取文件任务配置
+     */
+    private void startReadFilesTask(FileConfig fileConfig) {
+        TaskBean<FileBean> taskBean = creatTaskBean(null);
+        Task<List<File>> readFileTask = readAllFilesTask(taskBean, fileConfig);
+        readFileTask.setOnSucceeded(event -> {
+            try {
+                addInData(readFileTask.getValue());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+        Thread.ofVirtual()
+                .name("readFileTask-vThread" + tabId)
+                .start(readFileTask);
+    }
+
+    /**
      * 界面初始化
      *
      * @throws IOException io异常
@@ -1029,8 +1067,7 @@ public class FileRenameController extends RootController {
                 // 更新所选文件路径显示
                 inFilePath = updatePathLabel(selectedFile.getAbsolutePath(), inFilePath, key_inFilePath, inPath_Re, configFile_Rename);
                 // 读取数据
-                List<File> inFileList = readAllFiles(fileConfig);
-                addInData(inFileList);
+                startReadFilesTask(fileConfig);
             }
         }
     }
@@ -1043,32 +1080,19 @@ public class FileRenameController extends RootController {
     @FXML
     private void handleDrop(DragEvent dragEvent) {
         List<File> files = dragEvent.getDragboard().getFiles();
-        File firstFile = files.getFirst();
-        List<File> inFileList = new ArrayList<>();
-        try {
-            for (File file : files) {
-                if (firstFile.isFile()) {
-                    if (file.isFile()) {
-                        addFileType_Re.setValue(text_addFile);
-                        inFileList.add(file);
-                    }
-                    setPathLabel(inPath_Re, "");
-                } else if (firstFile.isDirectory()) {
-                    addFileType_Re.setValue(text_addDirectory);
-                    List<String> filterExtensionList = getFilterExtensionList(filterFileType_Re);
-                    FileConfig fileConfig = new FileConfig();
-                    fileConfig.setShowDirectoryName(directoryNameType_Re.getValue())
-                            .setShowHideFile(hideFileType_Re.getValue())
-                            .setFilterExtensionList(filterExtensionList)
-                            .setInFile(file);
-                    inFileList = readAllFiles(fileConfig);
-                    setPathLabel(inPath_Re, file.getPath());
-                }
+        TaskBean<FileBean> taskBean = creatTaskBean(null);
+        Task<List<File>> voidTask = readDropFiles(taskBean, files);
+        voidTask.setOnSucceeded(event -> {
+            taskUnbind(taskBean);
+            try {
+                addInData(voidTask.getValue());
+            } catch (Exception e) {
+                showExceptionAlert(e);
             }
-            addInData(inFileList);
-        } catch (Exception e) {
-            showExceptionAlert(e);
-        }
+        });
+        Thread.ofVirtual()
+                .name("readDropFilesTask-vThread" + tabId)
+                .start(voidTask);
     }
 
     /**
@@ -1161,6 +1185,11 @@ public class FileRenameController extends RootController {
                     taskBean.getMassageLabel().setTextFill(Color.GREEN);
                     renameTask = null;
                 });
+                renameTask.setOnFailed(event -> {
+                    taskNotSuccess(taskBean, text_taskFailed);
+                    renameTask = null;
+                    throw new RuntimeException(event.getSource().getException());
+                });
                 if (!renameTask.isRunning()) {
                     Thread.ofVirtual()
                             .name("renameTask-vThread" + tabId)
@@ -1209,7 +1238,7 @@ public class FileRenameController extends RootController {
                 .setShowDirectoryName(directoryNameType_Re.getValue())
                 .setShowHideFile(hideFileType_Re.getValue())
                 .setInFile(file);
-        addInData(readAllFiles(fileConfig));
+        startReadFilesTask(fileConfig);
     }
 
     /**
@@ -1492,16 +1521,18 @@ public class FileRenameController extends RootController {
      */
     @FXML
     public void addFileTypeAction() {
-        if (text_addDirectory.equals(addFileType_Re.getValue())) {
-            reselectButton_Re.setVisible(true);
-            fileButton_Re.setText(text_selectReadFolder);
-            directoryNameType_Re.setDisable(false);
-        } else {
-            reselectButton_Re.setVisible(false);
-            fileButton_Re.setText(text_selectReadFile);
-            directoryNameType_Re.setValue(text_onlyFile);
-            directoryNameType_Re.setDisable(true);
-        }
+        Platform.runLater(() -> {
+            if (text_addDirectory.equals(addFileType_Re.getValue())) {
+                reselectButton_Re.setVisible(true);
+                fileButton_Re.setText(text_selectReadFolder);
+                directoryNameType_Re.setDisable(false);
+            } else {
+                reselectButton_Re.setVisible(false);
+                fileButton_Re.setText(text_selectReadFile);
+                directoryNameType_Re.setValue(text_onlyFile);
+                directoryNameType_Re.setDisable(true);
+            }
+        });
     }
 
 }
