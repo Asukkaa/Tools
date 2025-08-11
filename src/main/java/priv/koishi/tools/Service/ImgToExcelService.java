@@ -102,6 +102,9 @@ public class ImgToExcelService {
                     }
                     FileNumBean fileNumBean = fileNumBeans.get(i);
                     List<String> imgList = fileNumBean.getFilePathList();
+                    if (CollectionUtils.isNotEmpty(imgList)) {
+                        imgList.sort(String.CASE_INSENSITIVE_ORDER);
+                    }
                     Row row = getOrCreateRow(sheet, rowNum);
                     Cell startCell = row.createCell(startCellNum);
                     // 判断附加项导出设置
