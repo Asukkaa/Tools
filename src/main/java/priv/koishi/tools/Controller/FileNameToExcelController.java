@@ -338,7 +338,7 @@ public class FileNameToExcelController extends RootController {
     }
 
     /**
-     * 设置javafx单元格宽度
+     * 设置要防重复点击的组件
      */
     private void setDisableNodes() {
         disableNodes.add(fileButton_Name);
@@ -415,9 +415,11 @@ public class FileNameToExcelController extends RootController {
                 throw new RuntimeException(e);
             }
         });
-        Thread.ofVirtual()
-                .name("readFileTask-vThread" + tabId)
-                .start(readFileTask);
+        if (!readFileTask.isRunning()) {
+            Thread.ofVirtual()
+                    .name("readFileTask-vThread" + tabId)
+                    .start(readFileTask);
+        }
     }
 
     /**
