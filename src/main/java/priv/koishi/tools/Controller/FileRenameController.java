@@ -1023,6 +1023,7 @@ public class FileRenameController extends RootController {
             // 监听列表数据变化
             tableView_Re.getItems().addListener((ListChangeListener<FileBean>) change ->
                     addFileType_Re.setDisable(!tableView_Re.getItems().isEmpty()));
+            addFileTypeAction();
         });
     }
 

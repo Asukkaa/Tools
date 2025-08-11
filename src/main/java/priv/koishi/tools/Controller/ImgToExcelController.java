@@ -656,6 +656,8 @@ public class ImgToExcelController extends RootController {
             setDisableNodes();
             // 绑定表格数据
             autoBuildTableViewData(tableView_Img, FileNumBean.class, tabId, index_Img);
+            insertImgTypAction();
+            linkNameType();
         });
     }
 
