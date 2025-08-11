@@ -2,6 +2,7 @@ package priv.koishi.tools.Controller;
 
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -11,12 +12,14 @@ import javafx.scene.input.DragEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import lombok.Setter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import priv.koishi.tools.Bean.FileBean;
+import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Callback.FileChooserCallback;
 import priv.koishi.tools.Configuration.FileChooserConfig;
 import priv.koishi.tools.Configuration.FileConfig;
@@ -27,7 +30,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static priv.koishi.tools.Finals.CommonFinals.*;
-import static priv.koishi.tools.Utils.FileUtils.*;
+import static priv.koishi.tools.Service.ReadDataService.readAllFilesTask;
+import static priv.koishi.tools.Utils.FileUtils.openDirectory;
+import static priv.koishi.tools.Utils.FileUtils.updateProperties;
+import static priv.koishi.tools.Utils.TaskUtils.bindingTaskNode;
+import static priv.koishi.tools.Utils.TaskUtils.taskUnbind;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
 /**
@@ -48,6 +55,11 @@ public class FileChooserController extends RootController {
     private FileChooserConfig fileChooserConfig;
 
     /**
+     * 要防重复点击的组件
+     */
+    private static final List<Node> disableNodes = new ArrayList<>();
+
+    /**
      * 回调函数
      */
     @Setter
@@ -65,16 +77,22 @@ public class FileChooserController extends RootController {
     public HBox fileNumberHBox_FC;
 
     @FXML
+    public VBox progressBarVBox_FC;
+
+    @FXML
+    public ProgressBar progressBar_FC;
+
+    @FXML
     public TextField fileNameFilter_FC;
 
     @FXML
-    public Label filePath_FC, fileNumber_FC;
-
-    @FXML
-    public Button outPathButton_FC, addFileButton_FC, refreshButton_FC;
+    public Label filePath_FC, fileNumber_FC, log_FC;
 
     @FXML
     public ChoiceBox<String> fileFilter_FC, hideFileType_FC, fileNameType_FC;
+
+    @FXML
+    public Button outPathButton_FC, addFileButton_FC, refreshButton_FC, confirm_FC, close_FC;
 
     @FXML
     public TableView<FileBean> tableView_FC;
@@ -93,9 +111,8 @@ public class FileChooserController extends RootController {
      * 初始化数据
      *
      * @param fileChooserConfig 文件查询设置
-     * @throws IOException io异常
      */
-    public void initData(FileChooserConfig fileChooserConfig) throws IOException {
+    public void initData(FileChooserConfig fileChooserConfig) {
         String path = fileChooserConfig.getInFile().getPath();
         if (StringUtils.isBlank(path)) {
             path = defaultFileChooserPath;
@@ -112,9 +129,8 @@ public class FileChooserController extends RootController {
      * 选择文件
      *
      * @param file 列表选中的数据
-     * @throws IOException io异常
      */
-    private void selectFile(File file) throws IOException {
+    private void selectFile(File file) {
         removeAll();
         FileConfig fileConfig = new FileConfig();
         fileConfig.setShowDirectoryName(fileFilter_FC.getValue())
@@ -122,10 +138,29 @@ public class FileChooserController extends RootController {
                 .setShowHideFile(hideFileType_FC.getValue())
                 .setFileNameType(fileNameType_FC.getValue())
                 .setInFile(file);
-        addRemoveSameFile(readAllFiles(fileConfig), false, tableView_FC);
-        // 获取所选文件路径
-        setPathLabel(filePath_FC, file.getPath());
-        updateTableViewSizeText(tableView_FC, fileNumber_FC, text_file);
+        TaskBean<FileBean> taskBean = new TaskBean<>();
+        taskBean.setProgressBar(progressBar_FC)
+                .setMassageLabel(fileNumber_FC)
+                .setDisableNodes(disableNodes)
+                .setTableView(tableView_FC);
+        Task<List<File>> readAllFilesTask = readAllFilesTask(taskBean, fileConfig);
+        bindingTaskNode(readAllFilesTask, taskBean);
+        readAllFilesTask.setOnSucceeded(event -> {
+            taskUnbind(taskBean);
+            try {
+                addRemoveSameFile(readAllFilesTask.getValue(), false, tableView_FC);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            // 获取所选文件路径
+            setPathLabel(filePath_FC, file.getPath());
+            updateTableViewSizeText(tableView_FC, fileNumber_FC, text_file);
+        });
+        if (!readAllFilesTask.isRunning()) {
+            Thread.ofVirtual()
+                    .name("readAllFilesTask-vThread" + tabId)
+                    .start(readAllFilesTask);
+        }
     }
 
     /**
@@ -140,6 +175,8 @@ public class FileChooserController extends RootController {
         double tableWidth = stageWidth * 0.94;
         tableView_FC.setMaxWidth(tableWidth);
         tableView_FC.setPrefWidth(tableWidth);
+        progressBarVBox_FC.setMaxWidth(tableWidth * 0.4);
+        progressBarVBox_FC.setPrefWidth(tableWidth * 0.4);
         regionRightAlignment(fileNumberHBox_FC, tableWidth, fileNumber_FC);
         bindPrefWidthProperty();
     }
@@ -192,6 +229,21 @@ public class FileChooserController extends RootController {
     }
 
     /**
+     * 设置要防重复点击的组件
+     */
+    private void setDisableNodes() {
+        disableNodes.add(close_FC);
+        disableNodes.add(confirm_FC);
+        disableNodes.add(fileFilter_FC);
+        disableNodes.add(hideFileType_FC);
+        disableNodes.add(fileNameType_FC);
+        disableNodes.add(outPathButton_FC);
+        disableNodes.add(addFileButton_FC);
+        disableNodes.add(refreshButton_FC);
+        disableNodes.add(fileNameFilter_FC);
+    }
+
+    /**
      * 界面初始化
      */
     @FXML
@@ -207,6 +259,8 @@ public class FileChooserController extends RootController {
             });
             // 组件自适应宽高
             adaption();
+            // 设置要防重复点击的组件
+            setDisableNodes();
             // 绑定表格数据
             autoBuildTableViewData(tableView_FC, FileBean.class, tabId, index_FC);
             // 设置文件大小排序
@@ -265,7 +319,7 @@ public class FileChooserController extends RootController {
      * @param actionEvent 点击事件
      */
     @FXML
-    private void selectFilePath(ActionEvent actionEvent) throws IOException {
+    private void selectFilePath(ActionEvent actionEvent) {
         Window window = ((Node) actionEvent.getSource()).getScene().getWindow();
         File selectedFile = creatDirectoryChooser(window, filePath_FC.getText(), text_selectDirectory);
         if (selectedFile != null) {
@@ -276,10 +330,9 @@ public class FileChooserController extends RootController {
     /**
      * 前往上级文件夹
      *
-     * @throws IOException io异常
      */
     @FXML
-    private void gotoParent() throws IOException {
+    private void gotoParent() {
         File file = new File(filePath_FC.getText());
         File parentFile = file.getParentFile();
         selectFile(parentFile);
@@ -335,40 +388,36 @@ public class FileChooserController extends RootController {
     /**
      * 刷新列表按钮
      *
-     * @throws IOException io异常
      */
     @FXML
-    private void refreshTable() throws IOException {
+    private void refreshTable() {
         selectFile(new File(filePath_FC.getText()));
     }
 
     /**
      * 过滤条件单选框监听
      *
-     * @throws IOException io异常
      */
     @FXML
-    private void fileFilterAction() throws IOException {
+    private void fileFilterAction() {
         refreshTable();
     }
 
     /**
      * 隐藏文件查询设置单选框监听
      *
-     * @throws IOException io异常
      */
     @FXML
-    private void hideFileTypeAction() throws IOException {
+    private void hideFileTypeAction() {
         refreshTable();
     }
 
     /**
      * 文件名查询设置单选框监听
      *
-     * @throws IOException io异常
      */
     @FXML
-    private void fileNameTypeAction() throws IOException {
+    private void fileNameTypeAction() {
         refreshTable();
     }
 

@@ -83,7 +83,7 @@
         </HBox>
 
         <HBox fx:id="fileNumberHBox_MV" spacing="10">
-            <Button fx:id="addFileButton_MV" onAction="#addFiles" styleClass="cadetblue-button" text="选择要移动的文件"/>
+            <Button fx:id="addFileButton_MV" onAction="#addFiles" styleClass="cadetblue-button"/>
             <Button fx:id="clearButton_MV" onAction="#removeAll" style="-fx-cursor: hand" text="清空列表"/>
             <Button fx:id="moveButton_MV" onAction="#moveAll" styleClass="cornflowerblue-button" text="开始移动"/>
             <CheckBox fx:id="openDirectory_MV" prefHeight="25" selected="true"
@@ -110,10 +110,7 @@
             </columns>
         </TableView>
 
-        <HBox fx:id="tipHBox_MV" spacing="10">
-            <ProgressBar fx:id="progressBar_MV" visible="false" prefWidth="200.0" progress="0.0"/>
-        </HBox>
-
+        <ProgressBar fx:id="progressBar_MV" visible="false" prefWidth="200.0" progress="0.0"/>
         <Label fx:id="log_MV" prefHeight="20"/>
     </VBox>
 </AnchorPane>

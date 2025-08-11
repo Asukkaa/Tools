@@ -301,9 +301,11 @@ public class FileNumToExcelController extends RootController {
                     taskUnbind(taskBean);
                     startReadExcelTask(taskBean, callback);
                 });
-                Thread.ofVirtual()
-                        .name("readAllFilesTask-vThread" + tabId)
-                        .start(readAllFilesTask);
+                if (!readAllFilesTask.isRunning()) {
+                    Thread.ofVirtual()
+                            .name("readAllFilesTask-vThread" + tabId)
+                            .start(readAllFilesTask);
+                }
             } else {
                 startReadExcelTask(taskBean, callback);
             }

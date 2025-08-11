@@ -974,9 +974,11 @@ public class FileRenameController extends RootController {
                 throw new RuntimeException(e);
             }
         });
-        Thread.ofVirtual()
-                .name("readFileTask-vThread" + tabId)
-                .start(readFileTask);
+        if (!readFileTask.isRunning()) {
+            Thread.ofVirtual()
+                    .name("readFileTask-vThread" + tabId)
+                    .start(readFileTask);
+        }
     }
 
     /**
@@ -1083,18 +1085,20 @@ public class FileRenameController extends RootController {
     private void handleDrop(DragEvent dragEvent) {
         List<File> files = dragEvent.getDragboard().getFiles();
         TaskBean<FileBean> taskBean = creatTaskBean(null);
-        Task<List<File>> voidTask = readDropFiles(taskBean, files);
-        voidTask.setOnSucceeded(event -> {
+        Task<List<File>> readDropFilesTask = readDropFiles(taskBean, files);
+        readDropFilesTask.setOnSucceeded(event -> {
             taskUnbind(taskBean);
             try {
-                addInData(voidTask.getValue());
+                addInData(readDropFilesTask.getValue());
             } catch (Exception e) {
                 showExceptionAlert(e);
             }
         });
-        Thread.ofVirtual()
-                .name("readDropFilesTask-vThread" + tabId)
-                .start(voidTask);
+        if (!readDropFilesTask.isRunning()) {
+            Thread.ofVirtual()
+                    .name("readDropFilesTask-vThread" + tabId)
+                    .start(readDropFilesTask);
+        }
     }
 
     /**

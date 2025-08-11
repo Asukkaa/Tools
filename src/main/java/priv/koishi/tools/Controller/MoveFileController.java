@@ -75,7 +75,7 @@ public class MoveFileController extends RootController {
     public ProgressBar progressBar_MV;
 
     @FXML
-    public HBox fileNumberHBox_MV, tipHBox_MV, filterHBox_MV;
+    public HBox fileNumberHBox_MV, filterHBox_MV;
 
     @FXML
     public TableView<FileBean> tableView_MV;
@@ -207,7 +207,7 @@ public class MoveFileController extends RootController {
     }
 
     /**
-     * 设置javafx单元格宽度
+     * 设置要防重复点击的组件
      */
     private void setDisableNodes() {
         disableNodes.add(moveButton_MV);
@@ -363,9 +363,11 @@ public class MoveFileController extends RootController {
             }
             log_MV.setTextFill(Color.GREEN);
         });
-        Thread.ofVirtual()
-                .name("moveFileTask-vThread" + tabId)
-                .start(moveFileTask);
+        if (!moveFileTask.isRunning()) {
+            Thread.ofVirtual()
+                    .name("moveFileTask-vThread" + tabId)
+                    .start(moveFileTask);
+        }
     }
 
     /**
@@ -407,9 +409,11 @@ public class MoveFileController extends RootController {
                 updateTableViewSizeText(tableView_MV, fileNumber_MV, text_file);
             });
             addFileType_MV.setDisable(true);
-            Thread.ofVirtual()
-                    .name("addFileTask-vThread" + tabId)
-                    .start(addFileTask);
+            if (!addFileTask.isRunning()) {
+                Thread.ofVirtual()
+                        .name("addFileTask-vThread" + tabId)
+                        .start(addFileTask);
+            }
         } else if (text_addDirectory.equals(addFileType)) {
             FileChooserConfig fileConfig = new FileChooserConfig();
             fileConfig.setPathKey(key_inFilePath)
@@ -431,9 +435,11 @@ public class MoveFileController extends RootController {
                     updateTableViewSizeText(tableView_MV, fileNumber_MV, text_file);
                 });
                 addFileType_MV.setDisable(true);
-                Thread.ofVirtual()
-                        .name("removeSameFileTask-vThread" + tabId)
-                        .start(removeSameFileTask);
+                if (!removeSameFileTask.isRunning()) {
+                    Thread.ofVirtual()
+                            .name("removeSameFileTask-vThread" + tabId)
+                            .start(removeSameFileTask);
+                }
             });
         }
     }
@@ -446,12 +452,14 @@ public class MoveFileController extends RootController {
         String addFileType = addFileType_MV.getValue();
         String sourceAction = sourceAction_MV.getValue();
         if (text_addDirectory.equals(addFileType)) {
+            addFileButton_MV.setText(text_selectMoveFolder);
             filterHBox_MV.setVisible(true);
             ObservableList<String> items = sourceAction_MV.getItems();
             if (!items.contains(sourceAction_deleteFolder) || !items.contains(sourceAction_trashFolder)) {
                 items.addAll(sourceAction_trashFolder, sourceAction_deleteFolder);
             }
         } else if (text_addFile.equals(addFileType)) {
+            addFileButton_MV.setText(text_selectMoveFile);
             filterHBox_MV.setVisible(false);
             ObservableList<String> items = sourceAction_MV.getItems();
             items.removeAll(sourceAction_deleteFolder, sourceAction_trashFolder);

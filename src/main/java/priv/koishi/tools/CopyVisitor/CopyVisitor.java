@@ -4,6 +4,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import priv.koishi.tools.Enum.CopyMode;
 
 import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -37,12 +38,17 @@ public class CopyVisitor extends SimpleFileVisitor<Path> {
     /**
      * 拷贝方式
      */
-    private final CopyMode mode;
+    private final CopyMode copyMode;
 
     /**
      * 源文件处理方式（保留、删除、放入回收站）
      */
     private final String sourceAction;
+
+    /**
+     * 是否处理隐藏文件
+     */
+    private final String hideFileType;
 
     /**
      * 过滤文件类型
@@ -54,16 +60,17 @@ public class CopyVisitor extends SimpleFileVisitor<Path> {
      *
      * @param sourceRoot          源目录
      * @param targetRoot          目标目录
-     * @param mode                拷贝方式
+     * @param copyMode            拷贝方式
      * @param filterExtensionList 过滤文件类型
      */
-    public CopyVisitor(Path sourceRoot, Path targetRoot, CopyMode mode, List<String> filterExtensionList,
-                       String sourceAction) {
+    public CopyVisitor(Path sourceRoot, Path targetRoot, CopyMode copyMode, List<String> filterExtensionList,
+                       String sourceAction, String hideFileType) {
         this.sourceRoot = sourceRoot;
         this.targetRoot = targetRoot;
-        this.mode = mode;
+        this.copyMode = copyMode;
         this.filterExtensionList = filterExtensionList;
         this.sourceAction = sourceAction;
+        this.hideFileType = hideFileType;
     }
 
     /**
@@ -92,11 +99,21 @@ public class CopyVisitor extends SimpleFileVisitor<Path> {
      */
     @Override
     public FileVisitResult preVisitDirectory(Path path, BasicFileAttributes attrs) throws IOException {
+        // 处理隐藏文件，顶层目录是否隐藏都要读取
+        if (!path.equals(sourceRoot)) {
+            File file = path.toFile();
+            if (file.isHidden() && text_noHideFile.equals(hideFileType)) {
+                return FileVisitResult.SKIP_SUBTREE;
+            }
+            if (!file.isHidden() && text_onlyHideFile.equals(hideFileType)) {
+                return FileVisitResult.SKIP_SUBTREE;
+            }
+        }
         // 如果当前目录是目标目录或其子目录，跳过复制
         if (path.startsWith(targetRoot) || path.equals(targetRoot)) {
             return FileVisitResult.SKIP_SUBTREE;
         }
-        if (mode == CopyMode.STRUCTURE_ONLY_FOLDERS || mode == CopyMode.STRUCTURE_WITH_FILES) {
+        if (copyMode == CopyMode.STRUCTURE_ONLY_FOLDERS || copyMode == CopyMode.STRUCTURE_WITH_FILES) {
             // 构建目标目录路径
             Path relativePath = sourceRoot.relativize(path);
             Path targetDir = targetRoot.resolve(relativePath);
@@ -122,6 +139,14 @@ public class CopyVisitor extends SimpleFileVisitor<Path> {
      */
     @Override
     public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
+        // 处理隐藏文件
+        File file = path.toFile();
+        if (file.isHidden() && text_noHideFile.equals(hideFileType)) {
+            return FileVisitResult.SKIP_SUBTREE;
+        }
+        if (!file.isHidden() && text_onlyHideFile.equals(hideFileType)) {
+            return FileVisitResult.SKIP_SUBTREE;
+        }
         // 如果当前目录是目标目录或其子目录，跳过复制
         if (path.startsWith(targetRoot) || path.equals(targetRoot)) {
             return FileVisitResult.SKIP_SUBTREE;
@@ -134,7 +159,7 @@ public class CopyVisitor extends SimpleFileVisitor<Path> {
             }
         }
         Path targetFile;
-        if (mode == CopyMode.ONLY_FILES) {
+        if (copyMode == CopyMode.ONLY_FILES) {
             // 仅复制文件，不保留目录结构
             targetFile = targetRoot.resolve(path.getFileName());
         } else {
@@ -149,7 +174,7 @@ public class CopyVisitor extends SimpleFileVisitor<Path> {
             Files.createDirectories(targetParent);
         }
         // 执行复制
-        if (mode != CopyMode.STRUCTURE_ONLY_FOLDERS) {
+        if (copyMode != CopyMode.STRUCTURE_ONLY_FOLDERS) {
             Files.copy(path, targetFile, StandardCopyOption.COPY_ATTRIBUTES);
             // 处理 win 的隐藏文件
             hiddenWinFile(path, targetFile);

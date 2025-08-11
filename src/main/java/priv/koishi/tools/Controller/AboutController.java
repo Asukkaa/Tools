@@ -275,9 +275,11 @@ public class AboutController extends RootController {
                         ProgressDialog progressDialog = new ProgressDialog();
                         // 用户选择更新
                         downloadedUpdateTask = downloadAndInstallUpdate(updateInfo, progressDialog);
-                        Thread.ofVirtual()
-                                .name("task-downloadedUpdate-vThread")
-                                .start(downloadedUpdateTask);
+                        if (!downloadedUpdateTask.isRunning()) {
+                            Thread.ofVirtual()
+                                    .name("task-downloadedUpdate-vThread")
+                                    .start(downloadedUpdateTask);
+                        }
                         downloadedUpdateTask.setOnFailed(workerStateEvent -> {
                             try {
                                 logger.info("任务失败，删除临时文件夹： {}", ToolsTempPath);
@@ -308,9 +310,11 @@ public class AboutController extends RootController {
             updateCheckDate(Color.RED);
             throw new RuntimeException(task.getException());
         });
-        Thread.ofVirtual()
-                .name("task-checkUpdate-vThread")
-                .start(task);
+        if (!task.isRunning()) {
+            Thread.ofVirtual()
+                    .name("task-checkUpdate-vThread")
+                    .start(task);
+        }
     }
 
     /**

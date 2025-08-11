@@ -87,9 +87,13 @@
         </TableView>
 
         <HBox spacing="10">
-            <Label prefWidth="400"/>
-            <Button text="确认选择" onAction="#confirmSelect"/>
-            <Button text="取消" style="-fx-cursor: hand" onAction="#closeWindow"/>
+            <VBox fx:id="progressBarVBox_FC" spacing="10">
+                <ProgressBar fx:id="progressBar_FC" visible="false" prefWidth="200.0" progress="0.0"/>
+                <Label fx:id="log_FC" prefHeight="20"/>
+            </VBox>
+
+            <Button fx:id="confirm_FC" text="确认选择" onAction="#confirmSelect"/>
+            <Button fx:id="close_FC" text="取消" style="-fx-cursor: hand" onAction="#closeWindow"/>
         </HBox>
     </VBox>
 </AnchorPane>

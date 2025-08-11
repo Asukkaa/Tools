@@ -12,10 +12,7 @@ import priv.koishi.tools.Enum.CopyMode;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -132,10 +129,11 @@ public class MoveFileService {
                 changeDisableNodes(taskBean, true);
                 updateMessage("正在校验要处理的路径");
                 List<FileBean> fileBeanList = taskBean.getBeanList();
-                String targetDirectory = moveFileController.outPath_MV.getText();
                 String moveType = moveFileController.moveType_MV.getValue();
+                String targetDirectory = moveFileController.outPath_MV.getText();
                 String addFileType = moveFileController.addFileType_MV.getValue();
                 String sourceAction = moveFileController.sourceAction_MV.getValue();
+                String hideFileType = moveFileController.hideFileType_MV.getValue();
                 List<String> filterExtensionList = getFilterExtensionList(moveFileController.filterFileType_MV);
                 List<File> fileList = new ArrayList<>();
                 for (FileBean fileBean : fileBeanList) {
@@ -148,7 +146,7 @@ public class MoveFileService {
                 if (text_addDirectory.equals(addFileType)) {
                     // 筛选顶级目录
                     List<File> topDirs = filterTopDirectories(fileList);
-                    CopyMode mode = determineCopyMode(moveType);
+                    CopyMode copyMode = determineCopyMode(moveType);
                     int topDirsSize = topDirs.size();
                     for (int i = 0; i < topDirsSize; i++) {
                         File source = topDirs.get(i);
@@ -158,14 +156,21 @@ public class MoveFileService {
                         Files.walkFileTree(sourcePath,
                                 new CopyVisitor(sourcePath,
                                         targetPath,
-                                        mode,
+                                        copyMode,
                                         filterExtensionList,
-                                        sourceAction));
+                                        sourceAction,
+                                        hideFileType));
                         updateProgress(i + 1, fileListSize);
                     }
                 } else if (text_addFile.equals(addFileType)) {
                     for (int i = 0; i < fileListSize; i++) {
                         File file = fileList.get(i);
+                        if (file.isHidden() && text_noHideFile.equals(hideFileType)) {
+                            continue;
+                        }
+                        if (!file.isHidden() && text_onlyHideFile.equals(hideFileType)) {
+                            continue;
+                        }
                         updateMessage("正在移动：" + file.getPath());
                         File targetFile = new File(targetDirectory, file.getName());
                         // 防止重名覆盖，自动重命名

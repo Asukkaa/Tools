@@ -840,6 +840,10 @@ public class CommonFinals {
 
     public static final String text_selectReadFolder = "选择要读取的文件夹";
 
+    public static final String text_selectMoveFile = "选择要移动的文件";
+
+    public static final String text_selectMoveFolder = "选择要移动的文件夹";
+
     public static final String id_settingTab = "settingTab";
 
     public static final String id_aboutTab = "aboutTab";

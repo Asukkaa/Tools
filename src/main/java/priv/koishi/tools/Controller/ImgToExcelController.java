@@ -391,9 +391,11 @@ public class ImgToExcelController extends RootController {
                     taskUnbind(taskBean);
                     startReadExcelTask(taskBean, callback);
                 });
-                Thread.ofVirtual()
-                        .name("readAllFilesTask-vThread" + tabId)
-                        .start(readAllFilesTask);
+                if (!readAllFilesTask.isRunning()) {
+                    Thread.ofVirtual()
+                            .name("readAllFilesTask-vThread" + tabId)
+                            .start(readAllFilesTask);
+                }
             } else {
                 startReadExcelTask(taskBean, callback);
             }
@@ -683,9 +685,11 @@ public class ImgToExcelController extends RootController {
                 taskUnbind(taskBean);
                 inFileList = readMachGroupTask.getValue();
             });
-            Thread.ofVirtual()
-                    .name("readMachGroupTask-vThread" + tabId)
-                    .start(readMachGroupTask);
+            if (!readMachGroupTask.isRunning()) {
+                Thread.ofVirtual()
+                        .name("readMachGroupTask-vThread" + tabId)
+                        .start(readMachGroupTask);
+            }
         }
     }
 
