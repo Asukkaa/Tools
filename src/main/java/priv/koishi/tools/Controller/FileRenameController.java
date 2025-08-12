@@ -1436,6 +1436,7 @@ public class FileRenameController extends RootController {
             // 表格设置为可编辑
             tableView_Re.setEditable(true);
             rename_Re.setCellFactory((tableColumn) -> new EditingCell<>(FileBean::setRename));
+            tableView_Re.refresh();
         }
         updateLabel(log_Re, "");
     }
