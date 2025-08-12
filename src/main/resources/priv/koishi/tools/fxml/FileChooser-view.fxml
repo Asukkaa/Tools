@@ -8,7 +8,7 @@
             fx:controller="priv.koishi.tools.Controller.FileChooserController">
     <VBox spacing="10" AnchorPane.topAnchor="10" AnchorPane.leftAnchor="30">
         <HBox spacing="10">
-            <Button fx:id="outPathButton_FC" onAction="#selectFilePath" style="-fx-cursor: hand" text="选择要查询的文件夹"/>
+            <Button fx:id="selectPathButton_FC" onAction="#selectFilePath" style="-fx-cursor: hand" text="选择要查询的文件夹"/>
             <Label fx:id="filePath_FC" prefHeight="25" style="-fx-font-size: 15px;"/>
         </HBox>
 
@@ -62,7 +62,7 @@
         </HBox>
 
         <HBox fx:id="fileNumberHBox_FC" spacing="10">
-            <Button fx:id="addFileButton_FC" onAction="#gotoParent" styleClass="cornflowerblue-button" text="前往上级文件夹"/>
+            <Button fx:id="gotoParentButton_FC" onAction="#gotoParent" styleClass="cornflowerblue-button" text="前往上级文件夹"/>
             <Button fx:id="refreshButton_FC" onAction="#refreshTable" styleClass="cadetblue-button" text="刷新列表"/>
 
             <Label fx:id="fileNumber_FC" alignment="CENTER_RIGHT" prefHeight="20" text="列表为空"/>

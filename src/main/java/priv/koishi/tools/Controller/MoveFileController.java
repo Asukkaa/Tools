@@ -38,6 +38,7 @@ import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.TaskUtils.bindingTaskNode;
 import static priv.koishi.tools.Utils.TaskUtils.taskUnbind;
 import static priv.koishi.tools.Utils.UiUtils.*;
+import static priv.koishi.tools.Utils.UiUtils.addToolTip;
 
 /**
  * 移动文件工具页控制器
@@ -197,12 +198,15 @@ public class MoveFileController extends RootController {
      * 设置鼠标悬停提示
      */
     private void setToolTip() {
+        addToolTip(tip_moveType, moveType_MV);
+        addToolTip(tip_moveButton, moveButton_MV);
         addToolTip(tip_learButton, clearButton_MV);
-        addToolTip(tip_exportButton, moveButton_MV);
+        addToolTip(tip_movePath, outPathButton_MV);
         addToolTip(tip_addFileType, addFileType_MV);
-        addToolTip(tip_outPathButton, outPathButton_MV);
+        addToolTip(tip_sourceAction, sourceAction_MV);
+        addToolTip(tip_hideFileType, hideFileType_MV);
         addToolTip(tip_openDirectory, openDirectory_MV);
-        addToolTip(tip_reselectButton, addFileButton_MV);
+        addToolTip(tip_addFileButton, addFileButton_MV);
         addToolTip(tip_filterFileType, filterFileType_MV);
     }
 

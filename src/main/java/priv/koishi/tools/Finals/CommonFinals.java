@@ -28,12 +28,12 @@ public class CommonFinals {
     /**
      * 程序版本
      */
-    public static final String version = "2.5.2";
+    public static final String version = "2.5.3";
 
     /**
      * 程序构建日期
      */
-    public static final String buildDate = "2025.08.07";
+    public static final String buildDate = "2025.08.12";
 
     /**
      * 文件后缀名：bat
@@ -588,6 +588,34 @@ public class CommonFinals {
     public static final String tip_linkName = "填写后将会修改超链接名称，为空则默认使用文件名称";
 
     public static final String tip_addFileType = "用来选择读取文件还是文件夹，列表为空时才能修改";
+
+    public static final String tip_selectPath = "点击后可选择要查询的目录";
+
+    public static final String tip_gotoParent = "点击可返回上级目录";
+
+    public static final String tip_fileNameType = "用来选择文件名匹配的方式";
+
+    public static final String tip_fileNameFilter = "将会按照这里填写的字符进行筛选";
+
+    public static final String tip_moveButton = "点击将会按照设置将列表中的文件移动到指定文件夹中";
+
+    public static final String tip_movePath = "点击后可以选择目标文件夹位置";
+
+    public static final String tip_addFileButton = "点击可选择要移动的文件或文件夹";
+
+    public static final String tip_sourceAction = "用来选择移动文件后源文件的处理方式";
+
+    public static final String tip_confirm = "点击后将会把列表中选中的文件夹添加到要移动的文件列表中，没有选中项则添加当前查询的目录";
+
+    public static final String tip_close = "点击后将会关闭当前页面，不会将任何数据添加到要移动的文件列表中";
+
+    public static final String tip_moveType = """
+            用来选择文件目录的处理方式
+            仅移动文件：只会移动文件不会移动文件夹
+            保留目录结构移动文件：会将整个文件夹都移动到指定位置，保留原目录结构
+            不保留顶层目录移动文件：保留顶层目录下的原目录结构移动文件，不会创建顶层目录
+            保留目录结构复制文件夹：只会按照原目录创建文件夹，不会做移动操作
+            不保留顶层目录复制文件夹：只会按照原目录创建文件夹，但不创建顶层目录""";
 
     public static final String tip_nextGcType = """
             下次启动程序将会按照此设置项设置垃圾回收（GC）方式
