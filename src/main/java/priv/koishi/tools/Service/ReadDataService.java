@@ -108,10 +108,15 @@ public class ReadDataService {
                 int maxRow = excelConfig.getMaxRowNum();
                 checkFileExists(excelInPath, text_excelNotExists);
                 Workbook workbook = getWorkbook(excelInPath);
+                int sheetCount = workbook.getNumberOfSheets();
+                List<String> sheetNames = new ArrayList<>(sheetCount);
+                for (int i = 0; i < sheetCount; i++) {
+                    sheetNames.add(workbook.getSheetName(i));
+                }
                 // 读取指定sheet
                 Sheet sheet;
-                if (StringUtils.isEmpty(sheetName)) {
-                    sheet = workbook.getSheetAt(0);
+                if (StringUtils.isBlank(sheetName)) {
+                    sheet = workbook.getSheet(sheetNames.getFirst());
                 } else {
                     sheet = workbook.getSheet(sheetName);
                     if (sheet == null) {
