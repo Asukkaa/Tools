@@ -786,6 +786,8 @@ public class CommonFinals {
 
     public static final String text_addDirectory = "读取文件夹";
 
+    public static final String text_allFileHideNot = "是否隐藏都查询";
+
     public static final String text_noHideFile = "不查询隐藏文件";
 
     public static final String text_onlyHideFile = "只查询隐藏文件";

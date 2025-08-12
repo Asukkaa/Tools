@@ -2,9 +2,11 @@ package priv.koishi.tools.Service;
 
 import javafx.application.Platform;
 import javafx.concurrent.Task;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import priv.koishi.tools.Bean.FileBean;
 import priv.koishi.tools.Bean.TaskBean;
@@ -15,7 +17,9 @@ import priv.koishi.tools.Configuration.StringRenameConfig;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static priv.koishi.tools.Controller.MainController.fileRenameController;
 import static priv.koishi.tools.Finals.CommonFinals.*;
@@ -88,10 +92,50 @@ public class FileRenameService {
             protected String call() throws Exception {
                 // 改变要防重复点击的组件状态
                 changeDisableNodes(taskBean, true);
-                // 防止命名重复先将所有慰文件重命名为uuid生成的临时名称
-                updateMessage("正在将文件重命名为临时名称");
+                updateMessage("正在校验名称");
                 List<FileBean> fileBeanList = taskBean.getBeanList();
                 int fileBeanListSize = fileBeanList.size();
+                String parentPath = new File(fileBeanList.getFirst().getPath()).getParent();
+                FileConfig fileConfig = new FileConfig();
+                fileConfig.setInFile(new File(parentPath))
+                        .setShowDirectoryName(text_onlyFile)
+                        .setShowHideFile(text_allFileHideNot);
+                List<File> files = readAllFiles(fileConfig);
+                // 构建原始文件集合
+                List<File> originalFiles = fileBeanList.stream()
+                        .map(fileBean -> new File(fileBean.getPath()))
+                        .toList();
+                // 从files中移除原始文件
+                files.removeAll(originalFiles);
+                // 提取剩余文件的名称集合
+                Set<String> existingFileNames = files.stream()
+                        .map(File::getName)
+                        .collect(Collectors.toSet());
+                // 检测重命名冲突
+                String errorMsg = "检测到当前目录下已存在的重命名文件：";
+                List<FileBean> conflictBeans = new ArrayList<>();
+                updateProgress(0, fileBeanListSize);
+                for (int i = 0; i < fileBeanListSize; i++) {
+                    FileBean fileBean = fileBeanList.get(i);
+                    String newFileName = fileBean.getFullRename();
+                    String oldName = fileBean.getFullName();
+                    if (existingFileNames.contains(newFileName)) {
+                        errorMsg += "\n序号为：" + fileBean.getId() + " 的文件 " + oldName + " 重命名为 " + newFileName;
+                        conflictBeans.add(fileBean);
+                    }
+                    updateProgress(i + 1, fileBeanListSize);
+                }
+                if (CollectionUtils.isNotEmpty(conflictBeans)) {
+                    String finalErrorMsg = errorMsg;
+                    Platform.runLater(() -> {
+                        Alert alert = creatErrorAlert(finalErrorMsg);
+                        alert.setHeaderText("文件重命名已存在");
+                        alert.showAndWait();
+                    });
+                    return null;
+                }
+                // 防止命名重复先将所有慰文件重命名为uuid生成的临时名称
+                updateMessage("正在将文件重命名为临时名称");
                 for (int i = 0; i < fileBeanListSize; i++) {
                     FileBean fileBean = fileBeanList.get(i);
                     String ext = fileBean.getNewFileType();
@@ -122,7 +166,7 @@ public class FileRenameService {
                     updateProgress(i, fileBeanListSize);
                 }
                 updateMessage("所有文件已重命名完毕");
-                return new File(fileBeanList.getFirst().getPath()).getParent();
+                return parentPath;
             }
 
             // 给文件一个临时重命名

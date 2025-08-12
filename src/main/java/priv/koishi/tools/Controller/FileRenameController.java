@@ -1186,11 +1186,16 @@ public class FileRenameController extends RootController {
                 // 绑定带进度条的线程
                 bindingTaskNode(renameTask, taskBean);
                 renameTask.setOnSucceeded(event -> {
-                    taskUnbind(taskBean);
-                    if (openDirectory_Re.isSelected()) {
-                        openDirectory(renameTask.getValue());
+                    String value = renameTask.getValue();
+                    if (StringUtils.isBlank(value)) {
+                        taskNotSuccess(taskBean, text_taskFailed);
+                    } else {
+                        taskUnbind(taskBean);
+                        if (openDirectory_Re.isSelected()) {
+                            openDirectory(value);
+                        }
+                        taskBean.getMassageLabel().setTextFill(Color.GREEN);
                     }
-                    taskBean.getMassageLabel().setTextFill(Color.GREEN);
                     renameTask = null;
                 });
                 renameTask.setOnFailed(event -> {
