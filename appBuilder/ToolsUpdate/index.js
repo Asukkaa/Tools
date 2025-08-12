@@ -16,7 +16,7 @@ exports.main = async (event) => {
     // 客户端当前版本
     const clientVersion = requestBody.version;
     // 服务端最新版本
-    const serverVersion = "2.4.2";
+    const serverVersion = "2.5.3";
     // 版本号对比逻辑
     let fullUpdate = false;
     if (clientVersion) {
@@ -35,23 +35,23 @@ exports.main = async (event) => {
     }
     // 阿里云全量更新文件存储地址
     const aliyunAppLinks = {
-        win: 'https://mp-f42cc448-2bf2-4edf-9bb8-8f060ec60dd6.cdn.bspapp.com/Tools/win/Tools-2.4.2-win.zip',
-        mac: 'https://mp-f42cc448-2bf2-4edf-9bb8-8f060ec60dd6.cdn.bspapp.com/Tools/mac/Tools-2.4.2-mac.zip'
+        win: 'https://mp-f42cc448-2bf2-4edf-9bb8-8f060ec60dd6.cdn.bspapp.com/Tools/win/Tools-2.5.3-win.zip',
+        mac: 'https://mp-f42cc448-2bf2-4edf-9bb8-8f060ec60dd6.cdn.bspapp.com/Tools/mac/Tools-2.5.3-mac.zip'
     };
     // 阿里云增量更新文件存储地址
     const aliyunLibLinks = {
-        win: 'https://mp-f42cc448-2bf2-4edf-9bb8-8f060ec60dd6.cdn.bspapp.com/Tools/win/lib-2.4.2-win.zip',
-        mac: 'https://mp-f42cc448-2bf2-4edf-9bb8-8f060ec60dd6.cdn.bspapp.com/Tools/mac/lib-2.4.2-mac.zip'
+        win: 'https://mp-f42cc448-2bf2-4edf-9bb8-8f060ec60dd6.cdn.bspapp.com/Tools/win/lib-2.5.3-win.zip',
+        mac: 'https://mp-f42cc448-2bf2-4edf-9bb8-8f060ec60dd6.cdn.bspapp.com/Tools/mac/lib-2.5.3-mac.zip'
     };
     // 支付宝云全量更新文件存储地址
     const alipayAppLinks = {
-        win: 'https://env-00jxtp3qdq80.normal.cloudstatic.cn/Tools/win/Tools-2.4.2-win.zip',
-        mac: 'https://env-00jxtp3qdq80.normal.cloudstatic.cn/Tools/mac/Tools-2.4.2-mac.zip'
+        win: 'https://env-00jxtp3qdq80.normal.cloudstatic.cn/Tools/win/Tools-2.5.3-win.zip',
+        mac: 'https://env-00jxtp3qdq80.normal.cloudstatic.cn/Tools/mac/Tools-2.5.3-mac.zip'
     };
     // 支付宝云增量更新文件存储地址
     const alipayLibLinks = {
-        win: 'https://env-00jxtp3qdq80.normal.cloudstatic.cn/Tools/win/lib-2.4.2-win.zip',
-        mac: 'https://env-00jxtp3qdq80.normal.cloudstatic.cn/Tools/mac/lib-2.4.2-mac.zip'
+        win: 'https://env-00jxtp3qdq80.normal.cloudstatic.cn/Tools/win/lib-2.5.3-win.zip',
+        mac: 'https://env-00jxtp3qdq80.normal.cloudstatic.cn/Tools/mac/lib-2.5.3-mac.zip'
     };
     let aliyunFileLink, alipayFileLink;
     if (fullUpdate) {
@@ -72,10 +72,14 @@ exports.main = async (event) => {
         // 构造响应对象
         const latestVersionInfo = {
             version: serverVersion,
-            buildDate: "2025.08.01",
-            whatsNew: `版本2.4.2:
-        1.增强批量修改文件拓展名功能
-        2.优化界面布局`,
+            buildDate: "2025.08.12",
+            whatsNew: `版本2.5.3:
+        1.新增批量移动文件工具
+        2.批量向excel插入图片工具支持插入图片超链接功能
+        3.批量重命名工具支持多选添加文件功能
+        4.优化文件读取等功能的逻辑
+        5.优化ui界面
+        6.修复了一些bug`,
             aliyunFileLink: aliyunFileLink,
             alipayFileLink: alipayFileLink,
             fullUpdate: fullUpdate
