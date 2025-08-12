@@ -5,8 +5,6 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.concurrent.Service;
-import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
@@ -587,6 +585,8 @@ public class UiUtils {
             @Override
             protected void updateItem(Image image, boolean empty) {
                 super.updateItem(image, empty);
+                // 清理之前的图片
+                imageView.setImage(null);
                 setTextFill(Color.BLACK);
                 if (empty) {
                     setText(null);
@@ -603,35 +603,6 @@ public class UiUtils {
                 }
             }
         });
-    }
-
-    /**
-     * 获取表格中的缩略图
-     *
-     * @param path 缩略图路径
-     * @return 表格中的缩略图对象
-     */
-    public static Service<Image> tableViewImageService(String path) {
-        return new Service<>() {
-            @Override
-            protected Task<Image> createTask() {
-                return new Task<>() {
-                    @Override
-                    protected Image call() {
-                        if (StringUtils.isNotBlank(path)) {
-                            return new Image("file:" + path,
-                                    200,
-                                    200,
-                                    true,
-                                    true,
-                                    true);
-                        } else {
-                            return null;
-                        }
-                    }
-                };
-            }
-        };
     }
 
     /**
@@ -1918,14 +1889,19 @@ public class UiUtils {
     /**
      * 关闭窗口
      *
-     * @param stage 要关闭的窗口
+     * @param stage    要关闭的窗口
+     * @param runnable 关闭前的回调
      */
-    public static void closeStage(Stage stage) {
+    public static void closeStage(Stage stage, Runnable runnable) {
+        if (runnable != null) {
+            runnable.run();
+        }
         WindowEvent closeEvent = new WindowEvent(stage, WindowEvent.WINDOW_CLOSE_REQUEST);
         stage.fireEvent(closeEvent);
         if (!closeEvent.isConsumed()) {
             stage.close();
         }
+        System.gc();
     }
 
 }
