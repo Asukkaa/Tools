@@ -860,7 +860,7 @@ public class FileUtils {
      * @param file 要校验的文件
      * @return true为图片，false为非图片
      */
-    public static boolean isImgFile(File file) throws IOException {
+    public static boolean isImgFile(File file) {
         if (!file.exists()) {
             return false;
         }

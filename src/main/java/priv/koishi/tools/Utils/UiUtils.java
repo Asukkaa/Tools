@@ -1083,7 +1083,7 @@ public class UiUtils {
     private static void openDirectorMenuItem(TableView<FileBean> tableView) {
         List<FileBean> fileBeans = tableView.getSelectionModel().getSelectedItems();
         List<String> pathList = fileBeans.stream().map(FileBean::getPath).distinct().toList();
-        pathList.forEach(FileUtils::openDirectory);
+        pathList.forEach(FileUtils::openParentDirectory);
     }
 
     /**

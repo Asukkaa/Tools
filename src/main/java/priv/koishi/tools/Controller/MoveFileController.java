@@ -255,6 +255,25 @@ public class MoveFileController extends RootController {
     }
 
     /**
+     * 构建右键菜单
+     *
+     * @param tableView 要添加右键菜单的列表
+     * @param label     列表对应的统计信息展示栏
+     */
+    public void tableViewContextMenu(TableView<FileBean> tableView, Label label) {
+        // 添加右键菜单
+        ContextMenu contextMenu = new ContextMenu();
+        // 查看文件选项
+        buildFilePathItem(tableView, contextMenu);
+        // 取消选中选项
+        buildClearSelectedData(tableView, contextMenu);
+        // 删除所选数据选项
+        buildDeleteDataMenuItem(tableView, label, contextMenu, text_file);
+        // 为列表添加右键菜单并设置可选择多行
+        setContextMenu(contextMenu, tableView);
+    }
+
+    /**
      * 界面初始化
      *
      * @throws IOException io异常
@@ -278,8 +297,6 @@ public class MoveFileController extends RootController {
             autoBuildTableViewData(tableView_MV, FileBean.class, tabId, index_MV);
             // 设置文件大小排序
             fileSizeColum(size_MV);
-            // 设置列表通过拖拽排序行
-            tableViewDragRow(tableView_MV);
             // 构建右键菜单
             tableViewContextMenu(tableView_MV, fileNumber_MV);
             // 监听列表数据变化

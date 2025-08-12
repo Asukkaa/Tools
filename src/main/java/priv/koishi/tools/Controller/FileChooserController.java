@@ -35,7 +35,7 @@ import static priv.koishi.tools.Utils.FileUtils.openDirectory;
 import static priv.koishi.tools.Utils.FileUtils.updateProperties;
 import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
-import static priv.koishi.tools.Utils.UiUtils.addToolTip;
+import static priv.koishi.tools.Utils.UiUtils.buildFilePathItem;
 
 /**
  * @author KOISHI
@@ -267,20 +267,85 @@ public class FileChooserController extends RootController {
     }
 
     /**
+     * 构建右键菜单
+     *
+     * @param tableView 要添加右键菜单的列表
+     */
+    public void tableViewContextMenu(TableView<FileBean> tableView) {
+        // 添加右键菜单
+        ContextMenu contextMenu = new ContextMenu();
+        // 查询所选文件选项
+        buildSelectPathItem(tableView, contextMenu);
+        // 查看文件选项
+        buildFilePathItem(tableView, contextMenu);
+        // 取消选中选项
+        buildClearSelectedData(tableView, contextMenu);
+        // 为列表添加右键菜单并设置可选择多行
+        setContextMenu(contextMenu, tableView);
+    }
+
+    /**
+     * 查询所选第一行文件
+     *
+     * @param tableView   要添加右键菜单的列表
+     * @param contextMenu 右键菜单
+     */
+    private void buildSelectPathItem(TableView<FileBean> tableView, ContextMenu contextMenu) {
+        MenuItem selectPathItem = new MenuItem("查询所选第一行文件");
+        selectPathItem.setOnAction(event -> {
+            FileBean selectedItem = tableView.getSelectionModel().getSelectedItems().getFirst();
+            try {
+                handleFileDoubleClick(selectedItem);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        contextMenu.getItems().add(selectPathItem);
+    }
+
+    /**
+     * 设置页面关闭事件处理逻辑
+     */
+    private void setCloseRequest() {
+        stage.setOnCloseRequest(e -> {
+            try {
+                removeAll();
+                updateProperties(fileChooserConfig.getConfigFile(), fileChooserConfig.getPathKey(), filePath_FC.getText());
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+    }
+
+    /**
+     * 设置列表双击事件
+     */
+    private void setRowDoubleClick() {
+        tableView_FC.setRowFactory(tv -> {
+            TableRow<FileBean> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && !row.isEmpty()) {
+                    FileBean selectedFileBean = row.getItem();
+                    try {
+                        handleFileDoubleClick(selectedFileBean);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            });
+            return row;
+        });
+    }
+
+    /**
      * 界面初始化
      */
     @FXML
     private void initialize() {
         Platform.runLater(() -> {
             stage = (Stage) anchorPane_FC.getScene().getWindow();
-            stage.setOnCloseRequest(e -> {
-                try {
-                    removeAll();
-                    updateProperties(fileChooserConfig.getConfigFile(), fileChooserConfig.getPathKey(), filePath_FC.getText());
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                }
-            });
+            // 设置页面关闭事件处理逻辑
+            setCloseRequest();
             // 组件自适应宽高
             adaption();
             // 设置要防重复点击的组件
@@ -289,19 +354,10 @@ public class FileChooserController extends RootController {
             autoBuildTableViewData(tableView_FC, FileBean.class, tabId, index_FC);
             // 设置文件大小排序
             fileSizeColum(size_FC);
-            // 设置列表通过拖拽排序行（带双击事件）
-            tableViewDragRow(tableView_FC, event -> {
-                if (event.getClickCount() == 2 && !tableView_FC.getSelectionModel().isEmpty()) {
-                    FileBean selectedFileBean = tableView_FC.getSelectionModel().getSelectedItem();
-                    try {
-                        handleFileDoubleClick(selectedFileBean);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            });
+            // 设置列表双击事件
+            setRowDoubleClick();
             // 构建右键菜单
-            tableViewContextMenu(tableView_FC, fileNumber_FC);
+            tableViewContextMenu(tableView_FC);
         });
     }
 
