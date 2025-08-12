@@ -44,7 +44,6 @@ import static priv.koishi.tools.Service.ReadDataService.*;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
-import static priv.koishi.tools.Utils.UiUtils.textFieldValueListener;
 
 /**
  * 将图片与excel匹配并插入页面控制器

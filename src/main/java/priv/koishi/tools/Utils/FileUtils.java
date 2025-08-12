@@ -183,6 +183,7 @@ public class FileUtils {
     public static List<File> readAllFiles(FileConfig fileConfig) throws IOException {
         List<File> fileList = new ArrayList<>();
         readFiles(fileConfig, fileList, fileConfig.getInFile());
+        fileConfig.setInFile(null);
         return fileList;
     }
 

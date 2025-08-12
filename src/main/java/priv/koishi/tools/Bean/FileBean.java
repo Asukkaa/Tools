@@ -145,7 +145,7 @@ public class FileBean implements Indexable {
         try {
             String path = getPath();
             if (isImgFile(new File(path))) {
-                // 终止进行中的服务
+                // 终止进行中的线程
                 if (currentThumbThread != null && currentThumbThread.isAlive()) {
                     currentThumbThread.interrupt();
                 }
@@ -201,6 +201,18 @@ public class FileBean implements Indexable {
             type = "";
         }
         return getName() + type;
+    }
+
+    /**
+     * 清理资源
+     */
+    public void clearResources() {
+        if (currentThumbThread != null && currentThumbThread.isAlive()) {
+            currentThumbThread.interrupt();
+            currentThumbThread = null;
+        }
+        thumb = null;
+        tempFile = null;
     }
 
     /**

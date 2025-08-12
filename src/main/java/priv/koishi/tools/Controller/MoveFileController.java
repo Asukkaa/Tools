@@ -345,6 +345,7 @@ public class MoveFileController extends RootController {
      */
     @FXML
     private void removeAll() {
+        tableView_MV.getItems().stream().parallel().forEach(FileBean::clearResources);
         removeTableViewData(tableView_MV, fileNumber_MV, log_MV);
     }
 

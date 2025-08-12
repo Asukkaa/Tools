@@ -1119,7 +1119,7 @@ public class FileRenameController extends RootController {
      */
     @FXML
     private void removeAll() {
-        tableView_Re.getItems().stream().parallel().forEach(i -> i.setThumb(null));
+        tableView_Re.getItems().stream().parallel().forEach(FileBean::clearResources);
         removeTableViewData(tableView_Re, fileNumber_Re, log_Re);
     }
 
