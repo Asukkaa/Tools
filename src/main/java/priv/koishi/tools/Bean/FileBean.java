@@ -182,15 +182,6 @@ public class FileBean implements Indexable {
     }
 
     /**
-     * 释放图片资源
-     */
-    public void releaseThumb() {
-        if (thumb != null) {
-            thumb = null;
-        }
-    }
-
-    /**
      * 获取完整重命名
      *
      * @return 完整重命名

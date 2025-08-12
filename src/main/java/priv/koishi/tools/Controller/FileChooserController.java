@@ -215,7 +215,7 @@ public class FileChooserController extends RootController {
             readAllFilesTask.cancel();
             readAllFilesTask = null;
         }
-        tableView_FC.getItems().stream().parallel().forEach(FileBean::releaseThumb);
+        tableView_FC.getItems().stream().parallel().forEach(i -> i.setThumb(null));
         removeTableViewData(tableView_FC, fileNumber_FC, null);
     }
 

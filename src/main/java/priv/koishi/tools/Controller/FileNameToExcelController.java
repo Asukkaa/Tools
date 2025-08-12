@@ -529,7 +529,7 @@ public class FileNameToExcelController extends RootController {
      */
     @FXML
     private void removeAll() {
-        tableView_Name.getItems().stream().parallel().forEach(FileBean::releaseThumb);
+        tableView_Name.getItems().stream().parallel().forEach(i -> i.setThumb(null));
         removeTableViewData(tableView_Name, fileNumber_Name, log_Name);
     }
 
