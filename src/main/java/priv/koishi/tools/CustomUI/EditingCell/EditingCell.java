@@ -53,7 +53,7 @@ public class EditingCell<T> extends TableCell<T, String> {
     private boolean integerRange;
 
     /**
-     * 输入框文本改变监听器
+     * 输入框文本改变监听器（限制只能输入数字）
      */
     private ChangeListener<String> textChangeListener;
 
@@ -61,6 +61,11 @@ public class EditingCell<T> extends TableCell<T, String> {
      * 输入框失去焦点时,提交编辑监听器
      */
     private ChangeListener<? super Boolean> textFocusedPropertyListener;
+
+    /**
+     * 输入框文本改变监听器（更新鼠标悬浮提示）
+     */
+    private ChangeListener<String> stringChangeListener;
 
     /**
      * 单元格列名
@@ -101,6 +106,8 @@ public class EditingCell<T> extends TableCell<T, String> {
             if (Objects.isNull(textField)) {
                 createTextField();
             }
+            // 绑定监听器
+            bindListeners();
             setText(null);
             setGraphic(textField);
             textField.selectAll();
@@ -194,24 +201,34 @@ public class EditingCell<T> extends TableCell<T, String> {
     private void createTextField() {
         textField = new TextField(getString());
         textField.setMinWidth(getWidth() - getGraphicTextGap() * 2);
-        textFieldValueListener(textField, tip);
-        // 限制只能输入整数
-        if (integerRange) {
-            textChangeListener = (observable, oldValue, newValue) -> {
-                if (!isInIntegerRange(newValue, min, max) && StringUtils.isNotBlank(newValue)) {
-                    textField.setText(oldValue);
+        addValueToolTip(textField, tip + tableColumnText);
+    }
+
+    /**
+     * 绑定监听器
+     */
+    private void bindListeners() {
+        if (textField != null) {
+            // 先移除旧的再绑定新的
+            removeListeners();
+            stringChangeListener = textFieldValueListener(textField, tip);
+            // 限制只能输入整数
+            if (integerRange) {
+                textChangeListener = (observable, oldValue, newValue) -> {
+                    if (!isInIntegerRange(newValue, min, max) && StringUtils.isNotBlank(newValue)) {
+                        textField.setText(oldValue);
+                    }
+                };
+                textField.textProperty().addListener(textChangeListener);
+            }
+            // 输入框失去焦点时,提交编辑
+            textFocusedPropertyListener = (ob, old, now) -> {
+                if (!now) {
+                    commitEdit(textField.getText());
                 }
             };
-            textField.textProperty().addListener(textChangeListener);
+            textField.focusedProperty().addListener(textFocusedPropertyListener);
         }
-        // 输入框失去焦点时,提交编辑
-        textFocusedPropertyListener = (ob, old, now) -> {
-            if (!now) {
-                commitEdit(textField.getText());
-            }
-        };
-        textField.focusedProperty().addListener(textFocusedPropertyListener);
-        addValueToolTip(textField, tip + tableColumnText);
     }
 
     /**
@@ -234,6 +251,10 @@ public class EditingCell<T> extends TableCell<T, String> {
         if (textField != null && textChangeListener != null) {
             textField.textProperty().removeListener(textChangeListener);
             textChangeListener = null;
+        }
+        if (textField != null && stringChangeListener != null) {
+            textField.textProperty().removeListener(stringChangeListener);
+            stringChangeListener = null;
         }
     }
 
