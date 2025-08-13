@@ -140,10 +140,11 @@ public class FileRenameController extends RootController {
 
     @FXML
     public ChoiceBox<String> hideFileType_Re, directoryNameType_Re, renameType_Re, subCode_Re, differenceCode_Re,
-            targetStr_Re, leftBehavior_Re, rightBehavior_Re, renameBehavior_Re, renameFileType_Re, addFileType_Re;
+            targetStr_Re, leftBehavior_Re, rightBehavior_Re, renameBehavior_Re, renameFileType_Re, addFileType_Re,
+            sheetName_Re;
 
     @FXML
-    public TextField sheetName_Re, filterFileType_Re, readRow_Re, readCell_Re, maxRow_Re, startName_Re, nameNum_Re,
+    public TextField filterFileType_Re, readRow_Re, readCell_Re, maxRow_Re, startName_Re, nameNum_Re,
             startSize_Re, left_Re, right_Re, renameStr_Re, leftValue_Re, rightValue_Re, renameValue_Re, tag_Re,
             renameFileTypeText_Re;
 
@@ -292,7 +293,6 @@ public class FileRenameController extends RootController {
      * @param prop 配置文件
      */
     private void saveLastConfigByExcelRename(Properties prop) {
-        prop.put(key_lastSheetName, sheetName_Re.getText());
         prop.put(key_lastReadRow, readRow_Re.getText());
         prop.put(key_lastReadCell, readCell_Re.getText());
         prop.put(key_lastMaxRow, maxRow_Re.getText());
@@ -485,9 +485,8 @@ public class FileRenameController extends RootController {
             readFileTask.setOnSucceeded(event -> {
                 if (text_excelRename.equals(renameType_Re.getValue()) && StringUtils.isNotBlank(excelPath_Re.getText())) {
                     readExcelRename();
-                } else {
-                    taskUnbind(taskBean);
                 }
+                taskUnbind(taskBean);
                 readFileTask = null;
             });
             readFileTask.setOnFailed(event -> {
@@ -537,21 +536,28 @@ public class FileRenameController extends RootController {
             excelConfig.setReadCellNum(setDefaultIntValue(readCell_Re, defaultReadCell, 0, null))
                     .setReadRowNum(setDefaultIntValue(readRow_Re, defaultReadRow, 0, null))
                     .setMaxRowNum(setDefaultIntValue(maxRow_Re, -1, 1, null))
-                    .setSheetName(sheetName_Re.getText())
-                    .setInPath(excelPath_Re.getText());
+                    .setSheetName(sheetName_Re.getValue())
+                    .setInPath(excelInPath);
             TaskBean<FileNumBean> taskBean = new TaskBean<>();
             taskBean.setDisableNodes(disableNodes)
                     .setProgressBar(progressBar_Re)
                     .setReturnRenameList(true)
                     .setMassageLabel(log_Re)
                     .setShowFileType(false)
+                    .setSheet(sheetName_Re)
                     .setTabId(tabId);
             // 获取Task任务
             readExcelTask = readExcel(excelConfig, taskBean);
+            // 绑定带进度条的线程
+            bindingTaskNode(readExcelTask, taskBean);
             readExcelTask.setOnSucceeded(event -> {
                 List<String> excelRenameList = readExcelTask.getValue().stream().map(FileNumBean::getGroupName).toList();
                 ObservableList<FileBean> fileBeanList = tableView_Re.getItems();
-                showMatchExcelData(taskBean, fileBeanList, excelRenameList);
+                if (CollectionUtils.isNotEmpty(fileBeanList) && CollectionUtils.isNotEmpty(excelRenameList)) {
+                    matchExcelRename(fileBeanList, excelRenameList);
+                }
+                taskUnbind(taskBean);
+                updateLabel(log_Re, "");
                 readExcelTask = null;
             });
             readExcelTask.setOnFailed(event -> {
@@ -559,34 +565,12 @@ public class FileRenameController extends RootController {
                 readExcelTask = null;
                 throw new RuntimeException(event.getSource().getException());
             });
-            // 绑定带进度条的线程
-            bindingTaskNode(readExcelTask, taskBean);
             // 使用新线程启动
             if (!readExcelTask.isRunning()) {
                 Thread.ofVirtual()
                         .name("readExcelTask-vThread" + tabId)
                         .start(readExcelTask);
             }
-        }
-    }
-
-    /**
-     * 展示读取excel重命名数据
-     *
-     * @param taskBean        带有需要解绑的线程ui组件的线程参数类
-     * @param fileBeanList    读取的文件信息
-     * @param excelRenameList 读取的excel数据
-     */
-    private void showMatchExcelData(TaskBean<?> taskBean, ObservableList<? extends FileBean> fileBeanList, List<String> excelRenameList) {
-        if (CollectionUtils.isNotEmpty(fileBeanList) && CollectionUtils.isNotEmpty(excelRenameList)) {
-            matchExcelRename(fileBeanList, excelRenameList);
-        }
-        // 表格设置为可编辑
-        tableView_Re.setEditable(true);
-        rename_Re.setCellFactory((tableColumn) -> new EditingCell<>(FileBean::setRename));
-        taskUnbind(taskBean);
-        if (taskBean.getMassageLabel() == log_Re) {
-            log_Re.setText("");
         }
     }
 
@@ -753,8 +737,6 @@ public class FileRenameController extends RootController {
         textFieldValueListener(leftValue_Re, tip_leftValue);
         // 指定字符串所替换的字符串鼠标悬停提示
         textFieldValueListener(renameStr_Re, tip_renameStr);
-        // 鼠标悬留提示输入的导出excel表名称
-        textFieldValueListener(sheetName_Re, tip_sheetName);
         // 给目标字符串左侧替换或插入输入框添加鼠标悬停提示
         textFieldValueListener(rightValue_Re, tip_rightValue);
         // 限制相同编号文件起始尾缀输入框内容
@@ -1226,6 +1208,7 @@ public class FileRenameController extends RootController {
         File selectedFile = creatFileChooser(window, excelInPath, extensionFilters, text_selectExcel);
         if (selectedFile != null) {
             excelInPath = updatePathLabel(selectedFile.getAbsolutePath(), excelInPath, key_excelInPath, excelPath_Re, configFile_Rename);
+            sheetName_Re.getItems().clear();
             readExcelRename();
         }
     }
@@ -1438,11 +1421,11 @@ public class FileRenameController extends RootController {
                     }
                 }
             }
-            // 表格设置为可编辑
-            tableView_Re.setEditable(true);
-            rename_Re.setCellFactory((tableColumn) -> new EditingCell<>(FileBean::setRename));
-            tableView_Re.refresh();
         }
+        // 表格设置为可编辑
+        tableView_Re.setEditable(true);
+        rename_Re.setCellFactory((tableColumn) -> new EditingCell<>(FileBean::setRename));
+        tableView_Re.refresh();
         updateLabel(log_Re, "");
     }
 
@@ -1547,6 +1530,19 @@ public class FileRenameController extends RootController {
                 directoryNameType_Re.setDisable(true);
             }
         });
+    }
+
+    /**
+     * 工作表名称选项监听
+     *
+     * @throws Exception 要读取的文件列表为空
+     */
+    @FXML
+    private void sheetNameAction() throws Exception {
+        ObservableList<FileBean> fileBeans = tableView_Re.getItems();
+        if (CollectionUtils.isNotEmpty(fileBeans)) {
+            updateRename();
+        }
     }
 
 }

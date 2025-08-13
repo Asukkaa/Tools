@@ -70,11 +70,6 @@ public class FileNumToExcelController extends RootController {
     private static String defaultOutFileName;
 
     /**
-     * 默认读取表名称
-     */
-    private static String defaultSheetName;
-
-    /**
      * excel模板路径
      */
     private static String excelInPath;
@@ -127,7 +122,7 @@ public class FileNumToExcelController extends RootController {
     public TableView<FileNumBean> tableView_Num;
 
     @FXML
-    public ChoiceBox<String> hideFileType_Num, directoryNameType_Num;
+    public ChoiceBox<String> hideFileType_Num, directoryNameType_Num, sheetName_Num;
 
     @FXML
     public TableColumn<FileNumBean, Integer> groupName_Num, groupNumber_Num, index_Num;
@@ -147,8 +142,8 @@ public class FileNumToExcelController extends RootController {
             exportTitle_Num, exportFileNum_Num, exportFileSize_Num;
 
     @FXML
-    public TextField excelName_Num, sheetName_Num, startRow_Num, startCell_Num, filterFileType_Num,
-            subCode_Num, readRow_Num, readCell_Num, maxRow_Num;
+    public TextField excelName_Num, startRow_Num, startCell_Num, filterFileType_Num, subCode_Num, readRow_Num,
+            readCell_Num, maxRow_Num;
 
     /**
      * 组件自适应宽高
@@ -199,7 +194,6 @@ public class FileNumToExcelController extends RootController {
             String openFileValue = openFile_Num.isSelected() ? activation : unActivation;
             prop.put(key_lastOpenFile, openFileValue);
             prop.put(key_lastExcelName, excelName_Num.getText());
-            prop.put(key_lastSheetName, sheetName_Num.getText());
             prop.put(key_lastSubCode, subCode_Num.getText());
             prop.put(key_lastStartRow, startRow_Num.getText());
             prop.put(key_lastStartCell, startCell_Num.getText());
@@ -273,6 +267,7 @@ public class FileNumToExcelController extends RootController {
                 .setDisableNodes(disableNodes)
                 .setTableView(tableView_Num)
                 .setInFileList(inFileList)
+                .setSheet(sheetName_Num)
                 .setTabId(tabId);
         return taskBean;
     }
@@ -325,7 +320,7 @@ public class FileNumToExcelController extends RootController {
         excelConfig.setReadCellNum(setDefaultIntValue(readCell_Num, defaultReadCell, 0, null))
                 .setReadRowNum(setDefaultIntValue(readRow_Num, defaultReadRow, 0, null))
                 .setMaxRowNum(setDefaultIntValue(maxRow_Num, -1, 1, null))
-                .setSheetName(sheetName_Num.getText())
+                .setSheetName(sheetName_Num.getValue())
                 .setInPath(excelInPath);
         taskBean.setInFileList(inFileList);
         // 获取Task任务
@@ -367,7 +362,6 @@ public class FileNumToExcelController extends RootController {
         inFilePath = prop.getProperty(key_inFilePath);
         excelInPath = prop.getProperty(key_excelInPath);
         outFilePath = prop.getProperty(key_outFilePath);
-        defaultSheetName = prop.getProperty(key_defaultSheetName);
         defaultOutFileName = prop.getProperty(key_defaultOutFileName);
         defaultReadRow = Integer.parseInt(prop.getProperty(key_defaultReadRow));
         defaultReadCell = Integer.parseInt(prop.getProperty(key_defaultReadCell));
@@ -438,7 +432,6 @@ public class FileNumToExcelController extends RootController {
         addToolTip(tip_openFile, openFile_Num);
         addToolTip(tip_recursion, recursion_Num);
         addToolTip(tip_sheetName, sheetName_Num);
-        addToolTip(tip_excelName + defaultOutFileName, excelName_Num);
         addToolTip(tip_startReadRow, startRow_Num);
         addToolTip(tip_fileButton, fileButton_Num);
         addToolTip(tip_learButton, clearButton_Num);
@@ -455,6 +448,7 @@ public class FileNumToExcelController extends RootController {
         addToolTip(tip_excelPathButton, excelPathButton_Num);
         addToolTip(tip_directoryNameType, directoryNameType_Num);
         addToolTip(tip_excelType, excelType_Num, excelTypeLabel_Num);
+        addToolTip(tip_excelName + defaultOutFileName, excelName_Num);
         addToolTip(text_onlyNaturalNumber + defaultStartCell, startCell_Num);
         addToolTip(text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row, readRow_Num);
         addToolTip(text_onlyNaturalNumber + defaultReadCell + text_formThe + (defaultReadCell + 1) + text_cell, readCell_Num);
@@ -466,8 +460,6 @@ public class FileNumToExcelController extends RootController {
     private void textFieldChangeListener() {
         // 鼠标悬留提示输入的文件名称分割符
         textFieldValueListener(subCode_Num, tip_subCode);
-        // 鼠标悬留提示输入的导出excel表名称
-        textFieldValueListener(sheetName_Num, tip_sheetName);
         // 鼠标悬留提示输入的需要识别的文件后缀名
         textFieldValueListener(filterFileType_Num, tip_filterFileType);
         // 限制读取最大行数只能输入正整数
@@ -553,6 +545,7 @@ public class FileNumToExcelController extends RootController {
         List<File> files = dragEvent.getDragboard().getFiles();
         File file = files.getFirst();
         excelPath_Num.setText(file.getPath());
+        sheetName_Num.getItems().clear();
         addInData(null);
     }
 
@@ -610,11 +603,11 @@ public class FileNumToExcelController extends RootController {
             excelConfig.setStartCellNum(setDefaultIntValue(startCell_Num, defaultStartCell, 0, null))
                     .setStartRowNum(setDefaultIntValue(startRow_Num, readRowValue, 0, null))
                     .setOutName(setDefaultFileName(excelName_Num, defaultOutFileName))
-                    .setSheetName(setDefaultStrValue(sheetName_Num, defaultSheetName))
                     .setExportFileSize(exportFileSize_Num.isSelected())
                     .setExportFileNum(exportFileNum_Num.isSelected())
                     .setExportTitle(exportTitle_Num.isSelected())
                     .setOutExcelType(excelType_Num.getText())
+                    .setSheetName(sheetName_Num.getValue())
                     .setOutPath(outFilePath)
                     .setInPath(inFilePath);
             addInData(() -> {
@@ -674,6 +667,7 @@ public class FileNumToExcelController extends RootController {
         if (selectedFile != null) {
             // 更新所选文件路径显示
             excelInPath = updatePathLabel(selectedFile.getPath(), excelInPath, key_excelInPath, excelPath_Num, configFile_Num);
+            sheetName_Num.getItems().clear();
             addInData(null);
         }
     }
@@ -690,7 +684,7 @@ public class FileNumToExcelController extends RootController {
             throw new Exception(text_excelPathNull);
         }
         if (!new File(inFilePath).exists()) {
-            throw new Exception(text_directoryNotExists);
+            throw new Exception(text_excelNotExists);
         }
         updateLabel(log_Num, "");
         addInData(null);
@@ -707,6 +701,16 @@ public class FileNumToExcelController extends RootController {
         if (CollectionUtils.isNotEmpty(fileBeans)) {
             reselect();
         }
+    }
+
+    /**
+     * 工作表名称选项监听
+     *
+     * @throws Exception excel模板文件位置为空、要读取的文件夹不存在
+     */
+    @FXML
+    private void sheetNameAction() throws Exception {
+        reselect();
     }
 
 }

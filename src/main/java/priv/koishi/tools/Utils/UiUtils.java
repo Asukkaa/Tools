@@ -298,20 +298,31 @@ public class UiUtils {
     }
 
     /**
-     * 设置默认字符串值
+     * 设置默认sheet名称
      *
-     * @param textField    要设置默认字符串的文本输入框
-     * @param defaultValue 默认字符串
+     * @param textField    要设置默认sheet名称的文本输入框
+     * @param defaultValue 默认sheet名称
      * @return 文本输入框不为空则返回所填值，为空则为默认值
      */
-    public static String setDefaultStrValue(TextField textField, String defaultValue) {
+    public static String setDefaultSheetName(TextField textField, String defaultValue) {
         String valueStr = textField.getText();
         String value = defaultValue;
         if (StringUtils.isNotBlank(valueStr)) {
             value = valueStr;
         }
+        if (value.length() > 31) {
+            value = valueStr;
+        }
+        if (value.startsWith("'") || value.endsWith("'")) {
+            value = valueStr;
+        }
+        // 校验 : \ / ? * [ ]
+        if (value.matches(".*[\\\\:/?*\\[\\]].*")) {
+            value = valueStr;
+        }
         return value;
     }
+
 
     /**
      * 设置默认文件名

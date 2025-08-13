@@ -39,7 +39,8 @@
             <TextField fx:id="excelName_Img" prefHeight="20" prefWidth="160"/>
 
             <Label prefHeight="25" text="excel表名称:"/>
-            <TextField fx:id="sheetName_Img" prefHeight="20" prefWidth="160"/>
+            <ChoiceBox fx:id="sheetName_Img" prefHeight="25" prefWidth="160" onAction="#sheetNameAction"
+                       style="-fx-cursor: hand"/>
 
             <Label prefHeight="25" text="文件名称分割符:"/>
             <TextField fx:id="subCode_Img" prefHeight="20" prefWidth="100"/>

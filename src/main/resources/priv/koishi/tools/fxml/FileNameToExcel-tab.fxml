@@ -42,6 +42,8 @@
             <CheckBox fx:id="showFileType_Name" onAction="#handleCheckBoxAction" prefHeight="25" style="-fx-cursor: hand" text="显示文件拓展名"/>
             <CheckBox fx:id="exportTitle_Name" prefHeight="25" selected="true" style="-fx-cursor: hand" text="导出表头"/>
             <CheckBox fx:id="exportFullList_Name" prefHeight="25" selected="true" style="-fx-cursor: hand" text="导出完整数据"/>
+            <CheckBox fx:id="openDirectory_Name" prefHeight="25" selected="true" style="-fx-cursor: hand" text="导出后打开文件夹"/>
+            <CheckBox fx:id="openFile_Name" prefHeight="25" style="-fx-cursor: hand" text="导出后打开excel文件"/>
         </HBox>
 
         <HBox spacing="10">
@@ -49,23 +51,18 @@
             <TextField fx:id="excelName_Name" prefHeight="20" prefWidth="160"/>
 
             <Label prefHeight="25" text="excel表名称:"/>
-            <TextField fx:id="sheetName_Name" prefHeight="20" prefWidth="160"/>
-
-            <Label fx:id="excelTypeLabel_Name" prefHeight="25" text="导出excel文件类型:"/>
-            <ChoiceBox fx:id="excelType_Name" prefHeight="20" prefWidth="60" style="-fx-cursor: hand">
-                <items>
-                    <FXCollections fx:factory="observableArrayList">
-                        <String fx:value=".xlsx"/>
-                        <String fx:value=".xls"/>
-                    </FXCollections>
-                </items>
+            <ChoiceBox fx:id="sheetName_Name" prefHeight="20" prefWidth="160" onAction="#sheetNameAction"
+                       style="-fx-cursor: hand">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="*创建一个新表"/>
+                        </FXCollections>
+                    </items>
                 <value>
-                    <String fx:value=".xlsx"/>
+                    <String fx:value="*创建一个新表"/>
                 </value>
             </ChoiceBox>
-
-            <CheckBox fx:id="openDirectory_Name" prefHeight="25" selected="true" style="-fx-cursor: hand" text="导出后打开文件夹"/>
-            <CheckBox fx:id="openFile_Name" prefHeight="25" style="-fx-cursor: hand" text="导出后打开excel文件"/>
+            <TextField fx:id="sheetNameInput_Name" prefHeight="20" prefWidth="160"/>
         </HBox>
 
         <HBox spacing="10">
@@ -105,6 +102,18 @@
             <Button fx:id="reselectButton_Name" onAction="#reselect" styleClass="cadetblue-button" text="重新查询"/>
             <Button fx:id="clearButton_Name" onAction="#removeAll" style="-fx-cursor: hand" text="清空列表"/>
             <Button fx:id="exportButton_Name" onAction="#exportAll" styleClass="cornflowerblue-button" text="开始导出"/>
+            <Label fx:id="excelTypeLabel_Name" prefHeight="25" text="导出excel文件类型:"/>
+            <ChoiceBox fx:id="excelType_Name" prefHeight="20" prefWidth="60" style="-fx-cursor: hand">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value=".xlsx"/>
+                        <String fx:value=".xls"/>
+                    </FXCollections>
+                </items>
+                <value>
+                    <String fx:value=".xlsx"/>
+                </value>
+            </ChoiceBox>
 
             <Label fx:id="fileNumber_Name" alignment="CENTER_RIGHT" prefHeight="20" text="列表为空"/>
         </HBox>

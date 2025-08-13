@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TableView;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -89,6 +90,38 @@ public class ReadDataService {
     }
 
     /**
+     * 构建excel表名下拉框
+     *
+     * @param workbook       excel工作簿
+     * @param sheetChoiceBox 要填充选项的excel表名下拉框
+     * @return 第一个excel表名称
+     */
+    public static String buildSheetChoiceBox(Workbook workbook, ChoiceBox<String> sheetChoiceBox) {
+        int sheetCount = workbook.getNumberOfSheets();
+        List<String> sheetNames = new ArrayList<>(sheetCount);
+        for (int i = 0; i < sheetCount; i++) {
+            sheetNames.add(workbook.getSheetName(i));
+        }
+        String firstSheetName = sheetNames.getFirst();
+        if (sheetChoiceBox != null) {
+            String name = sheetChoiceBox.getValue();
+            Platform.runLater(() -> {
+                sheetChoiceBox.getItems().clear();
+                sheetChoiceBox.getItems().addAll(sheetNames);
+                if (text_newSheet.equals(name)) {
+                    sheetChoiceBox.getItems().add(text_newSheet);
+                    sheetChoiceBox.setValue(name);
+                } else if (!sheetNames.contains(name)) {
+                    sheetChoiceBox.setValue(firstSheetName);
+                } else {
+                    sheetChoiceBox.setValue(name);
+                }
+            });
+        }
+        return firstSheetName;
+    }
+
+    /**
      * 读取excel分组信息
      *
      * @param excelConfig excel读取设置
@@ -103,26 +136,23 @@ public class ReadDataService {
                 changeDisableNodes(taskBean, true);
                 updateMessage(text_readData);
                 List<FileNumBean> fileNumBeanList = new ArrayList<>();
-                String excelInPath = excelConfig.getInPath();
                 String sheetName = excelConfig.getSheetName();
                 int readRow = excelConfig.getReadRowNum();
                 int readCell = excelConfig.getReadCellNum();
                 int maxRow = excelConfig.getMaxRowNum();
+                String excelInPath = excelConfig.getInPath();
                 checkFileExists(excelInPath, text_excelNotExists);
                 Workbook workbook = getWorkbook(excelInPath);
-                int sheetCount = workbook.getNumberOfSheets();
-                List<String> sheetNames = new ArrayList<>(sheetCount);
-                for (int i = 0; i < sheetCount; i++) {
-                    sheetNames.add(workbook.getSheetName(i));
-                }
+                // 构建excel表名下拉框并获取第一个表名
+                String firstSheetName = buildSheetChoiceBox(workbook, taskBean.getSheet());
                 // 读取指定sheet
                 Sheet sheet;
                 if (StringUtils.isBlank(sheetName)) {
-                    sheet = workbook.getSheet(sheetNames.getFirst());
+                    sheet = workbook.getSheet(firstSheetName);
                 } else {
                     sheet = workbook.getSheet(sheetName);
                     if (sheet == null) {
-                        throw new Exception("未读取到名称为 " + sheetName + " 的表");
+                        throw new RuntimeException("未读取到名称为 " + sheetName + " 的表");
                     }
                 }
                 // 获取有文字的最后一行行号
@@ -138,7 +168,7 @@ public class ReadDataService {
                         }
                     }
                     if (i == 0 && lastRowNum != i) {
-                        throw new Exception("未读取到excel模板分组信息");
+                        throw new RuntimeException("未读取到excel模板分组信息");
                     }
                 }
                 // 获取要读取的最后一行
@@ -166,7 +196,7 @@ public class ReadDataService {
                 // 如果是文件重命名的excel模板则无需匹配数据
                 if (taskBean.isReturnRenameList()) {
                     if (CollectionUtils.isEmpty(fileNumBeanList)) {
-                        throw new Exception(text_selectNull);
+                        throw new RuntimeException(text_selectNull);
                     }
                     return fileNumBeanList;
                 }
@@ -196,7 +226,7 @@ public class ReadDataService {
      * @return 根据不同格式excel创建的作簿
      * @throws Exception 文件格式不支持、文件不存在
      */
-    private static Workbook getWorkbook(String excelInPath) throws Exception {
+    public static Workbook getWorkbook(String excelInPath) throws Exception {
         String excelType = getFileType(new File(excelInPath));
         Workbook workbook = null;
         try (InputStream inputStream = Files.newInputStream(Paths.get(excelInPath))) {

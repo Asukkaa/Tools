@@ -35,11 +35,11 @@ import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.MainApplication.mainScene;
 import static priv.koishi.tools.MainApplication.mainStage;
 import static priv.koishi.tools.Service.FileNameToExcelService.buildFileNameExcel;
-import static priv.koishi.tools.Service.ReadDataService.readAllFilesTask;
-import static priv.koishi.tools.Service.ReadDataService.readFile;
+import static priv.koishi.tools.Service.ReadDataService.*;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
+import static priv.koishi.tools.Utils.UiUtils.addToolTip;
 
 /**
  * 获取文件夹下的文件信息页面控制器
@@ -123,10 +123,10 @@ public class FileNameToExcelController extends RootController {
             creatDate_Name, updateDate_Name, showStatus_Name;
 
     @FXML
-    public ChoiceBox<String> excelType_Name, hideFileType_Name, directoryNameType_Name;
+    public ChoiceBox<String> excelType_Name, hideFileType_Name, directoryNameType_Name, sheetName_Name;
 
     @FXML
-    public TextField excelName_Name, sheetName_Name, startRow_Name, startCell_Name, filterFileType_Name;
+    public TextField excelName_Name, sheetNameInput_Name, startRow_Name, startCell_Name, filterFileType_Name;
 
     @FXML
     public Label outPath_Name, excelPath_Name, fileNumber_Name, inPath_Name, log_Name, tip_Name, excelTypeLabel_Name;
@@ -177,7 +177,7 @@ public class FileNameToExcelController extends RootController {
             String openFileValue = openFile_Name.isSelected() ? activation : unActivation;
             prop.put(key_lastOpenFile, openFileValue);
             prop.put(key_lastExcelName, excelName_Name.getText());
-            prop.put(key_lastSheetName, sheetName_Name.getText());
+            prop.put(key_lastSheetName, sheetNameInput_Name.getText());
             prop.put(key_lastExcelType, excelType_Name.getValue());
             prop.put(key_lastStartRow, startRow_Name.getText());
             prop.put(key_lastStartCell, startCell_Name.getText());
@@ -266,23 +266,23 @@ public class FileNameToExcelController extends RootController {
         InputStream input = checkRunningInputStream(configFile_Name);
         prop.load(input);
         if (activation.equals(prop.getProperty(key_loadLastConfig))) {
+            setControlLastConfig(inPath_Name, prop, key_lastInPath);
+            setControlLastConfig(outPath_Name, prop, key_lastOutPath);
             setControlLastConfig(openFile_Name, prop, key_lastOpenFile);
             setControlLastConfig(startRow_Name, prop, key_lastStartRow);
+            setControlLastConfig(excelPath_Name, prop, key_lastExcelPath);
             setControlLastConfig(excelName_Name, prop, key_lastExcelName);
-            setControlLastConfig(sheetName_Name, prop, key_lastSheetName);
             setControlLastConfig(excelType_Name, prop, key_lastExcelType);
             setControlLastConfig(startCell_Name, prop, key_lastStartCell);
             setControlLastConfig(recursion_Name, prop, key_lastRecursion);
             setControlLastConfig(exportTitle_Name, prop, key_lastExportTitle);
+            setControlLastConfig(sheetNameInput_Name, prop, key_lastSheetName);
             setControlLastConfig(showFileType_Name, prop, key_lastShowFileType);
             setControlLastConfig(hideFileType_Name, prop, key_lastHideFileType);
             setControlLastConfig(openDirectory_Name, prop, key_lastOpenDirectory);
             setControlLastConfig(exportFullList_Name, prop, key_lastExportFullList);
             setControlLastConfig(filterFileType_Name, prop, key_lastFilterFileType);
-            setControlLastConfig(inPath_Name, prop, key_lastInPath);
-            setControlLastConfig(outPath_Name, prop, key_lastOutPath);
             setControlLastConfig(directoryNameType_Name, prop, key_lastDirectoryNameType);
-            setControlLastConfig(excelPath_Name, prop, key_lastExcelPath);
             String excelPath = prop.getProperty(key_lastExcelPath);
             if (StringUtils.isNotBlank(excelPath)) {
                 removeExcelButton_Name.setVisible(true);
@@ -335,6 +335,7 @@ public class FileNameToExcelController extends RootController {
         addToolTip(tip_excelType, excelType_Name, excelTypeLabel_Name);
         addToolTip(tip_excelName + defaultOutFileName, excelName_Name);
         addToolTip(text_onlyNaturalNumber + defaultStartCell, startCell_Name);
+        addToolTip(tip_sheetNameInput + defaultSheetName, sheetNameInput_Name);
     }
 
     /**
@@ -357,13 +358,13 @@ public class FileNameToExcelController extends RootController {
      */
     private void textFieldChangeListener() {
         // 鼠标悬留提示输入的需要识别的文件后缀名
-        textFieldValueListener(sheetName_Name, tip_sheet);
-        // 鼠标悬留提示输入的需要识别的文件后缀名
         textFieldValueListener(filterFileType_Name, tip_filterFileType);
         // 限制导出预留行只能输入自然数
         integerRangeTextField(startRow_Name, 0, null, tip_startRow);
-        // 鼠标悬留提示输入的需要识别的文件后缀名
+        // 鼠标悬留提示输入的excel文件名称
         textFieldValueListener(excelName_Name, tip_excelName + defaultOutFileName);
+        // 鼠标悬留提示输入的表格名称
+        textFieldValueListener(sheetNameInput_Name, tip_sheetNameInput + defaultSheetName);
         // 限制导出预留列只能输入自然数
         integerRangeTextField(startCell_Name, 0, null, text_onlyNaturalNumber + defaultStartCell);
     }
@@ -420,6 +421,16 @@ public class FileNameToExcelController extends RootController {
                     .name("readFileTask-vThread" + tabId)
                     .start(readFileTask);
         }
+    }
+
+    /**
+     * 更新excel sheet名称
+     * @throws Exception 文件格式不支持、文件不存在
+     */
+    private void updateSheetName() throws Exception {
+        sheetName_Name.setValue(text_newSheet);
+        Workbook workbook = getWorkbook(excelInPath);
+        buildSheetChoiceBox(workbook, sheetName_Name);
     }
 
     /**
@@ -551,16 +562,20 @@ public class FileNameToExcelController extends RootController {
                 throw new Exception(text_fileListNull);
             }
             updateLabel(log_Name, "");
+            String sheetName = sheetName_Name.getValue();
+            if (text_newSheet.equals(sheetName)) {
+                sheetName = setDefaultSheetName(sheetNameInput_Name, defaultSheetName);
+            }
             ExcelConfig excelConfig = new ExcelConfig();
             excelConfig.setStartCellNum(setDefaultIntValue(startCell_Name, defaultStartCell, 0, null))
                     .setStartRowNum(setDefaultIntValue(startRow_Name, 0, 0, null))
                     .setOutName(setDefaultFileName(excelName_Name, defaultOutFileName))
-                    .setSheetName(setDefaultStrValue(sheetName_Name, defaultSheetName))
                     .setExportFullList(exportFullList_Name.isSelected())
-                    .setOutExcelType(excelType_Name.getValue())
                     .setExportTitle(exportTitle_Name.isSelected())
+                    .setOutExcelType(excelType_Name.getValue())
                     .setInPath(excelPath_Name.getText())
-                    .setOutPath(outFilePath);
+                    .setOutPath(outFilePath)
+                    .setSheetName(sheetName);
             TaskBean<FileBean> taskBean = new TaskBean<>();
             taskBean.setShowFileType(showFileType_Name.isSelected())
                     .setDisableNodes(disableNodes)
@@ -605,7 +620,7 @@ public class FileNameToExcelController extends RootController {
      * @throws IOException io异常
      */
     @FXML
-    private void getExcelPath(ActionEvent actionEvent) throws IOException {
+    private void getExcelPath(ActionEvent actionEvent) throws Exception {
         getConfig();
         List<FileChooser.ExtensionFilter> extensionFilters = new ArrayList<>();
         extensionFilters.add(new FileChooser.ExtensionFilter("Excel", "*.xlsx", "*.xls"));
@@ -616,6 +631,8 @@ public class FileNameToExcelController extends RootController {
         if (selectedFile != null) {
             // 更新所选文件路径显示
             excelInPath = updatePathLabel(selectedFile.getPath(), excelInPath, key_excelInPath, excelPath_Name, configFile_Name);
+            // 更新sheet名称
+            updateSheetName();
             removeExcelButton_Name.setVisible(true);
             String excelType = getFileType(selectedFile);
             excelType_Name.setValue(excelType);
@@ -638,6 +655,7 @@ public class FileNameToExcelController extends RootController {
             throw new Exception(text_directoryNotExists);
         }
         updateLabel(log_Name, "");
+        updateSheetName();
         FileConfig fileConfig = new FileConfig();
         fileConfig.setFilterExtensionList(getFilterExtensionList(filterFileType_Name))
                 .setShowDirectoryName(directoryNameType_Name.getValue())
@@ -669,6 +687,18 @@ public class FileNameToExcelController extends RootController {
         excelPath_Name.setTooltip(null);
         removeExcelButton_Name.setVisible(false);
         excelType_Name.setDisable(false);
+        sheetName_Name.getItems().clear();
+        sheetName_Name.getItems().add(text_newSheet);
+        sheetName_Name.setValue(text_newSheet);
+    }
+
+    /**
+     * 工作表名称选项监听
+     */
+    @FXML
+    public void sheetNameAction() {
+        String sheetName = sheetName_Name.getValue();
+        sheetNameInput_Name.setVisible(text_newSheet.equals(sheetName));
     }
 
 }

@@ -105,4 +105,9 @@ public class TaskBean<T> {
      */
     boolean bindingMassageLabel = true;
 
+    /**
+     * excel表名下拉框
+     */
+    ChoiceBox<String> sheet;
+
 }

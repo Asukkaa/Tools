@@ -80,11 +80,6 @@ public class ImgToExcelController extends RootController {
     private static String defaultOutFileName;
 
     /**
-     * 默认读取表名称
-     */
-    private static String defaultSheetName;
-
-    /**
      * excel模板路径
      */
     private static String excelInPath;
@@ -149,7 +144,7 @@ public class ImgToExcelController extends RootController {
     public HBox fileNumberHBox_Img, tipHBox_Img, linkHBox_Img, linkRightHBox_Img;
 
     @FXML
-    public ChoiceBox<String> hideFileType_Img, insertImgType_Img, linkNameType_Img;
+    public ChoiceBox<String> hideFileType_Img, insertImgType_Img, linkNameType_Img, sheetName_Img;
 
     @FXML
     public TableView<FileNumBean> tableView_Img;
@@ -169,8 +164,8 @@ public class ImgToExcelController extends RootController {
             outPathButton_Img, excelPathButton_Img;
 
     @FXML
-    public TextField imgWidth_Img, imgHeight_Img, excelName_Img, sheetName_Img, subCode_Img, startRow_Img,
-            startCell_Img, readRow_Img, readCell_Img, maxRow_Img, maxImgNum_Img, linkLeftName_Img, linkRightName_Img;
+    public TextField imgWidth_Img, imgHeight_Img, excelName_Img, subCode_Img, startRow_Img, startCell_Img,
+            readRow_Img, readCell_Img, maxRow_Img, maxImgNum_Img, linkLeftName_Img, linkRightName_Img;
 
     @FXML
     public CheckBox jpg_Img, png_Img, jpeg_Img, recursion_Img, showFileType_Img, openDirectory_Img, openFile_Img,
@@ -225,7 +220,6 @@ public class ImgToExcelController extends RootController {
             String openFileValue = openFile_Img.isSelected() ? activation : unActivation;
             prop.put(key_lastOpenFile, openFileValue);
             prop.put(key_lastExcelName, excelName_Img.getText());
-            prop.put(key_lastSheetName, sheetName_Img.getText());
             prop.put(key_lastSubCode, subCode_Img.getText());
             prop.put(key_lastStartRow, startRow_Img.getText());
             prop.put(key_lastStartCell, startCell_Img.getText());
@@ -280,7 +274,6 @@ public class ImgToExcelController extends RootController {
         inFilePath = prop.getProperty(key_inFilePath);
         excelInPath = prop.getProperty(key_excelInPath);
         outFilePath = prop.getProperty(key_outFilePath);
-        defaultSheetName = prop.getProperty(key_defaultSheetName);
         defaultOutFileName = prop.getProperty(key_defaultOutFileName);
         defaultReadRow = Integer.parseInt(prop.getProperty(key_defaultReadRow));
         defaultReadCell = Integer.parseInt(prop.getProperty(key_defaultReadCell));
@@ -414,7 +407,7 @@ public class ImgToExcelController extends RootController {
         excelConfig.setReadCellNum(setDefaultIntValue(readCell_Img, defaultReadCell, 0, null))
                 .setReadRowNum(setDefaultIntValue(readRow_Img, defaultReadRow, 0, null))
                 .setMaxRowNum(setDefaultIntValue(maxRow_Img, -1, 1, null))
-                .setSheetName(sheetName_Img.getText())
+                .setSheetName(sheetName_Img.getValue())
                 .setInPath(excelInPath);
         taskBean.setInFileList(inFileList);
         // 获取Task任务
@@ -465,6 +458,7 @@ public class ImgToExcelController extends RootController {
                 .setTableView(tableView_Img)
                 .setInFileList(inFileList)
                 .setMaxImgNum(maxImgNum)
+                .setSheet(sheetName_Img)
                 .setTabId(tabId);
         return taskBean;
     }
@@ -511,6 +505,7 @@ public class ImgToExcelController extends RootController {
      * 设置要防重复点击的组件
      */
     private void setDisableNodes() {
+        disableNodes.add(sheetName_Img);
         disableNodes.add(fileButton_Img);
         disableNodes.add(clearButton_Img);
         disableNodes.add(exportButton_Img);
@@ -544,8 +539,6 @@ public class ImgToExcelController extends RootController {
         integerRangeTextField(readRow_Img, 0, null, text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row);
         // 鼠标悬留提示输入的文件名称分割符
         textFieldValueListener(subCode_Img, tip_subCode);
-        // 鼠标悬留提示输入的导出excel表名称
-        textFieldValueListener(sheetName_Img, tip_sheetName);
         // 鼠标悬留提示输入的导出excel文件名称
         textFieldValueListener(excelName_Img, tip_excelName + defaultOutFileName);
         // 鼠标悬留提示输入的超链接左侧名称
@@ -704,6 +697,7 @@ public class ImgToExcelController extends RootController {
         List<File> files = dragEvent.getDragboard().getFiles();
         File file = files.getFirst();
         excelPath_Img.setText(file.getPath());
+        sheetName_Img.getItems().clear();
         try {
             addInData(null);
         } catch (Exception e) {
@@ -767,7 +761,6 @@ public class ImgToExcelController extends RootController {
                     .setStartRowNum(setDefaultIntValue(startRow_Img, readRowValue, 0, null))
                     .setImgWidth(setDefaultIntValue(imgWidth_Img, defaultImgWidth, 0, null))
                     .setOutName(setDefaultFileName(excelName_Img, defaultOutFileName))
-                    .setSheetName(setDefaultStrValue(sheetName_Img, defaultSheetName))
                     .setExportFileSize(exportFileSize_Img.isSelected())
                     .setExportFileNum(exportFileNum_Img.isSelected())
                     .setInsertImgType(insertImgType_Img.getValue())
@@ -776,6 +769,7 @@ public class ImgToExcelController extends RootController {
                     .setExportTitle(exportTitle_Img.isSelected())
                     .setLinkLeftName(linkLeftName_Img.getText())
                     .setOutExcelType(excelType_Img.getText())
+                    .setSheetName(sheetName_Img.getValue())
                     .setNoImg(noImg_Img.isSelected())
                     .setOutPath(outFilePath)
                     .setInPath(inFilePath);
@@ -887,6 +881,7 @@ public class ImgToExcelController extends RootController {
         if (selectedFile != null) {
             // 更新所选文件路径显示
             excelInPath = updatePathLabel(selectedFile.getPath(), excelInPath, key_excelInPath, excelPath_Img, configFile_Img);
+            sheetName_Img.getItems().clear();
             addInData(null);
         }
     }
@@ -903,7 +898,7 @@ public class ImgToExcelController extends RootController {
             throw new Exception(text_excelPathNull);
         }
         if (!new File(inFilePath).exists()) {
-            throw new Exception(text_directoryNotExists);
+            throw new Exception(text_excelNotExists);
         }
         updateLabel(log_Img, "");
         addInData(null);
@@ -968,6 +963,16 @@ public class ImgToExcelController extends RootController {
             linkName_Img.setText("超链接左侧名称:");
             linkRightHBox_Img.setVisible(true);
         }
+    }
+
+    /**
+     * 工作表名称选项监听
+     *
+     * @throws Exception excel模板文件位置为空、要读取的文件夹不存在
+     */
+    @FXML
+    private void sheetNameAction() throws Exception {
+        reselect();
     }
 
 }

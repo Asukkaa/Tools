@@ -239,7 +239,8 @@
         <VBox fx:id="excelRenameVBox_Re" spacing="10">
             <HBox spacing="10">
                 <Label prefHeight="25" text="excel表名称:"/>
-                <TextField fx:id="sheetName_Re" prefHeight="20" prefWidth="100"/>
+                <ChoiceBox fx:id="sheetName_Re" prefHeight="25" prefWidth="160" onAction="#sheetNameAction"
+                           style="-fx-cursor: hand"/>
 
                 <Label prefHeight="25" text="读取预留行:"/>
                 <TextField fx:id="readRow_Re" prefHeight="20" prefWidth="50"/>

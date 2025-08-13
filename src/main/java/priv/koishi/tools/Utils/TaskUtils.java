@@ -131,6 +131,7 @@ public class TaskUtils {
      * @param taskBean 要解绑的线程组件信息
      */
     public static void taskUnbind(TaskBean<?> taskBean) {
+
         // 隐藏取消按钮
         Button cancelButton = taskBean.getCancelButton();
         if (cancelButton != null) {

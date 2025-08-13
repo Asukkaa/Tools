@@ -413,265 +413,6 @@ public class CommonFinals {
      */
     public static final String javaOptions = "java-options=";
 
-    public static final String tip_appreciate = "感谢你的赞赏！";
-
-    public static final String tip_openGitLink = "点击即可跳转对应 git 仓库，如果喜欢本项目可以给作者一个 star";
-
-    public static final String tip_startSize = "只能填自然数，0为不限制编号位数，不填默认为0";
-
-    public static final String tip_renameStr = "填写后会将匹配到的字符串替换为所填写的字符串";
-
-    public static final String tip_sheetName = "须填与excel模板相同的表名才能正常读取模板";
-
-    public static final String tip_renameValue = "填写后会根据其他配置项处理文件名中所匹配的字符";
-
-    public static final String tip_nameNum = "只能填自然数，0为不使用分隔符进行分组重命名，不填默认为0";
-
-    public static final String tip_rightValue = "将所填字符根据选项插入或替换目标字符右侧所匹配的字符";
-
-    public static final String tip_leftValue = "将所填字符根据选项插入或替换目标字符左侧所匹配的字符";
-
-    public static final String tip_tag = "只能填自然数，不填默认为1，会根据所填值设置相同文件名起始尾缀";
-
-    public static final String tip_maxRow = "只能填正整数，不填默认不限制，会读取到有数据的最后一行，最小值为1";
-
-    public static final String tip_addSpace = "win系统自动重命名规则为：文件名 + 空格 + 英文括号包裹的阿拉伯数字编号";
-
-    public static final String tip_filterFileType = "填写后只会识别所填写的后缀名文件，多个文件后缀名用空格隔开，后缀名需带 '.'";
-
-    public static final String tip_left = "只能填自然数，不填为 0 默认匹配目标字符串左侧所有字符，填写后匹配目标字符串左侧所填写个数的单个字符";
-
-    public static final String tip_right = "只能填自然数，不填为 0 默认匹配目标字符串右侧所有字符，填写后匹配目标字符串右侧所填写个数的单个字符";
-
-    public static final String tip_recursion = "勾选后将会查询文件夹中的文件夹里的文件";
-
-    public static final String tip_sheet = "须填与excel模板相同的表名才能正常读取模板，若填表名不存在或不需要读取模板则会创建一个所填表";
-
-    public static final String tip_subCode = "填写后会按所填写的字符串来分割文件名称，按照分割后的文件名称左侧字符串进行分组";
-
-    public static final String tip_startRow = "只能填自然数，不填默认为 0，不预留行";
-
-    public static final String tip_startReadRow = "只能填自然数，不填默认与读取预留行相同";
-
-    public static final String tip_removeExcelButton = "删除excel模板路径";
-
-    public static final String tip_maxImgNum = "只能填正整数，不填默认为不限制";
-
-    public static final String tip_imgHeightWidth = "只能填正整数，不填默认为 ";
-
-    public static final String tip_rename = "点击后将会开始按照列表数据进行文件批量重命名，文件名不能包含 <>:\"/\\|?*";
-
-    public static final String tip_imgWidth = " 个字符宽度";
-
-    public static final String tip_imgHeight = " 个像素";
-
-    public static final String tip_reLaunch = "保存所有改动并重启程序，如果重启后修改内存设置不生效可能需要再次重启";
-
-    public static final String tip_noImg = "勾选后导出文件时没有图片的数据将会在单元格中标记为 无图片";
-
-    public static final String tip_filterImgType = "只会识别勾选的图片格式，不区分大小写，至少要勾选一种图片格式才能查询";
-
-    public static final String tip_exportFullList = "勾选后将导出完整数据，不勾选只导出文件名称";
-
-    public static final String tip_logsNum = "logs 文件夹下只会保留该配置所填写数量的 log 日志";
-
-    public static final String tip_sort = "本设置将影响 按指定规则批量重命名文件 与 获取文件夹下的文件信息 功能的文件查询默认排序";
-
-    public static final String tip_reverseSort = "默认不勾选，排序为从小到大，勾选后排序为从大到小";
-
-    public static final String tip_excelType = "如果需要使用excel模板则导出文件类型只能与excel模板文件类型一致";
-
-    public static final String tip_reselectButton = "点击将会按配置项重新查信息到列表中";
-
-    public static final String tip_learButton = "点击将会清空列表中的数据";
-
-    public static final String tip_exportButton = "点击将会按照列表数据和配置项导出数据到指定位置excel中";
-
-    public static final String tip_excelPathButton = "点击后可选择excel模板位置";
-
-    public static final String tip_fileButton = "点击后可选择要读取的文件夹位置，选择后将按照配置项读取数据到列表中";
-
-    public static final String tip_outPathButton = "点击后可选择数据导出位置";
-
-    public static final String tip_updateRenameButton = "点击后将会按照配置项更新列表中 修改后的文件名称 ，可配合排序等操作使用";
-
-    public static final String tip_showFileType = "勾选后文件名称会显示文件拓展名";
-
-    public static final String tip_exportTitle = "勾选后导出文件时导出起始行会添加每项数据的名称作为表头";
-
-    public static final String tip_directoryNameType = "点击可选择文件与文件夹查询逻辑";
-
-    public static final String tip_hideFileType = "点击可选择隐藏文件查询逻辑";
-
-    public static final String tip_openFile = "勾选后任务结束将会打开对应文件";
-
-    public static final String tip_openDirectory = "勾选后任务结束将会打开对应文件夹";
-
-    public static final String tip_exportFileNum = "勾选后导出文件时会在各分组匹配到的文件信息左侧单元格填写匹配的文件数量";
-
-    public static final String tip_exportFileSize = "勾选后导出文件时会在各分组匹配到的文件信息左侧单元格填写匹配的文件大小";
-
-    public static final String tip_renameType = "点击可选择文件重命名依据";
-
-    public static final String tip_differenceCode = "点击可选择区分编码类型";
-
-    public static final String tip_subCodeSelect = "点击可选择尾缀分隔符";
-
-    public static final String tip_targetStr = "点击可选择匹配字符规则";
-
-    public static final String tip_renameBehavior = "点击可选择重命名方法";
-
-    public static final String tip_tabSwitch = "点击即可启用或禁用该功能页";
-
-    public static final String tip_openLink = "点击即可跳转对应网盘分享页";
-
-    public static final String tip_wait = "每步操作执行前等待时间，单位为毫秒，只能填自然数，不填默认为 0";
-
-    public static final String tip_mouseStartX = "鼠标点击位置起始横坐标，与结束位置横坐标不同则执行拖拽操作，只能填自然数，不填默认为 0";
-
-    public static final String tip_mouseStartY = "鼠标点击位置起始纵坐标，与结束位置纵坐标不同则执行拖拽操作，只能填自然数，不填默认为 0";
-
-    public static final String tip_mouseEndX = "鼠标点击位置结束横坐标，与起始位置横坐标不同则执行拖拽操作，只能填自然数，不填默认为 起始横坐标";
-
-    public static final String tip_mouseEndY = "鼠标点击位置结束纵坐标，与起始位置纵坐标不同则执行拖拽操作，只能填自然数，不填默认为 起始纵坐标";
-
-    public static final String tip_runClick = "点击后将会按照列表中的步骤执行自动操作，执行自动化任务时按下 esc 即可取消任务";
-
-    public static final String tip_addPosition = "点击后将会根据设置在列表中添加一条操作步骤";
-
-    public static final String tip_clickTest = "点击后将会按照设置位置点击";
-
-    public static final String tip_loopTime = "自动操作循环次数，只能填自然数，不填默认为 1，填 0 为无限循环";
-
-    public static final String tip_clickNumBer = "每步操作执行次数，点击为多次点击，长按为多次长按，拖拽为多次拖拽，只能填自然数，不填默认为 1";
-
-    public static final String tip_clickType = "每步操作需要按下的键";
-
-    public static final String tip_clickTime = "每步操作中，单次操作的点击时长，单位为毫秒，只能填自然数，不填默认为 0";
-
-    public static final String tip_clickInterval = "每步操作中，单次操作的时间间隔，单位为毫秒，只能填自然数，不填默认为 0";
-
-    public static final String tip_clickName = "每步操作的名称，不填将给一个默认名称";
-
-    public static final String tip_outAutoClickPath = "点击可设置操作流程导出文件夹地址";
-
-    public static final String tip_loadAutoClick = "点击后选择要导入的操作流程即可在列表中追加";
-
-    public static final String tip_exportAutoClick = "点击即可按照设置导出文件夹与文件名导出列表中的操作流程";
-
-    public static final String tip_hideWindowRun = "勾选后运行或测试自动操作开始前将会隐藏本程序的窗口";
-
-    public static final String tip_showWindowRun = "勾选后运行或测试自动操作结束后将会弹出本程序的窗口";
-
-    public static final String tip_hideWindowRecord = "勾选后录制自动操作开始前将会隐藏本程序的窗口";
-
-    public static final String tip_showWindowRecord = "勾选后录制自动操作结束后将会弹出本程序的窗口";
-
-    public static final String tip_preparationRecordTime = "在录制自动操作前将会等待的时间，只能填自然数，单位秒，不填默认为 ";
-
-    public static final String tip_preparationRunTime = "在运行自动操作前将会等待的时间，只能填自然数，单位秒，不填默认为 ";
-
-    public static final String tip_nextRunMemory = "下次启动程序将会按照此设置项分配程序最大运行内存，单位为GB，只能填自然数，为空将设置为默认值操作系统最大内存的1/4";
-
-    public static final String tip_checkUpdate = "点击即可查询最新版本，查询失败可点击上方对应的网盘按钮查询";
-
-    public static final String tip_updateFileType = "点击将按照右侧设置修改列表中的文件拓展名";
-
-    public static final String tip_reNameFileTypeText = "将会按照此设置修改列表中的文件拓展名，为空则不修改";
-
-    public static final String tip_reNameFileType = "用来设置文件拓展名修改逻辑";
-
-    public static final String tip_insertImgType = "用来选择插入图片还是图片超链接";
-
-    public static final String tip_linkNameType = "用来选择超链接命名方式";
-
-    public static final String tip_linkName = "填写后将会修改超链接名称，为空则默认使用文件名称";
-
-    public static final String tip_addFileType = "用来选择读取文件还是文件夹，列表为空时才能修改";
-
-    public static final String tip_selectPath = "点击后可选择要查询的目录";
-
-    public static final String tip_gotoParent = "点击可返回上级目录";
-
-    public static final String tip_fileNameType = "用来选择文件名匹配的方式";
-
-    public static final String tip_fileNameFilter = "将会按照这里填写的字符进行筛选";
-
-    public static final String tip_moveButton = "点击将会按照设置将列表中的文件移动到指定文件夹中";
-
-    public static final String tip_movePath = "点击后可以选择目标文件夹位置";
-
-    public static final String tip_addFileButton = "点击可选择要移动的文件或文件夹";
-
-    public static final String tip_sourceAction = "用来选择移动文件后源文件的处理方式";
-
-    public static final String tip_confirm = "点击后将会把列表中选中的文件夹添加到要移动的文件列表中，没有选中项则添加当前查询的目录";
-
-    public static final String tip_close = "点击后将会关闭当前页面，不会将任何数据添加到要移动的文件列表中";
-
-    public static final String tip_moveType = """
-            用来选择文件目录的处理方式
-            仅移动文件：只会移动文件不会移动文件夹
-            保留目录结构移动文件：会将整个文件夹都移动到指定位置，保留原目录结构
-            不保留顶层目录移动文件：保留顶层目录下的原目录结构移动文件，不会创建顶层目录
-            保留目录结构复制文件夹：只会按照原目录创建文件夹，不会做移动操作
-            不保留顶层目录复制文件夹：只会按照原目录创建文件夹，但不创建顶层目录""";
-
-    public static final String tip_nextGcType = """
-            下次启动程序将会按照此设置项设置垃圾回收（GC）方式
-            G1GC：分区回收，低延迟与吞吐量平衡
-            ZGC：亚毫秒级停顿
-            ParallelGC：多线程并行回收，吞吐量优先
-            ShenandoahGC：全并发回收，停顿时间与堆大小无关
-            SerialGC：单线程回收，简单高效""";
-
-    public static final String tip_recordClick = """
-            点击录制自动操作按钮将会等待设置的准备时间后开始录制自动操作
-            每次鼠标点击并松开为一个步骤，每次点击间隔为操作前等待时间""";
-
-    public static final String tip_excelName = """
-            不用填写文件拓展名，如果导出文件夹已经存在同名文件将会覆盖模板excel文件
-            文件名不能包含 <>:"/\\|?*
-            设置为空或者不合法将会以默认名称命名，默认名称为：""";
-
-    public static final String tip_autoClickFileName = """
-            不用填写文件拓展名，导出文件为 .pmc 格式，如果导出文件夹已经存在同名文件不会覆盖
-            文件名不能包含  <>:"/\\|?*
-            设置为空或者不合法将会以默认名称命名，默认名称为：""";
-
-    public static final String tip_firstClick = """
-            勾选后：
-            如果是运行 测试操作流程 则会 鼠标左键 点击一次设置栏设置的起始坐标后再执行测试操作
-            如果是运行 自动化操作 则会 鼠标左键 点击一次第一步操作的起始坐标后再执行自动化操作
-            建议 Windows 用户不要勾选， macOS 用户需要勾选
-            Windows 会直接点击对应窗口的对应坐标，macOS 需要先点击对应窗口将焦点切换过去才能点中对应窗口的对应坐标""";
-
-    public static final String tip_updateSameCode = """
-            选中列表中的数据后点击这个按钮，会将选中数据的第一行到最后一行，
-            所有数据的修改后的文件名称的文件编号替换为第一行数据的文件编号，
-            文件名尾缀将延续所选的第一行数据继续递增""";
-
-    public static final String tip_option = """
-            插入：在匹配的字符位置插入所填写的字符串
-            替换：将匹配的字符串替换为所填写的字符串
-            删除：只删除指定位置的字符
-            移除：移除指定位置左侧或右侧所有字符串""";
-
-    public static final String tip_NativeHookException = """
-            需要在macOS系统设置中启用辅助设备权限：
-            1. 打开 [系统偏好设置 → 安全性与隐私 → 隐私]
-            2. 在左侧列表选择「辅助功能」
-            3. 点击🔒解锁设置
-            4. 删除列表中的\s""" + appName + app + """
-             （如果有的话）
-            5. 将\s""" + appName + app + """
-             添加到允许列表中
-            6. 重启\s""" + appName + app;
-
-    public static final String tip_version = """
-            版本：%s
-            构建日期：%s""".formatted(version, buildDate);
-
     public static final String text_NativeHookException = "需要在macOS系统设置中启用辅助设备权限";
 
     public static final String text_onlyNaturalNumber = "只能填自然数，不填默认为 ";
@@ -873,6 +614,8 @@ public class CommonFinals {
     public static final String text_selectMoveFile = "选择要移动的文件";
 
     public static final String text_selectMoveFolder = "选择要移动的文件夹";
+
+    public static final String text_newSheet = "*创建一个新表";
 
     public static final String id_settingTab = "settingTab";
 
@@ -1088,6 +831,8 @@ public class CommonFinals {
 
     public static final String key_addFileType = "addFileType";
 
+    public static final String key_sourceAction = "sourceAction";
+
     public static final String mouseButton_primary = "鼠标左键点击";
 
     public static final String mouseButton_secondary = "鼠标右键点击";
@@ -1235,5 +980,276 @@ public class CommonFinals {
         recordClickTypeMap.put(NativeMouseEvent.BUTTON4, mouseButton_back);
         recordClickTypeMap.put(NativeMouseEvent.BUTTON5, mouseButton_forward);
     }
+
+    public static final String tip_appreciate = "感谢你的赞赏！";
+
+    public static final String tip_openGitLink = "点击即可跳转对应 git 仓库，如果喜欢本项目可以给作者一个 star";
+
+    public static final String tip_startSize = "只能填自然数，0为不限制编号位数，不填默认为0";
+
+    public static final String tip_renameStr = "填写后会将匹配到的字符串替换为所填写的字符串";
+
+    public static final String tip_sheetName = "选择要读取的excel后将会把读取到的表格名称填充到下拉框中，选择表格名称以设置要读取的表";
+
+    public static final String tip_renameValue = "填写后会根据其他配置项处理文件名中所匹配的字符";
+
+    public static final String tip_nameNum = "只能填自然数，0为不使用分隔符进行分组重命名，不填默认为0";
+
+    public static final String tip_rightValue = "将所填字符根据选项插入或替换目标字符右侧所匹配的字符";
+
+    public static final String tip_leftValue = "将所填字符根据选项插入或替换目标字符左侧所匹配的字符";
+
+    public static final String tip_tag = "只能填自然数，不填默认为1，会根据所填值设置相同文件名起始尾缀";
+
+    public static final String tip_maxRow = "只能填正整数，不填默认不限制，会读取到有数据的最后一行，最小值为1";
+
+    public static final String tip_addSpace = "win系统自动重命名规则为：文件名 + 空格 + 英文括号包裹的阿拉伯数字编号";
+
+    public static final String tip_filterFileType = "填写后只会识别所填写的后缀名文件，多个文件后缀名用空格隔开，后缀名需带 '.'";
+
+    public static final String tip_left = "只能填自然数，不填为 0 默认匹配目标字符串左侧所有字符，填写后匹配目标字符串左侧所填写个数的单个字符";
+
+    public static final String tip_right = "只能填自然数，不填为 0 默认匹配目标字符串右侧所有字符，填写后匹配目标字符串右侧所填写个数的单个字符";
+
+    public static final String tip_recursion = "勾选后将会查询文件夹中的文件夹里的文件";
+
+    public static final String tip_subCode = "填写后会按所填写的字符串来分割文件名称，按照分割后的文件名称左侧字符串进行分组";
+
+    public static final String tip_startRow = "只能填自然数，不填默认为 0，不预留行";
+
+    public static final String tip_startReadRow = "只能填自然数，不填默认与读取预留行相同";
+
+    public static final String tip_removeExcelButton = "删除excel模板路径";
+
+    public static final String tip_maxImgNum = "只能填正整数，不填默认为不限制";
+
+    public static final String tip_imgHeightWidth = "只能填正整数，不填默认为 ";
+
+    public static final String tip_rename = "点击后将会开始按照列表数据进行文件批量重命名，文件名不能包含 <>:\"/\\|?*";
+
+    public static final String tip_imgWidth = " 个字符宽度";
+
+    public static final String tip_imgHeight = " 个像素";
+
+    public static final String tip_reLaunch = "保存所有改动并重启程序，如果重启后修改内存设置不生效可能需要再次重启";
+
+    public static final String tip_noImg = "勾选后导出文件时没有图片的数据将会在单元格中标记为 无图片";
+
+    public static final String tip_filterImgType = "只会识别勾选的图片格式，不区分大小写，至少要勾选一种图片格式才能查询";
+
+    public static final String tip_exportFullList = "勾选后将导出完整数据，不勾选只导出文件名称";
+
+    public static final String tip_logsNum = "logs 文件夹下只会保留该配置所填写数量的 log 日志";
+
+    public static final String tip_sort = "本设置将影响 按指定规则批量重命名文件 与 获取文件夹下的文件信息 功能的文件查询默认排序";
+
+    public static final String tip_reverseSort = "默认不勾选，排序为从小到大，勾选后排序为从大到小";
+
+    public static final String tip_excelType = "如果需要使用excel模板则导出文件类型只能与excel模板文件类型一致";
+
+    public static final String tip_reselectButton = "点击将会按配置项重新查信息到列表中";
+
+    public static final String tip_learButton = "点击将会清空列表中的数据";
+
+    public static final String tip_exportButton = "点击将会按照列表数据和配置项导出数据到指定位置excel中";
+
+    public static final String tip_excelPathButton = "点击后可选择excel模板位置";
+
+    public static final String tip_fileButton = "点击后可选择要读取的文件夹位置，选择后将按照配置项读取数据到列表中";
+
+    public static final String tip_outPathButton = "点击后可选择数据导出位置";
+
+    public static final String tip_updateRenameButton = "点击后将会按照配置项更新列表中 修改后的文件名称 ，可配合排序等操作使用";
+
+    public static final String tip_showFileType = "勾选后文件名称会显示文件拓展名";
+
+    public static final String tip_exportTitle = "勾选后导出文件时导出起始行会添加每项数据的名称作为表头";
+
+    public static final String tip_directoryNameType = "点击可选择文件与文件夹查询逻辑";
+
+    public static final String tip_hideFileType = "点击可选择隐藏文件查询逻辑";
+
+    public static final String tip_openFile = "勾选后任务结束将会打开对应文件";
+
+    public static final String tip_openDirectory = "勾选后任务结束将会打开对应文件夹";
+
+    public static final String tip_exportFileNum = "勾选后导出文件时会在各分组匹配到的文件信息左侧单元格填写匹配的文件数量";
+
+    public static final String tip_exportFileSize = "勾选后导出文件时会在各分组匹配到的文件信息左侧单元格填写匹配的文件大小";
+
+    public static final String tip_renameType = "点击可选择文件重命名依据";
+
+    public static final String tip_differenceCode = "点击可选择区分编码类型";
+
+    public static final String tip_subCodeSelect = "点击可选择尾缀分隔符";
+
+    public static final String tip_targetStr = "点击可选择匹配字符规则";
+
+    public static final String tip_renameBehavior = "点击可选择重命名方法";
+
+    public static final String tip_tabSwitch = "点击即可启用或禁用该功能页";
+
+    public static final String tip_openLink = "点击即可跳转对应网盘分享页";
+
+    public static final String tip_wait = "每步操作执行前等待时间，单位为毫秒，只能填自然数，不填默认为 0";
+
+    public static final String tip_mouseStartX = "鼠标点击位置起始横坐标，与结束位置横坐标不同则执行拖拽操作，只能填自然数，不填默认为 0";
+
+    public static final String tip_mouseStartY = "鼠标点击位置起始纵坐标，与结束位置纵坐标不同则执行拖拽操作，只能填自然数，不填默认为 0";
+
+    public static final String tip_mouseEndX = "鼠标点击位置结束横坐标，与起始位置横坐标不同则执行拖拽操作，只能填自然数，不填默认为 起始横坐标";
+
+    public static final String tip_mouseEndY = "鼠标点击位置结束纵坐标，与起始位置纵坐标不同则执行拖拽操作，只能填自然数，不填默认为 起始纵坐标";
+
+    public static final String tip_runClick = "点击后将会按照列表中的步骤执行自动操作，执行自动化任务时按下 esc 即可取消任务";
+
+    public static final String tip_addPosition = "点击后将会根据设置在列表中添加一条操作步骤";
+
+    public static final String tip_clickTest = "点击后将会按照设置位置点击";
+
+    public static final String tip_loopTime = "自动操作循环次数，只能填自然数，不填默认为 1，填 0 为无限循环";
+
+    public static final String tip_clickNumBer = "每步操作执行次数，点击为多次点击，长按为多次长按，拖拽为多次拖拽，只能填自然数，不填默认为 1";
+
+    public static final String tip_clickType = "每步操作需要按下的键";
+
+    public static final String tip_clickTime = "每步操作中，单次操作的点击时长，单位为毫秒，只能填自然数，不填默认为 0";
+
+    public static final String tip_clickInterval = "每步操作中，单次操作的时间间隔，单位为毫秒，只能填自然数，不填默认为 0";
+
+    public static final String tip_clickName = "每步操作的名称，不填将给一个默认名称";
+
+    public static final String tip_outAutoClickPath = "点击可设置操作流程导出文件夹地址";
+
+    public static final String tip_loadAutoClick = "点击后选择要导入的操作流程即可在列表中追加";
+
+    public static final String tip_exportAutoClick = "点击即可按照设置导出文件夹与文件名导出列表中的操作流程";
+
+    public static final String tip_hideWindowRun = "勾选后运行或测试自动操作开始前将会隐藏本程序的窗口";
+
+    public static final String tip_showWindowRun = "勾选后运行或测试自动操作结束后将会弹出本程序的窗口";
+
+    public static final String tip_hideWindowRecord = "勾选后录制自动操作开始前将会隐藏本程序的窗口";
+
+    public static final String tip_showWindowRecord = "勾选后录制自动操作结束后将会弹出本程序的窗口";
+
+    public static final String tip_preparationRecordTime = "在录制自动操作前将会等待的时间，只能填自然数，单位秒，不填默认为 ";
+
+    public static final String tip_preparationRunTime = "在运行自动操作前将会等待的时间，只能填自然数，单位秒，不填默认为 ";
+
+    public static final String tip_nextRunMemory = "下次启动程序将会按照此设置项分配程序最大运行内存，单位为GB，只能填自然数，为空将设置为默认值操作系统最大内存的1/4";
+
+    public static final String tip_checkUpdate = "点击即可查询最新版本，查询失败可点击上方对应的网盘按钮查询";
+
+    public static final String tip_updateFileType = "点击将按照右侧设置修改列表中的文件拓展名";
+
+    public static final String tip_reNameFileTypeText = "将会按照此设置修改列表中的文件拓展名，为空则不修改";
+
+    public static final String tip_reNameFileType = "用来设置文件拓展名修改逻辑";
+
+    public static final String tip_insertImgType = "用来选择插入图片还是图片超链接";
+
+    public static final String tip_linkNameType = "用来选择超链接命名方式";
+
+    public static final String tip_linkName = "填写后将会修改超链接名称，为空则默认使用文件名称";
+
+    public static final String tip_addFileType = "用来选择读取文件还是文件夹，列表为空时才能修改";
+
+    public static final String tip_selectPath = "点击后可选择要查询的目录";
+
+    public static final String tip_gotoParent = "点击可返回上级目录";
+
+    public static final String tip_fileNameType = "用来选择文件名匹配的方式";
+
+    public static final String tip_fileNameFilter = "将会按照这里填写的字符进行筛选";
+
+    public static final String tip_moveButton = "点击将会按照设置将列表中的文件移动到指定文件夹中";
+
+    public static final String tip_movePath = "点击后可以选择目标文件夹位置";
+
+    public static final String tip_addFileButton = "点击可选择要移动的文件或文件夹";
+
+    public static final String tip_sourceAction = "用来选择移动文件后源文件的处理方式";
+
+    public static final String tip_confirm = "点击后将会把列表中选中的文件夹添加到要移动的文件列表中，没有选中项则添加当前查询的目录";
+
+    public static final String tip_close = "点击后将会关闭当前页面，不会将任何数据添加到要移动的文件列表中";
+
+    public static final String tip_sheet = """
+            选择要读取的excel后将会把读取到的表格名称填充到下拉框中，选择表格名称以设置要读取的表
+            选择\s""" + text_newSheet + " 则会创建一个新表" + """
+            """;
+
+    public static final String tip_sheetNameInput = """
+            将会按照填写值新建表格，
+            表格名称不能超过31个字符，
+            表格名称不能包含 :\\/?*[]
+            表格名称第一个字符与最后一个字符不能为单引号
+            表格为空或不合法将会按照默认名称创建
+            表格名称已存在则不会创建新的表，将直接选择重名的表
+            默认名称为：""";
+
+    public static final String tip_moveType = """
+            用来选择文件目录的处理方式
+            仅移动文件：只会移动文件不会移动文件夹
+            保留目录结构移动文件：会将整个文件夹都移动到指定位置，保留原目录结构
+            不保留顶层目录移动文件：保留顶层目录下的原目录结构移动文件，不会创建顶层目录
+            保留目录结构复制文件夹：只会按照原目录创建文件夹，不会做移动操作
+            不保留顶层目录复制文件夹：只会按照原目录创建文件夹，但不创建顶层目录""";
+
+    public static final String tip_nextGcType = """
+            下次启动程序将会按照此设置项设置垃圾回收（GC）方式
+            G1GC：分区回收，低延迟与吞吐量平衡
+            ZGC：亚毫秒级停顿
+            ParallelGC：多线程并行回收，吞吐量优先
+            ShenandoahGC：全并发回收，停顿时间与堆大小无关
+            SerialGC：单线程回收，简单高效""";
+
+    public static final String tip_recordClick = """
+            点击录制自动操作按钮将会等待设置的准备时间后开始录制自动操作
+            每次鼠标点击并松开为一个步骤，每次点击间隔为操作前等待时间""";
+
+    public static final String tip_excelName = """
+            不用填写文件拓展名，如果导出文件夹已经存在同名文件将会覆盖模板excel文件
+            文件名不能包含 <>:"/\\|?*
+            设置为空或者不合法将会以默认名称命名，默认名称为：""";
+
+    public static final String tip_autoClickFileName = """
+            不用填写文件拓展名，导出文件为 .pmc 格式，如果导出文件夹已经存在同名文件不会覆盖
+            文件名不能包含  <>:"/\\|?*
+            设置为空或者不合法将会以默认名称命名，默认名称为：""";
+
+    public static final String tip_firstClick = """
+            勾选后：
+            如果是运行 测试操作流程 则会 鼠标左键 点击一次设置栏设置的起始坐标后再执行测试操作
+            如果是运行 自动化操作 则会 鼠标左键 点击一次第一步操作的起始坐标后再执行自动化操作
+            建议 Windows 用户不要勾选， macOS 用户需要勾选
+            Windows 会直接点击对应窗口的对应坐标，macOS 需要先点击对应窗口将焦点切换过去才能点中对应窗口的对应坐标""";
+
+    public static final String tip_updateSameCode = """
+            选中列表中的数据后点击这个按钮，会将选中数据的第一行到最后一行，
+            所有数据的修改后的文件名称的文件编号替换为第一行数据的文件编号，
+            文件名尾缀将延续所选的第一行数据继续递增""";
+
+    public static final String tip_option = """
+            插入：在匹配的字符位置插入所填写的字符串
+            替换：将匹配的字符串替换为所填写的字符串
+            删除：只删除指定位置的字符
+            移除：移除指定位置左侧或右侧所有字符串""";
+
+    public static final String tip_NativeHookException = """
+            需要在macOS系统设置中启用辅助设备权限：
+            1. 打开 [系统偏好设置 → 安全性与隐私 → 隐私]
+            2. 在左侧列表选择「辅助功能」
+            3. 点击🔒解锁设置
+            4. 删除列表中的\s""" + appName + app + """
+             （如果有的话）
+            5. 将\s""" + appName + app + """
+             添加到允许列表中
+            6. 重启\s""" + appName + app;
+
+    public static final String tip_version = """
+            版本：%s
+            构建日期：%s""".formatted(version, buildDate);
 
 }
