@@ -1164,6 +1164,16 @@ public class CommonFinals {
 
     public static final String linkName_splice = "在文件名两侧拼接名称";
 
+    public static final String sort_Name = "按文件名称排序";
+
+    public static final String sort_creatTime = "按文件创建时间排序";
+
+    public static final String sort_updateTime = "按文件修改时间排序";
+
+    public static final String sort_size = "按文件大小排序";
+
+    public static final String sort_type = "按文件类型排序";
+
     /**
      * 默认点击时长
      */

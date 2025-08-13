@@ -439,7 +439,7 @@ public class MoveFileController extends RootController {
         } else if (text_addDirectory.equals(addFileType)) {
             FileChooserConfig fileConfig = new FileChooserConfig();
             fileConfig.setPathKey(key_inFilePath)
-                    .setConfigFile(configFile_MV)
+                    .setConfigPath(configFile_MV)
                     .setTitle(text_selectDirectory)
                     .setInFile(new File(inFilePath))
                     .setShowHideFile(text_noHideFile)

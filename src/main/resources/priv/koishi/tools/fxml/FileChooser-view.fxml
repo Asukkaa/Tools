@@ -64,8 +64,9 @@
         <HBox fx:id="fileNumberHBox_FC" spacing="10">
             <Button fx:id="gotoParentButton_FC" onAction="#gotoParent" styleClass="cornflowerblue-button" text="前往上级文件夹"/>
             <Button fx:id="refreshButton_FC" onAction="#refreshTable" styleClass="cadetblue-button" text="刷新列表"/>
+            <Label prefHeight="25" textFill="red" text="双击文件夹所在数据行可查询该目录下的文件，按住shift可多选"/>
 
-            <Label fx:id="fileNumber_FC" alignment="CENTER_RIGHT" prefHeight="20" text="列表为空"/>
+            <Label fx:id="fileNumber_FC" alignment="CENTER_RIGHT" prefHeight="25" text="列表为空"/>
         </HBox>
 
         <TableView fx:id="tableView_FC" onDragDropped="#handleDrop" onDragOver="#acceptDrop">

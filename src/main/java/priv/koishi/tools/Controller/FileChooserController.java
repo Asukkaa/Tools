@@ -35,7 +35,6 @@ import static priv.koishi.tools.Utils.FileUtils.openDirectory;
 import static priv.koishi.tools.Utils.FileUtils.updateProperties;
 import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
-import static priv.koishi.tools.Utils.UiUtils.buildFilePathItem;
 
 /**
  * @author KOISHI
@@ -147,7 +146,9 @@ public class FileChooserController extends RootController {
         taskBean.setProgressBar(progressBar_FC)
                 .setMassageLabel(fileNumber_FC)
                 .setDisableNodes(disableNodes)
-                .setTableView(tableView_FC);
+                .setTableView(tableView_FC)
+                .setSortType(sort_type)
+                .setReverseSort(true);
         readAllFilesTask = readAllFilesTask(taskBean, fileConfig);
         bindingTaskNode(readAllFilesTask, taskBean);
         readAllFilesTask.setOnSucceeded(event -> {
@@ -304,17 +305,23 @@ public class FileChooserController extends RootController {
     }
 
     /**
-     * 设置页面关闭事件处理逻辑
+     * 页面关闭事件处理逻辑
      */
-    private void setCloseRequest() {
-        stage.setOnCloseRequest(e -> {
-            try {
-                removeAll();
-                updateProperties(fileChooserConfig.getConfigFile(), fileChooserConfig.getPathKey(), filePath_FC.getText());
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
-        });
+    private void closeRequest() {
+        try {
+            removeAll();
+            updateProperties(fileChooserConfig.getConfigPath(), fileChooserConfig.getPathKey(), filePath_FC.getText());
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+        // 清理监听器引用
+        tableView_FC.setRowFactory(tv -> null);
+        ContextMenu contextMenu = tableView_FC.getContextMenu();
+        if (contextMenu != null) {
+            // 清除所有菜单项事件
+            contextMenu.getItems().stream().parallel().forEach(item -> item.setOnAction(null));
+            tableView_FC.setContextMenu(null);
+        }
     }
 
     /**
@@ -323,6 +330,7 @@ public class FileChooserController extends RootController {
     private void setRowDoubleClick() {
         tableView_FC.setRowFactory(tv -> {
             TableRow<FileBean> row = new TableRow<>();
+            // 双击事件
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && !row.isEmpty()) {
                     FileBean selectedFileBean = row.getItem();
@@ -333,8 +341,38 @@ public class FileChooserController extends RootController {
                     }
                 }
             });
+            // 更新行样式方法
+            row.itemProperty().addListener((obs, oldItem, newItem) ->
+                    updateRowStyle(row));
+            row.selectedProperty().addListener((obs, wasSelected, isSelected) ->
+                    updateRowStyle(row));
             return row;
         });
+    }
+
+    /**
+     * 更新行样式
+     *
+     * @param row 要更新的行
+     */
+    private void updateRowStyle(TableRow<FileBean> row) {
+        FileBean item = row.getItem();
+        if (item == null) {
+            row.setStyle("");
+            return;
+        }
+        if (row.isSelected()) {
+            // 选中行的高亮样式
+            row.setStyle("");
+        } else {
+            // 根据文件类型设置样式
+            String fileType = item.getFileType();
+            if (extension_folder.equals(fileType)) {
+                row.setStyle("-fx-background-color: #e6f7ff;");
+            } else {
+                row.setStyle("");
+            }
+        }
     }
 
     /**
@@ -345,7 +383,7 @@ public class FileChooserController extends RootController {
         Platform.runLater(() -> {
             stage = (Stage) anchorPane_FC.getScene().getWindow();
             // 设置页面关闭事件处理逻辑
-            setCloseRequest();
+            stage.setOnCloseRequest(e -> closeRequest());
             // 组件自适应宽高
             adaption();
             // 设置要防重复点击的组件
@@ -449,7 +487,7 @@ public class FileChooserController extends RootController {
             FileBean fileBean = creatFileBean(tableView_FC, file);
             fileBeanList.add(fileBean);
         }
-        closeStage(stage, this::removeAll);
+        closeStage(stage, this::closeRequest);
         // 触发列表刷新
         if (fileChooserCallback != null) {
             fileChooserCallback.onFileChooser(fileBeanList);
@@ -461,7 +499,7 @@ public class FileChooserController extends RootController {
      */
     @FXML
     private void closeWindow() {
-        closeStage(stage, this::removeAll);
+        closeStage(stage, this::closeRequest);
     }
 
     /**

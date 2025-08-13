@@ -57,7 +57,9 @@ public class ReadDataService {
             protected List<File> call() throws IOException {
                 changeDisableNodes(taskBean, true);
                 updateMessage(text_readData);
-                return readAllFiles(fileConfig);
+                List<File> fileList = readAllFiles(fileConfig);
+                comparingData(taskBean, fileList);
+                return fileList;
             }
         };
     }
@@ -333,23 +335,23 @@ public class ReadDataService {
         // 是否倒序排序
         boolean reverseSort = taskBean.isReverseSort();
         switch (sortType) {
-            case "按文件名称排序": {
+            case sort_Name: {
                 comparingByName(fileList, reverseSort);
                 break;
             }
-            case "按文件创建时间排序": {
+            case sort_creatTime: {
                 comparingByCreatTime(fileList, reverseSort);
                 break;
             }
-            case "按文件修改时间排序": {
+            case sort_updateTime: {
                 comparingByUpdateTime(fileList, reverseSort);
                 break;
             }
-            case "按文件大小排序": {
+            case sort_size: {
                 comparingBySize(fileList, reverseSort);
                 break;
             }
-            case "按文件类型排序": {
+            case sort_type: {
                 comparingByType(fileList, reverseSort);
                 break;
             }

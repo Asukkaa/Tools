@@ -24,7 +24,7 @@ public class FileChooserConfig extends FileConfig {
     /**
      * 要更新的路径配置配置文件地址
      */
-    String configFile;
+    String configPath;
 
     /**
      * 文件选择器窗口标题

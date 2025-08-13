@@ -646,6 +646,7 @@ public class UiUtils {
      */
     public static <T> void removeTableViewData(TableView<T> tableView, Label fileNumber, Label log) {
         tableView.getItems().clear();
+        tableView.refresh();
         updateLabel(fileNumber, text_dataListNull);
         if (log != null) {
             updateLabel(log, "");
