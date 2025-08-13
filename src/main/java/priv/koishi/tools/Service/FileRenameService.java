@@ -110,6 +110,7 @@ public class FileRenameService {
                 // 提取剩余文件的名称集合
                 Set<String> existingFileNames = files.stream()
                         .map(File::getName)
+                        .map(String::toLowerCase)
                         .collect(Collectors.toSet());
                 // 检测重命名冲突
                 String errorMsg = "检测到当前目录下已存在的重命名文件：";
@@ -119,7 +120,7 @@ public class FileRenameService {
                     FileBean fileBean = fileBeanList.get(i);
                     String newFileName = fileBean.getFullRename();
                     String oldName = fileBean.getFullName();
-                    if (existingFileNames.contains(newFileName)) {
+                    if (existingFileNames.contains(newFileName.toLowerCase())) {
                         errorMsg += "\n序号为：" + fileBean.getId() + " 的文件 " + oldName + " 重命名为 " + newFileName;
                         conflictBeans.add(fileBean);
                     }
