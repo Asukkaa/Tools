@@ -71,7 +71,7 @@ public class SettingController extends RootController {
 
     @FXML
     public CheckBox loadRename_Set, loadFileNum_Set, loadFileName_Set, loadImgToExcel_Set, lastTab_Set,
-            fullWindow_Set, reverseSort_Set, loadAutoClick_Set, maxWindow_Set;
+            fullWindow_Set, reverseSort_Set, loadAutoClick_Set, maxWindow_Set, loadMoveFile_Set;
 
     /**
      * 组件自适应宽高
@@ -186,6 +186,7 @@ public class SettingController extends RootController {
      */
     private void setLoadLastConfigs() throws IOException {
         Properties prop = new Properties();
+        setLoadLastConfig(prop, loadMoveFile_Set, configFile_MV);
         setLoadLastConfig(prop, loadFileNum_Set, configFile_Num);
         setLoadLastConfig(prop, loadFileName_Set, configFile_Name);
         setLoadLastConfig(prop, loadRename_Set, configFile_Rename);
@@ -228,11 +229,14 @@ public class SettingController extends RootController {
         addToolTip(tip_reLaunch, reLaunch_Set);
         addToolTip(tip_reverseSort, reverseSort_Set);
         addToolTip(lastTab_Set.getText(), lastTab_Set);
+        addToolTip(maxWindow_Set.getText(), maxWindow_Set);
         addToolTip(fullWindow_Set.getText(), fullWindow_Set);
         addToolTip(loadRename_Set.getText(), loadRename_Set);
         addValueToolTip(nextRunMemory_Set, tip_nextRunMemory);
         addToolTip(loadFileNum_Set.getText(), loadFileNum_Set);
         addToolTip(loadFileName_Set.getText(), loadFileName_Set);
+        addToolTip(loadMoveFile_Set.getText(), loadMoveFile_Set);
+        addToolTip(loadAutoClick_Set.getText(), loadAutoClick_Set);
         addToolTip(loadImgToExcel_Set.getText(), loadImgToExcel_Set);
         addValueToolTip(nextGcType_Set, tip_nextGcType, nextGcType_Set.getValue());
     }
@@ -424,6 +428,16 @@ public class SettingController extends RootController {
     @FXML
     private void loadAutoClickAction() throws IOException {
         setLoadLastConfigCheckBox(loadAutoClick_Set, configFile_Click, key_loadLastConfig);
+    }
+
+    /**
+     * 自动操作工具功能加载上次设置信息
+     *
+     * @throws IOException io异常
+     */
+    @FXML
+    private void loadMoveFileAction() throws IOException {
+        setLoadLastConfigCheckBox(loadMoveFile_Set, configFile_MV, key_loadLastConfig);
     }
 
     /**

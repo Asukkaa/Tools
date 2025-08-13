@@ -27,6 +27,9 @@
 
             <CheckBox fx:id="loadFileName_Set" onAction="#loadFileNameAction" styleClass="checkBox-setting-style"
                       selected="true" text="获取文件夹下的文件信息 功能加载上次设置信息"/>
+
+            <CheckBox fx:id="loadMoveFile_Set" onAction="#loadMoveFileAction" styleClass="checkBox-setting-style"
+                      selected="true" text="移动文件工具 功能加载上次设置信息"/>
         </HBox>
 
         <HBox spacing="50">
