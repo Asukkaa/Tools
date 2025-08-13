@@ -38,7 +38,6 @@ import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.TaskUtils.bindingTaskNode;
 import static priv.koishi.tools.Utils.TaskUtils.taskUnbind;
 import static priv.koishi.tools.Utils.UiUtils.*;
-import static priv.koishi.tools.Utils.UiUtils.addToolTip;
 
 /**
  * 移动文件工具页控制器
@@ -148,12 +147,14 @@ public class MoveFileController extends RootController {
             InputStream input = checkRunningInputStream(configFile_MV);
             Properties prop = new Properties();
             prop.load(input);
+            prop.put(key_moveType, moveType_MV.getValue());
+            prop.put(key_lastOutPath, outPath_MV.getText());
             prop.put(key_addFileType, addFileType_MV.getValue());
+            prop.put(key_sourceAction, sourceAction_MV.getValue());
+            prop.put(key_lastHideFileType, hideFileType_MV.getValue());
+            prop.put(key_lastFilterFileType, filterFileType_MV.getText());
             String openDirectoryValue = openDirectory_MV.isSelected() ? activation : unActivation;
             prop.put(key_lastOpenDirectory, openDirectoryValue);
-            prop.put(key_lastFilterFileType, filterFileType_MV.getText());
-            prop.put(key_lastOutPath, outPath_MV.getText());
-            prop.put(key_moveType, moveType_MV.getValue());
             OutputStream output = checkRunningOutputStream(configFile_MV);
             prop.store(output, null);
             input.close();
@@ -187,9 +188,11 @@ public class MoveFileController extends RootController {
         if (activation.equals(prop.getProperty(key_loadLastConfig))) {
             setControlLastConfig(moveType_MV, prop, key_moveType);
             setControlLastConfig(outPath_MV, prop, key_lastOutPath);
+            setControlLastConfig(addFileType_MV, prop, key_addFileType);
+            setControlLastConfig(sourceAction_MV, prop, key_sourceAction);
+            setControlLastConfig(hideFileType_MV, prop, key_lastHideFileType);
             setControlLastConfig(openDirectory_MV, prop, key_lastOpenDirectory);
             setControlLastConfig(filterFileType_MV, prop, key_lastFilterFileType);
-            setControlLastConfig(addFileType_MV, prop, key_lastDirectoryNameType);
         }
         input.close();
     }
@@ -291,6 +294,7 @@ public class MoveFileController extends RootController {
         Platform.runLater(() -> {
             // 组件自适应宽高
             adaption();
+            ddFileTypeAction();
             // 设置要防重复点击的组件
             setDisableNodes();
             // 绑定表格数据
@@ -485,7 +489,7 @@ public class MoveFileController extends RootController {
             filterHBox_MV.setVisible(false);
             ObservableList<String> items = sourceAction_MV.getItems();
             items.removeAll(sourceAction_deleteFolder, sourceAction_trashFolder);
-            if (sourceAction.equals(sourceAction_deleteFolder) || sourceAction.equals(sourceAction_trashFolder)) {
+            if (!items.contains(sourceAction)) {
                 sourceAction_MV.setValue(sourceAction_saveFile);
             }
         }
