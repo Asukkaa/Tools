@@ -146,6 +146,9 @@
                         <String fx:value="英文括号：01 (1).xx"/>
                     </value>
                 </ChoiceBox>
+
+                <Label prefHeight="25" text="文件名前缀:"/>
+                <TextField fx:id="prefix_Re" prefHeight="20" prefWidth="100"/>
             </HBox>
         </VBox>
 

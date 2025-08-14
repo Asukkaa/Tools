@@ -147,7 +147,7 @@ public class FileRenameController extends RootController {
     @FXML
     public TextField filterFileType_Re, readRow_Re, readCell_Re, maxRow_Re, startName_Re, nameNum_Re,
             startSize_Re, left_Re, right_Re, renameStr_Re, leftValue_Re, rightValue_Re, renameValue_Re, tag_Re,
-            renameFileTypeText_Re;
+            renameFileTypeText_Re, prefix_Re;
 
     /**
      * 组件自适应宽高
@@ -631,7 +631,8 @@ public class FileRenameController extends RootController {
                 .setTag(setDefaultIntValue(tag_Re, 1, 0, null))
                 .setDifferenceCode(differenceCode_Re.getValue())
                 .setAddSpace(addSpace_Re.isSelected())
-                .setSubCode(subCode_Re.getValue());
+                .setSubCode(subCode_Re.getValue())
+                .setPrefix(prefix_Re.getText());
         taskBean.setConfiguration(codeRenameConfig);
     }
 
@@ -1456,7 +1457,8 @@ public class FileRenameController extends RootController {
                 .setDifferenceCode(differenceCode_Re.getValue())
                 .setAddSpace(addSpace_Re.isSelected())
                 .setNameNum(selectedFileBeans.size())
-                .setSubCode(subCode_Re.getValue());
+                .setSubCode(subCode_Re.getValue())
+                .setPrefix(prefix_Re.getText());
         ObservableList<FileBean> tableViewItems = tableView_Re.getItems();
         FileBean firstSelectFileBean = selectedFileBeans.getFirst();
         int startSelectIndex = tableViewItems.indexOf(firstSelectFileBean);

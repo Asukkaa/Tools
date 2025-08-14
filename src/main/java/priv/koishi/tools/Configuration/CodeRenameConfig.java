@@ -51,4 +51,9 @@ public class CodeRenameConfig extends Configuration {
      */
     int tag;
 
+    /**
+     * 文件名前缀
+     */
+    String prefix;
+
 }

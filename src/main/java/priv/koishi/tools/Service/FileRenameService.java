@@ -238,7 +238,7 @@ public class FileRenameService {
                 break;
             }
         }
-        return fileRename;
+        return codeRenameConfig.getPrefix() + fileRename;
     }
 
     /**
