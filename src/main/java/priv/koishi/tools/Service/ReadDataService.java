@@ -55,7 +55,7 @@ public class ReadDataService {
     public static Task<List<File>> readAllFilesTask(TaskBean<?> taskBean, FileConfig fileConfig) {
         return new Task<>() {
             @Override
-            protected List<File> call() throws IOException {
+            protected List<File> call() {
                 changeDisableNodes(taskBean, true);
                 updateMessage(text_readData);
                 List<File> fileList = readAllFiles(fileConfig);
@@ -74,7 +74,7 @@ public class ReadDataService {
     public static Task<List<File>> readMachGroup(TaskBean<FileNumBean> taskBean, FileConfig fileConfig) {
         return new Task<>() {
             @Override
-            protected List<File> call() throws IOException {
+            protected List<File> call() {
                 updateMessage(text_readData);
                 changeDisableNodes(taskBean, true);
                 List<FileNumBean> fileNumList = taskBean.getBeanList();

@@ -15,7 +15,6 @@ import priv.koishi.tools.Configuration.FileConfig;
 import priv.koishi.tools.Configuration.StringRenameConfig;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -47,7 +46,7 @@ public class FileRenameService {
     public static Task<List<File>> readDropFiles(TaskBean<FileBean> taskBean, List<File> files) {
         return new Task<>() {
             @Override
-            protected List<File> call() throws IOException {
+            protected List<File> call() {
                 changeDisableNodes(taskBean, true);
                 updateMessage(text_readData);
                 List<File> inFileList = new ArrayList<>();
@@ -90,7 +89,7 @@ public class FileRenameService {
     public static Task<String> fileRename(TaskBean<FileBean> taskBean) {
         return new Task<>() {
             @Override
-            protected String call() throws IOException {
+            protected String call() {
                 // 改变要防重复点击的组件状态
                 changeDisableNodes(taskBean, true);
                 updateMessage("正在校验名称");

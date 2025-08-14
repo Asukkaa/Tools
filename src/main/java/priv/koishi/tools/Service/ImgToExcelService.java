@@ -237,7 +237,7 @@ public class ImgToExcelService {
      * @return 插入图片后的最大列号
      */
     private static int insertImgLink(List<String> imgList, ExcelConfig excelConfig, int cellNum, int rowNum, Sheet sheet,
-                                     int maxCellNum, boolean showFileType, String insertImgType) throws IOException {
+                                     int maxCellNum, boolean showFileType, String insertImgType) {
         CreationHelper helper = sxssfWorkbook.getCreationHelper();
         String linkNameType = excelConfig.getLinkNameType();
         String linkLeftName = excelConfig.getLinkLeftName();

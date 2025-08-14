@@ -216,9 +216,8 @@ public class MoveFileService {
      * @param targetDir 目标基础目录路径
      * @param moveType  移动类型标识符
      * @return 构建完成的目标路径对象
-     * @throws IOException 当路径操作失败时抛出异常
      */
-    private static Path determineTargetPath(File source, String targetDir, String moveType) throws IOException {
+    private static Path determineTargetPath(File source, String targetDir, String moveType) {
         Path targetPath = Paths.get(targetDir);
         if (moveType_all.equals(moveType) || moveType_folder.equals(moveType)) {
             String safeDir = notOverwritePath(targetDir + File.separator + source.getName());
