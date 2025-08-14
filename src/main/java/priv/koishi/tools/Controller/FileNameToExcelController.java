@@ -313,7 +313,7 @@ public class FileNameToExcelController extends RootController {
      * 设置鼠标悬停提示
      */
     private void setToolTip() {
-        addToolTip(tip_sheet, sheetName_Name);
+
         addToolTip(tip_openFile, openFile_Name);
         addToolTip(tip_startRow, startRow_Name);
         addToolTip(tip_Name.getText(), tip_Name);
@@ -323,19 +323,20 @@ public class FileNameToExcelController extends RootController {
         addToolTip(tip_exportTitle, exportTitle_Name);
         addToolTip(tip_showFileType, showFileType_Name);
         addToolTip(tip_exportButton, exportButton_Name);
-        addToolTip(tip_hideFileType, hideFileType_Name);
         addToolTip(tip_outPathButton, outPathButton_Name);
         addToolTip(tip_openDirectory, openDirectory_Name);
         addToolTip(tip_reselectButton, reselectButton_Name);
         addToolTip(tip_exportFullList, exportFullList_Name);
         addToolTip(tip_filterFileType, filterFileType_Name);
         addToolTip(tip_excelPathButton, excelPathButton_Name);
-        addToolTip(tip_directoryNameType, directoryNameType_Name);
         addToolTip(tip_removeExcelButton, removeExcelButton_Name);
-        addToolTip(tip_excelType, excelType_Name, excelTypeLabel_Name);
         addToolTip(tip_excelName + defaultOutFileName, excelName_Name);
+        addValueToolTip(sheetName_Name, tip_sheet, sheetName_Name.getValue());
+        addValueToolTip(excelType_Name, tip_excelType, excelType_Name.getValue());
         addToolTip(text_onlyNaturalNumber + defaultStartCell, startCell_Name);
         addToolTip(tip_sheetNameInput + defaultSheetName, sheetNameInput_Name);
+        addValueToolTip(hideFileType_Name, tip_hideFileType, hideFileType_Name.getValue());
+        addValueToolTip(directoryNameType_Name, tip_directoryNameType, directoryNameType_Name.getValue());
     }
 
     /**
@@ -696,9 +697,34 @@ public class FileNameToExcelController extends RootController {
      * 工作表名称选项监听
      */
     @FXML
-    public void sheetNameAction() {
+    private void sheetNameAction() {
         String sheetName = sheetName_Name.getValue();
+        addValueToolTip(sheetName_Name, tip_sheetName, sheetName);
         sheetNameInput_Name.setVisible(text_newSheet.equals(sheetName));
+    }
+
+    /**
+     * 文件夹查询设置选项监听
+     */
+    @FXML
+    private void directoryTypeAction() {
+        addValueToolTip(directoryNameType_Name, tip_directoryNameType, directoryNameType_Name.getValue());
+    }
+
+    /**
+     * 隐藏文件查询设置选项监听
+     */
+    @FXML
+    private void hideFileTypeAction() {
+        addValueToolTip(hideFileType_Name, tip_hideFileType, hideFileType_Name.getValue());
+    }
+
+    /**
+     * 导出excel文件类型选项监听
+     */
+    @FXML
+    private void excelTypeAction() {
+        addValueToolTip(excelType_Name, tip_excelType, excelType_Name.getValue());
     }
 
 }

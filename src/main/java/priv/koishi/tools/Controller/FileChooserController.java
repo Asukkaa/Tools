@@ -226,13 +226,13 @@ public class FileChooserController extends RootController {
     private void setToolTip() {
         addToolTip(tip_close, close_FC);
         addToolTip(tip_confirm, confirm_FC);
-        addToolTip(tip_hideFileType, hideFileType_FC);
-        addToolTip(tip_fileNameType, fileNameType_FC);
         addToolTip(tip_selectPath, selectPathButton_FC);
         addToolTip(tip_gotoParent, gotoParentButton_FC);
         addToolTip(tip_reselectButton, refreshButton_FC);
-        addToolTip(tip_directoryNameType, fileFilter_FC);
         addToolTip(tip_fileNameFilter, fileNameFilter_FC);
+        addValueToolTip(fileNameType_FC, tip_fileNameType, fileNameType_FC.getValue());
+        addValueToolTip(hideFileType_FC, tip_hideFileType, hideFileType_FC.getValue());
+        addValueToolTip(fileFilter_FC, tip_directoryNameType, fileFilter_FC.getValue());
     }
 
     /**
@@ -515,6 +515,7 @@ public class FileChooserController extends RootController {
      */
     @FXML
     private void fileFilterAction() {
+        addValueToolTip(fileFilter_FC, tip_directoryNameType, fileFilter_FC.getValue());
         refreshTable();
     }
 
@@ -523,6 +524,7 @@ public class FileChooserController extends RootController {
      */
     @FXML
     private void hideFileTypeAction() {
+        addValueToolTip(hideFileType_FC, tip_hideFileType, hideFileType_FC.getValue());
         refreshTable();
     }
 
@@ -531,6 +533,7 @@ public class FileChooserController extends RootController {
      */
     @FXML
     private void fileNameTypeAction() {
+        addValueToolTip(fileNameType_FC, tip_fileNameType, fileNameType_FC.getValue());
         refreshTable();
     }
 

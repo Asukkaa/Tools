@@ -10,7 +10,8 @@
     <VBox fx:id="vbox_Re" spacing="10" AnchorPane.topAnchor="10">
         <HBox fx:id="warnHBox_Re" spacing="10">
             <Label prefHeight="25" text="文件夹查询设置:"/>
-            <ChoiceBox fx:id="directoryNameType_Re" prefHeight="25" prefWidth="140" style="-fx-cursor: hand">
+            <ChoiceBox fx:id="directoryNameType_Re" prefHeight="25" prefWidth="140" onAction="#directoryTypeAction"
+                       style="-fx-cursor: hand">
                 <items>
                     <FXCollections fx:factory="observableArrayList">
                         <String fx:value="只查询文件"/>
@@ -24,7 +25,8 @@
             </ChoiceBox>
 
             <Label prefHeight="25" text="隐藏文件查询设置:"/>
-            <ChoiceBox fx:id="hideFileType_Re" prefHeight="25" prefWidth="120" style="-fx-cursor: hand">
+            <ChoiceBox fx:id="hideFileType_Re" prefHeight="25" prefWidth="120" onAction="#hideFileTypeAction"
+                       style="-fx-cursor: hand">
                 <items>
                     <FXCollections fx:factory="observableArrayList">
                         <String fx:value="不查询隐藏文件"/>
@@ -130,7 +132,8 @@
                 </ChoiceBox>
 
                 <Label prefHeight="25" text="分隔符:"/>
-                <ChoiceBox fx:id="subCode_Re" prefHeight="25" prefWidth="150" style="-fx-cursor: hand">
+                <ChoiceBox fx:id="subCode_Re" prefHeight="25" prefWidth="150" onAction="#subCodeAction"
+                           style="-fx-cursor: hand">
                     <items>
                         <FXCollections fx:factory="observableArrayList">
                             <String fx:value="英文括号：01 (1).xx"/>

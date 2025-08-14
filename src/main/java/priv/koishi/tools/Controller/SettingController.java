@@ -49,13 +49,10 @@ public class SettingController extends RootController {
     public Button reLaunch_Set;
 
     @FXML
-    public ChoiceBox<String> sort_Set;
-
-    @FXML
     public TextField nextRunMemory_Set;
 
     @FXML
-    public ChoiceBox<String> nextGcType_Set;
+    public ChoiceBox<String> nextGcType_Set, sort_Set;
 
     @FXML
     public TableView<TabBean> tableView_Set;
@@ -225,7 +222,6 @@ public class SettingController extends RootController {
      * 设置鼠标悬停提示
      */
     private void setToolTip() {
-        addToolTip(tip_sort, sort_Set);
         addToolTip(tip_reLaunch, reLaunch_Set);
         addToolTip(tip_reverseSort, reverseSort_Set);
         addToolTip(lastTab_Set.getText(), lastTab_Set);
@@ -235,6 +231,7 @@ public class SettingController extends RootController {
         addValueToolTip(nextRunMemory_Set, tip_nextRunMemory);
         addToolTip(loadFileNum_Set.getText(), loadFileNum_Set);
         addToolTip(loadFileName_Set.getText(), loadFileName_Set);
+        addValueToolTip(sort_Set, tip_sort, sort_Set.getValue());
         addToolTip(loadMoveFile_Set.getText(), loadMoveFile_Set);
         addToolTip(loadAutoClick_Set.getText(), loadAutoClick_Set);
         addToolTip(loadImgToExcel_Set.getText(), loadImgToExcel_Set);
@@ -510,6 +507,7 @@ public class SettingController extends RootController {
      */
     @FXML
     private void sortAction() throws IOException {
+        addValueToolTip(sort_Set, tip_sort, sort_Set.getValue());
         InputStream input = checkRunningInputStream(configFile);
         Properties prop = new Properties();
         prop.load(input);

@@ -201,16 +201,16 @@ public class MoveFileController extends RootController {
      * 设置鼠标悬停提示
      */
     private void setToolTip() {
-        addToolTip(tip_moveType, moveType_MV);
         addToolTip(tip_moveButton, moveButton_MV);
         addToolTip(tip_learButton, clearButton_MV);
         addToolTip(tip_movePath, outPathButton_MV);
-        addToolTip(tip_addFileType, addFileType_MV);
-        addToolTip(tip_sourceAction, sourceAction_MV);
-        addToolTip(tip_hideFileType, hideFileType_MV);
         addToolTip(tip_openDirectory, openDirectory_MV);
         addToolTip(tip_addFileButton, addFileButton_MV);
         addToolTip(tip_filterFileType, filterFileType_MV);
+        addValueToolTip(moveType_MV, tip_moveType, moveType_MV.getValue());
+        addValueToolTip(addFileType_MV, tip_addFileType, addFileType_MV.getValue());
+        addValueToolTip(sourceAction_MV, tip_sourceAction, sourceAction_MV.getValue());
+        addValueToolTip(hideFileType_MV, tip_hideFileType, hideFileType_MV.getValue());
     }
 
     /**
@@ -476,6 +476,7 @@ public class MoveFileController extends RootController {
     @FXML
     private void ddFileTypeAction() {
         String addFileType = addFileType_MV.getValue();
+        addValueToolTip(addFileType_MV, tip_addFileType, addFileType);
         String sourceAction = sourceAction_MV.getValue();
         if (text_addDirectory.equals(addFileType)) {
             addFileButton_MV.setText(text_selectMoveFolder);
@@ -493,6 +494,30 @@ public class MoveFileController extends RootController {
                 sourceAction_MV.setValue(sourceAction_saveFile);
             }
         }
+    }
+
+    /**
+     * 移动后操作单选框监听
+     */
+    @FXML
+    private void sourceAction() {
+        addValueToolTip(sourceAction_MV, tip_sourceAction, sourceAction_MV.getValue());
+    }
+
+    /**
+     * 隐藏文件查询设置单选框监听
+     */
+    @FXML
+    private void hideFileTypeAction() {
+        addValueToolTip(hideFileType_MV, tip_hideFileType, hideFileType_MV.getValue());
+    }
+
+    /**
+     * 移动文件设置单选框监听
+     */
+    @FXML
+    private void moveTypeAction() {
+        addValueToolTip(moveType_MV, tip_moveType, moveType_MV.getValue());
     }
 
 }

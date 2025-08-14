@@ -43,6 +43,7 @@ import static priv.koishi.tools.Utils.CommonUtils.swapCase;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
+import static priv.koishi.tools.Utils.UiUtils.addValueToolTip;
 
 /**
  * 按指定规则批量重命名文件页面控制器
@@ -678,34 +679,35 @@ public class FileRenameController extends RootController {
         addToolTip(tip_nameNum, nameNum_Re);
         addToolTip(tip_Re.getText(), tip_Re);
         addToolTip(tip_addSpace, addSpace_Re);
-        addToolTip(tip_targetStr, targetStr_Re);
         addToolTip(tip_rename, renameButton_Re);
         addToolTip(tip_leftValue, leftValue_Re);
         addToolTip(tip_startSize, startSize_Re);
         addToolTip(tip_renameStr, renameStr_Re);
-        addToolTip(tip_sheetName, sheetName_Re);
         addToolTip(tip_fileButton, fileButton_Re);
         addToolTip(tip_rightValue, rightValue_Re);
-        addToolTip(tip_renameType, renameType_Re);
-        addToolTip(tip_subCodeSelect, subCode_Re);
         addToolTip(tip_learButton, clearButton_Re);
         addToolTip(tip_renameValue, renameValue_Re);
-        addToolTip(tip_addFileType, addFileType_Re);
-        addToolTip(tip_hideFileType, hideFileType_Re);
         addToolTip(tip_openDirectory, openDirectory_Re);
-        addToolTip(tip_differenceCode, differenceCode_Re);
         addToolTip(tip_filterFileType, filterFileType_Re);
         addToolTip(tip_reselectButton, reselectButton_Re);
-        addToolTip(tip_renameBehavior, renameBehavior_Re);
         addToolTip(tip_updateSameCode, updateSameCode_Re);
         addToolTip(tip_updateFileType, updateFileType_Re);
-        addToolTip(tip_reNameFileType, renameFileType_Re);
         addToolTip(tip_excelPathButton, excelPathButton_Re);
-        addToolTip(tip_directoryNameType, directoryNameType_Re);
         addToolTip(tip_updateRenameButton, updateRenameButton_Re);
-        addToolTip(tip_option, leftBehavior_Re, rightBehavior_Re);
         addToolTip(tip_reNameFileTypeText, renameFileTypeText_Re);
+        addValueToolTip(targetStr_Re, tip_targetStr, targetStr_Re.getValue());
+        addValueToolTip(subCode_Re, tip_subCodeSelect, subCode_Re.getValue());
+        addValueToolTip(sheetName_Re, tip_sheetName, sheetName_Re.getValue());
+        addValueToolTip(leftBehavior_Re, tip_option, leftBehavior_Re.getValue());
+        addValueToolTip(renameType_Re, tip_renameType, renameType_Re.getValue());
+        addValueToolTip(rightBehavior_Re, tip_option, rightBehavior_Re.getValue());
         addToolTip(text_onlyNaturalNumber + defaultStartNameNum, startName_Re);
+        addValueToolTip(addFileType_Re, tip_addFileType, addFileType_Re.getValue());
+        addValueToolTip(hideFileType_Re, tip_hideFileType, hideFileType_Re.getValue());
+        addValueToolTip(differenceCode_Re, tip_differenceCode, differenceCode_Re.getValue());
+        addValueToolTip(renameFileType_Re, tip_reNameFileType, renameFileType_Re.getValue());
+        addValueToolTip(renameBehavior_Re, tip_renameBehavior, renameBehavior_Re.getValue());
+        addValueToolTip(directoryNameType_Re, tip_directoryNameType, directoryNameType_Re.getValue());
         addToolTip(text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row, readRow_Re);
         addToolTip(text_onlyNaturalNumber + defaultReadCell + text_formThe + (defaultReadCell + 1) + text_cell, readCell_Re);
     }
@@ -1250,7 +1252,9 @@ public class FileRenameController extends RootController {
      */
     @FXML
     private void differenceCodeAction() {
-        switch (differenceCode_Re.getValue()) {
+        String differenceCode = differenceCode_Re.getValue();
+        addValueToolTip(differenceCode_Re, tip_differenceCode, differenceCode);
+        switch (differenceCode) {
             case text_arabicNumerals: {
                 updateSelectItems(addSpace_Re, subCode_Re, subCodeArabicNumItems);
                 break;
@@ -1275,6 +1279,7 @@ public class FileRenameController extends RootController {
      */
     @FXML
     private void renameTypeAction() {
+        addValueToolTip(renameType_Re, tip_renameType, renameType_Re.getValue());
         int index = vbox_Re.getChildren().indexOf(renameTypeHBox_Re) + 1;
         removeChildren(vbox_Re, strRenameVBox_Re, excelRenameVBox_Re, codeRenameVBox_Re);
         switch (renameType_Re.getValue()) {
@@ -1303,6 +1308,7 @@ public class FileRenameController extends RootController {
      */
     @FXML
     private void targetStrAction() {
+        addValueToolTip(targetStr_Re, tip_targetStr, targetStr_Re.getValue());
         switch (targetStr_Re.getValue()) {
             case text_specifyString: {
                 typeLabel_Re.setText(text_matchString);
@@ -1337,6 +1343,7 @@ public class FileRenameController extends RootController {
      */
     @FXML
     private void behaviorAction() {
+        addValueToolTip(renameBehavior_Re, tip_renameBehavior, renameBehavior_Re.getValue());
         targetStrHBox_Re.setVisible(true);
         switch (renameBehavior_Re.getValue()) {
             case text_replace: {
@@ -1363,6 +1370,7 @@ public class FileRenameController extends RootController {
     @FXML
     private void leftBehaviorAction() {
         String item = leftBehavior_Re.getValue();
+        addValueToolTip(leftBehavior_Re, tip_option, item);
         leftValue_Re.setVisible(text_insert.equals(item) || text_replace.equals(item));
     }
 
@@ -1372,6 +1380,7 @@ public class FileRenameController extends RootController {
     @FXML
     public void rightBehaviorAction() {
         String item = rightBehavior_Re.getValue();
+        addValueToolTip(rightBehavior_Re, tip_option, item);
         rightValue_Re.setVisible(text_insert.equals(item) || text_replace.equals(item));
     }
 
@@ -1510,6 +1519,7 @@ public class FileRenameController extends RootController {
      */
     @FXML
     private void renameFileTypeAction() {
+        addValueToolTip(renameFileType_Re, tip_reNameFileType, renameFileType_Re.getValue());
         renameFileTypeText_Re.setVisible(text_replace.equals(renameFileType_Re.getValue()));
     }
 
@@ -1519,6 +1529,7 @@ public class FileRenameController extends RootController {
     @FXML
     public void addFileTypeAction() {
         Platform.runLater(() -> {
+            addValueToolTip(addFileType_Re, tip_addFileType, addFileType_Re.getValue());
             if (text_addDirectory.equals(addFileType_Re.getValue())) {
                 reselectButton_Re.setVisible(true);
                 fileButton_Re.setText(text_selectReadFolder);
@@ -1539,10 +1550,35 @@ public class FileRenameController extends RootController {
      */
     @FXML
     private void sheetNameAction() throws Exception {
+        addValueToolTip(sheetName_Re, tip_sheetName, sheetName_Re.getValue());
         ObservableList<FileBean> fileBeans = tableView_Re.getItems();
         if (CollectionUtils.isNotEmpty(fileBeans)) {
             updateRename();
         }
+    }
+
+    /**
+     * 文件夹查询设置选项监听
+     */
+    @FXML
+    private void directoryTypeAction() {
+        addValueToolTip(directoryNameType_Re, tip_directoryNameType, directoryNameType_Re.getValue());
+    }
+
+    /**
+     * 隐藏文件类型选项监听
+     */
+    @FXML
+    private void hideFileTypeAction() {
+        addValueToolTip(hideFileType_Re, tip_hideFileType, hideFileType_Re.getValue());
+    }
+
+    /**
+     * 分隔符选项监听
+     */
+    @FXML
+    private void subCodeAction() {
+        addValueToolTip(subCode_Re, tip_subCode, subCode_Re.getValue());
     }
 
 }

@@ -473,20 +473,16 @@ public class ImgToExcelController extends RootController {
         addToolTip(tip_Img.getText(), tip_Img);
         addToolTip(tip_openFile, openFile_Img);
         addToolTip(tip_recursion, recursion_Img);
-        addToolTip(tip_sheetName, sheetName_Img);
         addToolTip(tip_maxImgNum, maxImgNum_Img);
         addToolTip(tip_startReadRow, startRow_Img);
         addToolTip(tip_fileButton, fileButton_Img);
         addToolTip(tip_learButton, clearButton_Img);
         addToolTip(tip_exportTitle, exportTitle_Img);
-        addToolTip(tip_linkNameType, linkNameType_Img);
         addToolTip(tip_showFileType, showFileType_Img);
-        addToolTip(tip_hideFileType, hideFileType_Img);
         addToolTip(tip_exportButton, exportButton_Img);
         addToolTip(tip_outPathButton, outPathButton_Img);
         addToolTip(tip_openDirectory, openDirectory_Img);
         addToolTip(tip_exportFileNum, exportFileNum_Img);
-        addToolTip(tip_insertImgType, insertImgType_Img);
         addToolTip(tip_exportFileSize, exportFileSize_Img);
         addToolTip(tip_reselectButton, reselectButton_Img);
         addToolTip(tip_excelPathButton, excelPathButton_Img);
@@ -494,8 +490,12 @@ public class ImgToExcelController extends RootController {
         addToolTip(tip_excelType, excelType_Img, excelTypeLabel_Img);
         addToolTip(tip_linkName, linkLeftName_Img, linkRightName_Img);
         addToolTip(tip_excelName + defaultOutFileName, excelName_Img);
+        addValueToolTip(sheetName_Img, tip_sheetName, sheetName_Img.getValue());
         addToolTip(text_onlyNaturalNumber + defaultStartCell, startCell_Img);
+        addValueToolTip(linkNameType_Img, tip_linkNameType, linkNameType_Img.getValue());
+        addValueToolTip(hideFileType_Img, tip_hideFileType, hideFileType_Img.getValue());
         addToolTip(tip_imgHeightWidth + defaultImgWidth + tip_imgWidth, imgWidth_Img);
+        addValueToolTip(insertImgType_Img, tip_insertImgType, insertImgType_Img.getValue());
         addToolTip(tip_imgHeightWidth + defaultImgHeight + tip_imgHeight, imgHeight_Img);
         addToolTip(text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row, readRow_Img);
         addToolTip(text_onlyNaturalNumber + defaultReadCell + text_formThe + (defaultReadCell + 1) + text_cell, readCell_Img);
@@ -947,7 +947,9 @@ public class ImgToExcelController extends RootController {
      */
     @FXML
     private void insertImgTypAction() {
-        linkHBox_Img.setVisible(!insertType_img.equals(insertImgType_Img.getValue()));
+        String value = insertImgType_Img.getValue();
+        addValueToolTip(insertImgType_Img, tip_insertImgType, value);
+        linkHBox_Img.setVisible(!insertType_img.equals(value));
     }
 
     /**
@@ -956,6 +958,7 @@ public class ImgToExcelController extends RootController {
     @FXML
     private void linkNameType() {
         String linkNameType = linkNameType_Img.getValue();
+        addValueToolTip(linkNameType_Img, tip_linkNameType, linkNameType);
         if (linkName_unified.equals(linkNameType)) {
             linkName_Img.setText("超链接名称:");
             linkRightHBox_Img.setVisible(false);
@@ -972,7 +975,16 @@ public class ImgToExcelController extends RootController {
      */
     @FXML
     private void sheetNameAction() throws Exception {
+        addValueToolTip(sheetName_Img, tip_sheetName, sheetName_Img.getValue());
         reselect();
+    }
+
+    /**
+     * 隐藏文件查询设置选项监听
+     */
+    @FXML
+    private void hideFileTypeAction() {
+        addValueToolTip(hideFileType_Img, tip_hideFileType, hideFileType_Img.getValue());
     }
 
 }

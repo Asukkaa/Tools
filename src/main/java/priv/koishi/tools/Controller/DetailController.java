@@ -149,13 +149,13 @@ public class DetailController extends RootController {
         addToolTip(tip_wait, wait_Det);
         addToolTip(tip_mouseEndX, mouseEndX_Det);
         addToolTip(tip_mouseEndY, mouseEndY_Det);
-        addToolTip(tip_clickType, clickType_Det);
         addToolTip(tip_clickTime, timeClick_Det);
         addToolTip(tip_clickName, clickName_Det);
         addToolTip(tip_clickInterval, interval_Det);
         addToolTip(tip_clickNumBer, clickNumBer_Det);
         addToolTip(tip_mouseStartX, mouseStartX_Det);
         addToolTip(tip_mouseStartY, mouseStartY_Det);
+        addValueToolTip(clickType_Det, tip_clickType, clickType_Det.getValue());
     }
 
     /**
@@ -207,6 +207,14 @@ public class DetailController extends RootController {
         if (refreshCallback != null) {
             refreshCallback.run();
         }
+    }
+
+    /**
+     * 操作类型选择框动作监听
+     */
+    @FXML
+    private void clickTypeAction() {
+        addValueToolTip(clickType_Det, tip_clickType, clickType_Det.getValue());
     }
 
 }

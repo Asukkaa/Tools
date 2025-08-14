@@ -28,12 +28,12 @@ public class CommonFinals {
     /**
      * 程序版本
      */
-    public static final String version = "2.5.4";
+    public static final String version = "2.5.5";
 
     /**
      * 程序构建日期
      */
-    public static final String buildDate = "2025.08.13";
+    public static final String buildDate = "2025.08.14";
 
     /**
      * 文件后缀名：bat

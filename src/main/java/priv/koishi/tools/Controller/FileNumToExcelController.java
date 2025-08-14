@@ -379,11 +379,14 @@ public class FileNumToExcelController extends RootController {
         InputStream input = checkRunningInputStream(configFile_Num);
         prop.load(input);
         if (activation.equals(prop.getProperty(key_loadLastConfig))) {
+            setControlLastConfig(inPath_Num, prop, key_lastInPath);
             setControlLastConfig(maxRow_Num, prop, key_lastMaxRow);
             setControlLastConfig(readRow_Num, prop, key_lastReadRow);
+            setControlLastConfig(outPath_Num, prop, key_lastOutPath);
             setControlLastConfig(readCell_Num, prop, key_lastReadCell);
             setControlLastConfig(startRow_Num, prop, key_lastStartRow);
             setControlLastConfig(openFile_Num, prop, key_lastOpenFile);
+            setControlLastConfig(excelPath_Num, prop, key_lastExcelPath);
             setControlLastConfig(excelName_Num, prop, key_lastExcelName);
             setControlLastConfig(sheetName_Num, prop, key_lastSheetName);
             setControlLastConfig(startCell_Num, prop, key_lastStartCell);
@@ -393,12 +396,9 @@ public class FileNumToExcelController extends RootController {
             setControlLastConfig(hideFileType_Num, prop, key_lastHideFileType);
             setControlLastConfig(openDirectory_Num, prop, key_lastOpenDirectory);
             setControlLastConfig(exportFileNum_Num, prop, key_lastExportFileNum);
-            setControlLastConfig(inPath_Num, prop, key_lastInPath);
             setControlLastConfig(exportFileSize_Num, prop, key_lastExportFileSize);
             setControlLastConfig(filterFileType_Num, prop, key_lastFilterFileType);
             setControlLastConfig(subCode_Num, prop, key_lastSubCode, true);
-            setControlLastConfig(outPath_Num, prop, key_lastOutPath);
-            setControlLastConfig(excelPath_Num, prop, key_lastExcelPath);
             setControlLastConfig(directoryNameType_Num, prop, key_lastDirectoryNameType);
             String excelPath = prop.getProperty(key_lastExcelPath);
             if (StringUtils.isNotBlank(excelPath)) {
@@ -431,13 +431,11 @@ public class FileNumToExcelController extends RootController {
         addToolTip(tip_subCode, subCode_Num);
         addToolTip(tip_openFile, openFile_Num);
         addToolTip(tip_recursion, recursion_Num);
-        addToolTip(tip_sheetName, sheetName_Num);
         addToolTip(tip_startReadRow, startRow_Num);
         addToolTip(tip_fileButton, fileButton_Num);
         addToolTip(tip_learButton, clearButton_Num);
         addToolTip(tip_exportTitle, exportTitle_Num);
         addToolTip(tip_showFileType, showFileType_Num);
-        addToolTip(tip_hideFileType, hideFileType_Num);
         addToolTip(tip_exportButton, exportButton_Num);
         addToolTip(tip_openDirectory, openDirectory_Num);
         addToolTip(tip_outPathButton, outPathButton_Num);
@@ -446,10 +444,12 @@ public class FileNumToExcelController extends RootController {
         addToolTip(tip_reselectButton, reselectButton_Num);
         addToolTip(tip_filterFileType, filterFileType_Num);
         addToolTip(tip_excelPathButton, excelPathButton_Num);
-        addToolTip(tip_directoryNameType, directoryNameType_Num);
         addToolTip(tip_excelType, excelType_Num, excelTypeLabel_Num);
         addToolTip(tip_excelName + defaultOutFileName, excelName_Num);
+        addValueToolTip(sheetName_Num, tip_sheetName, sheetName_Num.getValue());
         addToolTip(text_onlyNaturalNumber + defaultStartCell, startCell_Num);
+        addValueToolTip(hideFileType_Num, tip_hideFileType, hideFileType_Num.getValue());
+        addValueToolTip(directoryNameType_Num, tip_directoryNameType, directoryNameType_Num.getValue());
         addToolTip(text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row, readRow_Num);
         addToolTip(text_onlyNaturalNumber + defaultReadCell + text_formThe + (defaultReadCell + 1) + text_cell, readCell_Num);
     }
@@ -710,7 +710,24 @@ public class FileNumToExcelController extends RootController {
      */
     @FXML
     private void sheetNameAction() throws Exception {
+        addValueToolTip(sheetName_Num, tip_sheetName, sheetName_Num.getValue());
         reselect();
+    }
+
+    /**
+     * 文件夹查询设置选项监听
+     */
+    @FXML
+    private void directoryTypeAction() {
+        addValueToolTip(directoryNameType_Num, tip_directoryNameType, directoryNameType_Num.getValue());
+    }
+
+    /**
+     * 隐藏文件查询设置选项监听
+     */
+    @FXML
+    private void hideFileTypeAction() {
+        addValueToolTip(hideFileType_Num, tip_hideFileType, hideFileType_Num.getValue());
     }
 
 }
