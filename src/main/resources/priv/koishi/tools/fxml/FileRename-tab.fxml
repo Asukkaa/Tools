@@ -115,7 +115,7 @@
             </HBox>
 
             <HBox spacing="10">
-                <Label prefHeight="25" text="区分编码类型:"/>
+                <Label prefHeight="25" text="文件名尾缀类型:"/>
                 <ChoiceBox onAction="#differenceCodeAction" fx:id="differenceCode_Re" style="-fx-cursor: hand"
                            prefHeight="25" prefWidth="150">
                     <items>
@@ -131,7 +131,7 @@
                     </value>
                 </ChoiceBox>
 
-                <Label prefHeight="25" text="分隔符:"/>
+                <Label prefHeight="25" text="文件名尾缀分隔符:"/>
                 <ChoiceBox fx:id="subCode_Re" prefHeight="25" prefWidth="150" onAction="#subCodeAction"
                            style="-fx-cursor: hand">
                     <items>
