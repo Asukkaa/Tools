@@ -32,7 +32,7 @@ public class CodeRenameConfig extends Configuration {
     int nameNum;
 
     /**
-     * 区分编码类型
+     * 文件名尾缀类型
      */
     String differenceCode;
 

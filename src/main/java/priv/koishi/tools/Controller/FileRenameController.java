@@ -43,6 +43,7 @@ import static priv.koishi.tools.Utils.CommonUtils.swapCase;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
+import static priv.koishi.tools.Utils.UiUtils.textFieldValueListener;
 
 /**
  * 按指定规则批量重命名文件页面控制器
@@ -686,6 +687,7 @@ public class FileRenameController extends RootController {
         addToolTip(tip_left, left_Re);
         addToolTip(tip_right, right_Re);
         addToolTip(tip_maxRow, maxRow_Re);
+        addToolTip(tip_prefix, prefix_Re);
         addToolTip(tip_nameNum, nameNum_Re);
         addToolTip(tip_Re.getText(), tip_Re);
         addToolTip(tip_addSpace, addSpace_Re);
@@ -745,6 +747,8 @@ public class FileRenameController extends RootController {
         if (text_specifyIndex.equals(targetStr_Re.getValue())) {
             integerRangeTextField(renameValue_Re, 0, null, tip_renameValue);
         }
+        // 文件名前缀输入框添加鼠标悬停提示
+        textFieldValueListener(prefix_Re, tip_prefix);
         // 给目标字符串右侧替换或插入输入框添加鼠标悬停提示
         textFieldValueListener(leftValue_Re, tip_leftValue);
         // 指定字符串所替换的字符串鼠标悬停提示
@@ -1245,7 +1249,7 @@ public class FileRenameController extends RootController {
     }
 
     /**
-     * 根据区分编码类型更新重命名分隔符设置下拉框选项
+     * 根据文件名尾缀类型更新重命名分隔符设置下拉框选项
      */
     @FXML
     private void differenceCodeAction() {

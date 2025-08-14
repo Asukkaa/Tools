@@ -989,7 +989,7 @@ public class CommonFinals {
 
     public static final String tip_startSize = "只能填自然数，0为不限制编号位数，不填默认为0";
 
-    public static final String tip_renameStr = "填写后会将匹配到的字符串替换为所填写的字符串";
+    public static final String tip_renameStr = "填写后会将匹配到的字符串插入或替换为所填写的字符串";
 
     public static final String tip_sheetName = "选择要读取的excel后将会把读取到的表格名称填充到下拉框中，选择表格名称以设置要读取的表";
 
@@ -1081,7 +1081,7 @@ public class CommonFinals {
 
     public static final String tip_renameType = "点击可选择文件重命名依据";
 
-    public static final String tip_differenceCode = "点击可选择区分编码类型";
+    public static final String tip_differenceCode = "点击可选择文件名尾缀类型";
 
     public static final String tip_subCodeSelect = "点击可选择尾缀分隔符";
 
@@ -1177,6 +1177,8 @@ public class CommonFinals {
 
     public static final String tip_close = "点击后将会关闭当前页面，不会将任何数据添加到要移动的文件列表中";
 
+    public static final String tip_prefix = "将会在文件名前面添加所填写的字符";
+
     public static final String tip_sheet = """
             选择要读取的excel后将会把读取到的表格名称填充到下拉框中，选择表格名称以设置要读取的表
             选择\s""" + text_newSheet + " 则会创建一个新表" + """
@@ -1229,9 +1231,10 @@ public class CommonFinals {
             Windows 会直接点击对应窗口的对应坐标，macOS 需要先点击对应窗口将焦点切换过去才能点中对应窗口的对应坐标""";
 
     public static final String tip_updateSameCode = """
-            选中列表中的数据后点击这个按钮，会将选中数据的第一行到最后一行，
-            所有数据的修改后的文件名称的文件编号替换为第一行数据的文件编号，
-            文件名尾缀将延续所选的第一行数据继续递增""";
+            只有在 文件重命名依据设置 为\s""" + text_codeRename + " 时才能使用\n" + """
+            将会把列表中选中的数据的编号设置为选中数据的第一行的编号
+            选中数据的文件的尾缀名将会按照第一行的依次递增
+            未选中的数据延续选中数据最后一行的编号""";
 
     public static final String tip_option = """
             插入：在匹配的字符位置插入所填写的字符串
