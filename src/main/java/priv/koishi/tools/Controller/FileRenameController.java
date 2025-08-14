@@ -43,7 +43,6 @@ import static priv.koishi.tools.Utils.CommonUtils.swapCase;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
-import static priv.koishi.tools.Utils.UiUtils.addValueToolTip;
 
 /**
  * 按指定规则批量重命名文件页面控制器
@@ -88,6 +87,11 @@ public class FileRenameController extends RootController {
      * 要防重复点击的组件
      */
     private static final List<Node> disableNodes = new ArrayList<>();
+
+    /**
+     * 设置所选数据为同一编号右键菜单
+     */
+    private MenuItem updateSameCodeMenu;
 
     /**
      * 读取文件线程
@@ -255,6 +259,7 @@ public class FileRenameController extends RootController {
         prop.put(key_lastAddSpace, addSpaceValue);
         prop.put(key_lastDifferenceCode, differenceCode_Re.getValue());
         prop.put(key_lastSubCode, subCode_Re.getValue());
+        prop.put(key_lastPrefix, prefix_Re.getText());
     }
 
     /**
@@ -269,7 +274,7 @@ public class FileRenameController extends RootController {
             prop.put(key_lastRenameValue, renameValue_Re.getText());
             String renameBehaviorValue = renameBehavior_Re.getValue();
             prop.put(key_lastRenameBehavior, renameBehaviorValue);
-            if (text_replace.equals(renameBehaviorValue)) {
+            if (text_replace.equals(renameBehaviorValue) || text_insert.equals(renameBehaviorValue)) {
                 prop.put(key_lastRenameStr, renameStr_Re.getText());
             } else if (text_bothSides.equals(renameBehaviorValue)) {
                 prop.put(key_lastLeft, left_Re.getText());
@@ -373,6 +378,7 @@ public class FileRenameController extends RootController {
      */
     private void setLastConfigByCodeRename(Properties prop) {
         setControlLastConfig(tag_Re, prop, key_lastTag);
+        setControlLastConfig(prefix_Re, prop, key_lastPrefix);
         setControlLastConfig(subCode_Re, prop, key_lastSubCode);
         setControlLastConfig(nameNum_Re, prop, key_lastNameNum);
         setControlLastConfig(addSpace_Re, prop, key_lastAddSpace);
@@ -446,7 +452,8 @@ public class FileRenameController extends RootController {
     private void setLastConfigBySpecifyIndex(Properties prop) {
         setControlLastConfig(renameValue_Re, prop, key_lastRenameValue);
         setControlLastConfig(renameBehavior_Re, prop, key_lastRenameBehavior);
-        if (text_replace.equals(prop.getProperty(key_lastRenameBehavior))) {
+        String property = prop.getProperty(key_lastRenameBehavior);
+        if (text_replace.equals(property) || text_insert.equals(property)) {
             setControlLastConfig(renameStr_Re, prop, key_lastRenameStr);
         }
     }
@@ -468,13 +475,12 @@ public class FileRenameController extends RootController {
      * 添加数据渲染列表
      *
      * @param inFileList 要读取的文件
-     * @throws Exception 未查询到符合条件的数据
      */
-    public void addInData(List<File> inFileList) throws Exception {
+    public void addInData(List<File> inFileList) {
         if (readFileTask == null) {
             removeAll();
             if (inFileList.isEmpty()) {
-                throw new Exception(text_selectNull);
+                throw new RuntimeException(text_selectNull);
             }
             TaskBean<FileBean> taskBean = creatTaskBean(inFileList);
             // 匹配重命名规则
@@ -484,7 +490,8 @@ public class FileRenameController extends RootController {
             // 绑定带进度条的线程
             bindingTaskNode(readFileTask, taskBean);
             readFileTask.setOnSucceeded(event -> {
-                if (text_excelRename.equals(renameType_Re.getValue()) && StringUtils.isNotBlank(excelPath_Re.getText())) {
+                if (text_excelRename.equals(renameType_Re.getValue())
+                        && StringUtils.isNotBlank(excelPath_Re.getText())) {
                     readExcelRename();
                 }
                 taskUnbind(taskBean);
@@ -552,9 +559,11 @@ public class FileRenameController extends RootController {
             // 绑定带进度条的线程
             bindingTaskNode(readExcelTask, taskBean);
             readExcelTask.setOnSucceeded(event -> {
-                List<String> excelRenameList = readExcelTask.getValue().stream().map(FileNumBean::getGroupName).toList();
+                List<String> excelRenameList = readExcelTask.getValue().stream()
+                        .map(FileNumBean::getGroupName).toList();
                 ObservableList<FileBean> fileBeanList = tableView_Re.getItems();
-                if (CollectionUtils.isNotEmpty(fileBeanList) && CollectionUtils.isNotEmpty(excelRenameList)) {
+                if (CollectionUtils.isNotEmpty(fileBeanList)
+                        && CollectionUtils.isNotEmpty(excelRenameList)) {
                     matchExcelRename(fileBeanList, excelRenameList);
                 }
                 taskUnbind(taskBean);
@@ -649,7 +658,7 @@ public class FileRenameController extends RootController {
             String renameBehavior = renameBehavior_Re.getValue();
             stringRenameConfig.setRenameValue(renameValue_Re.getText())
                     .setRenameBehavior(renameBehavior);
-            if (text_replace.equals(renameBehavior)) {
+            if (text_replace.equals(renameBehavior) || text_insert.equals(renameBehavior)) {
                 stringRenameConfig.setRenameStr(renameStr_Re.getText());
             } else if (text_bothSides.equals(renameBehavior)) {
                 String leftBehavior = leftBehavior_Re.getValue();
@@ -786,7 +795,7 @@ public class FileRenameController extends RootController {
         // 查看文件选项
         buildFilePathItem(tableView_Re, contextMenu);
         // 设置所选数据为同一编号
-        updateSameCodeMenu(contextMenu);
+        updateSameCodeMenu = updateSameCodeMenu(contextMenu);
         // 批量修改文件拓展名
         updateFileTypeMenu(contextMenu);
         // 取消选中选项
@@ -802,7 +811,7 @@ public class FileRenameController extends RootController {
      *
      * @param contextMenu 右键菜单
      */
-    private void updateSameCodeMenu(ContextMenu contextMenu) {
+    private MenuItem updateSameCodeMenu(ContextMenu contextMenu) {
         MenuItem menuItem = new MenuItem("设置所选数据为同一编号");
         menuItem.setOnAction(event -> {
             try {
@@ -812,6 +821,7 @@ public class FileRenameController extends RootController {
             }
         });
         contextMenu.getItems().add(menuItem);
+        return menuItem;
     }
 
     /**
@@ -885,9 +895,11 @@ public class FileRenameController extends RootController {
             for (FileBean fileBean : fileBeans) {
                 fileBean.setNewFileType(fileType);
             }
+        } else {
+            for (FileBean fileBean : fileBeans) {
+                fileBean.setNewFileType(fileBean.getFileType());
+            }
         }
-        tableView_Re.refresh();
-        updateLabel(log_Re, "");
     }
 
     /**
@@ -899,8 +911,6 @@ public class FileRenameController extends RootController {
         for (FileBean fileBean : fileBeans) {
             fileBean.setNewFileType("");
         }
-        tableView_Re.refresh();
-        updateLabel(log_Re, "");
     }
 
     /**
@@ -912,8 +922,6 @@ public class FileRenameController extends RootController {
         for (FileBean fileBean : fileBeans) {
             fileBean.setNewFileType(fileBean.getFileType().toLowerCase());
         }
-        tableView_Re.refresh();
-        updateLabel(log_Re, "");
     }
 
     /**
@@ -925,8 +933,6 @@ public class FileRenameController extends RootController {
         for (FileBean fileBean : fileBeans) {
             fileBean.setNewFileType(fileBean.getFileType().toUpperCase());
         }
-        tableView_Re.refresh();
-        updateLabel(log_Re, "");
     }
 
     /**
@@ -938,8 +944,6 @@ public class FileRenameController extends RootController {
         for (FileBean fileBean : fileBeans) {
             fileBean.setNewFileType(swapCase(fileBean.getFileType()));
         }
-        tableView_Re.refresh();
-        updateLabel(log_Re, "");
     }
 
     /**
@@ -953,11 +957,7 @@ public class FileRenameController extends RootController {
         bindingTaskNode(readFileTask, taskBean);
         readFileTask.setOnSucceeded(event -> {
             taskUnbind(taskBean);
-            try {
-                addInData(readFileTask.getValue());
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            addInData(readFileTask.getValue());
         });
         if (!readFileTask.isRunning()) {
             Thread.ofVirtual()
@@ -1016,10 +1016,10 @@ public class FileRenameController extends RootController {
      * 选择文件夹按钮功能
      *
      * @param actionEvent 交互事件
-     * @throws Exception 未查询到符合条件的数据、io异常
+     * @throws IOException io异常
      */
     @FXML
-    private void inDirectoryButton(ActionEvent actionEvent) throws Exception {
+    private void inDirectoryButton(ActionEvent actionEvent) throws IOException {
         getConfig();
         List<String> filterExtensionList = getFilterExtensionList(filterFileType_Re);
         Window window = ((Node) actionEvent.getSource()).getScene().getWindow();
@@ -1110,16 +1110,14 @@ public class FileRenameController extends RootController {
 
     /**
      * 开始重命名按钮
-     *
-     * @throws Exception 要读取的文件列表为空
      */
     @FXML
-    private void renameAll() throws Exception {
+    private void renameAll() {
         if (renameTask == null) {
             updateLabel(log_Re, "");
             ObservableList<FileBean> fileBeans = tableView_Re.getItems();
             if (CollectionUtils.isEmpty(fileBeans)) {
-                throw new Exception(text_fileListNull);
+                throw new RuntimeException(text_fileListNull);
             }
             Map<String, List<FileBean>> fileBeanMap = fileBeans.stream().collect(Collectors.groupingBy(FileBean::getFullRename));
             List<String> repeatNameList = new ArrayList<>();
@@ -1218,18 +1216,16 @@ public class FileRenameController extends RootController {
 
     /**
      * 重新查询按钮
-     *
-     * @throws Exception 要查询的文件夹位置为空、要读取的文件夹不存在
      */
     @FXML
-    private void reselect() throws Exception {
+    private void reselect() {
         String inFilePath = inPath_Re.getText();
         if (StringUtils.isEmpty(inFilePath)) {
-            throw new Exception(text_filePathNull);
+            throw new RuntimeException(text_filePathNull);
         }
         File file = new File(inFilePath);
         if (!file.exists()) {
-            throw new Exception(text_directoryNotExists);
+            throw new RuntimeException(text_directoryNotExists);
         }
         updateLabel(log_Re, "");
         FileConfig fileConfig = new FileConfig();
@@ -1286,19 +1282,28 @@ public class FileRenameController extends RootController {
         switch (renameType_Re.getValue()) {
             case text_codeRename: {
                 vbox_Re.getChildren().add(index, codeRenameVBox_Re);
-                updateSameCode_Re.setVisible(true);
+                if (updateSameCodeMenu != null) {
+                    updateSameCodeMenu.setDisable(false);
+                }
+                updateSameCode_Re.setDisable(false);
                 break;
             }
             case text_strRename: {
                 vbox_Re.getChildren().add(index, strRenameVBox_Re);
-                updateSameCode_Re.setVisible(false);
+                if (updateSameCodeMenu != null) {
+                    updateSameCodeMenu.setDisable(true);
+                }
+                updateSameCode_Re.setDisable(true);
                 // 根据匹配字符规则选项展示组件
                 targetStrAction();
                 break;
             }
             case text_excelRename: {
                 vbox_Re.getChildren().add(index, excelRenameVBox_Re);
-                updateSameCode_Re.setVisible(false);
+                if (updateSameCodeMenu != null) {
+                    updateSameCodeMenu.setDisable(true);
+                }
+                updateSameCode_Re.setDisable(true);
                 break;
             }
         }
@@ -1315,7 +1320,7 @@ public class FileRenameController extends RootController {
                 typeLabel_Re.setText(text_matchString);
                 renameValue_Re.setText("");
                 addValueToolTip(renameValue_Re, tip_renameValue);
-                renameBehavior_Re.getItems().remove(text_bothSides);
+                renameBehavior_Re.getItems().removeAll(text_bothSides, text_insert);
                 renameBehavior_Re.getItems().add(text_bothSides);
                 // 根据重命名方法选项展示组件
                 behaviorAction();
@@ -1325,7 +1330,8 @@ public class FileRenameController extends RootController {
                 typeLabel_Re.setText(text_matchIndex);
                 renameValue_Re.setText("");
                 addValueToolTip(renameValue_Re, tip_renameValue);
-                renameBehavior_Re.getItems().remove(text_bothSides);
+                renameBehavior_Re.getItems().removeAll(text_bothSides, text_insert);
+                renameBehavior_Re.getItems().add(text_insert);
                 renameBehavior_Re.setValue(renameBehavior_Re.getItems().getFirst());
                 // 根据重命名方法选项展示组件
                 behaviorAction();
@@ -1347,7 +1353,7 @@ public class FileRenameController extends RootController {
         addValueToolTip(renameBehavior_Re, tip_renameBehavior, renameBehavior_Re.getValue());
         targetStrHBox_Re.setVisible(true);
         switch (renameBehavior_Re.getValue()) {
-            case text_replace: {
+            case text_replace, text_insert: {
                 renameStr_Re.setVisible(true);
                 behaviorHBox_Re.setVisible(false);
                 break;
@@ -1387,14 +1393,12 @@ public class FileRenameController extends RootController {
 
     /**
      * 更新重命名按钮
-     *
-     * @throws Exception 要读取的文件列表为空
      */
     @FXML
-    private void updateRename() throws Exception {
+    private void updateRename() {
         ObservableList<FileBean> fileBeans = tableView_Re.getItems();
         if (CollectionUtils.isEmpty(fileBeans)) {
-            throw new Exception(text_fileListNull);
+            throw new RuntimeException(text_fileListNull);
         }
         if (text_excelRename.equals(renameType_Re.getValue()) && StringUtils.isNotBlank(excelPath_Re.getText())) {
             readExcelRename();
@@ -1441,14 +1445,15 @@ public class FileRenameController extends RootController {
 
     /**
      * 设置所选数据为同一编号
-     *
-     * @throws Exception 未选中任何数据
      */
     @FXML
-    private void updateSameCode() throws Exception {
+    private void updateSameCode() {
         List<FileBean> selectedFileBeans = tableView_Re.getSelectionModel().getSelectedItems();
         if (CollectionUtils.isEmpty(selectedFileBeans)) {
-            throw new Exception(text_nullSelect);
+            throw new RuntimeException(text_nullSelect);
+        }
+        if (!text_codeRename.equals(renameType_Re.getValue())) {
+            throw new RuntimeException("文件重命名依据设置为 " + text_codeRename + " 才可使用");
         }
         // 选中的数据按照最新设置进行重命名
         CodeRenameConfig codeRenameConfig = new CodeRenameConfig();
@@ -1503,14 +1508,12 @@ public class FileRenameController extends RootController {
 
     /**
      * 批量修改文件拓展名
-     *
-     * @throws Exception 要读取的文件列表为空
      */
     @FXML
-    private void updateFileTypes() throws Exception {
+    private void updateFileTypes() {
         ObservableList<FileBean> fileBeans = tableView_Re.getItems();
         if (CollectionUtils.isEmpty(fileBeans)) {
-            throw new Exception(text_fileListNull);
+            throw new RuntimeException(text_fileListNull);
         }
         // 批量修改文件拓展名
         updateFileTypes(fileBeans, renameFileType_Re.getValue());
@@ -1547,11 +1550,9 @@ public class FileRenameController extends RootController {
 
     /**
      * 工作表名称选项监听
-     *
-     * @throws Exception 要读取的文件列表为空
      */
     @FXML
-    private void sheetNameAction() throws Exception {
+    private void sheetNameAction() {
         addValueToolTip(sheetName_Re, tip_sheetName, sheetName_Re.getValue());
         ObservableList<FileBean> fileBeans = tableView_Re.getItems();
         if (CollectionUtils.isNotEmpty(fileBeans)) {

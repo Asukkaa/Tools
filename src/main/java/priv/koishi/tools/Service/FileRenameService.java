@@ -359,6 +359,13 @@ public class FileRenameService {
                         fileName = sb.toString();
                         break;
                     }
+                    case text_insert:{
+                        String renameStr = stringRenameConfig.getRenameStr();
+                        StringBuilder sb = new StringBuilder(fileName);
+                        sb.insert(renameValueInt, renameStr);
+                        fileName = sb.toString();
+                        break;
+                    }
                 }
             }
         }

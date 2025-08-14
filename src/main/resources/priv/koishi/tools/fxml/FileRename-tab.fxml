@@ -172,7 +172,7 @@
                 </ChoiceBox>
 
                 <HBox fx:id="targetStrHBox_Re" spacing="10" visible="false">
-                    <Label fx:id="typeLabel_Re" prefHeight="25" text="要匹配的字符串:"/>
+                    <Label fx:id="typeLabel_Re" prefHeight="25" text="要匹配的字符串为:"/>
                     <TextField fx:id="renameValue_Re" prefHeight="20" prefWidth="100"/>
 
                     <Label prefHeight="25" text="重命名方法:"/>

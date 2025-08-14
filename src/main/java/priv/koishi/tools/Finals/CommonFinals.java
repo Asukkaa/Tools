@@ -461,7 +461,7 @@ public class CommonFinals {
 
     public static final String text_specifyIndex = "指定字符位置";
 
-    public static final String text_matchString = "要匹配的字符串:";
+    public static final String text_matchString = "要匹配的字符串为:";
 
     public static final String text_matchIndex = "要匹配的字符位置:";
 
@@ -700,6 +700,8 @@ public class CommonFinals {
     public static final String key_lastExcelPath = "lastExcelPath";
 
     public static final String key_lastSubCode = "lastSubCode";
+
+    public static final String key_lastPrefix = "lastPrefix";
 
     public static final String key_lastReadRow = "lastReadRow";
 
