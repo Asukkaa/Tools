@@ -11,6 +11,7 @@ import priv.koishi.tools.Configuration.ExcelConfig;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -139,9 +140,9 @@ public class ExcelUtils {
      * 校验excel输出路径是否与模板一致，若不一致则复制一份模板文件到输出路径
      *
      * @param excelConfig excel设置
-     * @throws Exception 文件设置可写失败
+     * @throws IOException 文件设置可写失败
      */
-    public static void checkCopyDestination(ExcelConfig excelConfig) throws Exception {
+    public static void checkCopyDestination(ExcelConfig excelConfig) throws IOException {
         String excelInPath = excelConfig.getInPath();
         String outPath = excelConfig.getOutPath();
         String excelName = excelConfig.getOutName();
@@ -155,7 +156,7 @@ public class ExcelUtils {
             File destinationPathFile = new File(String.valueOf(destinationPath));
             if (!destinationPathFile.canWrite()) {
                 if (!destinationPathFile.setWritable(true)) {
-                    throw new Exception("文件 " + destinationPath + " 设置为可写失败");
+                    throw new RuntimeException("文件 " + destinationPath + " 设置为可写失败");
                 }
             }
         }
@@ -167,9 +168,9 @@ public class ExcelUtils {
      * @param workbook    excel工作簿
      * @param excelConfig excel设置
      * @return excel保存路径
-     * @throws Exception io异常
+     * @throws IOException io异常
      */
-    public static String saveExcel(Workbook workbook, ExcelConfig excelConfig) throws Exception {
+    public static String saveExcel(Workbook workbook, ExcelConfig excelConfig) throws IOException {
         String filePath = excelConfig.getOutPath() + File.separator + excelConfig.getOutName() + excelConfig.getOutExcelType();
         Path path = Paths.get(filePath);
         // 处理HSSFWorkbook

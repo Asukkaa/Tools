@@ -5,11 +5,10 @@ import com.github.kwhat.jnativehook.keyboard.NativeKeyListener;
 import com.github.kwhat.jnativehook.mouse.NativeMouseListener;
 import org.apache.commons.lang3.StringUtils;
 import priv.koishi.tools.Bean.FileNumBean;
-import priv.koishi.tools.Configuration.FileConfig;
 import priv.koishi.tools.Bean.Vo.FileNumVo;
+import priv.koishi.tools.Configuration.FileConfig;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.management.GarbageCollectorMXBean;
@@ -189,19 +188,15 @@ public class CommonUtils {
             List<String> names = new ArrayList<>();
             long fileSize = 0;
             for (String path : v) {
-                try {
-                    String fileName;
-                    File file = new File(path);
-                    if (fileConfig.isShowFileType()) {
-                        fileName = file.getName();
-                    } else {
-                        fileName = getFileName(file);
-                    }
-                    fileSize += file.length();
-                    names.add(fileName);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                String fileName;
+                File file = new File(path);
+                if (fileConfig.isShowFileType()) {
+                    fileName = file.getName();
+                } else {
+                    fileName = getFileName(file);
                 }
+                fileSize += file.length();
+                names.add(fileName);
             }
             names.sort(String.CASE_INSENSITIVE_ORDER);
             fileNumBean.setFileNameList(names);

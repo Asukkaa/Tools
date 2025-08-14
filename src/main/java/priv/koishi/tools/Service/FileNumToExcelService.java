@@ -16,6 +16,7 @@ import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.ExcelConfig;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +44,7 @@ public class FileNumToExcelService {
     public static Task<Workbook> buildNameGroupNumExcel(TaskBean<FileNumBean> taskBean, ExcelConfig excelConfig) {
         return new Task<>() {
             @Override
-            protected Workbook call() throws Exception {
+            protected Workbook call() throws IOException {
                 // 改变要防重复点击的组件状态
                 changeDisableNodes(taskBean, true);
                 // 校验excel输出路径是否与模板一致，若不一致则复制一份模板文件到输出路径
@@ -73,7 +74,7 @@ public class FileNumToExcelService {
                     }
                 }
                 if (workbook == null) {
-                    throw new Exception("当前读取模板文件格式为 " + excelType + " 目前只支持读取 .xlsx 与 .xls 格式的文件");
+                    throw new RuntimeException("当前读取模板文件格式为 " + excelType + " 目前只支持读取 .xlsx 与 .xls 格式的文件");
                 }
                 int startRowNum = excelConfig.getStartRowNum();
                 int rowNum = startRowNum;

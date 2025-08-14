@@ -355,24 +355,22 @@ public class MoveFileController extends RootController {
 
     /**
      * 移动文件按钮
-     *
-     * @throws IOException 获取文件属性异常、创建文件夹失败
      */
     @FXML
-    private void moveAll() throws Exception {
+    private void moveAll() {
         String path = outPath_MV.getText();
         if (StringUtils.isBlank(path)) {
-            throw new Exception("请选择目标文件夹");
+            throw new RuntimeException("请选择目标文件夹");
         }
         File targetDirectory = new File(path);
         if (!targetDirectory.exists()) {
             if (!targetDirectory.mkdirs()) {
-                throw new Exception("创建文件夹 " + targetDirectory + " 失败");
+                throw new RuntimeException("创建文件夹 " + targetDirectory + " 失败");
             }
         }
         ObservableList<FileBean> items = tableView_MV.getItems();
         if (CollectionUtils.isEmpty(items)) {
-            throw new Exception("请选择要移动的文件或文件夹");
+            throw new RuntimeException("请选择要移动的文件或文件夹");
         }
         TaskBean<FileBean> taskBean = new TaskBean<>();
         taskBean.setProgressBar(progressBar_MV)

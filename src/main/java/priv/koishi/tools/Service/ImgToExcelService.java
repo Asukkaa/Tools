@@ -58,7 +58,7 @@ public class ImgToExcelService {
     public static Task<SXSSFWorkbook> buildImgGroupExcel(TaskBean<FileNumBean> taskBean, ExcelConfig excelConfig) {
         return new Task<>() {
             @Override
-            protected SXSSFWorkbook call() throws Exception {
+            protected SXSSFWorkbook call() throws IOException {
                 // 改变要防重复点击的组件状态
                 changeDisableNodes(taskBean, true);
                 // 校验excel输出路径是否与模板一致，若不一致则复制一份模板文件到输出路径

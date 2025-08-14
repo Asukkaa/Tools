@@ -692,11 +692,10 @@ public class UiUtils {
      * @param tabId                 页面id
      * @param fileNumber            展示列表信息分组数量及文件大小和匹配图片数量的文本栏
      * @param comparatorTableColumn 需要设置排序规则的列
-     * @throws Exception 未查询到符合条件的数据
      */
     public static void machGroup(FileConfig fileConfig, List<FileNumBean> fileNumList, List<? extends File> inFileList,
                                  TableView<FileNumBean> tableView, String tabId, Label fileNumber, TableColumn<FileNumBean,
-                    String> comparatorTableColumn) throws Exception {
+                    String> comparatorTableColumn) {
         FileNumVo fileNumVo = matchGroupData(fileNumList, inFileList, fileConfig);
         TaskBean<FileNumBean> taskBean = new TaskBean<>();
         taskBean.setComparatorTableColumn(comparatorTableColumn)

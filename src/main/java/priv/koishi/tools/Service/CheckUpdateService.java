@@ -382,7 +382,7 @@ public class CheckUpdateService {
                         }
                     }
                 } else {
-                    throw new IOException(text_scriptNotFind);
+                    throw new RuntimeException(text_scriptNotFind);
                 }
             }
         }

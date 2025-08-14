@@ -178,9 +178,8 @@ public class FileUtils {
      *
      * @param fileConfig 文件查询设置
      * @return 查询到的文件列表
-     * @throws IOException 读取文件失败、文件不存在
      */
-    public static List<File> readAllFiles(FileConfig fileConfig) throws IOException {
+    public static List<File> readAllFiles(FileConfig fileConfig) {
         List<File> fileList = new ArrayList<>();
         readFiles(fileConfig, fileList, fileConfig.getInFile());
         fileConfig.setInFile(null);
@@ -193,9 +192,8 @@ public class FileUtils {
      * @param fileConfig 文件查询设置
      * @param fileList   上层文件夹查询的文件列表
      * @param directory  最外层文件夹
-     * @throws IOException 读取文件失败、文件不存在
      */
-    public static void readFiles(FileConfig fileConfig, List<? super File> fileList, File directory) throws IOException {
+    public static void readFiles(FileConfig fileConfig, List<? super File> fileList, File directory) {
         File[] files = directory.listFiles();
         String showHideFile = fileConfig.getShowHideFile();
         String showDirectoryName = fileConfig.getShowDirectoryName();
@@ -238,9 +236,8 @@ public class FileUtils {
      * @param fileConfig 文件查询设置
      * @param fileList   上层文件夹查询的文件列表
      * @param file       文件
-     * @throws IOException 文件不存在
      */
-    private static void filterFileName(FileConfig fileConfig, List<? super File> fileList, File file) throws IOException {
+    private static void filterFileName(FileConfig fileConfig, List<? super File> fileList, File file) {
         String fileNameFilter = fileConfig.getFileNameFilter();
         if (StringUtils.isNotBlank(fileNameFilter) && file.exists()) {
             String fileName = getFileName(file);
@@ -280,11 +277,10 @@ public class FileUtils {
      *
      * @param file 要获取文件名的文件
      * @return 文件夹或不带拓展名的文件名称
-     * @throws IOException 文件不存在
      */
-    public static String getFileName(File file) throws IOException {
+    public static String getFileName(File file) {
         if (!file.exists()) {
-            throw new IOException(text_fileNotExists + ":" + file.getPath());
+            throw new RuntimeException(text_fileNotExists + ":" + file.getPath());
         }
         String fileName = file.getName();
         if (!file.isDirectory() && fileName.contains(".")) {
@@ -316,12 +312,11 @@ public class FileUtils {
      * 校验输出文件夹是否存在，不存在就创建一个
      *
      * @param path 要校验的路径
-     * @throws Exception 创建文件夹失败
      */
-    public static void checkDirectory(String path) throws Exception {
+    public static void checkDirectory(String path) {
         if (!new File(path).exists()) {
             if (!new File(path).mkdirs()) {
-                throw new Exception("创建文件夹 " + path + " 失败");
+                throw new RuntimeException("创建文件夹 " + path + " 失败");
             }
         }
     }
@@ -451,12 +446,11 @@ public class FileUtils {
      *
      * @param filePath 要校验的非文件夹文件路径
      * @param errTex   校验不通过时提示文案
-     * @throws IOException 文件校验不通过
      */
-    public static void checkFileExists(String filePath, String errTex) throws IOException {
+    public static void checkFileExists(String filePath, String errTex) {
         File file = new File(filePath);
         if (!file.exists() || !file.isFile()) {
-            throw new IOException(errTex);
+            throw new RuntimeException(errTex);
         }
     }
 
@@ -526,11 +520,10 @@ public class FileUtils {
      *
      * @param path 要判断的文件路径
      * @return 不会重名文件路径
-     * @throws IOException 路径不能为空、文件不存在
      */
-    public static String notOverwritePath(String path) throws IOException {
+    public static String notOverwritePath(String path) {
         if (StringUtils.isBlank(path)) {
-            throw new IOException("路径不能为空");
+            throw new RuntimeException("路径不能为空");
         }
         File file = new File(path);
         if (!file.exists()) {

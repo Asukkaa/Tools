@@ -222,9 +222,8 @@ public class FileNumToExcelController extends RootController {
      *
      * @param selectedFile        要读取的文件
      * @param filterExtensionList 要过滤的文件格式
-     * @throws Exception 未查询到符合条件的数据
      */
-    private void addInFile(File selectedFile, List<String> filterExtensionList) throws Exception {
+    private void addInFile(File selectedFile, List<String> filterExtensionList) {
         FileConfig fileConfig = creatFileConfig(selectedFile, filterExtensionList);
         // 列表中有excel分组后再匹配数据
         ObservableList<FileNumBean> fileNumList = tableView_Num.getItems();
@@ -519,10 +518,10 @@ public class FileNumToExcelController extends RootController {
      * 选择文件夹按钮功能
      *
      * @param actionEvent 交互事件
-     * @throws Exception 未查询到符合条件的数据、io异常
+     * @throws IOException 未查询到符合条件的数据、io异常
      */
     @FXML
-    private void inDirectoryButton(ActionEvent actionEvent) throws Exception {
+    private void inDirectoryButton(ActionEvent actionEvent) throws IOException {
         getConfig();
         Window window = ((Node) actionEvent.getSource()).getScene().getWindow();
         // 显示文件选择器
@@ -577,26 +576,24 @@ public class FileNumToExcelController extends RootController {
 
     /**
      * 导出excel按钮
-     *
-     * @throws Exception 导出文件夹位置为空、要查询的文件夹位置为空、excel模板文件位置为空
      */
     @FXML
-    private void exportAll() throws Exception {
+    private void exportAll() {
         if (buildExcelTask == null) {
             updateLabel(log_Num, "");
             String outFilePath = outPath_Num.getText();
             if (StringUtils.isEmpty(outFilePath)) {
-                throw new Exception(text_outPathNull);
+                throw new RuntimeException(text_outPathNull);
             }
             if (StringUtils.isEmpty(inPath_Num.getText())) {
-                throw new Exception(text_filePathNull);
+                throw new RuntimeException(text_filePathNull);
             }
             String inFilePath = excelPath_Num.getText();
             if (StringUtils.isEmpty(inFilePath)) {
-                throw new Exception(text_excelPathNull);
+                throw new RuntimeException(text_excelPathNull);
             }
             if (!new File(inFilePath).exists()) {
-                throw new Exception(text_directoryNotExists);
+                throw new RuntimeException(text_directoryNotExists);
             }
             int readRowValue = setDefaultIntValue(readRow_Num, defaultReadRow, 0, null);
             ExcelConfig excelConfig = new ExcelConfig();
@@ -633,10 +630,10 @@ public class FileNumToExcelController extends RootController {
      * 设置导出文件按钮
      *
      * @param actionEvent 交互事件
-     * @throws Exception io异常
+     * @throws IOException io异常
      */
     @FXML
-    private void exportPath(ActionEvent actionEvent) throws Exception {
+    private void exportPath(ActionEvent actionEvent) throws IOException {
         getConfig();
         Window window = ((Node) actionEvent.getSource()).getScene().getWindow();
         File selectedFile = creatDirectoryChooser(window, outFilePath, text_selectDirectory);
@@ -653,10 +650,10 @@ public class FileNumToExcelController extends RootController {
      * 选择excel模板按钮
      *
      * @param actionEvent 交互事件
-     * @throws Exception io异常
+     * @throws IOException io异常
      */
     @FXML
-    private void getExcelPath(ActionEvent actionEvent) throws Exception {
+    private void getExcelPath(ActionEvent actionEvent) throws IOException {
         getConfig();
         List<FileChooser.ExtensionFilter> extensionFilters = new ArrayList<>();
         extensionFilters.add(new FileChooser.ExtensionFilter("Excel", "*.xlsx", "*.xls"));
@@ -674,17 +671,15 @@ public class FileNumToExcelController extends RootController {
 
     /**
      * 重新查询按钮
-     *
-     * @throws Exception excel模板文件位置为空、要读取的文件夹不存在
      */
     @FXML
-    private void reselect() throws Exception {
+    private void reselect() {
         String inFilePath = excelPath_Num.getText();
         if (StringUtils.isEmpty(inFilePath)) {
-            throw new Exception(text_excelPathNull);
+            throw new RuntimeException(text_excelPathNull);
         }
         if (!new File(inFilePath).exists()) {
-            throw new Exception(text_excelNotExists);
+            throw new RuntimeException(text_excelNotExists);
         }
         updateLabel(log_Num, "");
         addInData(null);
@@ -692,11 +687,9 @@ public class FileNumToExcelController extends RootController {
 
     /**
      * 是否展示文件拓展名选项监听
-     *
-     * @throws Exception excel模板文件位置为空、要读取的文件夹不存在
      */
     @FXML
-    private void handleCheckBoxAction() throws Exception {
+    private void handleCheckBoxAction() {
         ObservableList<FileNumBean> fileBeans = tableView_Num.getItems();
         if (CollectionUtils.isNotEmpty(fileBeans)) {
             reselect();
@@ -705,11 +698,9 @@ public class FileNumToExcelController extends RootController {
 
     /**
      * 工作表名称选项监听
-     *
-     * @throws Exception excel模板文件位置为空、要读取的文件夹不存在
      */
     @FXML
-    private void sheetNameAction() throws Exception {
+    private void sheetNameAction() {
         addValueToolTip(sheetName_Num, tip_sheetName, sheetName_Num.getValue());
         reselect();
     }

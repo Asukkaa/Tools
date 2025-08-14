@@ -124,7 +124,7 @@ public class MoveFileService {
     public static Task<Void> moveFile(TaskBean<FileBean> taskBean) {
         return new Task<>() {
             @Override
-            protected Void call() throws Exception {
+            protected Void call() throws IOException {
                 // 改变要防重复点击的组件状态
                 changeDisableNodes(taskBean, true);
                 updateMessage("正在校验要处理的路径");

@@ -200,13 +200,12 @@ public class FileNameToExcelController extends RootController {
      * 添加数据渲染列表
      *
      * @param inFileList 查询到的文件list
-     * @throws Exception 未查询到符合条件的数据
      */
-    private void addInData(List<File> inFileList) throws Exception {
+    private void addInData(List<File> inFileList) {
         if (readFileTask == null) {
             removeAll();
             if (inFileList.isEmpty()) {
-                throw new Exception(text_selectNull);
+                throw new RuntimeException(text_selectNull);
             }
             ChoiceBox<String> sort = settingController.sort_Set;
             String sortValue = sort.getValue();
@@ -426,9 +425,9 @@ public class FileNameToExcelController extends RootController {
 
     /**
      * 更新excel sheet名称
-     * @throws Exception 文件格式不支持、文件不存在
+     * @throws IOException io异常
      */
-    private void updateSheetName() throws Exception {
+    private void updateSheetName() throws IOException {
         sheetName_Name.setValue(text_newSheet);
         Workbook workbook = getWorkbook(excelInPath);
         buildSheetChoiceBox(workbook, sheetName_Name);
@@ -470,10 +469,10 @@ public class FileNameToExcelController extends RootController {
     /**
      * 选择文件夹按钮功能
      *
-     * @throws Exception io异常
+     * @throws IOException io异常
      */
     @FXML
-    private void inDirectoryButton(ActionEvent actionEvent) throws Exception {
+    private void inDirectoryButton(ActionEvent actionEvent) throws IOException {
         getConfig();
         List<String> filterExtensionList = getFilterExtensionList(filterFileType_Name);
         Window window = ((Node) actionEvent.getSource()).getScene().getWindow();
@@ -548,19 +547,19 @@ public class FileNameToExcelController extends RootController {
     /**
      * 导出excel按钮
      *
-     * @throws Exception 导出文件夹位置为空、要读取的文件列表为空
+     * @throws IOException io异常
      */
     @FXML
-    private void exportAll() throws Exception {
+    private void exportAll() throws IOException {
         if (buildExcelTask == null) {
             updateLabel(log_Name, "");
             String outFilePath = outPath_Name.getText();
             ObservableList<FileBean> fileBeans = tableView_Name.getItems();
             if (StringUtils.isEmpty(outFilePath)) {
-                throw new Exception(text_outPathNull);
+                throw new RuntimeException(text_outPathNull);
             }
             if (CollectionUtils.isEmpty(fileBeans)) {
-                throw new Exception(text_fileListNull);
+                throw new RuntimeException(text_fileListNull);
             }
             updateLabel(log_Name, "");
             String sheetName = sheetName_Name.getValue();
@@ -621,7 +620,7 @@ public class FileNameToExcelController extends RootController {
      * @throws IOException io异常
      */
     @FXML
-    private void getExcelPath(ActionEvent actionEvent) throws Exception {
+    private void getExcelPath(ActionEvent actionEvent) throws IOException {
         getConfig();
         List<FileChooser.ExtensionFilter> extensionFilters = new ArrayList<>();
         extensionFilters.add(new FileChooser.ExtensionFilter("Excel", "*.xlsx", "*.xls"));
@@ -644,16 +643,16 @@ public class FileNameToExcelController extends RootController {
     /**
      * 重新查询按钮
      *
-     * @throws Exception 要查询的文件夹位置为空、要读取的文件夹不存在
+     * @throws IOException io异常
      */
     @FXML
-    private void reselect() throws Exception {
+    private void reselect() throws IOException {
         String inFilePath = inPath_Name.getText();
         if (StringUtils.isEmpty(inFilePath)) {
-            throw new Exception(text_filePathNull);
+            throw new RuntimeException(text_filePathNull);
         }
         if (!new File(inFilePath).exists()) {
-            throw new Exception(text_directoryNotExists);
+            throw new RuntimeException(text_directoryNotExists);
         }
         updateLabel(log_Name, "");
         updateSheetName();
@@ -669,10 +668,10 @@ public class FileNameToExcelController extends RootController {
     /**
      * 是否展示文件拓展名选项监听
      *
-     * @throws Exception io异常
+     * @throws IOException io异常
      */
     @FXML
-    private void handleCheckBoxAction() throws Exception {
+    private void handleCheckBoxAction() throws IOException {
         ObservableList<FileBean> fileBeans = tableView_Name.getItems();
         if (CollectionUtils.isNotEmpty(fileBeans)) {
             reselect();

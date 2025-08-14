@@ -443,6 +443,8 @@ public class AutoClickController extends RootController implements MousePosition
 
     /**
      * 显示浮窗
+     *
+     * @throws IOException io异常
      */
     private void showFloatingWindow() throws IOException {
         getConfig();
@@ -552,6 +554,7 @@ public class AutoClickController extends RootController implements MousePosition
      * 启动自动操作流程
      *
      * @param clickPositionBeans 自动操作流程
+     * @throws IOException io异常
      */
     private void launchClickTask(List<ClickPositionBean> clickPositionBeans) throws IOException {
         if (!runClicking && !recordClicking) {
@@ -1164,13 +1167,13 @@ public class AutoClickController extends RootController implements MousePosition
     /**
      * 运行自动点击按钮
      *
-     * @throws Exception 列表中没有要执行的操作
+     * @throws IOException io异常
      */
     @FXML
-    public void runClick() throws Exception {
+    public void runClick() throws IOException {
         ObservableList<ClickPositionBean> tableViewItems = tableView_Click.getItems();
         if (CollectionUtils.isEmpty(tableViewItems)) {
-            throw new Exception(text_noAutoClickToRun);
+            throw new RuntimeException(text_noAutoClickToRun);
         }
         // 启动自动操作流程
         launchClickTask(tableViewItems);
@@ -1229,17 +1232,17 @@ public class AutoClickController extends RootController implements MousePosition
     /**
      * 导出操作流程按钮
      *
-     * @throws Exception 列表中无要导出的自动操作流程
+     * @throws IOException io异常
      */
     @FXML
-    public void exportAutoClick() throws Exception {
+    public void exportAutoClick() throws IOException {
         if (autoClickTask == null && !recordClicking) {
             ObservableList<ClickPositionBean> tableViewItems = tableView_Click.getItems();
             if (CollectionUtils.isEmpty(tableViewItems)) {
-                throw new Exception(text_noAutoClickList);
+                throw new RuntimeException(text_noAutoClickList);
             }
             if (StringUtils.isBlank(outFilePath)) {
-                throw new Exception(text_outPathNull);
+                throw new RuntimeException(text_outPathNull);
             }
             String fileName = setDefaultFileName(outFileName_Click, defaultOutFileName);
             ObjectMapper objectMapper = new ObjectMapper();

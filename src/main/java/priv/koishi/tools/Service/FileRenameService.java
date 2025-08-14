@@ -15,6 +15,7 @@ import priv.koishi.tools.Configuration.FileConfig;
 import priv.koishi.tools.Configuration.StringRenameConfig;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -46,7 +47,7 @@ public class FileRenameService {
     public static Task<List<File>> readDropFiles(TaskBean<FileBean> taskBean, List<File> files) {
         return new Task<>() {
             @Override
-            protected List<File> call() throws Exception {
+            protected List<File> call() throws IOException {
                 changeDisableNodes(taskBean, true);
                 updateMessage(text_readData);
                 List<File> inFileList = new ArrayList<>();
@@ -89,7 +90,7 @@ public class FileRenameService {
     public static Task<String> fileRename(TaskBean<FileBean> taskBean) {
         return new Task<>() {
             @Override
-            protected String call() throws Exception {
+            protected String call() throws IOException {
                 // 改变要防重复点击的组件状态
                 changeDisableNodes(taskBean, true);
                 updateMessage("正在校验名称");
@@ -161,7 +162,7 @@ public class FileRenameService {
                     String newName = fileBean.getRename() + ext;
                     File newFile = new File(tempFile.getParent(), newName);
                     if (!tempFile.renameTo(newFile)) {
-                        throw new Exception("修改编号为 " + fileBean.getId() + " 的文件名称失败");
+                        throw new RuntimeException("修改编号为 " + fileBean.getId() + " 的文件名称失败");
                     }
                     updateMessage("已修改编号为 " + fileBean.getId() + " 的文件 " + fileBean.getName() + " 临时名称为 " + newName);
                     updateProgress(i, fileBeanListSize);
@@ -171,15 +172,15 @@ public class FileRenameService {
             }
 
             // 给文件一个临时重命名
-            private static File tempRename(FileBean fileBean, String tempName) throws Exception {
+            private static File tempRename(FileBean fileBean, String tempName) {
                 String oldPath = fileBean.getPath();
                 File oldFile = new File(oldPath);
                 if (!oldFile.exists()) {
-                    throw new Exception("编号为 " + fileBean.getId() + " 的文件 " + fileBean.getFullName() + " 不存在，列表中的地址为 " + oldPath);
+                    throw new RuntimeException("编号为 " + fileBean.getId() + " 的文件 " + fileBean.getFullName() + " 不存在，列表中的地址为 " + oldPath);
                 }
                 File tempFile = new File(oldFile.getParent(), tempName);
                 if (!oldFile.renameTo(tempFile)) {
-                    throw new Exception("修改编号为 " + fileBean.getId() + " 的文件临时名称 " + fileBean.getTempFile().getName() + " 失败");
+                    throw new RuntimeException("修改编号为 " + fileBean.getId() + " 的文件临时名称 " + fileBean.getTempFile().getName() + " 失败");
                 }
                 return tempFile;
             }

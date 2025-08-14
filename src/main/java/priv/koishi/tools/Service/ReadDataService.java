@@ -74,7 +74,7 @@ public class ReadDataService {
     public static Task<List<File>> readMachGroup(TaskBean<FileNumBean> taskBean, FileConfig fileConfig) {
         return new Task<>() {
             @Override
-            protected List<File> call() throws Exception {
+            protected List<File> call() throws IOException {
                 updateMessage(text_readData);
                 changeDisableNodes(taskBean, true);
                 List<FileNumBean> fileNumList = taskBean.getBeanList();
@@ -131,7 +131,7 @@ public class ReadDataService {
     public static Task<List<FileNumBean>> readExcel(ExcelConfig excelConfig, TaskBean<FileNumBean> taskBean) {
         return new Task<>() {
             @Override
-            protected List<FileNumBean> call() throws Exception {
+            protected List<FileNumBean> call() throws IOException {
                 // 改变要防重复点击的组件状态
                 changeDisableNodes(taskBean, true);
                 updateMessage(text_readData);
@@ -224,9 +224,9 @@ public class ReadDataService {
      *
      * @param excelInPath excel模板路径
      * @return 根据不同格式excel创建的作簿
-     * @throws Exception 文件格式不支持、文件不存在
+     * @throws IOException io异常
      */
-    public static Workbook getWorkbook(String excelInPath) throws Exception {
+    public static Workbook getWorkbook(String excelInPath) throws IOException {
         String excelType = getFileType(new File(excelInPath));
         Workbook workbook = null;
         try (InputStream inputStream = Files.newInputStream(Paths.get(excelInPath))) {
@@ -237,7 +237,7 @@ public class ReadDataService {
             }
             if (workbook == null) {
                 inputStream.close();
-                throw new Exception("当前读取模板文件格式为 " + excelType + " 目前只支持读取 .xlsx 与 .xls 格式的文件");
+                throw new RuntimeException("当前读取模板文件格式为 " + excelType + " 目前只支持读取 .xlsx 与 .xls 格式的文件");
             }
         }
         return workbook;
@@ -247,11 +247,10 @@ public class ReadDataService {
      * 渲染excel数据到列表中
      *
      * @return 用于展示到javafx列表的数据
-     * @throws Exception 未查询到符合条件的数据
      */
-    public static List<FileNumBean> showReadExcelData(List<FileNumBean> fileBeans, TaskBean<FileNumBean> taskBean) throws Exception {
+    public static List<FileNumBean> showReadExcelData(List<FileNumBean> fileBeans, TaskBean<FileNumBean> taskBean) {
         if (CollectionUtils.isEmpty(fileBeans)) {
-            throw new Exception(text_selectNull);
+            throw new RuntimeException(text_selectNull);
         }
         // 渲染数据
         Platform.runLater(() -> {

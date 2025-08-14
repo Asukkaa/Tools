@@ -18,6 +18,7 @@ import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.ExcelConfig;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -47,9 +48,9 @@ public class FileNameToExcelService {
      * @param excelConfig excel设置
      * @param taskBean    任务线程所需参数
      * @return 不分组构建excel线程
-     * @throws Exception io异常
+     * @throws IOException io异常
      */
-    public static Task<Workbook> buildFileNameExcel(ExcelConfig excelConfig, TaskBean<FileBean> taskBean) throws Exception {
+    public static Task<Workbook> buildFileNameExcel(ExcelConfig excelConfig, TaskBean<FileBean> taskBean) throws IOException {
         // 改变要防重复点击的组件状态
         changeDisableNodes(taskBean, true);
         String excelType = excelConfig.getOutExcelType();

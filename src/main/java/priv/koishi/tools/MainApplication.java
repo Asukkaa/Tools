@@ -67,10 +67,10 @@ public class MainApplication extends Application {
      *
      * @param stage 程序主舞台
      * @throws RuntimeException io异常
-     * @throws Exception        io异常
+     * @throws IOException      io异常
      */
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) throws IOException {
         mainStage = stage;
         // 读取fxml页面
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("fxml/Main-view.fxml"));

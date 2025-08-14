@@ -164,7 +164,7 @@ public class TaskUtils {
     public static Task<String> saveExcelTask(ExcelConfig excelConfig, Workbook workbook) {
         return new Task<>() {
             @Override
-            protected String call() throws Exception {
+            protected String call() throws IOException {
                 updateMessage("正在保存excel");
                 return saveExcel(workbook, excelConfig);
             }
