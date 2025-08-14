@@ -75,7 +75,7 @@ exports.main = async (event) => {
             buildDate: "2025.08.14",
             whatsNew: `版本 2.5.5:
         1.重命名工具按编号重命名功能新增添加文件名称前缀功能
-        2.重命名工具按字符重命名功能新增插入字符到指定位置
+        2.重命名工具按字符重命名功能新增插入字符到指定位置功能
         3.优化了一些ui界面
         4.修复了一些bug`,
             aliyunFileLink: aliyunFileLink,
