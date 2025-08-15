@@ -63,6 +63,11 @@ public class CopyVisitor extends SimpleFileVisitor<Path> {
     private final CodeRenameConfig codeRenameConfig;
 
     /**
+     * 是否反向过滤文件类型（true-反向过滤）
+     */
+    private final boolean reverseFileType;
+
+    /**
      * 构造函数
      *
      * @param sourceRoot          源目录
@@ -70,9 +75,10 @@ public class CopyVisitor extends SimpleFileVisitor<Path> {
      * @param copyMode            拷贝方式
      * @param filterExtensionList 过滤文件类型
      * @param codeRenameConfig    重命名规则
+     * @param reverseFileType     是否反向过滤文件类型（true-反向过滤）
      */
     public CopyVisitor(Path sourceRoot, Path targetRoot, CopyMode copyMode, List<String> filterExtensionList,
-                       String sourceAction, String hideFileType, CodeRenameConfig codeRenameConfig) {
+                       String sourceAction, String hideFileType, CodeRenameConfig codeRenameConfig, boolean reverseFileType) {
         this.sourceRoot = sourceRoot;
         this.targetRoot = targetRoot;
         this.copyMode = copyMode;
@@ -80,6 +86,7 @@ public class CopyVisitor extends SimpleFileVisitor<Path> {
         this.sourceAction = sourceAction;
         this.hideFileType = hideFileType;
         this.codeRenameConfig = codeRenameConfig;
+        this.reverseFileType = reverseFileType;
     }
 
     /**
@@ -163,7 +170,12 @@ public class CopyVisitor extends SimpleFileVisitor<Path> {
         // 处理拓展名过滤
         String fileType = getFileType(path.toFile());
         if (CollectionUtils.isNotEmpty(filterExtensionList)) {
-            if (!filterExtensionList.contains(fileType)) {
+            boolean isMatch = filterExtensionList.contains(fileType);
+            // 反向过滤
+            if (reverseFileType) {
+                isMatch = !isMatch;
+            }
+            if (!isMatch) {
                 return FileVisitResult.CONTINUE;
             }
         }

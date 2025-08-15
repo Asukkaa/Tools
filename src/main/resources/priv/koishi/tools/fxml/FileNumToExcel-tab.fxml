@@ -78,6 +78,7 @@
 
             <Label prefHeight="25" text="需要识别的文件后缀名:"/>
             <TextField fx:id="filterFileType_Num" prefHeight="20" prefWidth="150"/>
+            <CheckBox fx:id="reverseFileType_Num" prefHeight="25" style="-fx-cursor: hand" text="反向过滤文件类型"/>
         </HBox>
 
         <HBox spacing="10">

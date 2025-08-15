@@ -43,7 +43,6 @@ import static priv.koishi.tools.Utils.CommonUtils.swapCase;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
-import static priv.koishi.tools.Utils.UiUtils.textFieldValueListener;
 
 /**
  * 按指定规则批量重命名文件页面控制器
@@ -129,7 +128,7 @@ public class FileRenameController extends RootController {
             creatDate_Re, updateDate_Re, showStatus_Re;
 
     @FXML
-    public CheckBox openDirectory_Re, addSpace_Re;
+    public CheckBox openDirectory_Re, addSpace_Re, reverseFileType_Re;
 
     @FXML
     public VBox vbox_Re, codeRenameVBox_Re, strRenameVBox_Re, excelRenameVBox_Re;
@@ -201,6 +200,7 @@ public class FileRenameController extends RootController {
             Properties prop = new Properties();
             prop.load(input);
             prop.put(key_lastInPath, inPath_Re.getText());
+            prop.put(key_addFileType, addFileType_Re.getValue());
             prop.put(key_lastHideFileType, hideFileType_Re.getValue());
             prop.put(key_renameFileType, renameFileType_Re.getValue());
             prop.put(key_lastFilterFileType, filterFileType_Re.getText());
@@ -208,9 +208,10 @@ public class FileRenameController extends RootController {
             prop.put(key_lastDirectoryNameType, directoryNameType_Re.getValue());
             String openDirectoryValue = openDirectory_Re.isSelected() ? activation : unActivation;
             prop.put(key_lastOpenDirectory, openDirectoryValue);
+            String reverseFileTypeValue = reverseFileType_Re.isSelected() ? activation : unActivation;
+            prop.put(key_reverseFileType, reverseFileTypeValue);
             String renameTypeValue = renameType_Re.getValue();
             prop.put(key_lastRenameType, renameTypeValue);
-            prop.put(key_addFileType, addFileType_Re.getValue());
             // 根据文件重命名依据设置保存配置信息
             saveLastConfigByRenameType(prop, renameTypeValue);
             OutputStream output = checkRunningOutputStream(configFile_Rename);
@@ -338,6 +339,7 @@ public class FileRenameController extends RootController {
             setControlLastConfig(hideFileType_Re, prop, key_lastHideFileType);
             setControlLastConfig(renameFileType_Re, prop, key_renameFileType);
             setControlLastConfig(openDirectory_Re, prop, key_lastOpenDirectory);
+            setControlLastConfig(reverseFileType_Re, prop, key_reverseFileType);
             setControlLastConfig(filterFileType_Re, prop, key_lastFilterFileType);
             setControlLastConfig(renameFileTypeText_Re, prop, key_renameFileTypeText);
             setControlLastConfig(directoryNameType_Re, prop, key_lastDirectoryNameType);
@@ -707,6 +709,7 @@ public class FileRenameController extends RootController {
         addToolTip(tip_excelPathButton, excelPathButton_Re);
         addToolTip(tip_updateRenameButton, updateRenameButton_Re);
         addToolTip(tip_reNameFileTypeText, renameFileTypeText_Re);
+        addToolTip(reverseFileType_Re.getText(), reverseFileType_Re);
         addValueToolTip(targetStr_Re, tip_targetStr, targetStr_Re.getValue());
         addValueToolTip(subCode_Re, tip_subCodeSelect, subCode_Re.getValue());
         addValueToolTip(sheetName_Re, tip_sheetName, sheetName_Re.getValue());
@@ -1054,6 +1057,7 @@ public class FileRenameController extends RootController {
             File selectedFile = creatDirectoryChooser(window, inFilePath, text_selectDirectory);
             FileConfig fileConfig = new FileConfig();
             fileConfig.setShowDirectoryName(directoryNameType_Re.getValue())
+                    .setReverseFileType(reverseFileType_Re.isSelected())
                     .setShowHideFile(hideFileType_Re.getValue())
                     .setFilterExtensionList(filterExtensionList)
                     .setInFile(selectedFile);
@@ -1235,6 +1239,7 @@ public class FileRenameController extends RootController {
         FileConfig fileConfig = new FileConfig();
         fileConfig.setFilterExtensionList(getFilterExtensionList(filterFileType_Re))
                 .setShowDirectoryName(directoryNameType_Re.getValue())
+                .setReverseFileType(reverseFileType_Re.isSelected())
                 .setShowHideFile(hideFileType_Re.getValue())
                 .setInFile(file);
         startReadFilesTask(fileConfig);

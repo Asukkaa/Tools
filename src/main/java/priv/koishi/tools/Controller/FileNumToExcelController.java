@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import static priv.koishi.tools.Controller.MainController.settingController;
 import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.MainApplication.mainScene;
 import static priv.koishi.tools.MainApplication.mainStage;
@@ -39,6 +40,7 @@ import static priv.koishi.tools.Service.ReadDataService.readExcel;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
+import static priv.koishi.tools.Utils.UiUtils.setControlLastConfig;
 
 /**
  * 分组统计文件夹下文件数量页面控制器
@@ -138,7 +140,7 @@ public class FileNumToExcelController extends RootController {
             excelPathButton_Num, outPathButton_Num;
 
     @FXML
-    public CheckBox recursion_Num, openDirectory_Num, openFile_Num, showFileType_Num,
+    public CheckBox recursion_Num, openDirectory_Num, openFile_Num, showFileType_Num, reverseFileType_Num,
             exportTitle_Num, exportFileNum_Num, exportFileSize_Num;
 
     @FXML
@@ -211,6 +213,8 @@ public class FileNumToExcelController extends RootController {
             String exportTitleValue = exportTitle_Num.isSelected() ? activation : unActivation;
             prop.put(key_lastExportTitle, exportTitleValue);
             OutputStream output = checkRunningOutputStream(configFile_Num);
+            String reverseFileTypeValue = reverseFileType_Num.isSelected() ? activation : unActivation;
+            prop.put(key_reverseFileType, reverseFileTypeValue);
             prop.store(output, null);
             input.close();
             output.close();
@@ -242,6 +246,7 @@ public class FileNumToExcelController extends RootController {
     private FileConfig creatFileConfig(File selectedFile, List<String> filterExtensionList) {
         FileConfig fileConfig = new FileConfig();
         fileConfig.setShowDirectoryName(directoryNameType_Num.getValue())
+                .setReverseFileType(reverseFileType_Num.isSelected())
                 .setShowFileType(showFileType_Num.isSelected())
                 .setShowHideFile(hideFileType_Num.getValue())
                 .setFilterExtensionList(filterExtensionList)
@@ -257,9 +262,13 @@ public class FileNumToExcelController extends RootController {
      * @return TaskBean
      */
     private TaskBean<FileNumBean> creatTaskBean() {
+        ChoiceBox<String> sort = settingController.sort_Set;
+        String sortValue = sort.getValue();
+        CheckBox reverseSort = settingController.reverseSort_Set;
         TaskBean<FileNumBean> taskBean = new TaskBean<>();
         taskBean.setShowFileType(showFileType_Num.isSelected())
                 .setComparatorTableColumn(fileUnitSize_Num)
+                .setReverseSort(reverseSort.isSelected())
                 .setSubCode(subCode_Num.getText())
                 .setMassageLabel(fileNumber_Num)
                 .setProgressBar(progressBar_Num)
@@ -267,6 +276,7 @@ public class FileNumToExcelController extends RootController {
                 .setTableView(tableView_Num)
                 .setInFileList(inFileList)
                 .setSheet(sheetName_Num)
+                .setSortType(sortValue)
                 .setTabId(tabId);
         return taskBean;
     }
@@ -395,6 +405,7 @@ public class FileNumToExcelController extends RootController {
             setControlLastConfig(hideFileType_Num, prop, key_lastHideFileType);
             setControlLastConfig(openDirectory_Num, prop, key_lastOpenDirectory);
             setControlLastConfig(exportFileNum_Num, prop, key_lastExportFileNum);
+            setControlLastConfig(reverseFileType_Num, prop, key_reverseFileType);
             setControlLastConfig(exportFileSize_Num, prop, key_lastExportFileSize);
             setControlLastConfig(filterFileType_Num, prop, key_lastFilterFileType);
             setControlLastConfig(subCode_Num, prop, key_lastSubCode, true);
@@ -444,6 +455,7 @@ public class FileNumToExcelController extends RootController {
         addToolTip(tip_filterFileType, filterFileType_Num);
         addToolTip(tip_excelPathButton, excelPathButton_Num);
         addToolTip(tip_excelType, excelType_Num, excelTypeLabel_Num);
+        addToolTip(reverseFileType_Num.getText(), reverseFileType_Num);
         addToolTip(tip_excelName + defaultOutFileName, excelName_Num);
         addValueToolTip(sheetName_Num, tip_sheetName, sheetName_Num.getValue());
         addToolTip(text_onlyNaturalNumber + defaultStartCell, startCell_Num);

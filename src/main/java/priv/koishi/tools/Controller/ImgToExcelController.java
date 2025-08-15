@@ -447,9 +447,13 @@ public class ImgToExcelController extends RootController {
         if (StringUtils.isNotBlank(maxImgValue)) {
             maxImgNum = Integer.parseInt(maxImgValue);
         }
+        ChoiceBox<String> sort = settingController.sort_Set;
+        String sortValue = sort.getValue();
+        CheckBox reverseSort = settingController.reverseSort_Set;
         TaskBean<FileNumBean> taskBean = new TaskBean<>();
         taskBean.setShowFileType(showFileType_Img.isSelected())
                 .setComparatorTableColumn(fileUnitSize_Img)
+                .setReverseSort(reverseSort.isSelected())
                 .setSubCode(subCode_Img.getText())
                 .setMassageLabel(fileNumber_Img)
                 .setProgressBar(progressBar_Img)
@@ -458,6 +462,7 @@ public class ImgToExcelController extends RootController {
                 .setInFileList(inFileList)
                 .setMaxImgNum(maxImgNum)
                 .setSheet(sheetName_Img)
+                .setSortType(sortValue)
                 .setTabId(tabId);
         return taskBean;
     }

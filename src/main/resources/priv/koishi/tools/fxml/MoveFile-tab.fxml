@@ -77,6 +77,7 @@
         <HBox spacing="10">
             <Label prefHeight="25" text="需要移动的文件后缀名:"/>
             <TextField fx:id="filterFileType_MV" prefHeight="20" prefWidth="250"/>
+            <CheckBox fx:id="reverseFileType_MV" prefHeight="25" style="-fx-cursor: hand" text="反向过滤文件类型"/>
         </HBox>
 
         <HBox spacing="10">

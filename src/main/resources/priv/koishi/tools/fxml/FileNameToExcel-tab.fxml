@@ -74,8 +74,9 @@
             <Label prefHeight="25" text="导出预留列:"/>
             <TextField fx:id="startCell_Name" prefHeight="20" prefWidth="50"/>
 
-            <Label prefHeight="25" text="需要识别的文件后缀名:"/>
+            <Label prefHeight="25" text="需要识别的文件拓展名:"/>
             <TextField fx:id="filterFileType_Name" prefHeight="20" prefWidth="300"/>
+            <CheckBox fx:id="reverseFileType_Name" prefHeight="25" style="-fx-cursor: hand" text="反向过滤文件类型"/>
         </HBox>
 
         <HBox spacing="10">

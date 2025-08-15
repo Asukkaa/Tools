@@ -39,7 +39,6 @@ import static priv.koishi.tools.Service.ReadDataService.*;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
-import static priv.koishi.tools.Utils.UiUtils.addToolTip;
 
 /**
  * 获取文件夹下的文件信息页面控制器
@@ -132,7 +131,7 @@ public class FileNameToExcelController extends RootController {
     public Label outPath_Name, excelPath_Name, fileNumber_Name, inPath_Name, log_Name, tip_Name, excelTypeLabel_Name;
 
     @FXML
-    public CheckBox recursion_Name, openDirectory_Name, openFile_Name, showFileType_Name,
+    public CheckBox recursion_Name, openDirectory_Name, openFile_Name, showFileType_Name,reverseFileType_Name,
             exportTitle_Name, exportFullList_Name;
 
     @FXML
@@ -189,6 +188,8 @@ public class FileNameToExcelController extends RootController {
             prop.put(key_lastExportTitle, lastExportTitleValue);
             String lastExportFullListValue = exportFullList_Name.isSelected() ? activation : unActivation;
             prop.put(key_lastExportFullList, lastExportFullListValue);
+            String reverseFileTypeValue = reverseFileType_Name.isSelected() ? activation : unActivation;
+            prop.put(key_reverseFileType, reverseFileTypeValue);
             OutputStream output = checkRunningOutputStream(configFile_Name);
             prop.store(output, null);
             input.close();
@@ -214,9 +215,9 @@ public class FileNameToExcelController extends RootController {
             taskBean.setShowFileType(showFileType_Name.isSelected())
                     .setReverseSort(reverseSort.isSelected())
                     .setComparatorTableColumn(size_Name)
-                    .setDisableNodes(disableNodes)
                     .setProgressBar(progressBar_Name)
                     .setMassageLabel(fileNumber_Name)
+                    .setDisableNodes(disableNodes)
                     .setTableView(tableView_Name)
                     .setInFileList(inFileList)
                     .setSortType(sortValue)
@@ -248,9 +249,9 @@ public class FileNameToExcelController extends RootController {
         prop.load(input);
         inFilePath = prop.getProperty(key_inFilePath);
         outFilePath = prop.getProperty(key_outFilePath);
-        defaultOutFileName = prop.getProperty(key_defaultOutFileName);
-        defaultSheetName = prop.getProperty(key_defaultSheetName);
         excelInPath = prop.getProperty(key_excelInPath);
+        defaultSheetName = prop.getProperty(key_defaultSheetName);
+        defaultOutFileName = prop.getProperty(key_defaultOutFileName);
         defaultStartCell = Integer.parseInt(prop.getProperty(key_defaultStartCell));
         input.close();
     }
@@ -279,6 +280,7 @@ public class FileNameToExcelController extends RootController {
             setControlLastConfig(showFileType_Name, prop, key_lastShowFileType);
             setControlLastConfig(hideFileType_Name, prop, key_lastHideFileType);
             setControlLastConfig(openDirectory_Name, prop, key_lastOpenDirectory);
+            setControlLastConfig(reverseFileType_Name, prop, key_reverseFileType);
             setControlLastConfig(exportFullList_Name, prop, key_lastExportFullList);
             setControlLastConfig(filterFileType_Name, prop, key_lastFilterFileType);
             setControlLastConfig(directoryNameType_Name, prop, key_lastDirectoryNameType);
@@ -329,6 +331,7 @@ public class FileNameToExcelController extends RootController {
         addToolTip(tip_filterFileType, filterFileType_Name);
         addToolTip(tip_excelPathButton, excelPathButton_Name);
         addToolTip(tip_removeExcelButton, removeExcelButton_Name);
+        addToolTip(reverseFileType_Name.getText(), reverseFileType_Name);
         addToolTip(tip_excelName + defaultOutFileName, excelName_Name);
         addValueToolTip(sheetName_Name, tip_sheet, sheetName_Name.getValue());
         addValueToolTip(excelType_Name, tip_excelType, excelType_Name.getValue());
@@ -428,9 +431,11 @@ public class FileNameToExcelController extends RootController {
      * @throws IOException io异常
      */
     private void updateSheetName() throws IOException {
-        sheetName_Name.setValue(text_newSheet);
-        Workbook workbook = getWorkbook(excelInPath);
-        buildSheetChoiceBox(workbook, sheetName_Name);
+        if (StringUtils.isNotBlank(excelInPath)) {
+            sheetName_Name.setValue(text_newSheet);
+            Workbook workbook = getWorkbook(excelInPath);
+            buildSheetChoiceBox(workbook, sheetName_Name);
+        }
     }
 
     /**
@@ -480,6 +485,7 @@ public class FileNameToExcelController extends RootController {
         File selectedFile = creatDirectoryChooser(window, inFilePath, text_selectDirectory);
         FileConfig fileConfig = new FileConfig();
         fileConfig.setShowDirectoryName(directoryNameType_Name.getValue())
+                .setReverseFileType(reverseFileType_Name.isSelected())
                 .setShowHideFile(hideFileType_Name.getValue())
                 .setFilterExtensionList(filterExtensionList)
                 .setRecursion(recursion_Name.isSelected())
@@ -504,6 +510,7 @@ public class FileNameToExcelController extends RootController {
         File file = files.getFirst();
         FileConfig fileConfig = new FileConfig();
         fileConfig.setShowDirectoryName(directoryNameType_Name.getValue())
+                .setReverseFileType(reverseFileType_Name.isSelected())
                 .setShowHideFile(hideFileType_Name.getValue())
                 .setFilterExtensionList(filterExtensionList)
                 .setRecursion(recursion_Name.isSelected())
@@ -659,6 +666,7 @@ public class FileNameToExcelController extends RootController {
         FileConfig fileConfig = new FileConfig();
         fileConfig.setFilterExtensionList(getFilterExtensionList(filterFileType_Name))
                 .setShowDirectoryName(directoryNameType_Name.getValue())
+                .setReverseFileType(reverseFileType_Name.isSelected())
                 .setShowHideFile(hideFileType_Name.getValue())
                 .setRecursion(recursion_Name.isSelected())
                 .setInFile(new File(inFilePath));

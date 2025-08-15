@@ -3,6 +3,7 @@ package priv.koishi.tools.Service;
 import javafx.concurrent.Task;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TableView;
+import org.apache.commons.collections4.CollectionUtils;
 import priv.koishi.tools.Bean.FileBean;
 import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.CodeRenameConfig;
@@ -53,15 +54,25 @@ public class MoveFileService {
                 ChoiceBox<String> addFileType = moveFileController.addFileType_MV;
                 String addType = addFileType.getValue();
                 TableView<FileBean> tableView = moveFileController.tableView_MV;
+                List<String> filterExtensionList = getFilterExtensionList(moveFileController.filterFileType_MV);
+                boolean reverseFileType = moveFileController.reverseFileType_MV.isSelected();
                 boolean isAllDirectory = false;
                 for (File file : inFileList) {
                     if (text_addFile.equals(addType)) {
                         if (file.isFile()) {
-                            addFiles.add(file);
+                            String fileType = getFileType(file);
+                            boolean matches = CollectionUtils.isEmpty(filterExtensionList) || filterExtensionList.contains(fileType);
+                            // 反向匹配文件类型
+                            if (reverseFileType) {
+                                matches = CollectionUtils.isEmpty(filterExtensionList) || !filterExtensionList.contains(fileType);
+                            }
+                            if (matches) {
+                                addFiles.add(file);
+                            }
                         } else if (file.isDirectory()) {
-                            List<String> filterExtensionList = getFilterExtensionList(moveFileController.filterFileType_MV);
                             FileConfig fileConfig = new FileConfig();
                             fileConfig.setFilterExtensionList(filterExtensionList)
+                                    .setReverseFileType(reverseFileType)
                                     .setShowDirectoryName(text_onlyFile)
                                     .setRecursion(true)
                                     .setInFile(file);
@@ -165,7 +176,8 @@ public class MoveFileService {
                                         filterExtensionList,
                                         sourceAction,
                                         hideFileType,
-                                        codeRenameConfig));
+                                        codeRenameConfig,
+                                        moveFileController.reverseFileType_MV.isSelected()));
                         updateProgress(i + 1, fileListSize);
                     }
                 } else if (text_addFile.equals(addFileType)) {

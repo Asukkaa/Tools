@@ -835,6 +835,8 @@ public class CommonFinals {
 
     public static final String key_sourceAction = "sourceAction";
 
+    public static final String key_reverseFileType = "reverseFileType";
+
     public static final String mouseButton_primary = "鼠标左键点击";
 
     public static final String mouseButton_secondary = "鼠标右键点击";

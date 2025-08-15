@@ -40,7 +40,6 @@ import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.TaskUtils.bindingTaskNode;
 import static priv.koishi.tools.Utils.TaskUtils.taskUnbind;
 import static priv.koishi.tools.Utils.UiUtils.*;
-import static priv.koishi.tools.Utils.UiUtils.addToolTip;
 
 /**
  * 移动文件工具页控制器
@@ -97,10 +96,10 @@ public class MoveFileController extends RootController {
     public Label outPath_MV, fileNumber_MV, log_MV;
 
     @FXML
-    public CheckBox openDirectory_MV, addSpace_MV;
+    public TextField filterFileType_MV, prefix_MV, tag_MV;
 
     @FXML
-    public TextField filterFileType_MV, prefix_MV, tag_MV;
+    public CheckBox openDirectory_MV, addSpace_MV, reverseFileType_MV;
 
     @FXML
     public Button clearButton_MV, moveButton_MV, addFileButton_MV, outPathButton_MV;
@@ -163,6 +162,8 @@ public class MoveFileController extends RootController {
             prop.put(key_lastDifferenceCode, differenceCode_MV.getValue());
             String openDirectoryValue = openDirectory_MV.isSelected() ? activation : unActivation;
             prop.put(key_lastOpenDirectory, openDirectoryValue);
+            String reverseFileTypeValue = reverseFileType_MV.isSelected() ? activation : unActivation;
+            prop.put(key_reverseFileType, reverseFileTypeValue);
             String addSpaceValue = addSpace_MV.isSelected() ? activation : unActivation;
             prop.put(key_lastAddSpace, addSpaceValue);
             OutputStream output = checkRunningOutputStream(configFile_MV);
@@ -206,6 +207,7 @@ public class MoveFileController extends RootController {
             setControlLastConfig(sourceAction_MV, prop, key_sourceAction);
             setControlLastConfig(hideFileType_MV, prop, key_lastHideFileType);
             setControlLastConfig(openDirectory_MV, prop, key_lastOpenDirectory);
+            setControlLastConfig(reverseFileType_MV, prop, key_reverseFileType);
             setControlLastConfig(filterFileType_MV, prop, key_lastFilterFileType);
             setControlLastConfig(differenceCode_MV, prop, key_lastDifferenceCode);
         }
@@ -225,6 +227,7 @@ public class MoveFileController extends RootController {
         addToolTip(tip_openDirectory, openDirectory_MV);
         addToolTip(tip_addFileButton, addFileButton_MV);
         addToolTip(tip_filterFileType, filterFileType_MV);
+        addToolTip(reverseFileType_MV.getText(), reverseFileType_MV);
         addValueToolTip(subCode_MV, tip_subCode, subCode_MV.getValue());
         addValueToolTip(moveType_MV, tip_moveType, moveType_MV.getValue());
         addValueToolTip(addFileType_MV, tip_addFileType, addFileType_MV.getValue());

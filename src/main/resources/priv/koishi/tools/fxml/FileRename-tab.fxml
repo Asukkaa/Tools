@@ -76,6 +76,7 @@
 
             <Label prefHeight="25" text="需要识别的文件后缀名:"/>
             <TextField fx:id="filterFileType_Re" prefHeight="20" prefWidth="200"/>
+            <CheckBox fx:id="reverseFileType_Re" prefHeight="25" style="-fx-cursor: hand" text="反向过滤文件类型"/>
 
             <Button fx:id="updateFileType_Re" onAction="#updateFileTypes" style="-fx-cursor: hand" text="更新文件拓展名"/>
             <ChoiceBox fx:id="renameFileType_Re" prefHeight="25" prefWidth="160" style="-fx-cursor: hand"
