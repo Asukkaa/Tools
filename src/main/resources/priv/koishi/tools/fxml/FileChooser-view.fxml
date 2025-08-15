@@ -12,53 +12,70 @@
             <Label fx:id="filePath_FC" prefHeight="25" style="-fx-font-size: 15px;"/>
         </HBox>
 
-        <HBox spacing="10">
-            <Label prefHeight="25" text="查询条件："/>
-            <ChoiceBox fx:id="fileFilter_FC" prefHeight="25" prefWidth="150" onAction="#fileFilterAction"
-                       style="-fx-cursor: hand">
-                <items>
-                    <FXCollections fx:factory="observableArrayList">
-                        <String fx:value="只查询文件"/>
+        <HBox spacing="200">
+            <HBox spacing="10">
+                <Label prefHeight="25" text="查询条件："/>
+                <ChoiceBox fx:id="fileFilter_FC" prefHeight="25" prefWidth="150" onAction="#fileFilterAction"
+                           style="-fx-cursor: hand">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="只查询文件"/>
+                            <String fx:value="文件和文件夹都查询"/>
+                            <String fx:value="只查询文件夹"/>
+                        </FXCollections>
+                    </items>
+                    <value>
                         <String fx:value="文件和文件夹都查询"/>
-                        <String fx:value="只查询文件夹"/>
-                    </FXCollections>
-                </items>
-                <value>
-                    <String fx:value="文件和文件夹都查询"/>
-                </value>
-            </ChoiceBox>
+                    </value>
+                </ChoiceBox>
+            </HBox>
 
-            <Label prefHeight="25" text="隐藏文件查询设置:"/>
-            <ChoiceBox fx:id="hideFileType_FC" prefHeight="25" prefWidth="120" onAction="#hideFileTypeAction"
-                       style="-fx-cursor: hand">
-                <items>
-                    <FXCollections fx:factory="observableArrayList">
+            <HBox spacing="10">
+                <Label prefHeight="25" text="隐藏文件查询设置:"/>
+                <ChoiceBox fx:id="hideFileType_FC" prefHeight="25" prefWidth="120" onAction="#hideFileTypeAction"
+                           style="-fx-cursor: hand">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="不查询隐藏文件"/>
+                            <String fx:value="是否隐藏都查询"/>
+                            <String fx:value="只查询隐藏文件"/>
+                        </FXCollections>
+                    </items>
+                    <value>
                         <String fx:value="不查询隐藏文件"/>
-                        <String fx:value="是否隐藏都查询"/>
-                        <String fx:value="只查询隐藏文件"/>
-                    </FXCollections>
-                </items>
-                <value>
-                    <String fx:value="不查询隐藏文件"/>
-                </value>
-            </ChoiceBox>
+                    </value>
+                </ChoiceBox>
+            </HBox>
+        </HBox>
 
-            <Label prefHeight="25" text="文件名查询设置:"/>
-            <ChoiceBox fx:id="fileNameType_FC" prefHeight="25" prefWidth="120" onAction="#fileNameTypeAction"
-                       style="-fx-cursor: hand">
-                <items>
-                    <FXCollections fx:factory="observableArrayList">
+        <HBox spacing="40">
+            <HBox spacing="10">
+                <Label prefHeight="25" text="文件名查询设置:"/>
+                <ChoiceBox fx:id="fileNameType_FC" prefHeight="25" prefWidth="120" onAction="#fileNameTypeAction"
+                           style="-fx-cursor: hand">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="文件名包含"/>
+                            <String fx:value="文件名为"/>
+                            <String fx:value="文件名起始于"/>
+                            <String fx:value="文件名结束于"/>
+                        </FXCollections>
+                    </items>
+                    <value>
                         <String fx:value="文件名包含"/>
-                        <String fx:value="文件名为"/>
-                        <String fx:value="文件名起始于"/>
-                        <String fx:value="文件名结束于"/>
-                    </FXCollections>
-                </items>
-                <value>
-                    <String fx:value="文件名包含"/>
-                </value>
-            </ChoiceBox>
-            <TextField fx:id="fileNameFilter_FC" prefHeight="25" prefWidth="120"/>
+                    </value>
+                </ChoiceBox>
+
+                <TextField fx:id="fileNameFilter_FC" prefHeight="25" prefWidth="150"/>
+            </HBox>
+
+            <HBox spacing="30">
+                <CheckBox fx:id="reverse_FC" style="-fx-cursor: hand" text="反向查询文件名" onAction="#reverseAction"
+                          prefHeight="25"/>
+
+                <CheckBox fx:id="filterNameCase_FC" style="-fx-cursor: hand" text="区分文件名大小写"
+                          onAction="#filterNameCaseAction" prefHeight="25"/>
+            </HBox>
         </HBox>
 
         <HBox fx:id="fileNumberHBox_FC" spacing="10">

@@ -1,6 +1,7 @@
 package priv.koishi.tools.Controller;
 
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -35,6 +36,7 @@ import static priv.koishi.tools.Utils.FileUtils.openDirectory;
 import static priv.koishi.tools.Utils.FileUtils.updateProperties;
 import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
+import static priv.koishi.tools.Utils.UiUtils.addToolTip;
 
 /**
  * @author KOISHI
@@ -52,6 +54,11 @@ public class FileChooserController extends RootController {
      * 文件查询设置
      */
     private FileChooserConfig fileChooserConfig;
+
+    /**
+     * 文件名输入框监听器
+     */
+    private ChangeListener<String> textFieldChangeListener;
 
     /**
      * 文件查询任务
@@ -88,6 +95,9 @@ public class FileChooserController extends RootController {
 
     @FXML
     public TextField fileNameFilter_FC;
+
+    @FXML
+    public CheckBox reverse_FC, filterNameCase_FC;
 
     @FXML
     public Label filePath_FC, fileNumber_FC, log_FC;
@@ -137,10 +147,12 @@ public class FileChooserController extends RootController {
     private void selectFile(File file) {
         removeAll();
         FileConfig fileConfig = new FileConfig();
-        fileConfig.setShowDirectoryName(fileFilter_FC.getValue())
+        fileConfig.setFilterNameCase(filterNameCase_FC.isSelected())
+                .setShowDirectoryName(fileFilter_FC.getValue())
                 .setFileNameFilter(fileNameFilter_FC.getText())
                 .setShowHideFile(hideFileType_FC.getValue())
                 .setFileNameType(fileNameType_FC.getValue())
+                .setReverseFileName(reverse_FC.isSelected())
                 .setInFile(file);
         TaskBean<FileBean> taskBean = new TaskBean<>();
         taskBean.setProgressBar(progressBar_FC)
@@ -226,10 +238,12 @@ public class FileChooserController extends RootController {
     private void setToolTip() {
         addToolTip(tip_close, close_FC);
         addToolTip(tip_confirm, confirm_FC);
+        addToolTip(reverse_FC.getText(), reverse_FC);
         addToolTip(tip_selectPath, selectPathButton_FC);
         addToolTip(tip_gotoParent, gotoParentButton_FC);
         addToolTip(tip_reselectButton, refreshButton_FC);
         addToolTip(tip_fileNameFilter, fileNameFilter_FC);
+        addToolTip(filterNameCase_FC.getText(), filterNameCase_FC);
         addValueToolTip(fileNameType_FC, tip_fileNameType, fileNameType_FC.getValue());
         addValueToolTip(hideFileType_FC, tip_hideFileType, hideFileType_FC.getValue());
         addValueToolTip(fileFilter_FC, tip_directoryNameType, fileFilter_FC.getValue());
@@ -316,6 +330,7 @@ public class FileChooserController extends RootController {
         }
         // 清理监听器引用
         tableView_FC.setRowFactory(tv -> null);
+        fileNameFilter_FC.textProperty().removeListener(textFieldChangeListener);
         ContextMenu contextMenu = tableView_FC.getContextMenu();
         if (contextMenu != null) {
             // 清除所有菜单项事件
@@ -396,6 +411,8 @@ public class FileChooserController extends RootController {
             setRowDoubleClick();
             // 构建右键菜单
             tableViewContextMenu(tableView_FC);
+            // 给输入框添加内容变化监听
+            textFieldChangeListener = textFieldValueListener(fileNameFilter_FC, tip_fileNameFilter);
         });
     }
 
@@ -534,6 +551,22 @@ public class FileChooserController extends RootController {
     @FXML
     private void fileNameTypeAction() {
         addValueToolTip(fileNameType_FC, tip_fileNameType, fileNameType_FC.getValue());
+        refreshTable();
+    }
+
+    /**
+     * 反向查询文件名开关
+     */
+    @FXML
+    private void reverseAction() {
+        refreshTable();
+    }
+
+    /**
+     * 区分大小写开关
+     */
+    @FXML
+    private void filterNameCaseAction() {
         refreshTable();
     }
 

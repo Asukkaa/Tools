@@ -33,12 +33,12 @@ public class FileConfig {
     String showDirectoryName;
 
     /**
-     * 递归查询设置
+     * 递归查询设置（true-开启递归）
      */
     boolean recursion;
 
     /**
-     * 展示文件拓展名设置
+     * 展示文件拓展名设置（true-展示拓展名）
      */
     boolean showFileType;
 
@@ -66,5 +66,20 @@ public class FileConfig {
      * 文件名称筛选字符串
      */
     String fileNameFilter;
+
+    /**
+     * 反向过滤文件名查询条件（true-反转查询）
+     */
+    boolean reverseFileName;
+
+    /**
+     * 反向过滤文件类型查询条件（true-反转查询）
+     */
+    boolean reverseFileType;
+
+    /**
+     * 文件名称筛选字符串大小写敏感（true-不区分大小写）
+     */
+    boolean filterNameCase;
 
 }

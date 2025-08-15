@@ -207,7 +207,12 @@ public class FileUtils {
                     }
                     if (text_onlyFile.equals(showDirectoryName) || text_fileDirectory.equals(showDirectoryName) || StringUtils.isEmpty(showDirectoryName)) {
                         String extension = getFileType(file);
-                        if (CollectionUtils.isEmpty(filterExtensionList) || filterExtensionList.contains(extension)) {
+                        boolean matches = CollectionUtils.isEmpty(filterExtensionList) || filterExtensionList.contains(extension);
+                        // 反向匹配文件类型
+                        if (fileConfig.isReverseFileType()) {
+                            matches = CollectionUtils.isEmpty(filterExtensionList) || !filterExtensionList.contains(extension);
+                        }
+                        if (matches) {
                             filterFileName(fileConfig, fileList, file);
                         }
                     }
@@ -241,35 +246,42 @@ public class FileUtils {
         String fileNameFilter = fileConfig.getFileNameFilter();
         if (StringUtils.isNotBlank(fileNameFilter) && file.exists()) {
             String fileName = getFileName(file);
-            switch (fileConfig.getFileNameType()) {
-                case name_contain: {
-                    if (fileName.contains(fileNameFilter)) {
-                        fileList.add(file);
-                    }
-                    break;
-                }
-                case name_is: {
-                    if (fileNameFilter.equals(fileName)) {
-                        fileList.add(file);
-                    }
-                    break;
-                }
-                case name_start: {
-                    if (fileName.startsWith(fileNameFilter)) {
-                        fileList.add(file);
-                    }
-                    break;
-                }
-                case name_end: {
-                    if (fileName.endsWith(fileNameFilter)) {
-                        fileList.add(file);
-                    }
-                    break;
-                }
+            // 区分大小写设置
+            if (!fileConfig.isFilterNameCase()) {
+                fileName = fileName.toLowerCase();
+                fileNameFilter = fileNameFilter.toLowerCase();
+            }
+            // 匹配文件名称
+            boolean matches = isMatchesFileName(fileConfig, fileName, fileNameFilter);
+            if (matches) {
+                fileList.add(file);
             }
         } else {
             fileList.add(file);
         }
+    }
+
+    /**
+     * 筛选文件名称
+     *
+     * @param fileConfig 文件查询设置
+     * @param fileName   文件名称
+     * @param fileNameFilter 文件名称过滤
+     * @return 是否匹配
+     */
+    private static boolean isMatchesFileName(FileConfig fileConfig, String fileName, String fileNameFilter) {
+        boolean matches = switch (fileConfig.getFileNameType()) {
+            case name_contain -> fileName.contains(fileNameFilter);
+            case name_is -> fileNameFilter.equals(fileName);
+            case name_start -> fileName.startsWith(fileNameFilter);
+            case name_end -> fileName.endsWith(fileNameFilter);
+            default -> false;
+        };
+        // 反向查询名称设置
+        if (fileConfig.isReverseFileName()) {
+            matches = !matches;
+        }
+        return matches;
     }
 
     /**
