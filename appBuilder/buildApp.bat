@@ -60,7 +60,7 @@ if exist "%target%\lib-*.zip" (
 )
 if exist "%lib%" (
     echo 正在生成 lib 压缩包: %libZipName%
-    start "" /B powershell -Command "Compress-Archive -Path '%lib%' -DestinationPath \"%target%\%libZipName%\" -Force"
+    start "" /B powershell -Command "Compress-Archive -Path '%lib%' -DestinationPath '%target%\%libZipName%' -Force; Set-Content -Path '%target%\lib.done' -Value 1"
 ) else (
     echo 错误：生成的 lib 目录不存在
 )
@@ -73,11 +73,20 @@ if exist "%target%\%appName%-*.zip" (
 )
 if exist "%appPath%" (
     echo 正在生成 app 压缩包: %appZipName%
-    start "" /B powershell -Command "Compress-Archive -Path '%appPath%\*' -DestinationPath \"%target%\%appZipName%\" -Force"
-    echo 正在打开目录: %appPath%
-    explorer /select,"%appPath%"
+    start "" /B powershell -Command "Compress-Archive -Path '%appPath%\*' -DestinationPath '%target%\%appZipName%' -Force; Set-Content -Path '%target%\app.done' -Value 1"
 ) else (
     echo 错误：生成的应用程序目录不存在
 )
+
+:: 等待压缩完成
+echo 等待压缩任务完成...
+:WaitLoop
+if not exist "%target%\lib.done" goto :WaitLoop
+if not exist "%target%\app.done" goto :WaitLoop
+
+:: 清理标记文件并打开目录
+del "%target%\lib.done" "%target%\app.done"
+echo 压缩完成，正在打开目录: %appPath%
+explorer /select,"%appPath%"
 
 pause
