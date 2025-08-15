@@ -5,6 +5,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TableView;
 import priv.koishi.tools.Bean.FileBean;
 import priv.koishi.tools.Bean.TaskBean;
+import priv.koishi.tools.Configuration.CodeRenameConfig;
 import priv.koishi.tools.Configuration.FileConfig;
 import priv.koishi.tools.CopyVisitor.CopyVisitor;
 import priv.koishi.tools.Enum.CopyMode;
@@ -12,12 +13,16 @@ import priv.koishi.tools.Enum.CopyMode;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 
 import static priv.koishi.tools.Controller.MainController.moveFileController;
 import static priv.koishi.tools.Finals.CommonFinals.*;
+import static priv.koishi.tools.Service.FileRenameService.getCodeRename;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
@@ -121,7 +126,7 @@ public class MoveFileService {
      *
      * @param taskBean 任务设置
      */
-    public static Task<Void> moveFile(TaskBean<FileBean> taskBean) {
+    public static Task<Void> moveFile(TaskBean<FileBean> taskBean, CodeRenameConfig codeRenameConfig) {
         return new Task<>() {
             @Override
             protected Void call() throws IOException {
@@ -152,14 +157,15 @@ public class MoveFileService {
                         File source = topDirs.get(i);
                         updateMessage("正在移动：" + source.getPath());
                         Path sourcePath = source.toPath();
-                        Path targetPath = determineTargetPath(source, targetDirectory, moveType);
+                        Path targetPath = determineTargetPath(source, targetDirectory, moveType, codeRenameConfig);
                         Files.walkFileTree(sourcePath,
                                 new CopyVisitor(sourcePath,
                                         targetPath,
                                         copyMode,
                                         filterExtensionList,
                                         sourceAction,
-                                        hideFileType));
+                                        hideFileType,
+                                        codeRenameConfig));
                         updateProgress(i + 1, fileListSize);
                     }
                 } else if (text_addFile.equals(addFileType)) {
@@ -174,7 +180,7 @@ public class MoveFileService {
                         updateMessage("正在移动：" + file.getPath());
                         File targetFile = new File(targetDirectory, file.getName());
                         // 防止重名覆盖，自动重命名
-                        String safePath = notOverwritePath(targetFile.getAbsolutePath());
+                        String safePath = notOverwritePath(targetFile.getAbsolutePath(), codeRenameConfig);
                         File safeTargetFile = new File(safePath);
                         Files.copy(file.toPath(),
                                 safeTargetFile.toPath(),
@@ -191,6 +197,43 @@ public class MoveFileService {
                 return null;
             }
         };
+    }
+
+
+    /**
+     * 文件重名不覆盖
+     *
+     * @param path             要判断的文件路径
+     * @param codeRenameConfig 重命名规则
+     * @return 不会重名文件路径
+     */
+    public static String notOverwritePath(String path, CodeRenameConfig codeRenameConfig) {
+        File file = new File(path);
+        if (!file.exists()) {
+            return path;
+        }
+        // 文件所在目录
+        String parentDir = file.getParent();
+        // 文件名
+        String fileName = getFileName(file);
+        // 文件拓展名
+        String extension = getFileType(file);
+        if (extension_file.equals(extension) || extension_folder.equals(extension)) {
+            extension = "";
+        }
+        FileBean fileBean = new FileBean()
+                .setName(fileName);
+        codeRenameConfig.setNameNum(1)
+                .setStartSize(-1);
+        // 起始尾缀
+        int counter = codeRenameConfig.getTag();
+        while (file.exists()) {
+            String newName = getCodeRename(codeRenameConfig, fileBean, -1, counter);
+            path = parentDir + File.separator + newName + extension;
+            file = new File(path);
+            counter++;
+        }
+        return path;
     }
 
     /**
@@ -212,15 +255,16 @@ public class MoveFileService {
     /**
      * 确定目标路径的构建策略
      *
-     * @param source    源文件对象
-     * @param targetDir 目标基础目录路径
-     * @param moveType  移动类型标识符
+     * @param source           源文件对象
+     * @param targetDir        目标基础目录路径
+     * @param moveType         移动类型标识符
+     * @param codeRenameConfig 重命名规则
      * @return 构建完成的目标路径对象
      */
-    private static Path determineTargetPath(File source, String targetDir, String moveType) {
+    private static Path determineTargetPath(File source, String targetDir, String moveType, CodeRenameConfig codeRenameConfig) {
         Path targetPath = Paths.get(targetDir);
         if (moveType_all.equals(moveType) || moveType_folder.equals(moveType)) {
-            String safeDir = notOverwritePath(targetDir + File.separator + source.getName());
+            String safeDir = notOverwritePath(targetDir + File.separator + source.getName(), codeRenameConfig);
             return Paths.get(safeDir);
         }
         return targetPath;

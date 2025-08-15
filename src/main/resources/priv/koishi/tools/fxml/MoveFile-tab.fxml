@@ -54,29 +54,72 @@
                 </value>
             </ChoiceBox>
 
-            <HBox spacing="10">
-                <Label prefHeight="25" text="需要移动的文件后缀名:"/>
-                <TextField fx:id="filterFileType_MV" prefHeight="20" prefWidth="250"/>
+            <HBox fx:id="filterHBox_MV" visible="false" spacing="10">
+                <Label prefHeight="25" text="目录结构设置:"/>
+                <ChoiceBox fx:id="moveType_MV" prefHeight="25" prefWidth="170" onAction="#moveTypeAction"
+                           style="-fx-cursor: hand">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="仅移动文件"/>
+                            <String fx:value="保留目录结构移动文件"/>
+                            <String fx:value="不保留顶层目录移动文件"/>
+                            <String fx:value="保留目录结构复制文件夹"/>
+                            <String fx:value="不保留顶层目录复制文件夹"/>
+                        </FXCollections>
+                    </items>
+                    <value>
+                        <String fx:value="仅移动文件"/>
+                    </value>
+                </ChoiceBox>
             </HBox>
         </HBox>
 
-        <HBox fx:id="filterHBox_MV" visible="false" spacing="10">
-            <Label prefHeight="25" text="移动文件设置:"/>
-            <ChoiceBox fx:id="moveType_MV" prefHeight="25" prefWidth="170" onAction="#moveTypeAction"
-                       style="-fx-cursor: hand">
+        <HBox spacing="10">
+            <Label prefHeight="25" text="需要移动的文件后缀名:"/>
+            <TextField fx:id="filterFileType_MV" prefHeight="20" prefWidth="250"/>
+        </HBox>
+
+        <HBox spacing="10">
+            <Label prefHeight="25" text="重名文件尾缀："/>
+            <ChoiceBox onAction="#differenceCodeAction" fx:id="differenceCode_MV" style="-fx-cursor: hand"
+                       prefHeight="25" prefWidth="150">
                 <items>
                     <FXCollections fx:factory="observableArrayList">
-                        <String fx:value="仅移动文件"/>
-                        <String fx:value="保留目录结构移动文件"/>
-                        <String fx:value="不保留顶层目录移动文件"/>
-                        <String fx:value="保留目录结构复制文件夹"/>
-                        <String fx:value="不保留顶层目录复制文件夹"/>
+                        <String fx:value="阿拉伯数字：123"/>
+                        <String fx:value="中文数字：一二三"/>
+                        <String fx:value="小写英文字母：abc"/>
+                        <String fx:value="大小英文字母：ABC"/>
                     </FXCollections>
                 </items>
                 <value>
-                    <String fx:value="仅移动文件"/>
+                    <String fx:value="阿拉伯数字：123"/>
                 </value>
             </ChoiceBox>
+
+            <Label prefHeight="25" text="重名文件尾缀分隔符："/>
+            <ChoiceBox fx:id="subCode_MV" prefHeight="25" prefWidth="150" onAction="#subCodeAction"
+                       style="-fx-cursor: hand">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="英文括号：01 (1).xx"/>
+                        <String fx:value="中文括号：01 （1）.xx"/>
+                        <String fx:value="英文横杠：01 -1.xx"/>
+                        <String fx:value="中文横杠：01 —1.xx"/>
+                    </FXCollections>
+                </items>
+                <value>
+                    <String fx:value="英文括号：01 (1).xx"/>
+                </value>
+            </ChoiceBox>
+
+            <Label prefHeight="25" text="重名文件前缀:"/>
+            <TextField fx:id="prefix_MV" prefHeight="20" prefWidth="100"/>
+
+            <Label prefHeight="25" text="相同编号文件起始尾缀:"/>
+            <TextField fx:id="tag_MV" prefHeight="20" prefWidth="50" promptText="1"/>
+
+            <CheckBox onAction="#handleCheckBoxAction" fx:id="addSpace_MV" prefHeight="25" selected="true"
+                      style="-fx-cursor: hand" text="向分隔符左侧添加一个空格"/>
         </HBox>
 
         <HBox spacing="10">

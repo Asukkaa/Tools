@@ -252,15 +252,15 @@ public class FileRenameController extends RootController {
      * @param prop 配置文件
      */
     private void saveLastConfigByCodeRename(Properties prop) {
+        prop.put(key_lastTag, tag_Re.getText());
+        prop.put(key_lastPrefix, prefix_Re.getText());
+        prop.put(key_lastNameNum, nameNum_Re.getText());
+        prop.put(key_lastSubCode, subCode_Re.getValue());
         prop.put(key_lastStartName, startName_Re.getText());
         prop.put(key_lastStartSize, startSize_Re.getText());
-        prop.put(key_lastNameNum, nameNum_Re.getText());
-        prop.put(key_lastTag, tag_Re.getText());
+        prop.put(key_lastDifferenceCode, differenceCode_Re.getValue());
         String addSpaceValue = addSpace_Re.isSelected() ? activation : unActivation;
         prop.put(key_lastAddSpace, addSpaceValue);
-        prop.put(key_lastDifferenceCode, differenceCode_Re.getValue());
-        prop.put(key_lastSubCode, subCode_Re.getValue());
-        prop.put(key_lastPrefix, prefix_Re.getText());
     }
 
     /**
@@ -300,9 +300,9 @@ public class FileRenameController extends RootController {
      * @param prop 配置文件
      */
     private void saveLastConfigByExcelRename(Properties prop) {
+        prop.put(key_lastMaxRow, maxRow_Re.getText());
         prop.put(key_lastReadRow, readRow_Re.getText());
         prop.put(key_lastReadCell, readCell_Re.getText());
-        prop.put(key_lastMaxRow, maxRow_Re.getText());
         prop.put(key_lastExcelPath, excelPath_Re.getText());
     }
 

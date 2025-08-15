@@ -1,6 +1,7 @@
 package priv.koishi.tools.CopyVisitor;
 
 import org.apache.commons.collections4.CollectionUtils;
+import priv.koishi.tools.Configuration.CodeRenameConfig;
 import priv.koishi.tools.Enum.CopyMode;
 
 import java.awt.*;
@@ -14,7 +15,8 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static priv.koishi.tools.Finals.CommonFinals.*;
-import static priv.koishi.tools.Utils.FileUtils.*;
+import static priv.koishi.tools.Service.MoveFileService.notOverwritePath;
+import static priv.koishi.tools.Utils.FileUtils.getFileType;
 
 /**
  * 批量拷贝文件
@@ -56,21 +58,28 @@ public class CopyVisitor extends SimpleFileVisitor<Path> {
     private final List<String> filterExtensionList;
 
     /**
+     * 重命名规则
+     */
+    private final CodeRenameConfig codeRenameConfig;
+
+    /**
      * 构造函数
      *
      * @param sourceRoot          源目录
      * @param targetRoot          目标目录
      * @param copyMode            拷贝方式
      * @param filterExtensionList 过滤文件类型
+     * @param codeRenameConfig    重命名规则
      */
     public CopyVisitor(Path sourceRoot, Path targetRoot, CopyMode copyMode, List<String> filterExtensionList,
-                       String sourceAction, String hideFileType) {
+                       String sourceAction, String hideFileType, CodeRenameConfig codeRenameConfig) {
         this.sourceRoot = sourceRoot;
         this.targetRoot = targetRoot;
         this.copyMode = copyMode;
         this.filterExtensionList = filterExtensionList;
         this.sourceAction = sourceAction;
         this.hideFileType = hideFileType;
+        this.codeRenameConfig = codeRenameConfig;
     }
 
     /**
@@ -118,7 +127,7 @@ public class CopyVisitor extends SimpleFileVisitor<Path> {
             Path relativePath = sourceRoot.relativize(path);
             Path targetDir = targetRoot.resolve(relativePath);
             // 防重名处理
-            targetDir = Paths.get(notOverwritePath(targetDir.toString()));
+            targetDir = Paths.get(notOverwritePath(targetDir.toString(), codeRenameConfig));
             // 创建目录
             if (!Files.exists(targetDir)) {
                 Files.createDirectories(targetDir);
@@ -167,7 +176,7 @@ public class CopyVisitor extends SimpleFileVisitor<Path> {
             targetFile = targetRoot.resolve(sourceRoot.relativize(path));
         }
         // 防重名处理
-        targetFile = Paths.get(notOverwritePath(targetFile.toString()));
+        targetFile = Paths.get(notOverwritePath(targetFile.toString(), codeRenameConfig));
         // 确保父目录存在
         Path targetParent = targetFile.getParent();
         if (!Files.exists(targetParent)) {

@@ -19,6 +19,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import priv.koishi.tools.Bean.FileBean;
 import priv.koishi.tools.Bean.TaskBean;
+import priv.koishi.tools.Configuration.CodeRenameConfig;
 import priv.koishi.tools.Configuration.FileChooserConfig;
 
 import java.io.File;
@@ -30,6 +31,7 @@ import java.util.List;
 import java.util.Properties;
 
 import static priv.koishi.tools.Controller.MainController.settingController;
+import static priv.koishi.tools.Enum.SelectItemsEnums.*;
 import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.MainApplication.mainScene;
 import static priv.koishi.tools.MainApplication.mainStage;
@@ -38,6 +40,7 @@ import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.TaskUtils.bindingTaskNode;
 import static priv.koishi.tools.Utils.TaskUtils.taskUnbind;
 import static priv.koishi.tools.Utils.UiUtils.*;
+import static priv.koishi.tools.Utils.UiUtils.addToolTip;
 
 /**
  * 移动文件工具页控制器
@@ -91,19 +94,20 @@ public class MoveFileController extends RootController {
             creatDate_MV, updateDate_MV, showStatus_MV;
 
     @FXML
-    public TextField filterFileType_MV;
-
-    @FXML
     public Label outPath_MV, fileNumber_MV, log_MV;
 
     @FXML
-    public CheckBox openDirectory_MV;
+    public CheckBox openDirectory_MV, addSpace_MV;
+
+    @FXML
+    public TextField filterFileType_MV, prefix_MV, tag_MV;
 
     @FXML
     public Button clearButton_MV, moveButton_MV, addFileButton_MV, outPathButton_MV;
 
     @FXML
-    public ChoiceBox<String> addFileType_MV, sourceAction_MV, moveType_MV, hideFileType_MV;
+    public ChoiceBox<String> addFileType_MV, sourceAction_MV, moveType_MV, hideFileType_MV, differenceCode_MV,
+            subCode_MV;
 
     /**
      * 组件自适应宽高
@@ -111,7 +115,7 @@ public class MoveFileController extends RootController {
     public void adaption() {
         // 设置组件高度
         double stageHeight = mainStage.getHeight();
-        tableView_MV.setPrefHeight(stageHeight * 0.55);
+        tableView_MV.setPrefHeight(stageHeight * 0.5);
         // 设置组件宽度
         double stageWidth = mainStage.getWidth();
         double tableWidth = stageWidth * 0.94;
@@ -147,14 +151,20 @@ public class MoveFileController extends RootController {
             InputStream input = checkRunningInputStream(configFile_MV);
             Properties prop = new Properties();
             prop.load(input);
+            prop.put(key_lastTag, tag_MV.getText());
+            prop.put(key_lastPrefix, prefix_MV.getText());
             prop.put(key_moveType, moveType_MV.getValue());
             prop.put(key_lastOutPath, outPath_MV.getText());
+            prop.put(key_lastSubCode, subCode_MV.getValue());
             prop.put(key_addFileType, addFileType_MV.getValue());
             prop.put(key_sourceAction, sourceAction_MV.getValue());
             prop.put(key_lastHideFileType, hideFileType_MV.getValue());
             prop.put(key_lastFilterFileType, filterFileType_MV.getText());
+            prop.put(key_lastDifferenceCode, differenceCode_MV.getValue());
             String openDirectoryValue = openDirectory_MV.isSelected() ? activation : unActivation;
             prop.put(key_lastOpenDirectory, openDirectoryValue);
+            String addSpaceValue = addSpace_MV.isSelected() ? activation : unActivation;
+            prop.put(key_lastAddSpace, addSpaceValue);
             OutputStream output = checkRunningOutputStream(configFile_MV);
             prop.store(output, null);
             input.close();
@@ -186,13 +196,18 @@ public class MoveFileController extends RootController {
         InputStream input = checkRunningInputStream(configFile_MV);
         prop.load(input);
         if (activation.equals(prop.getProperty(key_loadLastConfig))) {
+            setControlLastConfig(tag_MV, prop, key_lastTag);
             setControlLastConfig(moveType_MV, prop, key_moveType);
+            setControlLastConfig(prefix_MV, prop, key_lastPrefix);
             setControlLastConfig(outPath_MV, prop, key_lastOutPath);
+            setControlLastConfig(subCode_MV, prop, key_lastSubCode);
+            setControlLastConfig(addSpace_MV, prop, key_lastAddSpace);
             setControlLastConfig(addFileType_MV, prop, key_addFileType);
             setControlLastConfig(sourceAction_MV, prop, key_sourceAction);
             setControlLastConfig(hideFileType_MV, prop, key_lastHideFileType);
             setControlLastConfig(openDirectory_MV, prop, key_lastOpenDirectory);
             setControlLastConfig(filterFileType_MV, prop, key_lastFilterFileType);
+            setControlLastConfig(differenceCode_MV, prop, key_lastDifferenceCode);
         }
         input.close();
     }
@@ -201,16 +216,21 @@ public class MoveFileController extends RootController {
      * 设置鼠标悬停提示
      */
     private void setToolTip() {
+        addToolTip(tip_tag, tag_MV);
+        addToolTip(tip_prefix, prefix_MV);
+        addToolTip(tip_addSpace, addSpace_MV);
         addToolTip(tip_moveButton, moveButton_MV);
         addToolTip(tip_learButton, clearButton_MV);
         addToolTip(tip_movePath, outPathButton_MV);
         addToolTip(tip_openDirectory, openDirectory_MV);
         addToolTip(tip_addFileButton, addFileButton_MV);
         addToolTip(tip_filterFileType, filterFileType_MV);
+        addValueToolTip(subCode_MV, tip_subCode, subCode_MV.getValue());
         addValueToolTip(moveType_MV, tip_moveType, moveType_MV.getValue());
         addValueToolTip(addFileType_MV, tip_addFileType, addFileType_MV.getValue());
         addValueToolTip(sourceAction_MV, tip_sourceAction, sourceAction_MV.getValue());
         addValueToolTip(hideFileType_MV, tip_hideFileType, hideFileType_MV.getValue());
+        addValueToolTip(differenceCode_MV, tip_differenceCode, differenceCode_MV.getValue());
     }
 
     /**
@@ -219,8 +239,8 @@ public class MoveFileController extends RootController {
     private void setDisableNodes() {
         disableNodes.add(moveButton_MV);
         disableNodes.add(filterHBox_MV);
-        disableNodes.add(sourceAction_MV);
         disableNodes.add(clearButton_MV);
+        disableNodes.add(sourceAction_MV);
         disableNodes.add(outPathButton_MV);
         disableNodes.add(addFileButton_MV);
         Node autoClickTab = mainScene.lookup("#autoClickTab");
@@ -231,6 +251,10 @@ public class MoveFileController extends RootController {
      * 给输入框添加内容变化监听
      */
     private void textFieldChangeListener() {
+        // 文件名前缀输入框添加鼠标悬停提示
+        textFieldValueListener(prefix_MV, tip_prefix);
+        // 限制相同编号文件起始尾缀输入框内容
+        integerRangeTextField(tag_MV, 0, null, tip_tag);
         // 鼠标悬留提示输入的需要识别的文件后缀名
         textFieldValueListener(filterFileType_MV, tip_filterFileType);
     }
@@ -378,7 +402,13 @@ public class MoveFileController extends RootController {
                 .setTableView(tableView_MV)
                 .setMassageLabel(log_MV)
                 .setBeanList(items);
-        Task<Void> moveFileTask = moveFile(taskBean);
+        CodeRenameConfig codeRenameConfig = new CodeRenameConfig();
+        codeRenameConfig.setTag(setDefaultIntValue(tag_MV, 1, 0, null))
+                .setDifferenceCode(differenceCode_MV.getValue())
+                .setAddSpace(addSpace_MV.isSelected())
+                .setSubCode(subCode_MV.getValue())
+                .setPrefix(prefix_MV.getText());
+        Task<Void> moveFileTask = moveFile(taskBean, codeRenameConfig);
         bindingTaskNode(moveFileTask, taskBean);
         moveFileTask.setOnSucceeded(event -> {
             taskUnbind(taskBean);
@@ -511,11 +541,54 @@ public class MoveFileController extends RootController {
     }
 
     /**
-     * 移动文件设置单选框监听
+     * 目录结构设置单选框监听
      */
     @FXML
     private void moveTypeAction() {
         addValueToolTip(moveType_MV, tip_moveType, moveType_MV.getValue());
+    }
+
+    /**
+     * 根据文件名尾缀类型更新重命名分隔符设置下拉框选项
+     */
+    @FXML
+    private void differenceCodeAction() {
+        String differenceCode = differenceCode_MV.getValue();
+        addValueToolTip(differenceCode_MV, tip_differenceCode, differenceCode);
+        switch (differenceCode) {
+            case text_arabicNumerals: {
+                updateSelectItems(addSpace_MV, subCode_MV, subCodeArabicNumItems);
+                break;
+            }
+            case text_chineseNumerals: {
+                updateSelectItems(addSpace_MV, subCode_MV, subCodeChineseNumItems);
+                break;
+            }
+            case text_abc: {
+                updateSelectItems(addSpace_MV, subCode_MV, subCodeLowercaseItems);
+                break;
+            }
+            case text_ABC: {
+                updateSelectItems(addSpace_MV, subCode_MV, subCodeUppercaseNumItems);
+                break;
+            }
+        }
+    }
+
+    /**
+     * 分隔符选项监听
+     */
+    @FXML
+    private void subCodeAction() {
+        addValueToolTip(subCode_MV, tip_subCode, subCode_MV.getValue());
+    }
+
+    /**
+     * 是否向分隔符左侧添加一个空格选项监听
+     */
+    @FXML
+    private void handleCheckBoxAction() {
+        differenceCodeAction();
     }
 
 }

@@ -255,15 +255,14 @@ public class FileRenameService {
         // 使用String.format()函数进行补齐操作
         if (startSize > 0) {
             fileRename = String.format("%0" + startSize + "d", Integer.parseInt(fileRename));
+        } else if (startSize == -1) {
+            fileRename = fileBean.getName();
         }
         fileBean.setTagRename("");
         // 只有同名文件超过0个才需要分隔符
         if (codeRenameConfig.getNameNum() > 0) {
             String subCode = codeRenameConfig.getSubCode();
-            String space = "";
-            if (codeRenameConfig.isAddSpace()) {
-                space = " ";
-            }
+            String space = codeRenameConfig.isAddSpace() ? " " : "";
             String tagRename;
             switch (subCode.substring(0, 4)) {
                 case text_enBracket: {
