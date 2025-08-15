@@ -73,11 +73,11 @@ exports.main = async (event) => {
         const latestVersionInfo = {
             version: serverVersion,
             buildDate: "2025.08.15",
-            whatsNew: `版本 2.5.6:
-        1.批量移动文件工具支持自定义重命名重名文件功能
-        2.文件类型筛选和文件名称筛选支持反向筛选功能
-        3.优化了一些ui界面
-        4.修复了一些bug`,
+            whatsNew: `版本 2.5.6 :
+        1. 批量移动文件工具支持自定义重命名重名文件功能
+        2. 文件类型筛选和文件名称筛选支持反向筛选功能
+        3. 优化了一些 ui 界面
+        4. 修复了一些 bug`,
             aliyunFileLink: aliyunFileLink,
             alipayFileLink: alipayFileLink,
             fullUpdate: fullUpdate
