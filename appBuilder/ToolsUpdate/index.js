@@ -16,7 +16,14 @@ exports.main = async (event) => {
     // 客户端当前版本
     const clientVersion = requestBody.version;
     // 服务端最新版本
-    const serverVersion = "2.5.6";
+    const serverVersion = "2.5.7";
+    const buildDate = "2025.08.18";
+    const features = [
+        "分组统计文件夹下文件数量功能合并到将图片与 excel 匹配并插入功能中",
+        "批量重命名功能的根据 excel 重命名文件功能支持读取 xls 文件",
+        "调整了一些 UI 界面",
+        "修复了一些 bug"
+    ];
     // 版本号对比逻辑
     let fullUpdate = false;
     if (clientVersion) {
@@ -35,23 +42,23 @@ exports.main = async (event) => {
     }
     // 阿里云全量更新文件存储地址
     const aliyunAppLinks = {
-        win: 'https://mp-f42cc448-2bf2-4edf-9bb8-8f060ec60dd6.cdn.bspapp.com/Tools/win/Tools-2.5.6-win.zip',
-        mac: 'https://mp-f42cc448-2bf2-4edf-9bb8-8f060ec60dd6.cdn.bspapp.com/Tools/mac/Tools-2.5.6-mac.zip'
+        win: 'https://mp-f42cc448-2bf2-4edf-9bb8-8f060ec60dd6.cdn.bspapp.com/Tools/win/Tools-2.5.7-win.zip',
+        mac: 'https://mp-f42cc448-2bf2-4edf-9bb8-8f060ec60dd6.cdn.bspapp.com/Tools/mac/Tools-2.5.7-mac.zip'
     };
     // 阿里云增量更新文件存储地址
     const aliyunLibLinks = {
-        win: 'https://mp-f42cc448-2bf2-4edf-9bb8-8f060ec60dd6.cdn.bspapp.com/Tools/win/lib-2.5.6-win.zip',
-        mac: 'https://mp-f42cc448-2bf2-4edf-9bb8-8f060ec60dd6.cdn.bspapp.com/Tools/mac/lib-2.5.6-mac.zip'
+        win: 'https://mp-f42cc448-2bf2-4edf-9bb8-8f060ec60dd6.cdn.bspapp.com/Tools/win/lib-2.5.7-win.zip',
+        mac: 'https://mp-f42cc448-2bf2-4edf-9bb8-8f060ec60dd6.cdn.bspapp.com/Tools/mac/lib-2.5.7-mac.zip'
     };
     // 支付宝云全量更新文件存储地址
     const alipayAppLinks = {
-        win: 'https://env-00jxtp3qdq80.normal.cloudstatic.cn/Tools/win/Tools-2.5.6-win.zip',
-        mac: 'https://env-00jxtp3qdq80.normal.cloudstatic.cn/Tools/mac/Tools-2.5.6-mac.zip'
+        win: 'https://env-00jxtp3qdq80.normal.cloudstatic.cn/Tools/win/Tools-2.5.7-win.zip',
+        mac: 'https://env-00jxtp3qdq80.normal.cloudstatic.cn/Tools/mac/Tools-2.5.7-mac.zip'
     };
     // 支付宝云增量更新文件存储地址
     const alipayLibLinks = {
-        win: 'https://env-00jxtp3qdq80.normal.cloudstatic.cn/Tools/win/lib-2.5.6-win.zip',
-        mac: 'https://env-00jxtp3qdq80.normal.cloudstatic.cn/Tools/mac/lib-2.5.6-mac.zip'
+        win: 'https://env-00jxtp3qdq80.normal.cloudstatic.cn/Tools/win/lib-2.5.7-win.zip',
+        mac: 'https://env-00jxtp3qdq80.normal.cloudstatic.cn/Tools/mac/lib-2.5.7-mac.zip'
     };
     let aliyunFileLink, alipayFileLink;
     if (fullUpdate) {
@@ -72,12 +79,10 @@ exports.main = async (event) => {
         // 构造响应对象
         const latestVersionInfo = {
             version: serverVersion,
-            buildDate: "2025.08.15",
-            whatsNew: `版本 2.5.6 :
-        1. 批量移动文件工具支持自定义重命名重名文件功能
-        2. 文件类型筛选和文件名称筛选支持反向筛选功能
-        3. 优化了一些 ui 界面
-        4. 修复了一些 bug`,
+            buildDate: buildDate,
+            whatsNew: `版本 ${serverVersion}：
+            ${features.map((feat, index) => `
+                ${index + 1}. ${feat}`).join('\n')}`,
             aliyunFileLink: aliyunFileLink,
             alipayFileLink: alipayFileLink,
             fullUpdate: fullUpdate
