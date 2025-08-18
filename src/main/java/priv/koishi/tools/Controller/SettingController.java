@@ -67,8 +67,8 @@ public class SettingController extends RootController {
     public Label runningMemory_Set, thisPath_Set, systemMemory_Set, gcType_Set;
 
     @FXML
-    public CheckBox loadRename_Set, loadFileNum_Set, loadFileName_Set, loadImgToExcel_Set, lastTab_Set,
-            fullWindow_Set, reverseSort_Set, loadAutoClick_Set, maxWindow_Set, loadMoveFile_Set;
+    public CheckBox loadRename_Set, loadFileName_Set, loadImgToExcel_Set, lastTab_Set, fullWindow_Set,
+            reverseSort_Set, loadAutoClick_Set, maxWindow_Set, loadMoveFile_Set;
 
     /**
      * 组件自适应宽高
@@ -184,7 +184,6 @@ public class SettingController extends RootController {
     private void setLoadLastConfigs() throws IOException {
         Properties prop = new Properties();
         setLoadLastConfig(prop, loadMoveFile_Set, configFile_MV);
-        setLoadLastConfig(prop, loadFileNum_Set, configFile_Num);
         setLoadLastConfig(prop, loadFileName_Set, configFile_Name);
         setLoadLastConfig(prop, loadRename_Set, configFile_Rename);
         setLoadLastConfig(prop, loadImgToExcel_Set, configFile_Img);
@@ -229,7 +228,6 @@ public class SettingController extends RootController {
         addToolTip(fullWindow_Set.getText(), fullWindow_Set);
         addToolTip(loadRename_Set.getText(), loadRename_Set);
         addValueToolTip(nextRunMemory_Set, tip_nextRunMemory);
-        addToolTip(loadFileNum_Set.getText(), loadFileNum_Set);
         addToolTip(loadFileName_Set.getText(), loadFileName_Set);
         addValueToolTip(sort_Set, tip_sort, sort_Set.getValue());
         addToolTip(loadMoveFile_Set.getText(), loadMoveFile_Set);
@@ -385,16 +383,6 @@ public class SettingController extends RootController {
     @FXML
     private void loadRenameAction() throws IOException {
         setLoadLastConfigCheckBox(loadRename_Set, configFile_Rename, key_loadLastConfig);
-    }
-
-    /**
-     * 分组统计文件夹下文件数量功能加载上次设置信息
-     *
-     * @throws IOException io异常
-     */
-    @FXML
-    private void loadFileNumAction() throws IOException {
-        setLoadLastConfigCheckBox(loadFileNum_Set, configFile_Num, key_loadLastConfig);
     }
 
     /**

@@ -15,14 +15,17 @@ import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.ExcelConfig;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import static priv.koishi.tools.Finals.CommonFinals.*;
+import static priv.koishi.tools.Service.ImgToExcelService.insertFileLink;
 import static priv.koishi.tools.Utils.ExcelUtils.*;
 import static priv.koishi.tools.Utils.FileUtils.checkFileExists;
+import static priv.koishi.tools.Utils.FileUtils.getFileName;
 import static priv.koishi.tools.Utils.UiUtils.changeDisableNodes;
 
 /**
@@ -86,6 +89,7 @@ public class FileNumToExcelService {
                 updateMessage(text_identify + fileBeansSize + text_data);
                 boolean exportFileNum = excelConfig.isExportFileNum();
                 boolean exportFileSize = excelConfig.isExportFileSize();
+                boolean showFileType = taskBean.isShowFileType();
                 List<String> titles = new ArrayList<>();
                 // 创建表头
                 if (excelConfig.isExportTitle()) {
@@ -94,27 +98,31 @@ public class FileNumToExcelService {
                 }
                 for (int i = 0; i < fileBeansSize; i++) {
                     FileNumBean fileBean = fileBeans.get(i);
-                    List<String> fileNameList = fileBean.getFileNameList();
+                    List<String> filePathList = fileBean.getFilePathList();
                     Row row = getOrCreateRow(sheet, rowNum);
                     Cell startCell = row.createCell(startCellNum);
                     // 判断附加项导出设置
                     if (exportFileNum && !exportFileSize) {
                         startCell.setCellValue(fileBean.getGroupNumber());
-                        maxCellNum = buildFileName(fileNameList, row, startCellNum + 1, maxCellNum);
+                        maxCellNum = buildFileName(filePathList, excelConfig, startCellNum + 1, rowNum, sheet,
+                                row, maxCellNum, showFileType, workbook);
                     } else if (!exportFileNum && exportFileSize) {
                         // 附加项只导出文件大小
                         startCell.setCellValue(fileBean.getFileUnitSize());
-                        maxCellNum = buildFileName(fileNameList, row, startCellNum + 1, maxCellNum);
+                        maxCellNum = buildFileName(filePathList, excelConfig, startCellNum + 1, rowNum, sheet,
+                                row, maxCellNum, showFileType, workbook);
                     } else if (exportFileNum) {
                         // 附加项导出文件数量和大小
                         startCell.setCellValue(fileBean.getGroupNumber());
                         int sizeCellNum = startCellNum + 1;
                         Cell sizeCell = row.createCell(sizeCellNum);
                         sizeCell.setCellValue(fileBean.getFileUnitSize());
-                        maxCellNum = buildFileName(fileNameList, row, sizeCellNum + 1, maxCellNum);
+                        maxCellNum = buildFileName(filePathList, excelConfig, sizeCellNum + 1, rowNum, sheet,
+                                row, maxCellNum, showFileType, workbook);
                     } else {
                         // 不导出附加项
-                        maxCellNum = buildFileName(fileNameList, row, startCellNum, maxCellNum);
+                        maxCellNum = buildFileName(filePathList, excelConfig, startCellNum, rowNum, sheet,
+                                row, maxCellNum, showFileType, workbook);
                     }
                     updateMessage(text_printing + (i + 1) + "/" + fileBeansSize + text_data);
                     updateProgress(i + 1, fileBeansSize);
@@ -122,7 +130,8 @@ public class FileNumToExcelService {
                 }
                 // 合并文件名表头单元格
                 if (excelConfig.isExportTitle()) {
-                    sheet.addMergedRegion(new CellRangeAddress(startRowNum, startRowNum, startCellNum + titles.size() - 1, maxCellNum - 1));
+                    sheet.addMergedRegion(new CellRangeAddress(startRowNum, startRowNum,
+                            startCellNum + titles.size() - 1, maxCellNum - 1));
                 }
                 autoSizeExcelCells(sheet, maxCellNum, startCellNum);
                 updateMessage(text_printDown);
@@ -134,20 +143,43 @@ public class FileNumToExcelService {
     /**
      * 处理文件名称列
      *
-     * @param fileNameList 要处理文件名
-     * @param row          当前所在excel行
-     * @param cellNum      当前行起始列号
+     * @param filePathList 文件路径
+     * @param excelConfig  excel导出设置
+     * @param cellNum      文件起始列号
+     * @param rowNum       文件的起始行号
+     * @param sheet        当前表
+     * @param row          当前行
      * @param maxCellNum   最大列号
      * @return 最大列号
      */
-    private static int buildFileName(List<String> fileNameList, Row row, int cellNum, int maxCellNum) {
-        if (CollectionUtils.isNotEmpty(fileNameList)) {
-            for (String s : fileNameList) {
-                Cell nameCell = row.createCell(cellNum);
-                nameCell.setCellValue(s);
-                cellNum++;
-                maxCellNum = Math.max(maxCellNum, cellNum);
+    private static int buildFileName(List<String> filePathList, ExcelConfig excelConfig, int cellNum, int rowNum,
+                                     Sheet sheet, Row row, int maxCellNum, boolean showFileType, Workbook workbook) {
+        if (CollectionUtils.isNotEmpty(filePathList)) {
+            String insertType = excelConfig.getInsertType();
+            if (insertType_relativePath.equals(insertType)) {
+                maxCellNum = insertFileLink(filePathList, excelConfig, cellNum, rowNum, sheet, maxCellNum, showFileType,
+                        insertType, workbook);
+            } else if (insertType_name.equals(insertType)) {
+                for (String s : filePathList) {
+                    Cell nameCell = row.createCell(cellNum);
+                    File file = new File(s);
+                    String fileName;
+                    if (showFileType) {
+                        fileName = file.getName();
+                    } else {
+                        fileName = getFileName(file);
+                    }
+                    nameCell.setCellValue(fileName);
+                    cellNum++;
+                    maxCellNum = Math.max(maxCellNum, cellNum);
+                }
             }
+        } else {
+            Cell cell = getOrCreateCell(cellNum, row);
+            if (excelConfig.isNoImg()) {
+                cell.setCellValue(text_noFile);
+            }
+            maxCellNum = Math.max(maxCellNum, cellNum);
         }
         return maxCellNum;
     }

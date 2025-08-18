@@ -1212,7 +1212,10 @@ public class FileRenameController extends RootController {
     @FXML
     private void getExcelPath(ActionEvent actionEvent) throws IOException {
         getConfig();
-        List<FileChooser.ExtensionFilter> extensionFilters = new ArrayList<>(Collections.singleton(new FileChooser.ExtensionFilter("Excel", "*.xlsx")));
+        List<FileChooser.ExtensionFilter> extensionFilters = new ArrayList<>();
+        extensionFilters.add(new FileChooser.ExtensionFilter("Excel", "*.xlsx", "*.xls"));
+        extensionFilters.add(new FileChooser.ExtensionFilter("Excel(2007)", "*.xlsx"));
+        extensionFilters.add(new FileChooser.ExtensionFilter("Excel(2003)", "*.xls"));
         Window window = ((Node) actionEvent.getSource()).getScene().getWindow();
         File selectedFile = creatFileChooser(window, excelInPath, extensionFilters, text_selectExcel);
         if (selectedFile != null) {
@@ -1324,13 +1327,14 @@ public class FileRenameController extends RootController {
     @FXML
     private void targetStrAction() {
         addValueToolTip(targetStr_Re, tip_targetStr, targetStr_Re.getValue());
+        ObservableList<String> items = renameBehavior_Re.getItems();
         switch (targetStr_Re.getValue()) {
             case text_specifyString: {
                 typeLabel_Re.setText(text_matchString);
                 renameValue_Re.setText("");
                 addValueToolTip(renameValue_Re, tip_renameValue);
-                renameBehavior_Re.getItems().removeAll(text_bothSides, text_insert);
-                renameBehavior_Re.getItems().add(text_bothSides);
+                items.removeAll(text_bothSides, text_insert);
+                items.add(text_bothSides);
                 // 根据重命名方法选项展示组件
                 behaviorAction();
                 break;
@@ -1339,9 +1343,9 @@ public class FileRenameController extends RootController {
                 typeLabel_Re.setText(text_matchIndex);
                 renameValue_Re.setText("");
                 addValueToolTip(renameValue_Re, tip_renameValue);
-                renameBehavior_Re.getItems().removeAll(text_bothSides, text_insert);
-                renameBehavior_Re.getItems().add(text_insert);
-                renameBehavior_Re.setValue(renameBehavior_Re.getItems().getFirst());
+                items.removeAll(text_bothSides, text_insert);
+                items.add(text_insert);
+                renameBehavior_Re.setValue(items.getFirst());
                 // 根据重命名方法选项展示组件
                 behaviorAction();
                 break;

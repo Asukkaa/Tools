@@ -22,9 +22,6 @@
         </HBox>
 
         <HBox spacing="50">
-            <CheckBox fx:id="loadFileNum_Set" onAction="#loadFileNumAction" styleClass="checkBox-setting-style"
-                      selected="true" text="分组统计文件夹下文件数量 功能加载上次设置信息"/>
-
             <CheckBox fx:id="loadFileName_Set" onAction="#loadFileNameAction" styleClass="checkBox-setting-style"
                       selected="true" text="获取文件夹下的文件信息 功能加载上次设置信息"/>
 

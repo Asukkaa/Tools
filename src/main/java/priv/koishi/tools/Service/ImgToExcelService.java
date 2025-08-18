@@ -55,7 +55,7 @@ public class ImgToExcelService {
      * @param excelConfig excel导出设置
      * @return excel工作簿
      */
-    public static Task<SXSSFWorkbook> buildImgGroupExcel(TaskBean<FileNumBean> taskBean, ExcelConfig excelConfig) {
+    public static Task<Workbook> buildImgGroupExcel(TaskBean<FileNumBean> taskBean, ExcelConfig excelConfig) {
         return new Task<>() {
             @Override
             protected SXSSFWorkbook call() throws IOException {
@@ -158,15 +158,16 @@ public class ImgToExcelService {
         if (CollectionUtils.isEmpty(imgList)) {
             Cell cell = getOrCreateCell(cellNum, row);
             if (excelConfig.isNoImg()) {
-                cell.setCellValue("无图片");
+                cell.setCellValue(text_noImg);
             }
             maxCellNum = Math.max(maxCellNum, cellNum);
         } else {
-            String insertImgType = excelConfig.getInsertImgType();
+            String insertImgType = excelConfig.getInsertType();
             if (insertType_img.equals(insertImgType)) {
                 maxCellNum = insertImg(imgList, excelConfig, cellNum, rowNum, sheet, maxCellNum);
             } else if (insertType_relativePath.equals(insertImgType) || insertType_absolutePath.equals(insertImgType)) {
-                maxCellNum = insertImgLink(imgList, excelConfig, cellNum, rowNum, sheet, maxCellNum, showFileType, insertImgType);
+                maxCellNum = insertFileLink(imgList, excelConfig, cellNum, rowNum, sheet, maxCellNum, showFileType,
+                        insertImgType, sxssfWorkbook);
             }
         }
         return maxCellNum;
@@ -224,35 +225,36 @@ public class ImgToExcelService {
     }
 
     /**
-     * 插入图片超链接
+     * 插入文件超链接
      *
-     * @param imgList       图片路径
-     * @param excelConfig   excel导出设置
-     * @param cellNum       图片起始列号
-     * @param rowNum        图片的起始行号
-     * @param sheet         当前表
-     * @param maxCellNum    最大列号
-     * @param showFileType  是否显示文件类型
-     * @param insertImgType 插入图片类型
-     * @return 插入图片后的最大列号
+     * @param pathList     文件路径
+     * @param excelConfig  excel导出设置
+     * @param cellNum      文件起始列号
+     * @param rowNum       文件的起始行号
+     * @param sheet        当前表
+     * @param maxCellNum   最大列号
+     * @param showFileType 是否显示文件类型
+     * @param insertType   插入文件类型
+     * @param workbook     当前工作簿
+     * @return 插入文件后的最大列号
      */
-    private static int insertImgLink(List<String> imgList, ExcelConfig excelConfig, int cellNum, int rowNum, Sheet sheet,
-                                     int maxCellNum, boolean showFileType, String insertImgType) {
-        CreationHelper helper = sxssfWorkbook.getCreationHelper();
+    public static int insertFileLink(List<String> pathList, ExcelConfig excelConfig, int cellNum, int rowNum, Sheet sheet,
+                                     int maxCellNum, boolean showFileType, String insertType, Workbook workbook) {
+        CreationHelper helper = workbook.getCreationHelper();
         String linkNameType = excelConfig.getLinkNameType();
         String linkLeftName = excelConfig.getLinkLeftName();
         String linkRightName = excelConfig.getLinkRightName();
         String outPath = excelConfig.getOutPath();
-        for (String imgPath : imgList) {
+        for (String path : pathList) {
             // 创建超链接单元格
             Cell cell = getOrCreateCell(cellNum, sheet.getRow(rowNum));
             // 创建文件超链接
             Hyperlink hyperlink = helper.createHyperlink(HyperlinkType.FILE);
-            File imgFile = new File(imgPath);
+            File imgFile = new File(path);
             // 路径转换为URI格式
             String uriPath;
             // 设置超链接路径
-            if (insertType_absolutePath.equals(insertImgType)) {
+            if (insertType_absolutePath.equals(insertType)) {
                 uriPath = String.valueOf(imgFile.toURI());
             } else {
                 // 文件所在目录
@@ -266,8 +268,8 @@ public class ImgToExcelService {
             // 应用超链接到单元格
             cell.setHyperlink(hyperlink);
             // 设置单元格样式
-            CellStyle style = sxssfWorkbook.createCellStyle();
-            Font font = sxssfWorkbook.createFont();
+            CellStyle style = workbook.createCellStyle();
+            Font font = workbook.createFont();
             font.setUnderline(Font.U_SINGLE);
             font.setColor(IndexedColors.BLUE.getIndex());
             style.setFont(font);

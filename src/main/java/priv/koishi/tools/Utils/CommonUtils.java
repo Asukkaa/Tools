@@ -152,6 +152,7 @@ public class CommonUtils {
         fileNumBeans.forEach(bean1 -> {
             bean1.setGroupNumber(0);
             bean1.setFileName("");
+            bean1.setFileUnitSize("");
             Optional<FileNumBean> matchedBeans = fileNumList.stream()
                     .filter(bean2 -> bean2.getGroupName().equals(bean1.getGroupName()))
                     .findFirst();

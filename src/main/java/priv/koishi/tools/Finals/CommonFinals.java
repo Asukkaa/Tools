@@ -166,11 +166,6 @@ public class CommonFinals {
     public static final String configFile_Rename = "config/fileRenameConfig.properties";
 
     /**
-     * 统计文件数量功能配置文件路径
-     */
-    public static final String configFile_Num = "config/fileNumToExcelConfig.properties";
-
-    /**
      * 读取文件名称功能配置文件路径
      */
     public static final String configFile_Name = "config/fileNameToExcelConfig.properties";
@@ -501,8 +496,6 @@ public class CommonFinals {
 
     public static final String text_group = " 组数据，匹配到 ";
 
-    public static final String text_picture = " 张图片，";
-
     public static final String text_totalFileSize = "总大小 ";
 
     public static final String text_file = " 个文件 ";
@@ -605,6 +598,8 @@ public class CommonFinals {
 
     public static final String text_noImg = "无图片";
 
+    public static final String text_noFile = "无文件";
+
     public static final String text_imgPath = "图片地址：";
 
     public static final String text_selectReadFile = "选择要读取的文件";
@@ -617,6 +612,10 @@ public class CommonFinals {
 
     public static final String text_newSheet = "*创建一个新表";
 
+    public static final String text_matchImg = "匹配图片并插入";
+
+    public static final String text_matchFile = "匹配文件并统计";
+
     public static final String id_settingTab = "settingTab";
 
     public static final String id_aboutTab = "aboutTab";
@@ -624,8 +623,6 @@ public class CommonFinals {
     public static final String id_autoClickTab = "autoClickTab";
 
     public static final String id_fileNameToExcelTab = "fileNameToExcelTab";
-
-    public static final String id_fileNumToExcelTab = "fileNumToExcelTab";
 
     public static final String id_imgToExcelTab = "imgToExcelTab";
 
@@ -831,6 +828,8 @@ public class CommonFinals {
 
     public static final String key_linkRightName = "linkRightName";
 
+    public static final String key_matchFileType = "matchFileType";
+
     public static final String key_addFileType = "addFileType";
 
     public static final String key_sourceAction = "sourceAction";
@@ -883,9 +882,11 @@ public class CommonFinals {
 
     public static final String insertType_img = "插入图片";
 
-    public static final String insertType_relativePath = "插入图片相对路径超链接";
+    public static final String insertType_name = "插入文件名称";
 
-    public static final String insertType_absolutePath = "插入图片绝对路径超链接";
+    public static final String insertType_relativePath = "插入文件相对路径超链接";
+
+    public static final String insertType_absolutePath = "插入文件绝对路径超链接";
 
     public static final String hidden = "隐藏";
 
@@ -1037,7 +1038,7 @@ public class CommonFinals {
 
     public static final String tip_reLaunch = "保存所有改动并重启程序，如果重启后修改内存设置不生效可能需要再次重启";
 
-    public static final String tip_noImg = "勾选后导出文件时没有图片的数据将会在单元格中标记为 无图片";
+    public static final String tip_noFile = "勾选后导出文件时没有图片的数据将会在单元格中标记为 ";
 
     public static final String tip_filterImgType = "只会识别勾选的图片格式，不区分大小写，至少要勾选一种图片格式才能查询";
 
@@ -1149,7 +1150,7 @@ public class CommonFinals {
 
     public static final String tip_reNameFileType = "用来设置文件拓展名修改逻辑";
 
-    public static final String tip_insertImgType = "用来选择插入图片还是图片超链接";
+    public static final String tip_insertImgType = "用来选择插入图片还是文件超链接";
 
     public static final String tip_linkNameType = "用来选择超链接命名方式";
 
@@ -1178,6 +1179,8 @@ public class CommonFinals {
     public static final String tip_close = "点击后将会关闭当前页面，不会将任何数据添加到要移动的文件列表中";
 
     public static final String tip_prefix = "将会在文件名前面添加所填写的字符";
+
+    public static final String tip_matchFileType = "用来选择要匹配的文件类型";
 
     public static final String tip_sheet = """
             选择要读取的excel后将会把读取到的表格名称填充到下拉框中，选择表格名称以设置要读取的表

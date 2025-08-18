@@ -689,21 +689,14 @@ public class UiUtils {
      * @param fileNumList           分组信息
      * @param inFileList            要分组的文件
      * @param tableView             展示数据的javafx列表
-     * @param tabId                 页面id
      * @param fileNumber            展示列表信息分组数量及文件大小和匹配图片数量的文本栏
-     * @param comparatorTableColumn 需要设置排序规则的列
      */
     public static void machGroup(FileConfig fileConfig, List<FileNumBean> fileNumList, List<? extends File> inFileList,
-                                 TableView<FileNumBean> tableView, String tabId, Label fileNumber, TableColumn<FileNumBean,
-                    String> comparatorTableColumn) {
+                                 TableView<FileNumBean> tableView, Label fileNumber) {
         FileNumVo fileNumVo = matchGroupData(fileNumList, inFileList, fileConfig);
-        TaskBean<FileNumBean> taskBean = new TaskBean<>();
-        taskBean.setComparatorTableColumn(comparatorTableColumn)
-                .setTableView(tableView)
-                .setTabId(tabId);
-        showReadExcelData(fileNumList, taskBean);
+        showReadExcelData(fileNumList, tableView);
         Platform.runLater(() -> fileNumber.setText(text_allHave + fileNumVo.getDataNum() + text_group +
-                fileNumVo.getImgNum() + text_picture + text_totalFileSize + fileNumVo.getImgSize()));
+                fileNumVo.getImgNum() + text_file + text_totalFileSize + fileNumVo.getImgSize()));
     }
 
     /**
@@ -1607,11 +1600,11 @@ public class UiUtils {
     /**
      * 设置要暂时移除的组件
      *
-     * @param parentVBox     父级vBox
-     * @param childrenVBoxes 要移除的子级vBox
+     * @param parentPane     父级Pane
+     * @param childrenPanes 要移除的子级Pane
      */
-    public static void removeChildren(VBox parentVBox, VBox... childrenVBoxes) {
-        parentVBox.getChildren().removeAll(childrenVBoxes);
+    public static void removeChildren(Pane parentPane, Pane... childrenPanes) {
+        parentPane.getChildren().removeAll(childrenPanes);
     }
 
     /**

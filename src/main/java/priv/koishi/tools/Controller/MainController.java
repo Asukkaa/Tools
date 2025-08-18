@@ -49,11 +49,6 @@ public class MainController extends RootController {
     public static FileNameToExcelController fileNameToExcelController;
 
     /**
-     * 分组统计文件夹下文件数量页面控制器
-     */
-    public static FileNumToExcelController fileNumToExcelController;
-
-    /**
      * 将图片与excel匹配并插入页面控制器
      */
     public static ImgToExcelController imgToExcelController;
@@ -72,8 +67,7 @@ public class MainController extends RootController {
     public TabPane tabPane;
 
     @FXML
-    public Tab fileNumToExcelTab, fileNameToExcelTab, moveFileTab, imgToExcelTab, fileRenameTab, settingTab,
-            aboutTab, autoClickTab;
+    public Tab fileNameToExcelTab, moveFileTab, imgToExcelTab, fileRenameTab, settingTab, aboutTab, autoClickTab;
 
     /**
      * 页面初始化
@@ -89,7 +83,6 @@ public class MainController extends RootController {
             autoClickController = getController(AutoClickController.class);
             imgToExcelController = getController(ImgToExcelController.class);
             fileRenameController = getController(FileRenameController.class);
-            fileNumToExcelController = getController(FileNumToExcelController.class);
             fileNameToExcelController = getController(FileNameToExcelController.class);
             // 主页面加载完毕
             EventBus.publish(new MainLoadedEvent());
@@ -109,11 +102,6 @@ public class MainController extends RootController {
                 case id_fileNameToExcelTab:
                     if (isActivation) {
                         fileNameToExcelController.adaption();
-                    }
-                    break;
-                case id_fileNumToExcelTab:
-                    if (isActivation) {
-                        fileNumToExcelController.adaption();
                     }
                     break;
                 case id_imgToExcelTab:
@@ -156,10 +144,6 @@ public class MainController extends RootController {
         // 保存批量向excel功能插入图片最后设置
         if (imgToExcelController != null) {
             imgToExcelController.saveLastConfig();
-        }
-        // 保存分组统计文件信息导出到excel最后设置
-        if (fileNumToExcelController != null) {
-            fileNumToExcelController.saveLastConfig();
         }
         // 保存导出文件详细信息到excel最后设置
         if (fileNameToExcelController != null) {

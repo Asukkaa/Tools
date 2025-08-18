@@ -30,14 +30,6 @@
             </ScrollPane>
         </Tab>
 
-        <Tab style="-fx-cursor: hand" fx:id="fileNumToExcelTab" text="分组统计文件夹下文件数量">
-            <ScrollPane fitToWidth="true" fitToHeight="true">
-                <AnchorPane>
-                    <fx:include source="FileNumToExcel-tab.fxml"/>
-                </AnchorPane>
-            </ScrollPane>
-        </Tab>
-
         <Tab style="-fx-cursor: hand" fx:id="fileNameToExcelTab" text="获取文件夹下的文件信息">
             <ScrollPane fitToWidth="true" fitToHeight="true">
                 <AnchorPane>

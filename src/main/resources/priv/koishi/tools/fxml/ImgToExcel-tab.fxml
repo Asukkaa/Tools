@@ -24,18 +24,29 @@
                 </value>
             </ChoiceBox>
 
+            <Label prefHeight="25" text="匹配文件类型:"/>
+            <ChoiceBox fx:id="matchFileType_Img" prefHeight="25" prefWidth="120" onAction="#matchFileTypeAction"
+                       style="-fx-cursor: hand">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="匹配图片并插入"/>
+                        <String fx:value="匹配文件并统计"/>
+                    </FXCollections>
+                </items>
+                <value>
+                    <String fx:value="匹配图片并插入"/>
+                </value>
+            </ChoiceBox>
+
             <CheckBox fx:id="recursion_Img" prefHeight="25" style="-fx-cursor: hand" text="递归查询"/>
             <CheckBox fx:id="showFileType_Img" onAction="#handleCheckBoxAction" prefHeight="25"
                       style="-fx-cursor: hand" text="显示文件拓展名"/>
-            <CheckBox fx:id="openDirectory_Img" prefHeight="25" selected="true"
-                      style="-fx-cursor: hand" text="导出后打开文件夹"/>
-            <CheckBox fx:id="openFile_Img" prefHeight="25" style="-fx-cursor: hand" text="导出后打开excel文件"/>
 
             <Label prefHeight="25" fx:id="excelTypeLabel_Img" text="导出excel文件类型:"/>
             <Label prefHeight="25" fx:id="excelType_Img" text="选取excel模板后决定"/>
         </HBox>
 
-        <HBox spacing="10">
+        <HBox fx:id="fileTypeHBox_Img" spacing="10">
             <Label prefHeight="25" text="导出excel文件名称:"/>
             <TextField fx:id="excelName_Img" prefHeight="20" prefWidth="160"/>
 
@@ -46,10 +57,17 @@
             <Label prefHeight="25" text="文件名称分割符:"/>
             <TextField fx:id="subCode_Img" prefHeight="20" prefWidth="100"/>
 
-            <Label prefHeight="25" text="需要识别的图片格式:"/>
-            <CheckBox fx:id="jpg_Img" prefHeight="25" style="-fx-cursor: hand" selected="true" text=".jpg"/>
-            <CheckBox fx:id="png_Img" prefHeight="25" style="-fx-cursor: hand" selected="true" text=".png"/>
-            <CheckBox fx:id="jpeg_Img" prefHeight="25" style="-fx-cursor: hand" selected="true" text=".jpeg"/>
+            <Label prefHeight="25" text="需要识别的文件格式:"/>
+            <HBox fx:id="imgHBox_Img" spacing="10">
+                <CheckBox fx:id="jpg_Img" prefHeight="25" style="-fx-cursor: hand" selected="true" text=".jpg"/>
+                <CheckBox fx:id="png_Img" prefHeight="25" style="-fx-cursor: hand" selected="true" text=".png"/>
+                <CheckBox fx:id="jpeg_Img" prefHeight="25" style="-fx-cursor: hand" selected="true" text=".jpeg"/>
+            </HBox>
+
+            <HBox fx:id="fileHBox_Img" spacing="10">
+                <TextField fx:id="filterFileType_Img" prefHeight="20" prefWidth="150"/>
+                <CheckBox fx:id="reverseFileType_Img" prefHeight="25" style="-fx-cursor: hand" text="反向过滤文件类型"/>
+            </HBox>
         </HBox>
 
         <HBox spacing="10">
@@ -87,21 +105,22 @@
             <Button fx:id="excelPathButton_Img" onAction="#getExcelPath" style="-fx-cursor: hand" text="选择excel模板位置"/>
             <Label fx:id="excelPath_Img"  prefWidth="310" prefHeight="25" style="-fx-font-size: 15px;"/>
 
-            <CheckBox fx:id="noImg_Img" prefHeight="25" style="-fx-cursor: hand" text="标记没有图片的数据"/>
+            <CheckBox fx:id="noFile_Img" prefHeight="25" style="-fx-cursor: hand" text="标记没有匹配到文件的数据"/>
             <CheckBox fx:id="exportTitle_Img" prefHeight="25" style="-fx-cursor: hand" text="导出表头"/>
             <CheckBox fx:id="exportFileNum_Img" prefHeight="25" style="-fx-cursor: hand" text="导出文件数量"/>
             <CheckBox fx:id="exportFileSize_Img" prefHeight="25" style="-fx-cursor: hand" text="导出每项数据的文件大小"/>
         </HBox>
 
         <HBox spacing="10">
-            <Label prefHeight="25" text="图片插入类型:"/>
+            <Label prefHeight="25" text="文件插入类型:"/>
             <ChoiceBox fx:id="insertImgType_Img" prefHeight="25" prefWidth="160" onAction="#insertImgTypAction"
                        style="-fx-cursor: hand">
                 <items>
                     <FXCollections fx:factory="observableArrayList">
                         <String fx:value="插入图片"/>
-                        <String fx:value="插入图片相对路径超链接"/>
-                        <String fx:value="插入图片绝对路径超链接"/>
+                        <String fx:value="插入文件名称"/>
+                        <String fx:value="插入文件相对路径超链接"/>
+                        <String fx:value="插入文件绝对路径超链接"/>
                     </FXCollections>
                 </items>
                 <value>
@@ -141,8 +160,12 @@
             <Button fx:id="clearButton_Img" onAction="#removeAll" style="-fx-cursor: hand" text="清空列表"/>
             <Button fx:id="exportButton_Img" onAction="#exportAll" styleClass="cornflowerblue-button" text="开始导出"/>
 
-            <Label prefHeight="25" text="最大图片匹配数量:"/>
+            <Label prefHeight="25" text="最大文件匹配数量:"/>
             <TextField fx:id="maxImgNum_Img" prefHeight="20" prefWidth="60"/>
+
+            <CheckBox fx:id="openDirectory_Img" prefHeight="25" selected="true"
+                      style="-fx-cursor: hand" text="导出后打开文件夹"/>
+            <CheckBox fx:id="openFile_Img" prefHeight="25" style="-fx-cursor: hand" text="导出后打开excel文件"/>
 
             <Label fx:id="fileNumber_Img" prefHeight="20" text="列表为空" alignment="CENTER_RIGHT"/>
         </HBox>

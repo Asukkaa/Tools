@@ -100,12 +100,12 @@ public class ExcelConfig {
     boolean exportFileSize;
 
     /**
-     * 图片插入类型
+     * 文件插入类型
      */
-    String insertImgType;
+    String insertType;
 
     /**
-     * 图片插入链接名称类型
+     * 文件插入链接名称类型
      */
     String linkNameType;
 

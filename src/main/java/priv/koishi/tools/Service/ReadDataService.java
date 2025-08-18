@@ -2,7 +2,6 @@ package priv.koishi.tools.Service;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TableView;
@@ -81,8 +80,7 @@ public class ReadDataService {
                 List<File> files = readAllFiles(fileConfig);
                 // 列表中有excel分组后再匹配数据
                 if (CollectionUtils.isNotEmpty(fileNumList)) {
-                    machGroup(fileConfig, fileNumList, files, taskBean.getTableView(),
-                            taskBean.getTabId(), taskBean.getMassageLabel(), taskBean.getComparatorTableColumn());
+                    machGroup(fileConfig, fileNumList, files, taskBean.getTableView(), taskBean.getMassageLabel());
                 }
                 return files;
             }
@@ -209,12 +207,12 @@ public class ReadDataService {
                             .setSubCode(taskBean.getSubCode());
                     FileNumVo fileNumVo = matchGroupData(fileNumBeanList, inFileList, fileConfig);
                     updateMessage(text_allHave + fileNumVo.getDataNum() + text_group + fileNumVo.getImgNum() +
-                            text_picture + text_totalFileSize + fileNumVo.getImgSize());
+                            text_file + text_totalFileSize + fileNumVo.getImgSize());
                 } else {
                     updateMessage(text_allHave + fileNumBeanList.size() + text_data);
                 }
                 // 匹配数据
-                return showReadExcelData(fileNumBeanList, taskBean);
+                return showReadExcelData(fileNumBeanList, taskBean.getTableView());
             }
         };
     }
@@ -246,20 +244,17 @@ public class ReadDataService {
     /**
      * 渲染excel数据到列表中
      *
+     * @param fileBeans 用于展示到javafx列表的数据
+     * @param tableView javafx列表
      * @return 用于展示到javafx列表的数据
      */
-    public static List<FileNumBean> showReadExcelData(List<FileNumBean> fileBeans, TaskBean<FileNumBean> taskBean) {
+    public static List<FileNumBean> showReadExcelData(List<FileNumBean> fileBeans, TableView<FileNumBean> tableView) {
         if (CollectionUtils.isEmpty(fileBeans)) {
             throw new RuntimeException(text_selectNull);
         }
         // 渲染数据
         Platform.runLater(() -> {
-            TableView<FileNumBean> tableView = taskBean.getTableView();
-            // 创建新列表避免直接操作原始集合
-            ObservableList<FileNumBean> newItems = FXCollections.observableArrayList(tableView.getItems());
-            newItems.addAll(fileBeans);
-            // 直接替换整个列表而不是修改原列表
-            tableView.setItems(FXCollections.observableArrayList(newItems));
+            tableView.setItems(FXCollections.observableArrayList(fileBeans));
             tableView.refresh();
         });
         return fileBeans;

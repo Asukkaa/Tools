@@ -1074,8 +1074,6 @@ public class AutoClickController extends RootController implements MousePosition
         disableNodes.add(moveFileTab);
         Node fileRenameTab = mainScene.lookup("#fileRenameTab");
         disableNodes.add(fileRenameTab);
-        Node fileNumToExcelTab = mainScene.lookup("#fileNumToExcelTab");
-        disableNodes.add(fileNumToExcelTab);
         Node imgToExcelTab = mainScene.lookup("#imgToExcelTab");
         disableNodes.add(imgToExcelTab);
         Node fileNameToExcelTab = mainScene.lookup("#fileNameToExcelTab");
