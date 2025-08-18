@@ -1035,11 +1035,13 @@ public class ImgToExcelController extends RootController {
             items.remove(insertType_img);
             items.addFirst(insertType_img);
             insertImgType_Img.setValue(items.getFirst());
-            File file = new File(excelInPath);
-            if (!xlsx.equals(getFileType(file))) {
-                excelInPath = null;
-                setPathLabel(excelPath_Img, "");
-                excelType_Img.setText("选取excel模板后决定");
+            if (StringUtils.isNotBlank(excelInPath)) {
+                File file = new File(excelInPath);
+                if (!xlsx.equals(getFileType(file))) {
+                    excelInPath = null;
+                    setPathLabel(excelPath_Img, "");
+                    excelType_Img.setText("选取excel模板后决定");
+                }
             }
             addToolTip(tip_noFile + text_noImg, noFile_Img);
         } else if (text_matchFile.equals(value)) {
