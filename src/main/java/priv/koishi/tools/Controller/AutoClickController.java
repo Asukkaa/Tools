@@ -44,7 +44,6 @@ import priv.koishi.tools.CustomUI.EditingCell.EditingCell;
 import priv.koishi.tools.Listener.MousePositionListener;
 import priv.koishi.tools.Listener.MousePositionUpdater;
 import priv.koishi.tools.MainApplication;
-import priv.koishi.tools.ThreadPool.ThreadPoolManager;
 
 import java.awt.*;
 import java.io.File;
@@ -54,7 +53,6 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static priv.koishi.tools.Finals.CommonFinals.*;
@@ -66,7 +64,6 @@ import static priv.koishi.tools.Utils.CommonUtils.removeNativeListener;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
-import static priv.koishi.tools.Utils.UiUtils.regionRightAlignment;
 
 /**
  * 自动点击工具页面控制器
@@ -136,11 +133,6 @@ public class AutoClickController extends RootController implements MousePosition
      * 要防重复点击的组件
      */
     private static final List<Node> disableNodes = new ArrayList<>();
-
-    /**
-     * 线程池实例
-     */
-    private static final ExecutorService executorService = ThreadPoolManager.getPool(AutoClickController.class);
 
     /**
      * 自动点击任务
@@ -226,7 +218,7 @@ public class AutoClickController extends RootController implements MousePosition
             hideWindowRecord_Click, showWindowRecord_Click;
 
     @FXML
-    public Button clearButton_Click, runClick_Click, clickTest_Click, addPosition_Click, loadAutoClick_Click,
+    public Button clearButton_Click, runClick_Click, addPosition_Click, loadAutoClick_Click,
             exportAutoClick_Click, addOutPath_Click, recordClick_Click, showPMC_Click;
 
     @FXML
@@ -629,7 +621,8 @@ public class AutoClickController extends RootController implements MousePosition
                 // 改变要防重复点击的组件状态
                 changeDisableNodes(taskBean, true);
                 // 获取准备时间值
-                int preparationTimeValue = setDefaultIntValue(preparationRunTime_Click, Integer.parseInt(preparationRunTimeDefault), 0, null);
+                int preparationTimeValue = setDefaultIntValue(preparationRunTime_Click,
+                        Integer.parseInt(preparationRunTimeDefault), 0, null);
                 // 设置浮窗文本显示准备时间
                 floatingLabel.setText(text_cancelTask + preparationTimeValue + text_run);
                 showFloatingWindow();
@@ -649,7 +642,7 @@ public class AutoClickController extends RootController implements MousePosition
         if (preparationTimeValue == 0) {
             if (!autoClickTask.isRunning()) {
                 // 使用新线程启动
-                executorService.execute(autoClickTask);
+                new Thread(autoClickTask).start();
             }
             return runTimeline;
         }
@@ -666,7 +659,7 @@ public class AutoClickController extends RootController implements MousePosition
                 finalTimeline.stop();
                 if (!autoClickTask.isRunning()) {
                     // 使用新线程启动
-                    executorService.execute(autoClickTask);
+                    new Thread(autoClickTask).start();
                 }
             }
         }));
@@ -862,7 +855,6 @@ public class AutoClickController extends RootController implements MousePosition
     private void setToolTip() {
         addToolTip(tip_runClick, runClick_Click);
         addToolTip(tip_loopTime, loopTime_Click);
-        addToolTip(tip_clickTest, clickTest_Click);
         addToolTip(tip_Click.getText(), tip_Click);
         addToolTip(tip_firstClick, firstClick_Click);
         addToolTip(tip_learButton, clearButton_Click);
@@ -1027,7 +1019,8 @@ public class AutoClickController extends RootController implements MousePosition
                             .setClickNum("1");
                     Platform.runLater(() -> {
                         log_Click.setTextFill(Color.BLUE);
-                        String log = text_recorded + recordClickTypeMap.get(pressButton) + " 点击 (" + clickBean.getStartX() + "," + clickBean.getStartY() + ")";
+                        String log = text_recorded + recordClickTypeMap.get(pressButton) +
+                                " 点击 (" + clickBean.getStartX() + "," + clickBean.getStartY() + ")";
                         log_Click.setText(log);
                         floatingLabel.setText(text_cancelTask + text_recordClicking + "\n" + log);
                     });
@@ -1056,7 +1049,8 @@ public class AutoClickController extends RootController implements MousePosition
                         addData(clickPositionBeans, addType, tableView_Click, dataNumber_Click, text_process);
                         // 日志反馈
                         log_Click.setTextFill(Color.BLUE);
-                        String log = text_recorded + recordClickTypeMap.get(pressButton) + " 松开 (" + clickBean.getEndX() + "," + clickBean.getEndY() + ")";
+                        String log = text_recorded + recordClickTypeMap.get(pressButton) +
+                                " 松开 (" + clickBean.getEndX() + "," + clickBean.getEndY() + ")";
                         log_Click.setText(log);
                         floatingLabel.setText(text_cancelTask + text_recordClicking + "\n" + log);
                     });
@@ -1071,12 +1065,13 @@ public class AutoClickController extends RootController implements MousePosition
      */
     private void setDisableNodes() {
         disableNodes.add(runClick_Click);
-        disableNodes.add(clickTest_Click);
         disableNodes.add(recordClick_Click);
         disableNodes.add(addPosition_Click);
         disableNodes.add(clearButton_Click);
         disableNodes.add(loadAutoClick_Click);
         disableNodes.add(exportAutoClick_Click);
+        Node moveFileTab = mainScene.lookup("#moveFileTab");
+        disableNodes.add(moveFileTab);
         Node fileRenameTab = mainScene.lookup("#fileRenameTab");
         disableNodes.add(fileRenameTab);
         Node fileNumToExcelTab = mainScene.lookup("#fileNumToExcelTab");
@@ -1100,7 +1095,6 @@ public class AutoClickController extends RootController implements MousePosition
         isNativeHookException = true;
         runClick_Click.setDisable(true);
         recordClick_Click.setDisable(true);
-        clickTest_Click.setDisable(true);
         String errorMessage = appName + " 缺少必要系统权限";
         if (isMac) {
             errorMessage = text_NativeHookException;
@@ -1206,7 +1200,8 @@ public class AutoClickController extends RootController implements MousePosition
     public void loadAutoClick(ActionEvent actionEvent) throws IOException {
         if (autoClickTask == null && !recordClicking) {
             getConfig();
-            List<FileChooser.ExtensionFilter> extensionFilters = new ArrayList<>(Collections.singleton(new FileChooser.ExtensionFilter("Perfect Mouse Control", "*.pmc")));
+            List<FileChooser.ExtensionFilter> extensionFilters = new ArrayList<>(Collections.singleton(
+                    new FileChooser.ExtensionFilter("Perfect Mouse Control", "*.pmc")));
             Window window = ((Node) actionEvent.getSource()).getScene().getWindow();
             List<File> selectedFile = creatFilesChooser(window, inFilePath, extensionFilters, text_selectAutoFile);
             if (selectedFile != null) {
@@ -1218,7 +1213,8 @@ public class AutoClickController extends RootController implements MousePosition
                     File jsonFile = new File(file.getPath());
                     List<ClickPositionBean> clickPositionBeans;
                     try {
-                        clickPositionBeans = objectMapper.readValue(jsonFile, objectMapper.getTypeFactory().constructCollectionType(List.class, ClickPositionBean.class));
+                        clickPositionBeans = objectMapper.readValue(jsonFile, objectMapper.getTypeFactory()
+                                .constructCollectionType(List.class, ClickPositionBean.class));
                     } catch (MismatchedInputException | JsonParseException e) {
                         throw new IOException(text_loadAutoClick + inFilePath + text_formatError);
                     }
@@ -1288,7 +1284,8 @@ public class AutoClickController extends RootController implements MousePosition
                     ObjectMapper objectMapper = new ObjectMapper();
                     File jsonFile = new File(file.getPath());
                     try {
-                        clickPositionBeans.addAll(objectMapper.readValue(jsonFile, objectMapper.getTypeFactory().constructCollectionType(List.class, ClickPositionBean.class)));
+                        clickPositionBeans.addAll(objectMapper.readValue(jsonFile, objectMapper.getTypeFactory()
+                                .constructCollectionType(List.class, ClickPositionBean.class)));
                     } catch (IOException e) {
                         throw new IOException(text_loadAutoClick + inFilePath + text_formatError);
                     }

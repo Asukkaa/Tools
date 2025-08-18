@@ -19,7 +19,6 @@ import priv.koishi.tools.Bean.TabBean;
 import priv.koishi.tools.Controller.MainController;
 import priv.koishi.tools.EventBus.EventBus;
 import priv.koishi.tools.EventBus.SettingsLoadedEvent;
-import priv.koishi.tools.ThreadPool.ThreadPoolManager;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -162,8 +161,6 @@ public class MainApplication extends Application {
      */
     @Override
     public void stop() throws Exception {
-        // 关闭线程池
-        ThreadPoolManager.shutdownAll();
         // 卸载全局输入监听钩子
         GlobalScreen.unregisterNativeHook();
         // 保存设置
