@@ -36,6 +36,7 @@ import org.apache.logging.log4j.Logger;
 import priv.koishi.tools.Annotate.UsedByReflection;
 import priv.koishi.tools.Bean.*;
 import priv.koishi.tools.Bean.Vo.FileNumVo;
+import priv.koishi.tools.Configuration.CopyConfig;
 import priv.koishi.tools.Configuration.FileChooserConfig;
 import priv.koishi.tools.Configuration.FileConfig;
 import priv.koishi.tools.Controller.FileChooserController;
@@ -56,6 +57,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static priv.koishi.tools.Controller.MainController.copyFileController;
 import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.Service.ReadDataService.showReadExcelData;
 import static priv.koishi.tools.Utils.CommonUtils.*;
@@ -685,11 +687,11 @@ public class UiUtils {
     /**
      * 分组匹配数
      *
-     * @param fileConfig            文件查询设置
-     * @param fileNumList           分组信息
-     * @param inFileList            要分组的文件
-     * @param tableView             展示数据的javafx列表
-     * @param fileNumber            展示列表信息分组数量及文件大小和匹配图片数量的文本栏
+     * @param fileConfig  文件查询设置
+     * @param fileNumList 分组信息
+     * @param inFileList  要分组的文件
+     * @param tableView   展示数据的javafx列表
+     * @param fileNumber  展示列表信息分组数量及文件大小和匹配图片数量的文本栏
      */
     public static void machGroup(FileConfig fileConfig, List<FileNumBean> fileNumList, List<? extends File> inFileList,
                                  TableView<FileNumBean> tableView, Label fileNumber) {
@@ -1600,7 +1602,7 @@ public class UiUtils {
     /**
      * 设置要暂时移除的组件
      *
-     * @param parentPane     父级Pane
+     * @param parentPane    父级Pane
      * @param childrenPanes 要移除的子级Pane
      */
     public static void removeChildren(Pane parentPane, Pane... childrenPanes) {
@@ -1829,8 +1831,9 @@ public class UiUtils {
     public static void removeSameFilePath(TableView<FileBean> tableView, List<FileBean> fileBeans) {
         List<FileBean> currentItems = new ArrayList<>(tableView.getItems());
         List<FileBean> filteredList = fileBeans.stream()
-                .filter(fileBean -> currentItems.stream()
-                        .noneMatch(current -> current.getPath().equals(fileBean.getPath())))
+                .filter(fileBean ->
+                        currentItems.stream().noneMatch(current ->
+                                current.getPath().equals(fileBean.getPath())))
                 .toList();
         tableView.getItems().addAll(filteredList);
         tableView.refresh();
@@ -1844,12 +1847,18 @@ public class UiUtils {
      */
     public static FileBean creatFileBean(TableView<FileBean> tableView, File file) throws IOException {
         String showStatus = file.isHidden() ? hidden : unhidden;
+        // 设置文件复制配置
+        CopyConfig copyConfig = null;
+        if (copyFileController != null) {
+            copyConfig = copyFileController.creatCopyConfig();
+        }
         return new FileBean()
                 .setUpdateDate(getFileUpdateTime(file))
                 .setCreatDate(getFileCreatTime(file))
                 .setSize(getFileUnitSize(file))
                 .setFileType(getFileType(file))
                 .setShowStatus(showStatus)
+                .setCopyConfig(copyConfig)
                 .setName(file.getName())
                 .setPath(file.getPath())
                 .setTableView(tableView);

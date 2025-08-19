@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.collections.FXCollections?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import java.lang.*?>
+<AnchorPane fx:id="anchorPane_CP" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            stylesheets="@../css/Styles.css"
+            fx:controller="priv.koishi.tools.Controller.CopyFileController">
+    <VBox spacing="10" AnchorPane.topAnchor="10" AnchorPane.leftAnchor="30">
+        <HBox spacing="10">
+            <Label prefHeight="25" text="文件读取设置:"/>
+            <ChoiceBox fx:id="addFileType_CP" prefHeight="25" prefWidth="100" onAction="#ddFileTypeAction"
+                       style="-fx-cursor: hand">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="读取文件"/>
+                        <String fx:value="读取文件夹"/>
+                    </FXCollections>
+                </items>
+                <value>
+                    <String fx:value="读取文件夹"/>
+                </value>
+            </ChoiceBox>
+
+            <Label prefHeight="25" text="隐藏文件查询设置:"/>
+            <ChoiceBox fx:id="hideFileType_CP" prefHeight="25" prefWidth="120" onAction="#hideFileTypeAction"
+                       style="-fx-cursor: hand">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="不查询隐藏文件"/>
+                        <String fx:value="是否隐藏都查询"/>
+                        <String fx:value="只查询隐藏文件"/>
+                    </FXCollections>
+                </items>
+                <value>
+                    <String fx:value="是否隐藏都查询"/>
+                </value>
+            </ChoiceBox>
+
+            <Label prefHeight="25" text="需要复制的文件拓展名:"/>
+            <TextField fx:id="filterFileType_CP" prefHeight="20" prefWidth="180"/>
+            <CheckBox fx:id="reverseFileType_CP" prefHeight="25" style="-fx-cursor: hand" text="反向过滤文件类型"/>
+
+            <HBox fx:id="filterHBox_CP" visible="false" spacing="10">
+                <Label prefHeight="25" text="目录结构设置:"/>
+                <ChoiceBox fx:id="copyType_CP" prefHeight="25" prefWidth="170" onAction="#copyTypeAction"
+                           style="-fx-cursor: hand">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="仅复制文件"/>
+                            <String fx:value="保留目录结构复制文件"/>
+                            <String fx:value="不保留顶层目录复制文件"/>
+                            <String fx:value="保留目录结构复制文件夹"/>
+                            <String fx:value="不保留顶层目录复制文件夹"/>
+                        </FXCollections>
+                    </items>
+                    <value>
+                        <String fx:value="仅复制文件"/>
+                    </value>
+                </ChoiceBox>
+            </HBox>
+        </HBox>
+
+        <HBox spacing="10">
+            <Label prefHeight="25" text="重名文件尾缀："/>
+            <ChoiceBox onAction="#differenceCodeAction" fx:id="differenceCode_CP" style="-fx-cursor: hand"
+                       prefHeight="25" prefWidth="150">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="阿拉伯数字：123"/>
+                        <String fx:value="中文数字：一二三"/>
+                        <String fx:value="小写英文字母：abc"/>
+                        <String fx:value="大小英文字母：ABC"/>
+                    </FXCollections>
+                </items>
+                <value>
+                    <String fx:value="阿拉伯数字：123"/>
+                </value>
+            </ChoiceBox>
+
+            <Label prefHeight="25" text="重名文件尾缀分隔符："/>
+            <ChoiceBox fx:id="subCode_CP" prefHeight="25" prefWidth="150" onAction="#subCodeAction"
+                       style="-fx-cursor: hand">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="英文括号：01 (1).xx"/>
+                        <String fx:value="中文括号：01 （1）.xx"/>
+                        <String fx:value="英文横杠：01 -1.xx"/>
+                        <String fx:value="中文横杠：01 —1.xx"/>
+                    </FXCollections>
+                </items>
+                <value>
+                    <String fx:value="英文括号：01 (1).xx"/>
+                </value>
+            </ChoiceBox>
+
+            <Label prefHeight="25" text="重名文件前缀:"/>
+            <TextField fx:id="prefix_CP" prefHeight="20" prefWidth="100"/>
+
+            <Label prefHeight="25" text="重名文件起始尾缀:"/>
+            <TextField fx:id="tag_CP" prefHeight="20" prefWidth="50" promptText="1"/>
+
+            <CheckBox onAction="#handleCheckBoxAction" fx:id="addSpace_CP" prefHeight="25" selected="true"
+                      style="-fx-cursor: hand" text="向分隔符左侧添加一个空格"/>
+        </HBox>
+
+        <HBox spacing="10">
+            <Button fx:id="outPathButton_CP" onAction="#targetPath" style="-fx-cursor: hand" text="选择目标文件夹位置"/>
+            <Label fx:id="outPath_CP" prefHeight="25" style="-fx-font-size: 15px;"/>
+        </HBox>
+
+        <HBox fx:id="fileNumberHBox_CP" spacing="10">
+            <Button fx:id="addFileButton_CP" onAction="#addFiles" styleClass="cadetblue-button"/>
+            <Button fx:id="updateCopy_CP" onAction="#updateCopyConfig" style="-fx-cursor: hand" text="更新复制设置"/>
+            <Button fx:id="clearButton_CP" onAction="#removeAll" style="-fx-cursor: hand" text="清空列表"/>
+            <Button fx:id="moveButton_CP" onAction="#copyAll" styleClass="cornflowerblue-button" text="开始复制"/>
+            <Label prefHeight="25" text="复制数量:"/>
+            <TextField fx:id="copyNum_CP" prefHeight="20" prefWidth="50" promptText="1"/>
+
+            <CheckBox fx:id="openDirectory_CP" prefHeight="25" selected="true"
+                      style="-fx-cursor: hand" text="复制后打开文件夹"/>
+
+            <Label fx:id="fileNumber_CP" alignment="CENTER_RIGHT" prefHeight="25" text="列表为空"/>
+        </HBox>
+
+        <TableView fx:id="tableView_CP" onDragDropped="#handleDrop" onDragOver="#acceptDrop">
+            <placeholder>
+                <Label text="拖拽或点击选择要读取的文件夹按钮向列表添加文件"/>
+            </placeholder>
+
+            <columns>
+                <TableColumn fx:id="index_CP" text="序号" sortable="false"/>
+                <TableColumn fx:id="thumb_CP" text="缩略图" sortable="false"/>
+                <TableColumn fx:id="name_CP" text="文件名称"/>
+                <TableColumn fx:id="fileType_CP" text="文件类型"/>
+                <TableColumn fx:id="path_CP" text="文件路径"/>
+                <TableColumn fx:id="size_CP" sortType="DESCENDING" text="文件大小"/>
+                <TableColumn fx:id="showStatus_CP" text="是否隐藏"/>
+                <TableColumn fx:id="creatDate_CP" text="创建时间"/>
+                <TableColumn fx:id="updateDate_CP" text="修改时间"/>
+            </columns>
+        </TableView>
+
+        <ProgressBar fx:id="progressBar_CP" visible="false" prefWidth="200.0" progress="0.0"/>
+        <Label fx:id="log_CP" prefHeight="20"/>
+    </VBox>
+</AnchorPane>

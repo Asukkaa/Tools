@@ -8,6 +8,7 @@ import lombok.experimental.Accessors;
 import org.apache.commons.lang3.StringUtils;
 import priv.koishi.tools.Annotate.UsedByReflection;
 import priv.koishi.tools.Configuration.CodeRenameConfig;
+import priv.koishi.tools.Configuration.CopyConfig;
 
 import java.io.File;
 
@@ -115,6 +116,16 @@ public class FileBean implements Indexable {
      * 要显示缩略图的列表
      */
     TableView<FileBean> tableView;
+
+    /**
+     * 拷贝功能配置
+     */
+    CopyConfig copyConfig;
+
+    /**
+     * 复制文件配置详情页删除标志（true-删除）
+     */
+    boolean remove;
 
     /**
      * 加载缩略图线程

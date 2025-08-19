@@ -107,7 +107,7 @@ public class MoveFileService {
                 changeDisableNodes(taskBean, true);
                 updateMessage(text_readData);
                 List<File> inFileList = taskBean.getInFileList();
-                addRemoveSameFile(inFileList, isAllDirectory, moveFileController.tableView_MV);
+                addRemoveSameFile(inFileList, isAllDirectory, taskBean.getTableView());
                 return null;
             }
         };
@@ -126,7 +126,7 @@ public class MoveFileService {
                 changeDisableNodes(taskBean, true);
                 updateMessage("正在校验要处理路径");
                 List<FileBean> fileBeanList = taskBean.getBeanList();
-                removeSameFilePath(moveFileController.tableView_MV, fileBeanList);
+                removeSameFilePath(taskBean.getTableView(), fileBeanList);
                 return null;
             }
         };

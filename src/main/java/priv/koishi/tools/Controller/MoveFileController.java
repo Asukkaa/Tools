@@ -256,7 +256,7 @@ public class MoveFileController extends RootController {
     private void textFieldChangeListener() {
         // 文件名前缀输入框添加鼠标悬停提示
         textFieldValueListener(prefix_MV, tip_prefix);
-        // 限制相同编号文件起始尾缀输入框内容
+        // 限制重名文件起始尾缀输入框内容
         integerRangeTextField(tag_MV, 0, null, tip_tag);
         // 鼠标悬留提示输入的需要识别的文件后缀名
         textFieldValueListener(filterFileType_MV, tip_filterFileType);

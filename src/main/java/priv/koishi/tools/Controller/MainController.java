@@ -63,11 +63,14 @@ public class MainController extends RootController {
      */
     public static MoveFileController moveFileController;
 
+    public static CopyFileController copyFileController;
+
     @FXML
     public TabPane tabPane;
 
     @FXML
-    public Tab fileNameToExcelTab, moveFileTab, imgToExcelTab, fileRenameTab, settingTab, aboutTab, autoClickTab;
+    public Tab fileNameToExcelTab, moveFileTab, imgToExcelTab, fileRenameTab, settingTab, aboutTab, copyFileTab,
+            autoClickTab;
 
     /**
      * 页面初始化
@@ -80,6 +83,7 @@ public class MainController extends RootController {
             aboutController = getController(AboutController.class);
             settingController = getController(SettingController.class);
             moveFileController = getController(MoveFileController.class);
+            copyFileController = getController(CopyFileController.class);
             autoClickController = getController(AutoClickController.class);
             imgToExcelController = getController(ImgToExcelController.class);
             fileRenameController = getController(FileRenameController.class);
@@ -126,9 +130,14 @@ public class MainController extends RootController {
                         autoClickController.adaption();
                     }
                     break;
-                    case id_moveFileTab:
+                case id_moveFileTab:
                     if (isActivation) {
                         moveFileController.adaption();
+                    }
+                    break;
+                case id_copyFileTab:
+                    if (isActivation) {
+                        copyFileController.adaption();
                     }
                     break;
             }
@@ -168,6 +177,10 @@ public class MainController extends RootController {
         // 移动文件功能保存最后设置
         if (moveFileController != null) {
             moveFileController.saveLastConfig();
+        }
+        // 拷贝文件功能保存最后设置
+        if (copyFileController != null) {
+            copyFileController.saveLastConfig();
         }
         // 保存关程序闭前页面状态设置
         saveLastConfig();

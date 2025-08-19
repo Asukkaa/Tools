@@ -6,7 +6,7 @@
 <VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
       fx:controller="priv.koishi.tools.Controller.MainController">
     <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE">
-        <Tab style="-fx-cursor: hand" fx:id="fileRenameTab" text="按指定规则批量重命名文件">
+        <Tab style="-fx-cursor: hand" fx:id="fileRenameTab" text="文件重命名工具">
             <ScrollPane fitToWidth="true" fitToHeight="true">
                 <AnchorPane>
                     <fx:include source="FileRename-tab.fxml"/>
@@ -14,7 +14,7 @@
             </ScrollPane>
         </Tab>
 
-        <Tab style="-fx-cursor: hand" fx:id="moveFileTab" text="移动文件工具">
+        <Tab style="-fx-cursor: hand" fx:id="moveFileTab" text="文件移动工具">
             <ScrollPane fitToWidth="true" fitToHeight="true">
                 <AnchorPane>
                     <fx:include source="MoveFile-tab.fxml"/>
@@ -22,7 +22,15 @@
             </ScrollPane>
         </Tab>
 
-        <Tab style="-fx-cursor: hand" fx:id="imgToExcelTab" text="将图片与excel匹配并插入">
+        <Tab style="-fx-cursor: hand" fx:id="copyFileTab" text="文件复制工具">
+            <ScrollPane fitToWidth="true" fitToHeight="true">
+                <AnchorPane>
+                    <fx:include source="CopyFile-tab.fxml"/>
+                </AnchorPane>
+            </ScrollPane>
+        </Tab>
+
+        <Tab style="-fx-cursor: hand" fx:id="imgToExcelTab" text="excel插入图片工具">
             <ScrollPane fitToWidth="true" fitToHeight="true">
                 <AnchorPane>
                     <fx:include source="ImgToExcel-tab.fxml"/>
@@ -30,7 +38,7 @@
             </ScrollPane>
         </Tab>
 
-        <Tab style="-fx-cursor: hand" fx:id="fileNameToExcelTab" text="获取文件夹下的文件信息">
+        <Tab style="-fx-cursor: hand" fx:id="fileNameToExcelTab" text="获取文件夹下的文件信息工具">
             <ScrollPane fitToWidth="true" fitToHeight="true">
                 <AnchorPane>
                     <fx:include source="FileNameToExcel-tab.fxml"/>

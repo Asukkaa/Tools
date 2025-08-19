@@ -23,7 +23,7 @@ import static priv.koishi.tools.Utils.UiUtils.*;
  * Date 2022/3/11
  * Time 15:09
  */
-public class DetailController extends RootController {
+public class ClickDetailController extends RootController {
 
     /**
      * 带鼠标悬停提示的内容变化监听器

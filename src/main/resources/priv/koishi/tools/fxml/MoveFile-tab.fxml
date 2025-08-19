@@ -116,7 +116,7 @@
             <Label prefHeight="25" text="重名文件前缀:"/>
             <TextField fx:id="prefix_MV" prefHeight="20" prefWidth="100"/>
 
-            <Label prefHeight="25" text="相同编号文件起始尾缀:"/>
+            <Label prefHeight="25" text="重名文件起始尾缀:"/>
             <TextField fx:id="tag_MV" prefHeight="20" prefWidth="50" promptText="1"/>
 
             <CheckBox onAction="#handleCheckBoxAction" fx:id="addSpace_MV" prefHeight="25" selected="true"

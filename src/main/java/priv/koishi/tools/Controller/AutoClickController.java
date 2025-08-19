@@ -384,7 +384,7 @@ public class AutoClickController extends RootController implements MousePosition
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        DetailController controller = loader.getController();
+        ClickDetailController controller = loader.getController();
         controller.initData(item);
         // 设置保存后的回调
         controller.setRefreshCallback(() -> {
@@ -404,7 +404,6 @@ public class AutoClickController extends RootController implements MousePosition
         scene.getStylesheets().add(Objects.requireNonNull(MainApplication.class.getResource("css/Styles.css")).toExternalForm());
         detailStage.show();
     }
-
 
     /**
      * 初始化浮窗
