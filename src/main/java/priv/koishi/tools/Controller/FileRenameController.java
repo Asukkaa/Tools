@@ -43,6 +43,7 @@ import static priv.koishi.tools.Utils.CommonUtils.swapCase;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
+import static priv.koishi.tools.Utils.UiUtils.addToolTip;
 
 /**
  * 按指定规则批量重命名文件页面控制器
@@ -697,6 +698,7 @@ public class FileRenameController extends RootController {
         addToolTip(tip_leftValue, leftValue_Re);
         addToolTip(tip_startSize, startSize_Re);
         addToolTip(tip_renameStr, renameStr_Re);
+        addToolTip(warn_Re.getText(), warn_Re);
         addToolTip(tip_fileButton, fileButton_Re);
         addToolTip(tip_rightValue, rightValue_Re);
         addToolTip(tip_learButton, clearButton_Re);

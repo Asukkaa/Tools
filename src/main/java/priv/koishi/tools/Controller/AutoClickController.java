@@ -64,6 +64,7 @@ import static priv.koishi.tools.Utils.CommonUtils.removeNativeListener;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
+import static priv.koishi.tools.Utils.UiUtils.addToolTip;
 
 /**
  * 自动点击工具页面控制器
@@ -211,7 +212,7 @@ public class AutoClickController extends RootController implements MousePosition
 
     @FXML
     public Label mousePosition_Click, dataNumber_Click, log_Click, tip_Click, cancelTip_Click, outPath_Click,
-            err_Click;
+            err_Click, timeTip_Click;
 
     @FXML
     public CheckBox openDirectory_Click, showWindowRun_Click, hideWindowRun_Click, firstClick_Click,
@@ -865,6 +866,8 @@ public class AutoClickController extends RootController implements MousePosition
         addToolTip(tip_outAutoClickPath, addOutPath_Click);
         addToolTip(tip_openDirectory, openDirectory_Click);
         addToolTip(tip_loadAutoClick, loadAutoClick_Click);
+        addToolTip(timeTip_Click.getText(), timeTip_Click);
+        addToolTip(cancelTip_Click.getText(), cancelTip_Click);
         addToolTip(tip_exportAutoClick, exportAutoClick_Click);
         addToolTip(tip_hideWindowRecord, hideWindowRecord_Click);
         addToolTip(tip_showWindowRecord, showWindowRecord_Click);

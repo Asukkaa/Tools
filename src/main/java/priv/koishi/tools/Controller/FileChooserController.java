@@ -100,7 +100,7 @@ public class FileChooserController extends RootController {
     public CheckBox reverse_FC, filterNameCase_FC;
 
     @FXML
-    public Label filePath_FC, fileNumber_FC, log_FC;
+    public Label filePath_FC, fileNumber_FC, log_FC, tip_FC;
 
     @FXML
     public ChoiceBox<String> fileFilter_FC, hideFileType_FC, fileNameType_FC;
@@ -238,6 +238,7 @@ public class FileChooserController extends RootController {
     private void setToolTip() {
         addToolTip(tip_close, close_FC);
         addToolTip(tip_confirm, confirm_FC);
+        addToolTip(tip_FC.getText(), tip_FC);
         addToolTip(reverse_FC.getText(), reverse_FC);
         addToolTip(tip_selectPath, selectPathButton_FC);
         addToolTip(tip_gotoParent, gotoParentButton_FC);

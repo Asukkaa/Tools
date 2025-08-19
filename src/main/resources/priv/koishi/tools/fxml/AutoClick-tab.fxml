@@ -8,7 +8,7 @@
         <HBox fx:id="cancelTipHBox_Click" spacing="10">
             <Label prefHeight="25" prefWidth="250" fx:id="mousePosition_Click"/>
 
-            <Label prefHeight="25" textFill="coral" text="提示：1 秒 = 1000 毫秒  列表中每条数据为一步，每步可操作多次"/>
+            <Label fx:id="timeTip_Click" prefHeight="25" textFill="coral" text="提示：1 秒 = 1000 毫秒  列表中每条数据为一步，每步可操作多次"/>
 
             <Label fx:id="cancelTip_Click" prefHeight="25" textFill="red" alignment="CENTER_RIGHT"
                    text="运行或录制自动化任务时按下 esc 即可取消任务"/>
