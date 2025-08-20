@@ -17,7 +17,6 @@ import javafx.scene.input.DragEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -46,7 +45,8 @@ import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.MainApplication.mainScene;
 import static priv.koishi.tools.MainApplication.mainStage;
 import static priv.koishi.tools.Service.MoveFileService.*;
-import static priv.koishi.tools.Utils.FileUtils.*;
+import static priv.koishi.tools.Utils.FileUtils.checkRunningInputStream;
+import static priv.koishi.tools.Utils.FileUtils.checkRunningOutputStream;
 import static priv.koishi.tools.Utils.TaskUtils.bindingTaskNode;
 import static priv.koishi.tools.Utils.TaskUtils.taskUnbind;
 import static priv.koishi.tools.Utils.UiUtils.*;
@@ -507,20 +507,6 @@ public class CopyFileController extends RootController {
                 .setAddSpace(addSpace_CP.isSelected())
                 .setSubCode(subCode_CP.getValue())
                 .setPrefix(prefix_CP.getText());
-        Task<Void> moveFileTask = moveFile(taskBean, codeRenameConfig);
-        bindingTaskNode(moveFileTask, taskBean);
-        moveFileTask.setOnSucceeded(event -> {
-            taskUnbind(taskBean);
-            if (openDirectory_CP.isSelected()) {
-                openDirectory(path);
-            }
-            log_CP.setTextFill(Color.GREEN);
-        });
-        if (!moveFileTask.isRunning()) {
-            Thread.ofVirtual()
-                    .name("moveFileTask-vThread" + tabId)
-                    .start(moveFileTask);
-        }
     }
 
     /**
