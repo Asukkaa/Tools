@@ -10,7 +10,7 @@
     <VBox fx:id="vbox_Re" spacing="10" AnchorPane.topAnchor="10">
         <HBox fx:id="warnHBox_Re" spacing="10">
             <Label prefHeight="25" text="文件夹查询设置:"/>
-            <ChoiceBox fx:id="directoryNameType_Re" prefHeight="25" prefWidth="140" onAction="#directoryTypeAction"
+            <ChoiceBox fx:id="showDirectory_Re" prefHeight="25" prefWidth="140" onAction="#directoryTypeAction"
                        style="-fx-cursor: hand">
                 <items>
                     <FXCollections fx:factory="observableArrayList">

@@ -634,6 +634,8 @@ public class CommonFinals {
 
     public static final String id_copyFileTab = "copyFileTab";
 
+    public static final String id_tableView_CP = "tableView_CP";
+
     public static final String key_sort = "sort";
 
     public static final String key_reverseSort = "reverseSort";
@@ -899,6 +901,8 @@ public class CommonFinals {
     public static final String copyType_file = "仅复制文件";
 
     public static final String copyType_all = "保留目录结构复制文件";
+
+    public static final String copyType_noTopFolderFile = "不保留顶层目录复制文件";
 
     public static final String moveType_file = "仅移动文件";
 

@@ -262,6 +262,16 @@ public class UiUtils {
      */
     public static List<String> getFilterExtensionList(TextField filterFileType) {
         String filterFileTypeValue = filterFileType.getText();
+        return getFilterExtensionList(filterFileTypeValue);
+    }
+
+    /**
+     * 处理要过滤的文件类型
+     *
+     * @param filterFileTypeValue 空格区分的要过滤的文件类型字符串
+     * @return 要过滤的文件类型list
+     */
+    public static List<String> getFilterExtensionList(String filterFileTypeValue) {
         List<String> filterExtensionList = new ArrayList<>();
         if (StringUtils.isNotBlank(filterFileTypeValue)) {
             filterExtensionList = Arrays.asList(filterFileTypeValue.toLowerCase().split(" "));
@@ -1849,7 +1859,7 @@ public class UiUtils {
         String showStatus = file.isHidden() ? hidden : unhidden;
         // 设置文件复制配置
         CopyConfig copyConfig = null;
-        if (copyFileController != null) {
+        if (copyFileController != null && id_tableView_CP.equals(tableView.getId())) {
             copyConfig = copyFileController.creatCopyConfig();
         }
         return new FileBean()
@@ -1857,9 +1867,9 @@ public class UiUtils {
                 .setCreatDate(getFileCreatTime(file))
                 .setSize(getFileUnitSize(file))
                 .setFileType(getFileType(file))
+                .setName(getFileName(file))
                 .setShowStatus(showStatus)
                 .setCopyConfig(copyConfig)
-                .setName(file.getName())
                 .setPath(file.getPath())
                 .setTableView(tableView);
     }

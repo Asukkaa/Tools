@@ -189,6 +189,7 @@ public class ClickDetailController extends RootController {
         selectedItem.setClickNum(String.valueOf(setDefaultIntValue(clickNumBer_Det, 1, 1, null)));
         selectedItem.setClickInterval(String.valueOf(setDefaultIntValue(interval_Det, 0, 0, null)));
         selectedItem.setType(clickType_Det.getValue());
+        removeAllListeners();
         stage.close();
         // 触发列表刷新（通过回调）
         if (refreshCallback != null) {
@@ -202,6 +203,7 @@ public class ClickDetailController extends RootController {
     @FXML
     private void removeDetail() {
         selectedItem.setRemove(true);
+        removeAllListeners();
         stage.close();
         // 触发列表刷新（通过回调）
         if (refreshCallback != null) {

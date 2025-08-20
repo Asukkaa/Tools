@@ -145,7 +145,7 @@ public class FileRenameController extends RootController {
             excelPathButton_Re, updateSameCode_Re, updateFileType_Re;
 
     @FXML
-    public ChoiceBox<String> hideFileType_Re, directoryNameType_Re, renameType_Re, subCode_Re, differenceCode_Re,
+    public ChoiceBox<String> hideFileType_Re, showDirectory_Re, renameType_Re, subCode_Re, differenceCode_Re,
             targetStr_Re, leftBehavior_Re, rightBehavior_Re, renameBehavior_Re, renameFileType_Re, addFileType_Re,
             sheetName_Re;
 
@@ -206,7 +206,7 @@ public class FileRenameController extends RootController {
             prop.put(key_renameFileType, renameFileType_Re.getValue());
             prop.put(key_lastFilterFileType, filterFileType_Re.getText());
             prop.put(key_renameFileTypeText, renameFileTypeText_Re.getText());
-            prop.put(key_lastDirectoryNameType, directoryNameType_Re.getValue());
+            prop.put(key_lastDirectoryNameType, showDirectory_Re.getValue());
             String openDirectoryValue = openDirectory_Re.isSelected() ? activation : unActivation;
             prop.put(key_lastOpenDirectory, openDirectoryValue);
             String reverseFileTypeValue = reverseFileType_Re.isSelected() ? activation : unActivation;
@@ -343,7 +343,7 @@ public class FileRenameController extends RootController {
             setControlLastConfig(reverseFileType_Re, prop, key_reverseFileType);
             setControlLastConfig(filterFileType_Re, prop, key_lastFilterFileType);
             setControlLastConfig(renameFileTypeText_Re, prop, key_renameFileTypeText);
-            setControlLastConfig(directoryNameType_Re, prop, key_lastDirectoryNameType);
+            setControlLastConfig(showDirectory_Re, prop, key_lastDirectoryNameType);
             // 根据重命名类型设置上次配置值
             setLastConfigByRenameType(prop);
         }
@@ -724,7 +724,7 @@ public class FileRenameController extends RootController {
         addValueToolTip(differenceCode_Re, tip_differenceCode, differenceCode_Re.getValue());
         addValueToolTip(renameFileType_Re, tip_reNameFileType, renameFileType_Re.getValue());
         addValueToolTip(renameBehavior_Re, tip_renameBehavior, renameBehavior_Re.getValue());
-        addValueToolTip(directoryNameType_Re, tip_directoryNameType, directoryNameType_Re.getValue());
+        addValueToolTip(showDirectory_Re, tip_directoryNameType, showDirectory_Re.getValue());
         addToolTip(text_onlyNaturalNumber + defaultReadRow + text_formThe + (defaultReadRow + 1) + text_row, readRow_Re);
         addToolTip(text_onlyNaturalNumber + defaultReadCell + text_formThe + (defaultReadCell + 1) + text_cell, readCell_Re);
     }
@@ -1058,7 +1058,7 @@ public class FileRenameController extends RootController {
             // 显示文件选择器
             File selectedFile = creatDirectoryChooser(window, inFilePath, text_selectDirectory);
             FileConfig fileConfig = new FileConfig();
-            fileConfig.setShowDirectoryName(directoryNameType_Re.getValue())
+            fileConfig.setShowDirectory(showDirectory_Re.getValue())
                     .setReverseFileType(reverseFileType_Re.isSelected())
                     .setShowHideFile(hideFileType_Re.getValue())
                     .setFilterExtensionList(filterExtensionList)
@@ -1243,8 +1243,8 @@ public class FileRenameController extends RootController {
         updateLabel(log_Re, "");
         FileConfig fileConfig = new FileConfig();
         fileConfig.setFilterExtensionList(getFilterExtensionList(filterFileType_Re))
-                .setShowDirectoryName(directoryNameType_Re.getValue())
                 .setReverseFileType(reverseFileType_Re.isSelected())
+                .setShowDirectory(showDirectory_Re.getValue())
                 .setShowHideFile(hideFileType_Re.getValue())
                 .setInFile(file);
         startReadFilesTask(fileConfig);
@@ -1553,12 +1553,12 @@ public class FileRenameController extends RootController {
             if (text_addDirectory.equals(addFileType_Re.getValue())) {
                 reselectButton_Re.setVisible(true);
                 fileButton_Re.setText(text_selectReadFolder);
-                directoryNameType_Re.setDisable(false);
+                showDirectory_Re.setDisable(false);
             } else {
                 reselectButton_Re.setVisible(false);
                 fileButton_Re.setText(text_selectReadFile);
-                directoryNameType_Re.setValue(text_onlyFile);
-                directoryNameType_Re.setDisable(true);
+                showDirectory_Re.setValue(text_onlyFile);
+                showDirectory_Re.setDisable(true);
             }
         });
     }
@@ -1580,7 +1580,7 @@ public class FileRenameController extends RootController {
      */
     @FXML
     private void directoryTypeAction() {
-        addValueToolTip(directoryNameType_Re, tip_directoryNameType, directoryNameType_Re.getValue());
+        addValueToolTip(showDirectory_Re, tip_directoryNameType, showDirectory_Re.getValue());
     }
 
     /**

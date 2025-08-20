@@ -53,6 +53,11 @@ public class FileBean implements Indexable {
     String path;
 
     /**
+     * 文件列表展示复制路径
+     */
+    String copyPath;
+
+    /**
      * 文件列表展示文件拓展名
      */
     String fileType;
@@ -224,6 +229,18 @@ public class FileBean implements Indexable {
         }
         thumb = null;
         tempFile = null;
+    }
+
+    /**
+     * 获取复制路径
+     *
+     * @return 复制路径
+     */
+    public String getCopyPath() {
+        if (StringUtils.isBlank(copyPath)) {
+            return new File(path).getParent();
+        }
+        return copyPath;
     }
 
     /**

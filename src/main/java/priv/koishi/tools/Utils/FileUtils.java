@@ -196,21 +196,26 @@ public class FileUtils {
     public static void readFiles(FileConfig fileConfig, List<? super File> fileList, File directory) {
         File[] files = directory.listFiles();
         String showHideFile = fileConfig.getShowHideFile();
-        String showDirectoryName = fileConfig.getShowDirectoryName();
+        String showDirectory = fileConfig.getShowDirectory();
         boolean recursion = fileConfig.isRecursion();
         List<String> filterExtensionList = fileConfig.getFilterExtensionList();
         if (files != null) {
             for (File file : files) {
                 if (file.isFile()) {
-                    if ((text_noHideFile.equals(showHideFile) && file.isHidden()) || (text_onlyHideFile.equals(showHideFile) && !file.isHidden())) {
+                    if ((text_noHideFile.equals(showHideFile) && file.isHidden()) ||
+                            (text_onlyHideFile.equals(showHideFile) && !file.isHidden())) {
                         continue;
                     }
-                    if (text_onlyFile.equals(showDirectoryName) || text_fileDirectory.equals(showDirectoryName) || StringUtils.isEmpty(showDirectoryName)) {
+                    if (StringUtils.isEmpty(showDirectory) ||
+                            text_onlyFile.equals(showDirectory) ||
+                            text_fileDirectory.equals(showDirectory)) {
                         String extension = getFileType(file);
-                        boolean matches = CollectionUtils.isEmpty(filterExtensionList) || filterExtensionList.contains(extension);
+                        boolean matches = CollectionUtils.isEmpty(filterExtensionList) ||
+                                filterExtensionList.contains(extension);
                         // 反向匹配文件类型
                         if (fileConfig.isReverseFileType()) {
-                            matches = CollectionUtils.isEmpty(filterExtensionList) || !filterExtensionList.contains(extension);
+                            matches = CollectionUtils.isEmpty(filterExtensionList) ||
+                                    !filterExtensionList.contains(extension);
                         }
                         if (matches) {
                             filterFileName(fileConfig, fileList, file);
@@ -221,10 +226,12 @@ public class FileUtils {
                     }
                 }
                 if (file.isDirectory()) {
-                    if ((text_noHideFile.equals(showHideFile) && file.isHidden()) || (text_onlyHideFile.equals(showHideFile) && !file.isHidden())) {
+                    if ((text_noHideFile.equals(showHideFile) && file.isHidden()) ||
+                            (text_onlyHideFile.equals(showHideFile) && !file.isHidden())) {
                         continue;
                     }
-                    if (text_onlyDirectory.equals(showDirectoryName) || text_fileDirectory.equals(showDirectoryName)) {
+                    if (text_onlyDirectory.equals(showDirectory) ||
+                            text_fileDirectory.equals(showDirectory)) {
                         filterFileName(fileConfig, fileList, file);
                     }
                     if (recursion) {
@@ -264,8 +271,8 @@ public class FileUtils {
     /**
      * 筛选文件名称
      *
-     * @param fileConfig 文件查询设置
-     * @param fileName   文件名称
+     * @param fileConfig     文件查询设置
+     * @param fileName       文件名称
      * @param fileNameFilter 文件名称过滤
      * @return 是否匹配
      */

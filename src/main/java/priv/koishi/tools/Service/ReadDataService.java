@@ -354,7 +354,7 @@ public class ReadDataService {
      * @param taskBean 带有排序类型与是否倒序的线程设置参数
      * @param fileList 要排序的文件
      */
-    private static void comparingData(TaskBean<?> taskBean, List<File> fileList) {
+    public static void comparingData(TaskBean<?> taskBean, List<File> fileList) {
         String sortType = taskBean.getSortType();
         // 是否倒序排序
         boolean reverseSort = taskBean.isReverseSort();

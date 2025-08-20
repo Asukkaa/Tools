@@ -13,8 +13,7 @@ import priv.koishi.tools.Configuration.ExcelConfig;
 
 import java.io.IOException;
 
-import static priv.koishi.tools.Finals.CommonFinals.text_saveSuccess;
-import static priv.koishi.tools.Finals.CommonFinals.text_taskFailed;
+import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.Utils.ExcelUtils.saveExcel;
 import static priv.koishi.tools.Utils.FileUtils.openDirectory;
 import static priv.koishi.tools.Utils.FileUtils.openFile;
@@ -72,6 +71,7 @@ public class TaskUtils {
             // 获取抛出的异常
             throw new RuntimeException(task.getException());
         });
+        task.setOnCancelled(event -> taskNotSuccess(taskBean, text_taskCancelled));
     }
 
     /**

@@ -131,7 +131,7 @@ public class FileChooserController extends RootController {
             path = defaultFileChooserPath;
         }
         this.fileChooserConfig = fileChooserConfig;
-        fileFilter_FC.setValue(fileChooserConfig.getShowDirectoryName());
+        fileFilter_FC.setValue(fileChooserConfig.getShowDirectory());
         hideFileType_FC.setValue(fileChooserConfig.getShowHideFile());
         // 设置鼠标悬停提示
         setToolTip();
@@ -147,7 +147,7 @@ public class FileChooserController extends RootController {
         removeAll();
         FileConfig fileConfig = new FileConfig();
         fileConfig.setFilterNameCase(filterNameCase_FC.isSelected())
-                .setShowDirectoryName(fileFilter_FC.getValue())
+                .setShowDirectory(fileFilter_FC.getValue())
                 .setFileNameFilter(fileNameFilter_FC.getText())
                 .setShowHideFile(hideFileType_FC.getValue())
                 .setFileNameType(fileNameType_FC.getValue())
@@ -173,12 +173,6 @@ public class FileChooserController extends RootController {
             setPathLabel(filePath_FC, file.getPath());
             updateTableViewSizeText(tableView_FC, fileNumber_FC, text_file);
         });
-        readAllFilesTask.setOnFailed(event -> {
-            taskNotSuccess(taskBean, text_taskFailed);
-            throw new RuntimeException(event.getSource().getException());
-        });
-        readAllFilesTask.setOnCancelled(event ->
-                taskNotSuccess(taskBean, text_taskCancelled));
         if (!readAllFilesTask.isRunning()) {
             Thread.ofVirtual()
                     .name("readAllFilesTask-vThread" + tabId)
@@ -481,7 +475,7 @@ public class FileChooserController extends RootController {
     private void confirmSelect() throws IOException {
         ObservableList<FileBean> selectedItems = tableView_FC.getSelectionModel().getSelectedItems();
         List<FileBean> fileBeanList = new ArrayList<>();
-        String showDirectory = fileChooserConfig.getShowDirectoryName();
+        String showDirectory = fileChooserConfig.getShowDirectory();
         if (CollectionUtils.isNotEmpty(selectedItems)) {
             for (FileBean fileBean : selectedItems) {
                 String fileType = fileBean.getFileType();

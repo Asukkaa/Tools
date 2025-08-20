@@ -69,4 +69,9 @@ public class CopyConfig {
      */
     int copyNum;
 
+    /**
+     * 打开目标文件夹
+     */
+    boolean openDirectory;
+
 }

@@ -54,7 +54,7 @@ public class FileRenameService {
                 ChoiceBox<String> addFileType_Re = fileRenameController.addFileType_Re;
                 Label inPath_Re = fileRenameController.inPath_Re;
                 TextField filterFileType_Re = fileRenameController.filterFileType_Re;
-                ChoiceBox<String> directoryNameType_Re = fileRenameController.directoryNameType_Re;
+                ChoiceBox<String> directoryNameType_Re = fileRenameController.showDirectory_Re;
                 ChoiceBox<String> hideFileType_Re = fileRenameController.hideFileType_Re;
                 for (File file : files) {
                     if (firstFile.isFile()) {
@@ -67,7 +67,7 @@ public class FileRenameService {
                         Platform.runLater(() -> addFileType_Re.setValue(text_addDirectory));
                         List<String> filterExtensionList = getFilterExtensionList(filterFileType_Re);
                         FileConfig fileConfig = new FileConfig();
-                        fileConfig.setShowDirectoryName(directoryNameType_Re.getValue())
+                        fileConfig.setShowDirectory(directoryNameType_Re.getValue())
                                 .setShowHideFile(hideFileType_Re.getValue())
                                 .setFilterExtensionList(filterExtensionList)
                                 .setInFile(file);
@@ -98,7 +98,7 @@ public class FileRenameService {
                 String parentPath = new File(fileBeanList.getFirst().getPath()).getParent();
                 FileConfig fileConfig = new FileConfig();
                 fileConfig.setInFile(new File(parentPath))
-                        .setShowDirectoryName(text_onlyFile)
+                        .setShowDirectory(text_onlyFile)
                         .setShowHideFile(text_allFileHideNot);
                 List<File> files = readAllFiles(fileConfig);
                 // 构建原始文件集合

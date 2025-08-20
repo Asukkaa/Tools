@@ -478,7 +478,7 @@ public class MoveFileController extends RootController {
                     .setTitle(text_selectDirectory)
                     .setInFile(new File(inFilePath))
                     .setShowHideFile(text_noHideFile)
-                    .setShowDirectoryName(text_onlyDirectory);
+                    .setShowDirectory(text_onlyDirectory);
             FileChooserController controller = chooserFiles(fileConfig);
             // 设置回调
             controller.setFileChooserCallback(fileBeanList -> {

@@ -30,7 +30,7 @@ public class FileConfig {
     /**
      * 查询文件夹设置
      */
-    String showDirectoryName;
+    String showDirectory;
 
     /**
      * 递归查询设置（true-开启递归）

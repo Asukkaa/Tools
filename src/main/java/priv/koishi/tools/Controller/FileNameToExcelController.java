@@ -484,7 +484,7 @@ public class FileNameToExcelController extends RootController {
         // 显示文件选择器
         File selectedFile = creatDirectoryChooser(window, inFilePath, text_selectDirectory);
         FileConfig fileConfig = new FileConfig();
-        fileConfig.setShowDirectoryName(directoryNameType_Name.getValue())
+        fileConfig.setShowDirectory(directoryNameType_Name.getValue())
                 .setReverseFileType(reverseFileType_Name.isSelected())
                 .setShowHideFile(hideFileType_Name.getValue())
                 .setFilterExtensionList(filterExtensionList)
@@ -509,7 +509,7 @@ public class FileNameToExcelController extends RootController {
         List<String> filterExtensionList = getFilterExtensionList(filterFileType_Name);
         File file = files.getFirst();
         FileConfig fileConfig = new FileConfig();
-        fileConfig.setShowDirectoryName(directoryNameType_Name.getValue())
+        fileConfig.setShowDirectory(directoryNameType_Name.getValue())
                 .setReverseFileType(reverseFileType_Name.isSelected())
                 .setShowHideFile(hideFileType_Name.getValue())
                 .setFilterExtensionList(filterExtensionList)
@@ -665,7 +665,7 @@ public class FileNameToExcelController extends RootController {
         updateSheetName();
         FileConfig fileConfig = new FileConfig();
         fileConfig.setFilterExtensionList(getFilterExtensionList(filterFileType_Name))
-                .setShowDirectoryName(directoryNameType_Name.getValue())
+                .setShowDirectory(directoryNameType_Name.getValue())
                 .setReverseFileType(reverseFileType_Name.isSelected())
                 .setShowHideFile(hideFileType_Name.getValue())
                 .setRecursion(recursion_Name.isSelected())

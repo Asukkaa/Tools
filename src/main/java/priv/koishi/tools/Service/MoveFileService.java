@@ -61,19 +61,19 @@ public class MoveFileService {
                     if (text_addFile.equals(addType)) {
                         if (file.isFile()) {
                             String fileType = getFileType(file);
-                            boolean matches = CollectionUtils.isEmpty(filterExtensionList) || filterExtensionList.contains(fileType);
+                            boolean matches = filterExtensionList.contains(fileType);
                             // 反向匹配文件类型
                             if (reverseFileType) {
-                                matches = CollectionUtils.isEmpty(filterExtensionList) || !filterExtensionList.contains(fileType);
+                                matches = !matches;
                             }
-                            if (matches) {
+                            if (CollectionUtils.isEmpty(filterExtensionList) || matches) {
                                 addFiles.add(file);
                             }
                         } else if (file.isDirectory()) {
                             FileConfig fileConfig = new FileConfig();
                             fileConfig.setFilterExtensionList(filterExtensionList)
                                     .setReverseFileType(reverseFileType)
-                                    .setShowDirectoryName(text_onlyFile)
+                                    .setShowDirectory(text_onlyFile)
                                     .setRecursion(true)
                                     .setInFile(file);
                             addFiles.addAll(readAllFiles(fileConfig));
@@ -235,8 +235,8 @@ public class MoveFileService {
         }
         FileBean fileBean = new FileBean()
                 .setName(fileName);
-        codeRenameConfig.setNameNum(1)
-                .setStartSize(-1);
+        codeRenameConfig.setStartSize(-1)
+                .setNameNum(1);
         // 起始尾缀
         int counter = codeRenameConfig.getTag();
         while (file.exists()) {

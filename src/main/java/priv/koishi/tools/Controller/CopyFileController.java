@@ -200,8 +200,10 @@ public class CopyFileController extends RootController {
         Properties prop = new Properties();
         InputStream input = checkRunningInputStream(configFile_CP);
         prop.load(input);
-        outFilePath = prop.getProperty(key_outFilePath);
         inFilePath = prop.getProperty(key_inFilePath);
+        outFilePath = prop.getProperty(key_outFilePath);
+        detailWidth = Integer.parseInt(prop.getProperty(key_detailWidth));
+        detailHeight = Integer.parseInt(prop.getProperty(key_detailHeight));
         input.close();
     }
 
@@ -302,6 +304,29 @@ public class CopyFileController extends RootController {
     }
 
     /**
+     * 获取复制配置
+     *
+     * @return 复制配置
+     */
+    public CopyConfig creatCopyConfig() {
+        int copyNum = setDefaultIntValue(copyNum_CP, 1, 1, null);
+        int tag = setDefaultIntValue(tag_CP, 1, 0, null);
+        return new CopyConfig()
+                .setReverseFileType(reverseFileType_CP.isSelected())
+                .setOpenDirectory(openDirectory_CP.isSelected())
+                .setDifferenceCode(differenceCode_CP.getValue())
+                .setFilterFileType(filterFileType_CP.getText())
+                .setHideFileType(hideFileType_CP.getValue())
+                .setAddSpace(addSpace_CP.isSelected())
+                .setCopyType(copyType_CP.getValue())
+                .setSubCode(subCode_CP.getValue())
+                .setOutPath(outPath_CP.getText())
+                .setPrefix(prefix_CP.getText())
+                .setCopyNum(copyNum)
+                .setTag(tag);
+    }
+
+    /**
      * 显示详情页
      *
      * @param item 要显示详情的文件复制设置
@@ -329,13 +354,19 @@ public class CopyFileController extends RootController {
         Stage detailStage = new Stage();
         Scene scene = new Scene(root, detailWidth, detailHeight);
         detailStage.setScene(scene);
-        detailStage.setTitle(item.getName() + " 步骤详情");
+        detailStage.setTitle(item.getName() + " 复制配置");
         detailStage.initModality(Modality.APPLICATION_MODAL);
         detailStage.getIcons().add(new Image(Objects.requireNonNull(MainApplication.class.getResource("icon/Tools.png")).toExternalForm()));
         scene.getStylesheets().add(Objects.requireNonNull(MainApplication.class.getResource("css/Styles.css")).toExternalForm());
         detailStage.show();
     }
 
+    /**
+     * 查看文件复制设置详情
+     *
+     * @param tableView   要添加右键菜单的列表
+     * @param contextMenu 右键菜单
+     */
     private void showCopyConfigMenuItem(TableView<FileBean> tableView, ContextMenu contextMenu) {
         MenuItem detailItem = new MenuItem("查看所选项第一行详情");
         detailItem.setOnAction(e -> {
@@ -356,6 +387,8 @@ public class CopyFileController extends RootController {
     private void tableViewContextMenu(TableView<FileBean> tableView, Label label) {
         // 添加右键菜单
         ContextMenu contextMenu = new ContextMenu();
+        // 查看文件复制设置详情
+        showCopyConfigMenuItem(tableView, contextMenu);
         // 查看文件选项
         buildFilePathItem(tableView, contextMenu);
         // 取消选中选项
@@ -364,28 +397,6 @@ public class CopyFileController extends RootController {
         buildDeleteDataMenuItem(tableView, label, contextMenu, text_file);
         // 为列表添加右键菜单并设置可选择多行
         setContextMenu(contextMenu, tableView);
-    }
-
-    /**
-     * 获取复制配置
-     *
-     * @return 复制配置
-     */
-    public CopyConfig creatCopyConfig() {
-        int copyNum = setDefaultIntValue(copyNum_CP, 1, 1, null);
-        int tag = setDefaultIntValue(copyNum_CP, 1, 0, null);
-        return new CopyConfig()
-                .setReverseFileType(reverseFileType_CP.isSelected())
-                .setDifferenceCode(differenceCode_CP.getValue())
-                .setFilterFileType(filterFileType_CP.getText())
-                .setHideFileType(hideFileType_CP.getValue())
-                .setAddSpace(addSpace_CP.isSelected())
-                .setCopyType(copyType_CP.getValue())
-                .setSubCode(subCode_CP.getValue())
-                .setOutPath(outPath_CP.getText())
-                .setPrefix(prefix_CP.getText())
-                .setCopyNum(copyNum)
-                .setTag(tag);
     }
 
     /**
@@ -563,7 +574,7 @@ public class CopyFileController extends RootController {
                     .setTitle(text_selectDirectory)
                     .setInFile(new File(inFilePath))
                     .setShowHideFile(text_noHideFile)
-                    .setShowDirectoryName(text_onlyDirectory);
+                    .setShowDirectory(text_onlyDirectory);
             FileChooserController controller = chooserFiles(fileConfig);
             // 设置回调
             controller.setFileChooserCallback(fileBeanList -> {

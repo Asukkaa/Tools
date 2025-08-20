@@ -9,20 +9,11 @@
             fx:controller="priv.koishi.tools.Controller.CopyFileDetailController">
     <VBox spacing="10" AnchorPane.topAnchor="10" AnchorPane.leftAnchor="30">
         <HBox spacing="10">
-            <Label prefHeight="25" text="文件读取设置:"/>
-            <ChoiceBox fx:id="addFileType_CD" prefHeight="25" prefWidth="100" onAction="#ddFileTypeAction"
-                       style="-fx-cursor: hand">
-                <items>
-                    <FXCollections fx:factory="observableArrayList">
-                        <String fx:value="读取文件"/>
-                        <String fx:value="读取文件夹"/>
-                    </FXCollections>
-                </items>
-                <value>
-                    <String fx:value="读取文件夹"/>
-                </value>
-            </ChoiceBox>
+            <Label prefHeight="25" text="源文件地址:"/>
+            <Label fx:id="sourcePath_CD" prefHeight="25" style="-fx-font-size: 15px;"/>
+        </HBox>
 
+        <HBox spacing="10">
             <Label prefHeight="25" text="隐藏文件查询设置:"/>
             <ChoiceBox fx:id="hideFileType_CD" prefHeight="25" prefWidth="120" onAction="#hideFileTypeAction"
                        style="-fx-cursor: hand">
@@ -101,7 +92,7 @@
             <Label prefHeight="25" text="重名文件起始尾缀:"/>
             <TextField fx:id="tag_CD" prefHeight="20" prefWidth="50" promptText="1"/>
 
-            <CheckBox onAction="#handleCheckBoxAction" fx:id="addSpace_CD" prefHeight="25" selected="true"
+            <CheckBox onAction="#addSpaceAction" fx:id="addSpace_CD" prefHeight="25" selected="true"
                       style="-fx-cursor: hand" text="向分隔符左侧添加一个空格"/>
         </HBox>
 
@@ -111,27 +102,28 @@
         </HBox>
 
         <HBox fx:id="fileNumberHBox_CD" spacing="10">
-            <Button fx:id="updateCopy_CD" onAction="#updateCopyConfig" style="-fx-cursor: hand" text="更新复制设置"/>
+            <Button fx:id="updateCopy_CD" onAction="#reselect" styleClass="cadetblue-button" text="刷新预览列表"/>
             <Label prefHeight="25" text="复制数量:"/>
             <TextField fx:id="copyNum_CD" prefHeight="20" prefWidth="50" promptText="1"/>
 
-            <CheckBox fx:id="openDirectory_CD" prefHeight="25" selected="true"
-                      style="-fx-cursor: hand" text="复制后打开文件夹"/>
+            <CheckBox fx:id="openDirectory_CD" prefHeight="25" selected="true" style="-fx-cursor: hand"
+                      text="复制后打开文件夹"/>
 
             <Label fx:id="fileNumber_CD" alignment="CENTER_RIGHT" prefHeight="25" text="列表为空"/>
         </HBox>
 
-        <TableView fx:id="tableView_CD" onDragDropped="#handleDrop" onDragOver="#acceptDrop">
+        <TableView fx:id="tableView_CD">
             <placeholder>
                 <Label text="拖拽或点击选择要读取的文件夹按钮向列表添加文件"/>
             </placeholder>
 
             <columns>
-                <TableColumn fx:id="index_CD" text="序号" sortable="false"/>
+                <TableColumn fx:id="index_CD" text="序号"/>
                 <TableColumn fx:id="thumb_CD" text="缩略图" sortable="false"/>
                 <TableColumn fx:id="name_CD" text="文件名称"/>
                 <TableColumn fx:id="fileType_CD" text="文件类型"/>
                 <TableColumn fx:id="path_CD" text="文件路径"/>
+                <TableColumn fx:id="copyPath_CD" text="目标目录"/>
                 <TableColumn fx:id="size_CD" sortType="DESCENDING" text="文件大小"/>
                 <TableColumn fx:id="showStatus_CD" text="是否隐藏"/>
                 <TableColumn fx:id="creatDate_CD" text="创建时间"/>
@@ -139,7 +131,14 @@
             </columns>
         </TableView>
 
-        <ProgressBar fx:id="progressBar_CD" visible="false" prefWidth="200.0" progress="0.0"/>
-        <Label fx:id="log_CD" prefHeight="20"/>
+        <HBox spacing="10">
+            <VBox fx:id="progressBarVBox_CD" spacing="10">
+                <ProgressBar fx:id="progressBar_CD" visible="false" prefWidth="200.0" progress="0.0"/>
+                <Label fx:id="log_CD" prefHeight="20"/>
+            </VBox>
+
+            <Button text="保存并关闭" onAction="#saveDetails"/>
+            <Button text="删除这个设置" style="-fx-cursor: hand" onAction="#removeDetail"/>
+        </HBox>
     </VBox>
 </AnchorPane>
