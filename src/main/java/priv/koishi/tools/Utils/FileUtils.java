@@ -47,11 +47,14 @@ public class FileUtils {
         if (file.isDirectory()) {
             return extension_folder;
         }
-        String filePath = file.getPath();
-        if (filePath.lastIndexOf(".") == -1) {
+        String fileName = file.getName();
+        int lastDotIndex = fileName.lastIndexOf(".");
+        if (lastDotIndex == -1 ||
+                lastDotIndex == 0 ||
+                lastDotIndex == fileName.length() - 1) {
             return extension_file;
         }
-        return filePath.substring(filePath.lastIndexOf(".")).toLowerCase();
+        return fileName.substring(fileName.lastIndexOf(".")).toLowerCase();
     }
 
     /**
