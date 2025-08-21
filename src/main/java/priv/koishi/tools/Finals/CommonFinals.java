@@ -902,6 +902,8 @@ public class CommonFinals {
 
     public static final String copyType_all = "保留目录结构复制文件";
 
+    public static final String copyType_rootFile = "仅复制根目录下的文件";
+
     public static final String copyType_noTopFolderFile = "不保留顶层目录复制文件";
 
     public static final String moveType_file = "仅移动文件";

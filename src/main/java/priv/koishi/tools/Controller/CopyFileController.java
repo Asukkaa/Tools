@@ -17,14 +17,13 @@ import javafx.scene.input.DragEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import priv.koishi.tools.Bean.FileBean;
 import priv.koishi.tools.Bean.TaskBean;
-import priv.koishi.tools.Configuration.CodeRenameConfig;
 import priv.koishi.tools.Configuration.CopyConfig;
 import priv.koishi.tools.Configuration.FileChooserConfig;
 import priv.koishi.tools.MainApplication;
@@ -44,11 +43,10 @@ import static priv.koishi.tools.Enum.SelectItemsEnums.*;
 import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.MainApplication.mainScene;
 import static priv.koishi.tools.MainApplication.mainStage;
+import static priv.koishi.tools.Service.CopyFileService.copyFile;
 import static priv.koishi.tools.Service.MoveFileService.*;
-import static priv.koishi.tools.Utils.FileUtils.checkRunningInputStream;
-import static priv.koishi.tools.Utils.FileUtils.checkRunningOutputStream;
-import static priv.koishi.tools.Utils.TaskUtils.bindingTaskNode;
-import static priv.koishi.tools.Utils.TaskUtils.taskUnbind;
+import static priv.koishi.tools.Utils.FileUtils.*;
+import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
 /**
@@ -84,6 +82,11 @@ public class CopyFileController extends RootController {
      * 页面标识符
      */
     private static final String tabId = "_CP";
+
+    /**
+     * 复制文件线程任务
+     */
+    private static Task<List<String>> copyFileTask;
 
     /**
      * 要防重复点击的组件
@@ -122,10 +125,10 @@ public class CopyFileController extends RootController {
     public CheckBox openDirectory_CP, addSpace_CP, reverseFileType_CP;
 
     @FXML
-    public Button clearButton_CP, moveButton_CP, addFileButton_CP, outPathButton_CP, updateCopy_CP;
+    public ChoiceBox<String> addFileType_CP, copyType_CP, hideFileType_CP, differenceCode_CP, subCode_CP;
 
     @FXML
-    public ChoiceBox<String> addFileType_CP, copyType_CP, hideFileType_CP, differenceCode_CP, subCode_CP;
+    public Button clearButton_CP, moveButton_CP, addFileButton_CP, outPathButton_CP, updateCopy_CP, cancelButton_CP;
 
     /**
      * 组件自适应宽高
@@ -481,32 +484,33 @@ public class CopyFileController extends RootController {
      */
     @FXML
     private void copyAll() {
-        String path = outPath_CP.getText();
-        if (StringUtils.isBlank(path)) {
-            throw new RuntimeException("请选择目标文件夹");
-        }
-        File targetDirectory = new File(path);
-        if (!targetDirectory.exists()) {
-            if (!targetDirectory.mkdirs()) {
-                throw new RuntimeException("创建文件夹 " + targetDirectory + " 失败");
-            }
-        }
         ObservableList<FileBean> items = tableView_CP.getItems();
         if (CollectionUtils.isEmpty(items)) {
             throw new RuntimeException("请选择要复制的文件或文件夹");
         }
         TaskBean<FileBean> taskBean = new TaskBean<>();
-        taskBean.setProgressBar(progressBar_CP)
+        taskBean.setCancelButton(cancelButton_CP)
+                .setProgressBar(progressBar_CP)
                 .setDisableNodes(disableNodes)
                 .setTableView(tableView_CP)
                 .setMassageLabel(log_CP)
                 .setBeanList(items);
-        CodeRenameConfig codeRenameConfig = new CodeRenameConfig();
-        codeRenameConfig.setTag(setDefaultIntValue(tag_CP, 1, 0, null))
-                .setDifferenceCode(differenceCode_CP.getValue())
-                .setAddSpace(addSpace_CP.isSelected())
-                .setSubCode(subCode_CP.getValue())
-                .setPrefix(prefix_CP.getText());
+        copyFileTask = copyFile(taskBean);
+        bindingTaskNode(copyFileTask, taskBean);
+        copyFileTask.setOnSucceeded(event -> {
+            taskBean.getCancelButton().setVisible(false);
+            taskUnbind(taskBean);
+            List<String> result = copyFileTask.getValue();
+            for (String s : result) {
+                openDirectory(s);
+            }
+            taskBean.getMassageLabel().setTextFill(Color.GREEN);
+        });
+        if (!copyFileTask.isRunning()) {
+            Thread.ofVirtual()
+                    .name("copyFileTask-vThread" + tabId)
+                    .start(copyFileTask);
+        }
     }
 
     /**
@@ -683,6 +687,16 @@ public class CopyFileController extends RootController {
                 selectedItems.forEach(fileBean -> fileBean.setCopyConfig(creatCopyConfig()));
             }
         });
+    }
+
+    /**
+     * 取消复制按钮
+     */
+    @FXML
+    private void cancelCopy() {
+        if (copyFileTask != null && copyFileTask.isRunning()) {
+            copyFileTask.cancel();
+        }
     }
 
 }

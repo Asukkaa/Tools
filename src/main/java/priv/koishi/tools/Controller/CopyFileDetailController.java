@@ -154,6 +154,8 @@ public class CopyFileDetailController extends RootController {
         copyNum_CD.setText(String.valueOf(copyConfig.getCopyNum()));
         openDirectory_CD.setSelected(copyConfig.isOpenDirectory());
         setPathLabel(outPath_CD, copyConfig.getOutPath());
+        // 初始化复制文件预览列表
+        Platform.runLater(this::reselect);
     }
 
     /**
@@ -312,6 +314,7 @@ public class CopyFileDetailController extends RootController {
         int tag = setDefaultIntValue(tag_CD, 1, 0, null);
         return new CopyConfig()
                 .setReverseFileType(reverseFileType_CD.isSelected())
+                .setOpenDirectory(openDirectory_CD.isSelected())
                 .setDifferenceCode(differenceCode_CD.getValue())
                 .setFilterFileType(filterFileType_CD.getText())
                 .setHideFileType(hideFileType_CD.getValue())
@@ -363,8 +366,6 @@ public class CopyFileDetailController extends RootController {
             fileSizeColum(size_CD);
             // 构建右键菜单
             tableViewContextMenu(tableView_CD);
-            // 初始化复制文件预览列表
-            reselect();
         });
     }
 

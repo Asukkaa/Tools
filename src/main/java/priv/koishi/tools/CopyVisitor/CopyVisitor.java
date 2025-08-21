@@ -74,6 +74,8 @@ public class CopyVisitor extends SimpleFileVisitor<Path> {
      * @param targetRoot          目标目录
      * @param copyMode            拷贝方式
      * @param filterExtensionList 过滤文件类型
+     * @param sourceAction        源文件处理方式（保留、删除、放入回收站）
+     * @param hideFileType        隐藏文件处理方式
      * @param codeRenameConfig    重命名规则
      * @param reverseFileType     是否反向过滤文件类型（true-反向过滤）
      */
