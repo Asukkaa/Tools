@@ -3,6 +3,8 @@ package priv.koishi.tools.Utils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import priv.koishi.tools.Bean.FileBean;
+import priv.koishi.tools.Configuration.CodeRenameConfig;
 import priv.koishi.tools.Configuration.FileConfig;
 
 import javax.swing.filechooser.FileSystemView;
@@ -22,6 +24,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import static priv.koishi.tools.Finals.CommonFinals.*;
+import static priv.koishi.tools.Service.FileRenameService.getCodeRename;
 
 /**
  * 文件操作工具类
@@ -561,6 +564,42 @@ public class FileUtils {
         int counter = 1;
         while (file.exists()) {
             path = parentDir + File.separator + fileName + "-" + counter + extension;
+            file = new File(path);
+            counter++;
+        }
+        return path;
+    }
+
+    /**
+     * 文件重名不覆盖
+     *
+     * @param path             要判断的文件路径
+     * @param codeRenameConfig 重命名规则
+     * @return 不会重名文件路径
+     */
+    public static String notOverwritePath(String path, CodeRenameConfig codeRenameConfig) {
+        File file = new File(path);
+        if (!file.exists()) {
+            return path;
+        }
+        // 文件所在目录
+        String parentDir = file.getParent();
+        // 文件名
+        String fileName = getFileName(file);
+        // 文件拓展名
+        String extension = getFileType(file);
+        if (extension_file.equals(extension) || extension_folder.equals(extension)) {
+            extension = "";
+        }
+        FileBean fileBean = new FileBean()
+                .setName(fileName);
+        codeRenameConfig.setStartSize(-1)
+                .setNameNum(1);
+        // 起始尾缀
+        int counter = codeRenameConfig.getTag();
+        while (file.exists()) {
+            String newName = getCodeRename(codeRenameConfig, fileBean, -1, counter);
+            path = parentDir + File.separator + newName + extension;
             file = new File(path);
             counter++;
         }

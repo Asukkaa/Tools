@@ -17,7 +17,7 @@ import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.Configurator;
 import priv.koishi.tools.Bean.TabBean;
 import priv.koishi.tools.Controller.MainController;
-import priv.koishi.tools.EventBus.EventBus;
+import priv.koishi.tools.EventBus.CommonEventBus;
 import priv.koishi.tools.EventBus.SettingsLoadedEvent;
 
 import java.io.FileInputStream;
@@ -99,7 +99,7 @@ public class MainApplication extends Application {
         // 初始化macOS系统应用菜单
         initMenu(tabPane);
         // 页面入口展示和自适应宽高
-        EventBus.subscribe(SettingsLoadedEvent.class, event ->
+        CommonEventBus.subscribe(SettingsLoadedEvent.class, event ->
                 mainApplicationAdaption(event, tabPane, loadLastConfig, lastTab));
         stage.setOnCloseRequest(event -> {
             try {

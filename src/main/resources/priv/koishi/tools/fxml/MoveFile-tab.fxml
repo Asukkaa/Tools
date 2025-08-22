@@ -61,6 +61,7 @@
                     <items>
                         <FXCollections fx:factory="observableArrayList">
                             <String fx:value="仅移动文件"/>
+                            <String fx:value="仅移动根目录下的文件"/>
                             <String fx:value="保留目录结构移动文件"/>
                             <String fx:value="不保留顶层目录移动文件"/>
                             <String fx:value="保留目录结构复制文件夹"/>

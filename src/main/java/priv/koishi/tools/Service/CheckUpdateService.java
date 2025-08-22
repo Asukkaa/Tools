@@ -9,7 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import priv.koishi.tools.Bean.CheckUpdateBean;
 import priv.koishi.tools.Bean.UniCloudResponse;
-import priv.koishi.tools.CustomUI.ProgressDialog.ProgressDialog;
+import priv.koishi.tools.CustomUI.CustomProgressDialog.ProgressDialog;
 
 import javax.net.ssl.SSLContext;
 import java.io.*;

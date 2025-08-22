@@ -8,8 +8,8 @@ import priv.koishi.tools.Bean.FileBean;
 import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.CodeRenameConfig;
 import priv.koishi.tools.Configuration.FileConfig;
-import priv.koishi.tools.CopyVisitor.CopyVisitor;
 import priv.koishi.tools.Enum.CopyMode;
+import priv.koishi.tools.Visitor.CopyVisitor;
 
 import java.awt.*;
 import java.io.File;
@@ -23,9 +23,9 @@ import java.util.List;
 
 import static priv.koishi.tools.Controller.MainController.moveFileController;
 import static priv.koishi.tools.Finals.CommonFinals.*;
-import static priv.koishi.tools.Service.FileRenameService.getCodeRename;
 import static priv.koishi.tools.Utils.FileUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
+import static priv.koishi.tools.Visitor.CopyVisitor.determineCopyMode;
 
 /**
  * 批量移动文件任务类
@@ -194,9 +194,7 @@ public class MoveFileService {
                         // 防止重名覆盖，自动重命名
                         String safePath = notOverwritePath(targetFile.getAbsolutePath(), codeRenameConfig);
                         File safeTargetFile = new File(safePath);
-                        Files.copy(file.toPath(),
-                                safeTargetFile.toPath(),
-                                StandardCopyOption.COPY_ATTRIBUTES);
+                        Files.copy(file.toPath(), safeTargetFile.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
                         if (sourceAction_deleteFile.equals(sourceAction)) {
                             Files.delete(file.toPath());
                         } else if (sourceAction_trashFile.equals(sourceAction)) {
@@ -209,59 +207,6 @@ public class MoveFileService {
                 return null;
             }
         };
-    }
-
-
-    /**
-     * 文件重名不覆盖
-     *
-     * @param path             要判断的文件路径
-     * @param codeRenameConfig 重命名规则
-     * @return 不会重名文件路径
-     */
-    public static String notOverwritePath(String path, CodeRenameConfig codeRenameConfig) {
-        File file = new File(path);
-        if (!file.exists()) {
-            return path;
-        }
-        // 文件所在目录
-        String parentDir = file.getParent();
-        // 文件名
-        String fileName = getFileName(file);
-        // 文件拓展名
-        String extension = getFileType(file);
-        if (extension_file.equals(extension) || extension_folder.equals(extension)) {
-            extension = "";
-        }
-        FileBean fileBean = new FileBean()
-                .setName(fileName);
-        codeRenameConfig.setStartSize(-1)
-                .setNameNum(1);
-        // 起始尾缀
-        int counter = codeRenameConfig.getTag();
-        while (file.exists()) {
-            String newName = getCodeRename(codeRenameConfig, fileBean, -1, counter);
-            path = parentDir + File.separator + newName + extension;
-            file = new File(path);
-            counter++;
-        }
-        return path;
-    }
-
-    /**
-     * 根据移动类型确定移动模式
-     *
-     * @param moveType 指定的移动类型标识符
-     * @return 返回对应的CopyMode枚举值
-     */
-    private static CopyMode determineCopyMode(String moveType) {
-        if (moveType_file.equals(moveType)) {
-            return CopyMode.ONLY_FILES;
-        } else if (moveType_folder.equals(moveType) || moveType_noTopFolder.equals(moveType)) {
-            return CopyMode.STRUCTURE_ONLY_FOLDERS;
-        } else {
-            return CopyMode.STRUCTURE_WITH_FILES;
-        }
     }
 
     /**

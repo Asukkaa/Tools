@@ -5,7 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import priv.koishi.tools.Bean.TabBean;
-import priv.koishi.tools.EventBus.EventBus;
+import priv.koishi.tools.EventBus.CommonEventBus;
 import priv.koishi.tools.EventBus.MainLoadedEvent;
 
 import java.io.IOException;
@@ -89,7 +89,7 @@ public class MainController extends RootController {
             fileRenameController = getController(FileRenameController.class);
             fileNameToExcelController = getController(FileNameToExcelController.class);
             // 主页面加载完毕
-            EventBus.publish(new MainLoadedEvent());
+            CommonEventBus.publish(new MainLoadedEvent());
         });
     }
 

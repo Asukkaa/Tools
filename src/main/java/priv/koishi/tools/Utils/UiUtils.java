@@ -41,7 +41,7 @@ import priv.koishi.tools.Configuration.FileChooserConfig;
 import priv.koishi.tools.Configuration.FileConfig;
 import priv.koishi.tools.Controller.FileChooserController;
 import priv.koishi.tools.Controller.MoveFileController;
-import priv.koishi.tools.CustomUI.MessageBubble.MessageBubble;
+import priv.koishi.tools.CustomUI.CustomMessageBubble.MessageBubble;
 import priv.koishi.tools.Enum.SelectItemsEnums;
 import priv.koishi.tools.MainApplication;
 

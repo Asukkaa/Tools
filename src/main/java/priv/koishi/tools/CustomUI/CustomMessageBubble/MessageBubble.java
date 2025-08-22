@@ -1,4 +1,4 @@
-package priv.koishi.tools.CustomUI.MessageBubble;
+package priv.koishi.tools.CustomUI.CustomMessageBubble;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;

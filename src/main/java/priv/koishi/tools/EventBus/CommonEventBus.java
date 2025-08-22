@@ -15,7 +15,7 @@ import java.util.function.Consumer;
  * Date:2025-06-04
  * Time:13:18
  */
-public class EventBus {
+public class CommonEventBus {
 
     /**
      * 事件监听器

@@ -9,7 +9,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import org.apache.commons.lang3.StringUtils;
 import priv.koishi.tools.Bean.TabBean;
-import priv.koishi.tools.EventBus.EventBus;
+import priv.koishi.tools.EventBus.CommonEventBus;
 import priv.koishi.tools.EventBus.MainLoadedEvent;
 import priv.koishi.tools.EventBus.SettingsLoadedEvent;
 
@@ -289,7 +289,7 @@ public class SettingController extends RootController {
                 // 为tab信息列表添加右键菜单
                 tableViewContextMenu(tableView_Set);
                 // 加载完成后发布事件
-                EventBus.publish(new SettingsLoadedEvent(tabBeanList));
+                CommonEventBus.publish(new SettingsLoadedEvent(tabBeanList));
                 // 标记页面加载完毕
                 initializedFinished = true;
             });
@@ -371,7 +371,7 @@ public class SettingController extends RootController {
         // 设置鼠标悬停提示
         setToolTip();
         // 初始化各功能页面入口
-        EventBus.subscribe(MainLoadedEvent.class, this::buildTabsData);
+        CommonEventBus.subscribe(MainLoadedEvent.class, this::buildTabsData);
         Platform.runLater(this::adaption);
     }
 

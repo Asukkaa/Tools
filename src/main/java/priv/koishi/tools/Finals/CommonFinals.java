@@ -908,6 +908,8 @@ public class CommonFinals {
 
     public static final String moveType_file = "仅移动文件";
 
+    public static final String moveType_rootFile = "仅移动根目录下的文件";
+
     public static final String moveType_all = "保留目录结构移动文件";
 
     public static final String moveType_folder = "保留目录结构复制文件夹";

@@ -13,6 +13,11 @@ public enum CopyMode {
     ONLY_FILES,
 
     /**
+     * 仅复制根目录下的文件
+     */
+    ONLY_ROOT_FILES,
+
+    /**
      * 保留结构，复制文件与目录（含空目录）
      */
     STRUCTURE_WITH_FILES,

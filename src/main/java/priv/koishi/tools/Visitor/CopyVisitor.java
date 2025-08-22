@@ -1,4 +1,4 @@
-package priv.koishi.tools.CopyVisitor;
+package priv.koishi.tools.Visitor;
 
 import org.apache.commons.collections4.CollectionUtils;
 import priv.koishi.tools.Configuration.CodeRenameConfig;
@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static priv.koishi.tools.Finals.CommonFinals.*;
-import static priv.koishi.tools.Service.MoveFileService.notOverwritePath;
 import static priv.koishi.tools.Utils.FileUtils.getFileType;
+import static priv.koishi.tools.Utils.FileUtils.notOverwritePath;
 
 /**
  * 批量拷贝文件
@@ -108,6 +108,21 @@ public class CopyVisitor extends SimpleFileVisitor<Path> {
     }
 
     /**
+     * 根据移动类型确定移动模式
+     *
+     * @param moveType 指定的移动类型标识符
+     * @return 返回对应的CopyMode枚举值
+     */
+    public static CopyMode determineCopyMode(String moveType) {
+        return switch (moveType) {
+            case moveType_file, copyType_file -> CopyMode.ONLY_FILES;
+            case moveType_rootFile, copyType_rootFile -> CopyMode.ONLY_ROOT_FILES;
+            case moveType_folder, moveType_noTopFolder -> CopyMode.STRUCTURE_ONLY_FOLDERS;
+            default -> CopyMode.STRUCTURE_WITH_FILES;
+        };
+    }
+
+    /**
      * 在访问目录前处理目录创建逻辑
      *
      * @param path  当前访问的目录路径
@@ -119,6 +134,10 @@ public class CopyVisitor extends SimpleFileVisitor<Path> {
     public FileVisitResult preVisitDirectory(Path path, BasicFileAttributes attrs) throws IOException {
         // 处理隐藏文件，顶层目录是否隐藏都要读取
         if (!path.equals(sourceRoot)) {
+            // 只复制根目录文件
+            if (copyMode == CopyMode.ONLY_ROOT_FILES) {
+                return FileVisitResult.SKIP_SUBTREE;
+            }
             File file = path.toFile();
             if (file.isHidden() && text_noHideFile.equals(hideFileType)) {
                 return FileVisitResult.SKIP_SUBTREE;
@@ -157,17 +176,21 @@ public class CopyVisitor extends SimpleFileVisitor<Path> {
      */
     @Override
     public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
+        // 跳过非根目录文件
+        if (copyMode == CopyMode.ONLY_ROOT_FILES && !path.getParent().equals(sourceRoot)) {
+            return FileVisitResult.CONTINUE;
+        }
         // 处理隐藏文件
         File file = path.toFile();
         if (file.isHidden() && text_noHideFile.equals(hideFileType)) {
-            return FileVisitResult.SKIP_SUBTREE;
+            return FileVisitResult.CONTINUE;
         }
         if (!file.isHidden() && text_onlyHideFile.equals(hideFileType)) {
-            return FileVisitResult.SKIP_SUBTREE;
+            return FileVisitResult.CONTINUE;
         }
         // 如果当前目录是目标目录或其子目录，跳过复制
         if (path.startsWith(targetRoot) || path.equals(targetRoot)) {
-            return FileVisitResult.SKIP_SUBTREE;
+            return FileVisitResult.CONTINUE;
         }
         // 处理拓展名过滤
         String fileType = getFileType(path.toFile());

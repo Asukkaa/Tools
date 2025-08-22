@@ -23,7 +23,7 @@ import priv.koishi.tools.Bean.FileBean;
 import priv.koishi.tools.Bean.FileNumBean;
 import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.*;
-import priv.koishi.tools.CustomUI.EditingCell.EditingCell;
+import priv.koishi.tools.CustomUI.CustomEditingCell.EditingCell;
 
 import java.io.File;
 import java.io.IOException;

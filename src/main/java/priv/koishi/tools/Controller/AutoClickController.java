@@ -40,7 +40,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import priv.koishi.tools.Bean.AutoClickTaskBean;
 import priv.koishi.tools.Bean.ClickPositionBean;
-import priv.koishi.tools.CustomUI.EditingCell.EditingCell;
+import priv.koishi.tools.CustomUI.CustomEditingCell.EditingCell;
 import priv.koishi.tools.Listener.MousePositionListener;
 import priv.koishi.tools.Listener.MousePositionUpdater;
 import priv.koishi.tools.MainApplication;

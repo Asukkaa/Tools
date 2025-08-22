@@ -18,7 +18,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import priv.koishi.tools.Bean.CheckUpdateBean;
 import priv.koishi.tools.Bean.TaskBean;
-import priv.koishi.tools.CustomUI.ProgressDialog.ProgressDialog;
+import priv.koishi.tools.CustomUI.CustomProgressDialog.ProgressDialog;
 
 import java.awt.*;
 import java.io.File;

@@ -6,8 +6,7 @@ import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.CodeRenameConfig;
 import priv.koishi.tools.Configuration.CopyConfig;
 import priv.koishi.tools.Configuration.FileConfig;
-import priv.koishi.tools.CopyVisitor.CopyVisitor;
-import priv.koishi.tools.Enum.CopyMode;
+import priv.koishi.tools.Visitor.CopyVisitor;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,6 +16,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 
+import static priv.koishi.tools.Visitor.CopyVisitor.determineCopyMode;
 import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.Service.FileRenameService.getCodeRename;
 import static priv.koishi.tools.Utils.FileUtils.getFileType;
@@ -247,22 +247,6 @@ public class CopyFileService {
             sources.add(sourceFile);
         }
         return sources;
-    }
-
-    /**
-     * 根据复制类型确定复制模式
-     *
-     * @param moveType 指定的复制类型标识符
-     * @return 返回对应的CopyMode枚举值
-     */
-    private static CopyMode determineCopyMode(String moveType) {
-        if (copyType_file.equals(moveType) || copyType_rootFile.equals(moveType)) {
-            return CopyMode.ONLY_FILES;
-        } else if (moveType_folder.equals(moveType) || moveType_noTopFolder.equals(moveType)) {
-            return CopyMode.STRUCTURE_ONLY_FOLDERS;
-        } else {
-            return CopyMode.STRUCTURE_WITH_FILES;
-        }
     }
 
 }
