@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.collections.FXCollections?>
+<?import javafx.collections.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import java.lang.*?>
 <AnchorPane fx:id="anchorPane_CP" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
@@ -108,15 +110,27 @@
         <HBox spacing="10">
             <Button fx:id="outPathButton_CP" onAction="#targetPath" style="-fx-cursor: hand" text="选择目标文件夹位置"/>
             <Label fx:id="outPath_CP" prefHeight="25" style="-fx-font-size: 15px;"/>
+
+            <Button fx:id="removePathButton_CP" onAction="#removePath" prefHeight="20"
+                    styleClass="delete-button-style" visible="false">
+                <graphic>
+                    <ImageView>
+                        <Image url="@../icon/Trash.png"/>
+                    </ImageView>
+                </graphic>
+            </Button>
         </HBox>
 
         <HBox fx:id="fileNumberHBox_CP" spacing="10">
             <Button fx:id="addFileButton_CP" onAction="#addFiles" styleClass="cadetblue-button"/>
             <Button fx:id="updateCopy_CP" onAction="#updateCopyConfig" style="-fx-cursor: hand" text="更新复制设置"/>
             <Button fx:id="clearButton_CP" onAction="#removeAll" style="-fx-cursor: hand" text="清空列表"/>
-            <Button fx:id="moveButton_CP" onAction="#copyAll" styleClass="cornflowerblue-button" text="开始复制"/>
+            <Button fx:id="copyButton_CP" onAction="#copyAll" styleClass="cornflowerblue-button" text="开始复制"/>
             <Label prefHeight="25" text="复制数量:"/>
             <TextField fx:id="copyNum_CP" prefHeight="20" prefWidth="50" promptText="1"/>
+
+            <CheckBox fx:id="firstRename_CP" prefHeight="25" selected="true" style="-fx-cursor: hand"
+                      text="第一遍复制就重命名文件"/>
 
             <CheckBox fx:id="openDirectory_CP" prefHeight="25" selected="true"
                       style="-fx-cursor: hand" text="复制后打开文件夹"/>

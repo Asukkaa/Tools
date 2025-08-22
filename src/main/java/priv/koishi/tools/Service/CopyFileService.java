@@ -64,7 +64,11 @@ public class CopyFileService {
                     for (int j = 0; j < copyNum; j++) {
                         FileBean fileBean = creatFileBean(taskBean.getTableView(), source)
                                 .setCopyPath(outPath);
-                        String newName = getCodeRename(codeRenameConfig, fileBean, -1, tag + j);
+                        String newName = fileBean.getName();
+                        if (copyConfig.isFirstRename()) {
+                            newName = getCodeRename(codeRenameConfig, fileBean, -1, tag + j);
+                            tag++;
+                        }
                         String extension = getFileType(source);
                         if (extension_file.equals(extension) || extension_folder.equals(extension)) {
                             extension = "";
@@ -72,10 +76,10 @@ public class CopyFileService {
                         String newPath = fileBean.getCopyPath() + File.separator + newName + extension;
                         File newFile = new File(newPath);
                         while (newFile.exists() || newPathList.contains(newPath)) {
-                            tag++;
                             newName = getCodeRename(codeRenameConfig, fileBean, -1, tag + j);
                             newPath = fileBean.getCopyPath() + File.separator + newName + extension;
                             newFile = new File(newPath);
+                            tag++;
                         }
                         fileBean.setName(newName);
                         fileBeanList.add(fileBean);
@@ -131,7 +135,11 @@ public class CopyFileService {
                             }
                             FileBean bean = creatFileBean(taskBean.getTableView(), source)
                                     .setCopyPath(outPath);
-                            String newName = getCodeRename(codeRenameConfig, bean, -1, tag + j);
+                            String newName = bean.getName();
+                            if (copyConfig.isFirstRename()) {
+                                newName = getCodeRename(codeRenameConfig, bean, -1, tag + j);
+                                tag++;
+                            }
                             String extension = getFileType(source);
                             if (extension_file.equals(extension) || extension_folder.equals(extension)) {
                                 extension = "";
@@ -140,10 +148,10 @@ public class CopyFileService {
                             String newPath = copyPath + File.separator + newName + extension;
                             File newFile = new File(newPath);
                             while (newFile.exists()) {
-                                tag++;
                                 newName = getCodeRename(codeRenameConfig, bean, -1, tag + j);
                                 newPath = copyPath + File.separator + newName + extension;
                                 newFile = new File(newPath);
+                                tag++;
                             }
                             File targetDirectory = new File(copyPath);
                             if (!targetDirectory.exists()) {
@@ -236,6 +244,7 @@ public class CopyFileService {
                 FileConfig fileConfig = new FileConfig();
                 fileConfig.setFilterExtensionList(getFilterExtensionList(copyConfig.getFilterFileType()))
                         .setReverseFileType(copyConfig.isReverseFileType())
+                        .setShowHideFile(copyConfig.getHideFileType())
                         .setShowDirectory(showDirectory)
                         .setRecursion(recursion)
                         .setShowFileType(false)

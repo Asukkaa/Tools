@@ -264,12 +264,12 @@ public class ReadDataService {
      * 读取文件夹下的文件
      *
      * @param taskBean 读取文件线程任务参数
-     * @return 无参数线程任务
+     * @return 添加的文件数据列表
      */
-    public static Task<Void> readFile(TaskBean<FileBean> taskBean) {
+    public static Task<List<FileBean>> readFile(TaskBean<FileBean> taskBean) {
         return new Task<>() {
             @Override
-            protected Void call() throws IOException {
+            protected List<FileBean> call() throws IOException {
                 // 改变要防重复点击的组件状态
                 changeDisableNodes(taskBean, true);
                 updateMessage(text_readData);
@@ -343,7 +343,7 @@ public class ReadDataService {
                     tableView.getItems().addAll(fileBeans);
                     tableView.refresh();
                 });
-                return null;
+                return fileBeans;
             }
         };
     }

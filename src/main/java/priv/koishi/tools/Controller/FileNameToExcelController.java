@@ -92,7 +92,7 @@ public class FileNameToExcelController extends RootController {
     /**
      * 读取文件线程
      */
-    private Task<Void> readFileTask;
+    private Task<List<FileBean>> readFileTask;
 
     /**
      * 构建excel线程
@@ -131,7 +131,7 @@ public class FileNameToExcelController extends RootController {
     public Label outPath_Name, excelPath_Name, fileNumber_Name, inPath_Name, log_Name, tip_Name, excelTypeLabel_Name;
 
     @FXML
-    public CheckBox recursion_Name, openDirectory_Name, openFile_Name, showFileType_Name,reverseFileType_Name,
+    public CheckBox recursion_Name, openDirectory_Name, openFile_Name, showFileType_Name, reverseFileType_Name,
             exportTitle_Name, exportFullList_Name;
 
     @FXML
@@ -314,7 +314,6 @@ public class FileNameToExcelController extends RootController {
      * 设置鼠标悬停提示
      */
     private void setToolTip() {
-
         addToolTip(tip_openFile, openFile_Name);
         addToolTip(tip_startRow, startRow_Name);
         addToolTip(tip_Name.getText(), tip_Name);
@@ -428,6 +427,7 @@ public class FileNameToExcelController extends RootController {
 
     /**
      * 更新excel sheet名称
+     *
      * @throws IOException io异常
      */
     private void updateSheetName() throws IOException {
@@ -516,7 +516,7 @@ public class FileNameToExcelController extends RootController {
                 .setRecursion(recursion_Name.isSelected())
                 .setInFile(file);
         String filePath = file.getPath();
-        inPath_Name.setText(filePath);
+        setPathLabel(inPath_Name, filePath);
         addToolTip(filePath, inPath_Name);
         try {
             startReadFilesTask(fileConfig);
@@ -691,8 +691,7 @@ public class FileNameToExcelController extends RootController {
      */
     @FXML
     private void removeExcelPath() {
-        excelPath_Name.setText("");
-        excelPath_Name.setTooltip(null);
+        setPathLabel(excelPath_Name, "");
         removeExcelButton_Name.setVisible(false);
         excelType_Name.setDisable(false);
         sheetName_Name.getItems().clear();

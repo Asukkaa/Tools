@@ -175,6 +175,9 @@ public class CommonFinals {
      */
     public static final String configFile_MV = "config/moveFileConfig.properties";
 
+    /**
+     * 批量复制文件功能配置文件路径
+     */
     public static final String configFile_CP = "config/copyFileConfig.properties";
 
     /**
@@ -618,6 +621,8 @@ public class CommonFinals {
 
     public static final String text_matchFile = "匹配文件并统计";
 
+    public static final String text_link = "\n注意：选择快捷方式会添加源文件，需要处理快捷方式需改用拖拽的方式添加";
+
     public static final String id_settingTab = "settingTab";
 
     public static final String id_aboutTab = "aboutTab";
@@ -841,6 +846,8 @@ public class CommonFinals {
     public static final String key_sourceAction = "sourceAction";
 
     public static final String key_reverseFileType = "reverseFileType";
+
+    public static final String key_firstRename = "firstRename";
 
     public static final String mouseButton_primary = "鼠标左键点击";
 
@@ -1184,9 +1191,17 @@ public class CommonFinals {
 
     public static final String tip_moveButton = "点击将会按照设置将列表中的文件移动到指定文件夹中";
 
+    public static final String tip_copyButton = "点击将会按照设置将列表中的文件复制到指定文件夹中";
+
     public static final String tip_movePath = "点击后可以选择目标文件夹位置";
 
-    public static final String tip_addFileButton = "点击可选择要移动的文件或文件夹";
+    public static final String tip_copyPath = "点击后可以选择目标文件夹位置，如果不设置则默认为源文件所在目录";
+
+    public static final String tip_addMoveFileButton = "点击可选择要移动的文件或文件夹" + text_link;
+
+    public static final String tip_addCopyFileButton = "点击可选择要复制的文件或文件夹" + text_link;
+
+    public static final String tip_addRenameFileButton = "点击可选择要重命名的文件或文件夹" + text_link;
 
     public static final String tip_sourceAction = "用来选择移动文件后源文件的处理方式";
 
@@ -1197,6 +1212,16 @@ public class CommonFinals {
     public static final String tip_prefix = "将会在文件名前面添加所填写的字符";
 
     public static final String tip_matchFileType = "用来选择要匹配的文件类型";
+
+    public static final String tip_updateCopyList = "将会按照设置刷新预览列表";
+
+    public static final String tip_updateCopy = "将会更新选中的列表复制配置，如果没有选中项则更新列表中所有配置";
+
+    public static final String tip_copyNum = "只能填正整数，用来设置复制文件的次数";
+
+    public static final String tip_removePathButton = "点击将会删除设置的目标目录，目标目录将会改为源文件所在目录";
+
+    public static final String tip_firstRename = "勾选后第一遍复制的文件无论是否有重名文件存在都会按照规则重命名";
 
     public static final String tip_sheet = """
             选择要读取的excel后将会把读取到的表格名称填充到下拉框中，选择表格名称以设置要读取的表

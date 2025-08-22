@@ -2,6 +2,8 @@
 
 <?import javafx.collections.FXCollections?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import java.lang.*?>
 <AnchorPane fx:id="anchorPane_CD" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
@@ -100,12 +102,24 @@
         <HBox spacing="10">
             <Button fx:id="outPathButton_CD" onAction="#targetPath" style="-fx-cursor: hand" text="选择目标文件夹位置"/>
             <Label fx:id="outPath_CD" prefHeight="25" style="-fx-font-size: 15px;"/>
+
+            <Button fx:id="removePathButton_CD" onAction="#removePath" prefHeight="20"
+                    styleClass="delete-button-style" visible="false">
+                <graphic>
+                    <ImageView>
+                        <Image url="@../icon/Trash.png"/>
+                    </ImageView>
+                </graphic>
+            </Button>
         </HBox>
 
         <HBox fx:id="fileNumberHBox_CD" spacing="10">
             <Button fx:id="updateCopy_CD" onAction="#reselect" styleClass="cadetblue-button" text="刷新预览列表"/>
             <Label prefHeight="25" text="复制数量:"/>
             <TextField fx:id="copyNum_CD" prefHeight="20" prefWidth="50" promptText="1"/>
+
+            <CheckBox fx:id="firstRename_CD" prefHeight="25" selected="true" style="-fx-cursor: hand"
+                      text="第一遍复制就重命名文件"/>
 
             <CheckBox fx:id="openDirectory_CD" prefHeight="25" selected="true" style="-fx-cursor: hand"
                       text="复制后打开文件夹"/>

@@ -97,7 +97,7 @@ public class FileRenameController extends RootController {
     /**
      * 读取文件线程
      */
-    private Task<Void> readFileTask;
+    private Task<List<FileBean>> readFileTask;
 
     /**
      * 读取excel线程
@@ -699,7 +699,6 @@ public class FileRenameController extends RootController {
         addToolTip(tip_startSize, startSize_Re);
         addToolTip(tip_renameStr, renameStr_Re);
         addToolTip(warn_Re.getText(), warn_Re);
-        addToolTip(tip_fileButton, fileButton_Re);
         addToolTip(tip_rightValue, rightValue_Re);
         addToolTip(tip_learButton, clearButton_Re);
         addToolTip(tip_renameValue, renameValue_Re);
@@ -708,6 +707,7 @@ public class FileRenameController extends RootController {
         addToolTip(tip_reselectButton, reselectButton_Re);
         addToolTip(tip_updateSameCode, updateSameCode_Re);
         addToolTip(tip_updateFileType, updateFileType_Re);
+        addToolTip(tip_addRenameFileButton, fileButton_Re);
         addToolTip(tip_excelPathButton, excelPathButton_Re);
         addToolTip(tip_updateRenameButton, updateRenameButton_Re);
         addToolTip(tip_reNameFileTypeText, renameFileTypeText_Re);

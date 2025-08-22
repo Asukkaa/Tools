@@ -15,6 +15,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 import priv.koishi.tools.Bean.FileBean;
 import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.CopyConfig;
@@ -34,6 +35,7 @@ import static priv.koishi.tools.Service.CopyFileService.readCopyFile;
 import static priv.koishi.tools.Utils.TaskUtils.bindingTaskNode;
 import static priv.koishi.tools.Utils.TaskUtils.taskUnbind;
 import static priv.koishi.tools.Utils.UiUtils.*;
+import static priv.koishi.tools.Utils.UiUtils.addToolTip;
 
 /**
  * 复制文件工具控制器
@@ -47,12 +49,7 @@ public class CopyFileDetailController extends RootController {
     /**
      * 目标文件路径
      */
-    public static String outFilePath;
-
-    /**
-     * 上次选择的文件路径
-     */
-    public static String inFilePath;
+    private static String outFilePath;
 
     /**
      * 页面标识符
@@ -122,10 +119,10 @@ public class CopyFileDetailController extends RootController {
     public TextField filterFileType_CD, prefix_CD, tag_CD, copyNum_CD;
 
     @FXML
-    public CheckBox openDirectory_CD, addSpace_CD, reverseFileType_CD;
+    public Button outPathButton_CD, updateCopy_CD, removePathButton_CD;
 
     @FXML
-    public Button outPathButton_CD, updateCopy_CD;
+    public CheckBox openDirectory_CD, addSpace_CD, reverseFileType_CD, firstRename_CD;
 
     @FXML
     public ChoiceBox<String> copyType_CD, hideFileType_CD, differenceCode_CD, subCode_CD;
@@ -135,25 +132,27 @@ public class CopyFileDetailController extends RootController {
      *
      * @param item 详情页数据
      */
-    public void initData(FileBean item) {
+    public void initData(FileBean item, String outFilePath) {
         selectedItem = item;
+        CopyFileDetailController.outFilePath = outFilePath;
         CopyConfig copyConfig = item.getCopyConfig();
         String sourcePath = item.getPath();
         File sourceFile = new File(sourcePath);
+        prefix_CD.setText(copyConfig.getPrefix());
+        subCode_CD.setValue(copyConfig.getSubCode());
+        copyType_CD.setValue(copyConfig.getCopyType());
+        addSpace_CD.setSelected(copyConfig.isAddSpace());
         filterHBox_CD.setVisible(sourceFile.isDirectory());
-        setPathLabel(sourcePath_CD, sourcePath);
+        tag_CD.setText(String.valueOf(copyConfig.getTag()));
+        firstRename_CD.setSelected(copyConfig.isFirstRename());
         hideFileType_CD.setValue(copyConfig.getHideFileType());
         filterFileType_CD.setText(copyConfig.getFilterFileType());
-        reverseFileType_CD.setSelected(copyConfig.isReverseFileType());
-        copyType_CD.setValue(copyConfig.getCopyType());
-        differenceCode_CD.setValue(copyConfig.getDifferenceCode());
-        subCode_CD.setValue(copyConfig.getSubCode());
-        prefix_CD.setText(copyConfig.getPrefix());
-        tag_CD.setText(String.valueOf(copyConfig.getTag()));
-        addSpace_CD.setSelected(copyConfig.isAddSpace());
-        copyNum_CD.setText(String.valueOf(copyConfig.getCopyNum()));
         openDirectory_CD.setSelected(copyConfig.isOpenDirectory());
+        differenceCode_CD.setValue(copyConfig.getDifferenceCode());
+        copyNum_CD.setText(String.valueOf(copyConfig.getCopyNum()));
+        reverseFileType_CD.setSelected(copyConfig.isReverseFileType());
         setPathLabel(outPath_CD, copyConfig.getOutPath());
+        setPathLabel(sourcePath_CD, sourcePath);
         // 初始化复制文件预览列表
         Platform.runLater(this::reselect);
     }
@@ -199,10 +198,14 @@ public class CopyFileDetailController extends RootController {
     private void setToolTip() {
         addToolTip(tip_tag, tag_CD);
         addToolTip(tip_prefix, prefix_CD);
+        addToolTip(tip_copyNum, copyNum_CD);
         addToolTip(tip_addSpace, addSpace_CD);
-        addToolTip(tip_movePath, outPathButton_CD);
+        addToolTip(tip_copyPath, outPathButton_CD);
+        addToolTip(tip_firstRename, firstRename_CD);
+        addToolTip(tip_updateCopyList, updateCopy_CD);
         addToolTip(tip_openDirectory, openDirectory_CD);
         addToolTip(tip_filterFileType, filterFileType_CD);
+        addToolTip(tip_removePathButton, removePathButton_CD);
         addToolTip(reverseFileType_CD.getText(), reverseFileType_CD);
         addValueToolTip(subCode_CD, tip_subCode, subCode_CD.getValue());
         addValueToolTip(copyType_CD, tip_moveType, copyType_CD.getValue());
@@ -257,7 +260,7 @@ public class CopyFileDetailController extends RootController {
         ChangeListener<String> tagListener = integerRangeTextField(tag_CD, 0, null, tip_tag);
         changeListeners.put(tag_CD, tagListener);
         // 限制复制数量输入框内容
-        ChangeListener<String> copyNumListener = integerRangeTextField(copyNum_CD, 1, null, tip_tag);
+        ChangeListener<String> copyNumListener = integerRangeTextField(copyNum_CD, 1, null, tip_copyNum);
         changeListeners.put(copyNum_CD, copyNumListener);
         // 鼠标悬留提示输入的需要识别的文件后缀名
         ChangeListener<String> filterFileTypeListener = textFieldValueListener(filterFileType_CD, tip_filterFileType);
@@ -317,6 +320,7 @@ public class CopyFileDetailController extends RootController {
                 .setOpenDirectory(openDirectory_CD.isSelected())
                 .setDifferenceCode(differenceCode_CD.getValue())
                 .setFilterFileType(filterFileType_CD.getText())
+                .setFirstRename(firstRename_CD.isSelected())
                 .setHideFileType(hideFileType_CD.getValue())
                 .setAddSpace(addSpace_CD.isSelected())
                 .setCopyType(copyType_CD.getValue())
@@ -378,10 +382,14 @@ public class CopyFileDetailController extends RootController {
     @FXML
     private void targetPath(ActionEvent actionEvent) throws IOException {
         Window window = ((Node) actionEvent.getSource()).getScene().getWindow();
-        File selectedFile = creatDirectoryChooser(window, outFilePath, text_selectDirectory);
+        String path = outPath_CD.getText();
+        String defaultFilePath = StringUtils.isBlank(path) ? outFilePath : path;
+        File selectedFile = creatDirectoryChooser(window, defaultFilePath, text_selectDirectory);
         if (selectedFile != null) {
             // 更新所选文件路径显示
-            outFilePath = updatePathLabel(selectedFile.getPath(), outFilePath, key_outFilePath, outPath_CD, configFile_CP);
+            outFilePath = updatePathLabel(selectedFile.getPath(), defaultFilePath, key_outFilePath, outPath_CD, configFile_CP);
+            removePathButton_CD.setVisible(true);
+            reselect();
         }
     }
 
@@ -492,6 +500,17 @@ public class CopyFileDetailController extends RootController {
         if (refreshCallback != null) {
             refreshCallback.run();
         }
+    }
+
+    /**
+     * 删除目标路径按钮
+     */
+    @FXML
+    private void removePath() {
+        setPathLabel(outPath_CD, "");
+        removePathButton_CD.setVisible(false);
+        tableView_CD.getItems().forEach(fileBean -> fileBean.setCopyPath(fileBean.getPath()));
+        tableView_CD.refresh();
     }
 
 }

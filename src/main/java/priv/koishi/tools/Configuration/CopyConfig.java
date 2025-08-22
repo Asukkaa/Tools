@@ -74,4 +74,9 @@ public class CopyConfig {
      */
     boolean openDirectory;
 
+    /**
+     * 第一遍复制就重命名文件（true-第一遍复制就重命名文件）
+     */
+    boolean firstRename;
+
 }

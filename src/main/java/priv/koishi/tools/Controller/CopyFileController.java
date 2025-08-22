@@ -44,10 +44,12 @@ import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.MainApplication.mainScene;
 import static priv.koishi.tools.MainApplication.mainStage;
 import static priv.koishi.tools.Service.CopyFileService.copyFile;
-import static priv.koishi.tools.Service.MoveFileService.*;
+import static priv.koishi.tools.Service.ReadDataService.readFile;
 import static priv.koishi.tools.Utils.FileUtils.*;
-import static priv.koishi.tools.Utils.TaskUtils.*;
+import static priv.koishi.tools.Utils.TaskUtils.bindingTaskNode;
+import static priv.koishi.tools.Utils.TaskUtils.taskUnbind;
 import static priv.koishi.tools.Utils.UiUtils.*;
+import static priv.koishi.tools.Utils.UiUtils.addToolTip;
 
 /**
  * 复制文件工具控制器
@@ -122,13 +124,14 @@ public class CopyFileController extends RootController {
     public TextField filterFileType_CP, prefix_CP, tag_CP, copyNum_CP;
 
     @FXML
-    public CheckBox openDirectory_CP, addSpace_CP, reverseFileType_CP;
+    public CheckBox openDirectory_CP, addSpace_CP, reverseFileType_CP, firstRename_CP;
 
     @FXML
     public ChoiceBox<String> addFileType_CP, copyType_CP, hideFileType_CP, differenceCode_CP, subCode_CP;
 
     @FXML
-    public Button clearButton_CP, moveButton_CP, addFileButton_CP, outPathButton_CP, updateCopy_CP, cancelButton_CP;
+    public Button clearButton_CP, copyButton_CP, addFileButton_CP, outPathButton_CP, updateCopy_CP, cancelButton_CP,
+            removePathButton_CP;
 
     /**
      * 组件自适应宽高
@@ -181,12 +184,14 @@ public class CopyFileController extends RootController {
             prop.put(key_lastHideFileType, hideFileType_CP.getValue());
             prop.put(key_lastFilterFileType, filterFileType_CP.getText());
             prop.put(key_lastDifferenceCode, differenceCode_CP.getValue());
+            String addSpaceValue = addSpace_CP.isSelected() ? activation : unActivation;
+            prop.put(key_lastAddSpace, addSpaceValue);
+            String firstRenameValue = firstRename_CP.isSelected() ? activation : unActivation;
+            prop.put(key_firstRename, firstRenameValue);
             String openDirectoryValue = openDirectory_CP.isSelected() ? activation : unActivation;
             prop.put(key_lastOpenDirectory, openDirectoryValue);
             String reverseFileTypeValue = reverseFileType_CP.isSelected() ? activation : unActivation;
             prop.put(key_reverseFileType, reverseFileTypeValue);
-            String addSpaceValue = addSpace_CP.isSelected() ? activation : unActivation;
-            prop.put(key_lastAddSpace, addSpaceValue);
             OutputStream output = checkRunningOutputStream(configFile_CP);
             prop.store(output, null);
             input.close();
@@ -227,6 +232,7 @@ public class CopyFileController extends RootController {
             setControlLastConfig(subCode_CP, prop, key_lastSubCode);
             setControlLastConfig(addSpace_CP, prop, key_lastAddSpace);
             setControlLastConfig(addFileType_CP, prop, key_addFileType);
+            setControlLastConfig(firstRename_CP, prop, key_firstRename);
             setControlLastConfig(hideFileType_CP, prop, key_lastHideFileType);
             setControlLastConfig(openDirectory_CP, prop, key_lastOpenDirectory);
             setControlLastConfig(reverseFileType_CP, prop, key_reverseFileType);
@@ -242,13 +248,17 @@ public class CopyFileController extends RootController {
     private void setToolTip() {
         addToolTip(tip_tag, tag_CP);
         addToolTip(tip_prefix, prefix_CP);
+        addToolTip(tip_copyNum, copyNum_CP);
         addToolTip(tip_addSpace, addSpace_CP);
-        addToolTip(tip_moveButton, moveButton_CP);
+        addToolTip(tip_updateCopy, updateCopy_CP);
+        addToolTip(tip_copyButton, copyButton_CP);
         addToolTip(tip_learButton, clearButton_CP);
-        addToolTip(tip_movePath, outPathButton_CP);
+        addToolTip(tip_copyPath, outPathButton_CP);
+        addToolTip(tip_firstRename, firstRename_CP);
         addToolTip(tip_openDirectory, openDirectory_CP);
-        addToolTip(tip_addFileButton, addFileButton_CP);
         addToolTip(tip_filterFileType, filterFileType_CP);
+        addToolTip(tip_addCopyFileButton, addFileButton_CP);
+        addToolTip(tip_removePathButton, removePathButton_CP);
         addToolTip(reverseFileType_CP.getText(), reverseFileType_CP);
         addValueToolTip(subCode_CP, tip_subCode, subCode_CP.getValue());
         addValueToolTip(copyType_CP, tip_moveType, copyType_CP.getValue());
@@ -261,7 +271,7 @@ public class CopyFileController extends RootController {
      * 设置要防重复点击的组件
      */
     private void setDisableNodes() {
-        disableNodes.add(moveButton_CP);
+        disableNodes.add(copyButton_CP);
         disableNodes.add(filterHBox_CP);
         disableNodes.add(clearButton_CP);
         disableNodes.add(outPathButton_CP);
@@ -278,10 +288,10 @@ public class CopyFileController extends RootController {
         textFieldValueListener(prefix_CP, tip_prefix);
         // 限制重名文件尾缀输入框内容
         integerRangeTextField(tag_CP, 0, null, tip_tag);
-        // 限制复制数量输入框内容
-        integerRangeTextField(copyNum_CP, 1, null, tip_tag);
         // 鼠标悬留提示输入的需要识别的文件后缀名
         textFieldValueListener(filterFileType_CP, tip_filterFileType);
+        // 限制复制数量输入框内容
+        integerRangeTextField(copyNum_CP, 1, null, tip_copyNum);
     }
 
     /**
@@ -295,13 +305,13 @@ public class CopyFileController extends RootController {
         CheckBox reverseSort = settingController.reverseSort_Set;
         TaskBean<FileBean> taskBean = new TaskBean<>();
         taskBean.setReverseSort(reverseSort.isSelected())
+                .setInFileList(new ArrayList<>(files))
                 .setComparatorTableColumn(size_CP)
                 .setProgressBar(progressBar_CP)
                 .setMassageLabel(fileNumber_CP)
                 .setDisableNodes(disableNodes)
                 .setTableView(tableView_CP)
                 .setSortType(sortValue)
-                .setInFileList(files)
                 .setTabId(tabId);
         return taskBean;
     }
@@ -319,6 +329,7 @@ public class CopyFileController extends RootController {
                 .setOpenDirectory(openDirectory_CP.isSelected())
                 .setDifferenceCode(differenceCode_CP.getValue())
                 .setFilterFileType(filterFileType_CP.getText())
+                .setFirstRename(firstRename_CP.isSelected())
                 .setHideFileType(hideFileType_CP.getValue())
                 .setAddSpace(addSpace_CP.isSelected())
                 .setCopyType(copyType_CP.getValue())
@@ -344,7 +355,7 @@ public class CopyFileController extends RootController {
             throw new RuntimeException(e);
         }
         CopyFileDetailController controller = loader.getController();
-        controller.initData(item);
+        controller.initData(item, outFilePath);
         // 设置保存后的回调
         controller.setRefreshCallback(() -> {
             if (item.isRemove()) {
@@ -444,18 +455,17 @@ public class CopyFileController extends RootController {
     private void handleDrop(DragEvent dragEvent) {
         List<File> files = dragEvent.getDragboard().getFiles();
         TaskBean<FileBean> taskBean = creatTaskBean(files);
-        Task<Void> readFileTask = readMoveFile(taskBean);
-        bindingTaskNode(readFileTask, taskBean);
-        readFileTask.setOnSucceeded(event -> {
+        Task<List<FileBean>> addFileTask = readFile(taskBean);
+        bindingTaskNode(addFileTask, taskBean);
+        addFileTask.setOnSucceeded(event -> {
+            addFileTask.getValue().forEach(fileBean -> fileBean.setCopyConfig(creatCopyConfig()));
             taskUnbind(taskBean);
-            // 更新文件数量
-            updateTableViewSizeText(tableView_CP, fileNumber_CP, text_file);
         });
         addFileType_CP.setDisable(true);
-        if (!readFileTask.isRunning()) {
+        if (!addFileTask.isRunning()) {
             Thread.ofVirtual()
-                    .name("readFileTask-vThread" + tabId)
-                    .start(readFileTask);
+                    .name("addFileTask-vThread" + tabId)
+                    .start(addFileTask);
         }
     }
 
@@ -466,8 +476,17 @@ public class CopyFileController extends RootController {
      */
     @FXML
     private void acceptDrop(DragEvent dragEvent) {
-        dragEvent.acceptTransferModes(TransferMode.COPY);
-        dragEvent.consume();
+        List<File> files = dragEvent.getDragboard().getFiles();
+        String addType = addFileType_CP.getValue();
+        files.forEach(file -> {
+            if (text_addFile.equals(addType) && file.isFile()) {
+                dragEvent.acceptTransferModes(TransferMode.COPY);
+                dragEvent.consume();
+            } else if (text_addDirectory.equals(addType) && file.isDirectory()) {
+                dragEvent.acceptTransferModes(TransferMode.COPY);
+                dragEvent.consume();
+            }
+        });
     }
 
     /**
@@ -527,6 +546,7 @@ public class CopyFileController extends RootController {
         if (selectedFile != null) {
             // 更新所选文件路径显示
             outFilePath = updatePathLabel(selectedFile.getPath(), outFilePath, key_outFilePath, outPath_CP, configFile_CP);
+            removePathButton_CP.setVisible(true);
         }
     }
 
@@ -544,12 +564,11 @@ public class CopyFileController extends RootController {
         if (text_addFile.equals(addFileType)) {
             List<File> files = creatFilesChooser(window, inFilePath, null, text_selectFile);
             TaskBean<FileBean> taskBean = creatTaskBean(files);
-            Task<Void> addFileTask = addMoveFile(taskBean, false);
+            Task<List<FileBean>> addFileTask = readFile(taskBean);
             bindingTaskNode(addFileTask, taskBean);
             addFileTask.setOnSucceeded(event -> {
+                addFileTask.getValue().forEach(fileBean -> fileBean.setCopyConfig(creatCopyConfig()));
                 taskUnbind(taskBean);
-                // 更新文件数量
-                updateTableViewSizeText(tableView_CP, fileNumber_CP, text_file);
             });
             addFileType_CP.setDisable(true);
             if (!addFileTask.isRunning()) {
@@ -569,21 +588,10 @@ public class CopyFileController extends RootController {
             // 设置回调
             controller.setFileChooserCallback(fileBeanList -> {
                 fileBeanList.forEach(fileBean -> fileBean.setCopyConfig(creatCopyConfig()));
-                TaskBean<FileBean> taskBean = creatTaskBean(null);
-                taskBean.setBeanList(fileBeanList);
-                Task<Void> removeSameFileTask = removeSameMoveFile(taskBean);
-                bindingTaskNode(removeSameFileTask, taskBean);
-                removeSameFileTask.setOnSucceeded(event -> {
-                    taskUnbind(taskBean);
-                    // 更新文件数量
-                    updateTableViewSizeText(tableView_CP, fileNumber_CP, text_file);
-                });
+                tableView_CP.getItems().addAll(fileBeanList);
+                tableView_CP.refresh();
                 addFileType_CP.setDisable(true);
-                if (!removeSameFileTask.isRunning()) {
-                    Thread.ofVirtual()
-                            .name("removeSameFileTask-vThread" + tabId)
-                            .start(removeSameFileTask);
-                }
+
             });
         }
     }
@@ -697,6 +705,15 @@ public class CopyFileController extends RootController {
         if (copyFileTask != null && copyFileTask.isRunning()) {
             copyFileTask.cancel();
         }
+    }
+
+    /**
+     * 删除目标路径按钮
+     */
+    @FXML
+    private void removePath() {
+        setPathLabel(outPath_CP, "");
+        removePathButton_CP.setVisible(false);
     }
 
 }

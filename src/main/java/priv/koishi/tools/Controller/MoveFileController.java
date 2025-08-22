@@ -225,7 +225,7 @@ public class MoveFileController extends RootController {
         addToolTip(tip_learButton, clearButton_MV);
         addToolTip(tip_movePath, outPathButton_MV);
         addToolTip(tip_openDirectory, openDirectory_MV);
-        addToolTip(tip_addFileButton, addFileButton_MV);
+        addToolTip(tip_addMoveFileButton, addFileButton_MV);
         addToolTip(tip_filterFileType, filterFileType_MV);
         addToolTip(reverseFileType_MV.getText(), reverseFileType_MV);
         addValueToolTip(subCode_MV, tip_subCode, subCode_MV.getValue());

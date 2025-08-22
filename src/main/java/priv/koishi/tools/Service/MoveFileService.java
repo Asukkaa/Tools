@@ -8,7 +8,6 @@ import priv.koishi.tools.Bean.FileBean;
 import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.CodeRenameConfig;
 import priv.koishi.tools.Configuration.FileConfig;
-import priv.koishi.tools.Enum.CopyMode;
 import priv.koishi.tools.Visitor.CopyVisitor;
 
 import java.awt.*;
@@ -162,7 +161,6 @@ public class MoveFileService {
                 if (text_addDirectory.equals(addFileType)) {
                     // 筛选顶级目录
                     List<File> topDirs = filterTopDirectories(fileList);
-                    CopyMode copyMode = determineCopyMode(moveType);
                     int topDirsSize = topDirs.size();
                     for (int i = 0; i < topDirsSize; i++) {
                         File source = topDirs.get(i);
@@ -172,7 +170,7 @@ public class MoveFileService {
                         Files.walkFileTree(sourcePath,
                                 new CopyVisitor(sourcePath,
                                         targetPath,
-                                        copyMode,
+                                        determineCopyMode(moveType),
                                         filterExtensionList,
                                         sourceAction,
                                         hideFileType,

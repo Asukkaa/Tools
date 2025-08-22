@@ -67,7 +67,7 @@ public class SettingController extends RootController {
     public Label runningMemory_Set, thisPath_Set, systemMemory_Set, gcType_Set;
 
     @FXML
-    public CheckBox loadRename_Set, loadFileName_Set, loadImgToExcel_Set, lastTab_Set, fullWindow_Set,
+    public CheckBox loadRename_Set, loadFileName_Set, loadImgToExcel_Set, lastTab_Set, fullWindow_Set, loadCopyFile_Set,
             reverseSort_Set, loadAutoClick_Set, maxWindow_Set, loadMoveFile_Set;
 
     /**
@@ -183,6 +183,7 @@ public class SettingController extends RootController {
      */
     private void setLoadLastConfigs() throws IOException {
         Properties prop = new Properties();
+        setLoadLastConfig(prop, loadCopyFile_Set, configFile_CP);
         setLoadLastConfig(prop, loadMoveFile_Set, configFile_MV);
         setLoadLastConfig(prop, loadFileName_Set, configFile_Name);
         setLoadLastConfig(prop, loadRename_Set, configFile_Rename);
@@ -376,7 +377,7 @@ public class SettingController extends RootController {
     }
 
     /**
-     * 按指定规则批量重命名文件功能加载上次设置信息
+     * 文件重命名工具 功能加载上次设置信息
      *
      * @throws IOException io异常
      */
@@ -386,7 +387,7 @@ public class SettingController extends RootController {
     }
 
     /**
-     * 获取文件夹下的文件名称功能加载上次设置信息
+     * 获取文件夹下的文件信息工具 功能加载上次设置信息
      *
      * @throws IOException io异常
      */
@@ -396,7 +397,7 @@ public class SettingController extends RootController {
     }
 
     /**
-     * 将图片与excel匹配并插入功能加载上次设置信息
+     * excel插入图片工具 功能加载上次设置信息
      *
      * @throws IOException io异常
      */
@@ -406,7 +407,7 @@ public class SettingController extends RootController {
     }
 
     /**
-     * 自动操作工具功能加载上次设置信息
+     * 自动操作工具 功能加载上次设置信息
      *
      * @throws IOException io异常
      */
@@ -416,13 +417,23 @@ public class SettingController extends RootController {
     }
 
     /**
-     * 自动操作工具功能加载上次设置信息
+     * 文件移动工具 功能加载上次设置信息
      *
      * @throws IOException io异常
      */
     @FXML
     private void loadMoveFileAction() throws IOException {
         setLoadLastConfigCheckBox(loadMoveFile_Set, configFile_MV, key_loadLastConfig);
+    }
+
+    /**
+     * 文件复制工具 功能加载上次设置信息
+     *
+     * @throws IOException io异常
+     */
+    @FXML
+    private void loadCopyFileAction() throws IOException {
+        setLoadLastConfigCheckBox(loadCopyFile_Set, configFile_CP, key_loadLastConfig);
     }
 
     /**
