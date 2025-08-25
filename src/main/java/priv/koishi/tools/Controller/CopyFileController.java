@@ -62,12 +62,12 @@ public class CopyFileController extends RootController {
     /**
      * 目标文件路径
      */
-    public static String outFilePath;
+    public String outFilePath;
 
     /**
      * 上次选择的文件路径
      */
-    public static String inFilePath;
+    public String inFilePath;
 
     /**
      * 详情页高度
@@ -82,17 +82,17 @@ public class CopyFileController extends RootController {
     /**
      * 页面标识符
      */
-    private static final String tabId = "_CP";
+    private final String tabId = "_CP";
 
     /**
      * 复制文件线程任务
      */
-    private static Task<List<String>> copyFileTask;
+    private Task<List<String>> copyFileTask;
 
     /**
      * 要防重复点击的组件
      */
-    private static final List<Node> disableNodes = new ArrayList<>();
+    private final List<Node> disableNodes = new ArrayList<>();
 
     @FXML
     public AnchorPane anchorPane_CP;

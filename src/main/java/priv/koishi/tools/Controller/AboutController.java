@@ -55,17 +55,17 @@ public class AboutController extends RootController {
     /**
      * 日志记录器
      */
-    private static final Logger logger = LogManager.getLogger(AboutController.class);
+    private final Logger logger = LogManager.getLogger(AboutController.class);
 
     /**
      * 更新时间格式
      */
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss");
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss");
 
     /**
      * 要防重复点击的组件
      */
-    private static final List<Node> disableNodes = new ArrayList<>();
+    private final List<Node> disableNodes = new ArrayList<>();
 
     /**
      * 下载更新任务
@@ -289,9 +289,8 @@ public class AboutController extends RootController {
                             }
                             taskNotSuccess(taskBean, text_downloadFailed);
                             progressDialog.close();
-                            Throwable ex = downloadedUpdateTask.getException();
                             downloadedUpdateTask = null;
-                            throw new RuntimeException(text_downloadFailed, ex);
+                            throw new RuntimeException(text_downloadFailed, event.getSource().getException());
                         });
                         downloadedUpdateTask.setOnCancelled(workerStateEvent ->
                                 downloadedUpdateTask = null);

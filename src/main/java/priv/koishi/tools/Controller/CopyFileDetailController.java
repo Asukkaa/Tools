@@ -54,7 +54,7 @@ public class CopyFileDetailController extends RootController {
     /**
      * 页面标识符
      */
-    private static final String tabId = "_CD";
+    private final String tabId = "_CD";
 
     /**
      * 读取要复制的文件线程任务
@@ -79,7 +79,7 @@ public class CopyFileDetailController extends RootController {
     /**
      * 要防重复点击的组件
      */
-    private static final List<Node> disableNodes = new ArrayList<>();
+    private final List<Node> disableNodes = new ArrayList<>();
 
     /**
      * 回调函数

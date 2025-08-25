@@ -1,20 +1,30 @@
 package priv.koishi.tools.Service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
 import javafx.scene.robot.Robot;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import priv.koishi.tools.Bean.AutoClickTaskBean;
 import priv.koishi.tools.Bean.ClickPositionBean;
+import priv.koishi.tools.Bean.TaskBean;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import static javafx.scene.input.MouseButton.NONE;
 import static javafx.scene.input.MouseButton.PRIMARY;
 import static priv.koishi.tools.Finals.CommonFinals.*;
+import static priv.koishi.tools.Utils.FileUtils.notOverwritePath;
+import static priv.koishi.tools.Utils.UiUtils.changeDisableNodes;
 
 /**
  * 自动点击线程任务类
@@ -26,9 +36,71 @@ import static priv.koishi.tools.Finals.CommonFinals.*;
 public class AutoClickService {
 
     /**
+     * 加载 PMC 文件
+     *
+     * @param taskBean 线程任务参数
+     * @param files    文件列表
+     * @return PMC 文件列表
+     */
+    public static Task<List<ClickPositionBean>> loadPMC(TaskBean<ClickPositionBean> taskBean, List<File> files) {
+        return new Task<>() {
+            @Override
+            protected List<ClickPositionBean> call() {
+                changeDisableNodes(taskBean, true);
+                updateMessage(text_readData);
+                List<ClickPositionBean> clickPositionBeans = new ArrayList<>();
+                for (File file : files) {
+                    // 读取 JSON 文件并转换为 List<ClickPositionBean>
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    String path = file.getPath();
+                    File jsonFile = new File(path);
+                    try {
+                        clickPositionBeans.addAll(objectMapper.readValue(jsonFile, objectMapper.getTypeFactory()
+                                .constructCollectionType(List.class, ClickPositionBean.class)));
+                    } catch (Exception e) {
+                        throw new RuntimeException(text_loadAutoClick + path + text_formatError);
+                    }
+                }
+                return clickPositionBeans;
+            }
+        };
+    }
+
+    /**
+     * 导出 PMC 文件
+     *
+     * @param taskBean    线程任务参数
+     * @param fileName    要导出的文件名
+     * @param outFilePath 导出文件夹路径
+     * @return 导出文件路径
+     */
+    public static Task<String> exportPMC(TaskBean<ClickPositionBean> taskBean, String fileName, String outFilePath) {
+        return new Task<>() {
+            @Override
+            protected String call() throws IOException {
+                changeDisableNodes(taskBean, true);
+                updateMessage("正在导出自动操作流程");
+                ObservableList<ClickPositionBean> tableViewItems = taskBean.getTableView().getItems();
+                if (CollectionUtils.isEmpty(tableViewItems)) {
+                    throw new RuntimeException(text_noAutoClickList);
+                }
+                if (StringUtils.isBlank(outFilePath)) {
+                    throw new RuntimeException(text_outPathNull);
+                }
+                ObjectMapper objectMapper = new ObjectMapper();
+                String path = notOverwritePath(outFilePath + File.separator + fileName + PMC);
+                objectMapper.writeValue(new File(path), tableViewItems);
+                updateMessage(text_saveSuccess + path);
+                return path;
+            }
+        };
+    }
+
+    /**
      * 自动点击
      *
      * @param taskBean 线程任务参数
+     * @param robot    自动任务执行机器人
      */
     public static Task<Void> autoClick(AutoClickTaskBean taskBean, Robot robot) {
         return new Task<>() {

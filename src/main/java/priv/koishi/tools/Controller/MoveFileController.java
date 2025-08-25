@@ -52,27 +52,27 @@ public class MoveFileController extends RootController {
     /**
      * 目标文件路径
      */
-    public static String outFilePath;
+    public String outFilePath;
 
     /**
      * 上次选择的文件路径
      */
-    public static String inFilePath;
+    public String inFilePath;
 
     /**
      * 页面标识符
      */
-    private static final String tabId = "_MV";
+    private final String tabId = "_MV";
 
     /**
      * 移动文件线程任务
      */
-    private static Task<String> moveFileTask;
+    private Task<String> moveFileTask;
 
     /**
      * 要防重复点击的组件
      */
-    private static final List<Node> disableNodes = new ArrayList<>();
+    private final List<Node> disableNodes = new ArrayList<>();
 
     @FXML
     public AnchorPane anchorPane_MV;

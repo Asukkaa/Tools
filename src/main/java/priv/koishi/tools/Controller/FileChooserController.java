@@ -47,7 +47,7 @@ public class FileChooserController extends RootController {
     /**
      * 页面标识符
      */
-    private static final String tabId = "_FC";
+    private final String tabId = "_FC";
 
     /**
      * 文件查询设置
@@ -62,12 +62,12 @@ public class FileChooserController extends RootController {
     /**
      * 文件查询任务
      */
-    private static Task<List<File>> readAllFilesTask;
+    private Task<List<File>> readAllFilesTask;
 
     /**
      * 要防重复点击的组件
      */
-    private static final List<Node> disableNodes = new ArrayList<>();
+    private final List<Node> disableNodes = new ArrayList<>();
 
     /**
      * 回调函数

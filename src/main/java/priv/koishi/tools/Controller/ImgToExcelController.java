@@ -58,67 +58,67 @@ public class ImgToExcelController extends RootController {
     /**
      * 日志记录器
      */
-    private static final Logger logger = LogManager.getLogger(ImgToExcelController.class);
+    private final Logger logger = LogManager.getLogger(ImgToExcelController.class);
 
     /**
      * 要处理的文件夹路径
      */
-    private static String inFilePath;
+    private String inFilePath;
 
     /**
      * 要处理的文件夹文件
      */
-    private static List<File> inFileList;
+    private List<File> inFileList;
 
     /**
      * 导出文件路径
      */
-    private static String outFilePath;
+    private String outFilePath;
 
     /**
      * 默认导出文件名称
      */
-    private static String defaultOutFileName;
+    private String defaultOutFileName;
 
     /**
      * excel模板路径
      */
-    private static String excelInPath;
+    private String excelInPath;
 
     /**
      * 页面标识符
      */
-    private static final String tabId = "_Img";
+    private final String tabId = "_Img";
 
     /**
      * 默认图片宽度
      */
-    private static int defaultImgWidth;
+    private int defaultImgWidth;
 
     /**
      * 默认图片高度
      */
-    private static int defaultImgHeight;
+    private int defaultImgHeight;
 
     /**
      * 默认起始输出列
      */
-    private static int defaultStartCell;
+    private int defaultStartCell;
 
     /**
      * 默认起始读取行
      */
-    private static int defaultReadRow;
+    private int defaultReadRow;
 
     /**
      * 默认起始读取列
      */
-    private static int defaultReadCell;
+    private int defaultReadCell;
 
     /**
      * 要防重复点击的组件
      */
-    private static final List<Node> disableNodes = new ArrayList<>();
+    private final List<Node> disableNodes = new ArrayList<>();
 
     /**
      * 构建excel线程
@@ -429,11 +429,9 @@ public class ImgToExcelController extends RootController {
         readExcelTask.setOnFailed(event -> {
             taskUnbind(taskBean);
             taskNotSuccess(taskBean, text_taskFailed);
-            // 获取抛出的异常
-            Throwable ex = readExcelTask.getException();
             readExcelTask = null;
             inFileList = null;
-            throw new RuntimeException(ex);
+            throw new RuntimeException(event.getSource().getException());
         });
         if (!readExcelTask.isRunning()) {
             Thread.ofVirtual()
@@ -850,12 +848,10 @@ public class ImgToExcelController extends RootController {
                             taskBean.getMassageLabel().setText(text_saveSuccess + excelPath);
                             taskBean.getMassageLabel().setTextFill(Color.GREEN);
                         });
-                        saveExcelTask.setOnFailed(s -> {
+                        saveExcelTask.setOnFailed(event -> {
                             taskNotSuccess(taskBean, text_taskFailed);
-                            // 获取抛出的异常
-                            Throwable ex = saveExcelTask.getException();
                             resetTasks();
-                            throw new RuntimeException(ex);
+                            throw new RuntimeException(event.getSource().getException());
                         });
                         if (!saveExcelTask.isRunning()) {
                             Thread.ofVirtual()
@@ -863,12 +859,10 @@ public class ImgToExcelController extends RootController {
                                     .start(saveExcelTask);
                         }
                     });
-                    buildExcelTask.setOnFailed(s -> {
+                    buildExcelTask.setOnFailed(event -> {
                         taskNotSuccess(taskBean, text_taskFailed);
-                        // 获取抛出的异常
-                        Throwable ex = buildExcelTask.getException();
                         resetTasks();
-                        throw new RuntimeException(ex);
+                        throw new RuntimeException(event.getSource().getException());
                     });
                     if (!buildExcelTask.isRunning()) {
                         Thread.ofVirtual()

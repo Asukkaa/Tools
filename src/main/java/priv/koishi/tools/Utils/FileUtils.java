@@ -44,7 +44,7 @@ public class FileUtils {
      * 获取文件类型
      *
      * @param file 文件
-     * @return 文件类型
+     * @return 带有 . 的文件类型
      */
     public static String getFileType(File file) {
         if (file.isDirectory()) {

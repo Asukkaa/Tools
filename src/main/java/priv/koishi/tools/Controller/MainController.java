@@ -44,25 +44,28 @@ public class MainController extends RootController {
     public static AutoClickController autoClickController;
 
     /**
-     * 获取文件夹下的文件信息页面控制器
+     * 获取文件夹下的文件信息工具页面控制器
      */
     public static FileNameToExcelController fileNameToExcelController;
 
     /**
-     * 将图片与excel匹配并插入页面控制器
+     * excel插入图片工具页面控制器
      */
     public static ImgToExcelController imgToExcelController;
 
     /**
-     * 按指定规则批量重命名文件页面控制器
+     * 文件重命名工具页面控制器
      */
     public static FileRenameController fileRenameController;
 
     /**
-     * 移动文件工具页面控制器
+     * 文件移动工具页面控制器
      */
     public static MoveFileController moveFileController;
 
+    /**
+     * 文件复制工具页面控制器
+     */
     public static CopyFileController copyFileController;
 
     @FXML

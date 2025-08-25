@@ -57,37 +57,37 @@ public class FileRenameController extends RootController {
     /**
      * 要处理的文件夹路径
      */
-    private static String inFilePath;
+    private String inFilePath;
 
     /**
      * excel模板路径
      */
-    private static String excelInPath;
+    private String excelInPath;
 
     /**
      * 页面标识符
      */
-    private static final String tabId = "_Re";
+    private final String tabId = "_Re";
 
     /**
      * 文件名起始编号
      */
-    private static int defaultStartNameNum;
+    private int defaultStartNameNum;
 
     /**
      * 默认起始读取行
      */
-    private static int defaultReadRow;
+    private int defaultReadRow;
 
     /**
      * 默认起始读取列
      */
-    private static int defaultReadCell;
+    private int defaultReadCell;
 
     /**
      * 要防重复点击的组件
      */
-    private static final List<Node> disableNodes = new ArrayList<>();
+    private final List<Node> disableNodes = new ArrayList<>();
 
     /**
      * 设置所选数据为同一编号右键菜单

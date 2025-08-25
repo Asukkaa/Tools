@@ -52,42 +52,42 @@ public class FileNameToExcelController extends RootController {
     /**
      * 要处理的文件夹路径
      */
-    private static String inFilePath;
+    private String inFilePath;
 
     /**
      * 导出文件路径
      */
-    private static String outFilePath;
+    private String outFilePath;
 
     /**
      * 默认导出文件名称
      */
-    private static String defaultOutFileName;
+    private String defaultOutFileName;
 
     /**
      * 默认读取表名称
      */
-    private static String defaultSheetName;
+    private String defaultSheetName;
 
     /**
      * excel模板路径
      */
-    private static String excelInPath;
+    private String excelInPath;
 
     /**
      * 页面标识符
      */
-    private static final String tabId = "_Name";
+    private final String tabId = "_Name";
 
     /**
      * 默认起始输出列
      */
-    private static int defaultStartCell;
+    private int defaultStartCell;
 
     /**
      * 要防重复点击的组件
      */
-    private static final List<Node> disableNodes = new ArrayList<>();
+    private final List<Node> disableNodes = new ArrayList<>();
 
     /**
      * 读取文件线程
