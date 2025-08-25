@@ -46,8 +46,7 @@ import static priv.koishi.tools.MainApplication.mainStage;
 import static priv.koishi.tools.Service.CopyFileService.copyFile;
 import static priv.koishi.tools.Service.ReadDataService.readFile;
 import static priv.koishi.tools.Utils.FileUtils.*;
-import static priv.koishi.tools.Utils.TaskUtils.bindingTaskNode;
-import static priv.koishi.tools.Utils.TaskUtils.taskUnbind;
+import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.addToolTip;
 
@@ -514,16 +513,31 @@ public class CopyFileController extends RootController {
                 .setTableView(tableView_CP)
                 .setMassageLabel(log_CP)
                 .setBeanList(items);
-        copyFileTask = copyFile(taskBean);
+        copyFileTask = copyFile(taskBean, text_addDirectory.equals(addFileType_CP.getValue()));
+        taskBean.setWorkTask(copyFileTask);
         bindingTaskNode(copyFileTask, taskBean);
         copyFileTask.setOnSucceeded(event -> {
             taskBean.getCancelButton().setVisible(false);
             taskUnbind(taskBean);
             List<String> result = copyFileTask.getValue();
-            for (String s : result) {
-                openDirectory(s);
+            if (CollectionUtils.isEmpty(result)) {
+                taskNotSuccess(taskBean, text_taskFailed);
+            } else {
+                for (String s : result) {
+                    openDirectory(s);
+                }
+                taskBean.getMassageLabel().setTextFill(Color.GREEN);
             }
-            taskBean.getMassageLabel().setTextFill(Color.GREEN);
+            copyFileTask = null;
+        });
+        copyFileTask.setOnFailed(event -> {
+            taskNotSuccess(taskBean, text_taskFailed);
+            copyFileTask = null;
+            throw new RuntimeException(event.getSource().getException());
+        });
+        copyFileTask.setOnCancelled(event -> {
+            taskNotSuccess(taskBean, text_taskCancelled);
+            copyFileTask = null;
         });
         if (!copyFileTask.isRunning()) {
             Thread.ofVirtual()

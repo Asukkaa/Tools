@@ -1,5 +1,6 @@
 package priv.koishi.tools.Visitor;
 
+import javafx.concurrent.Task;
 import org.apache.commons.collections4.CollectionUtils;
 import priv.koishi.tools.Configuration.CodeRenameConfig;
 import priv.koishi.tools.Enum.CopyMode;
@@ -68,6 +69,11 @@ public class CopyVisitor extends SimpleFileVisitor<Path> {
     private final boolean reverseFileType;
 
     /**
+     * 工作任务线程
+     */
+    private final Task<?> workTask;
+
+    /**
      * 构造函数
      *
      * @param sourceRoot          源目录
@@ -78,9 +84,11 @@ public class CopyVisitor extends SimpleFileVisitor<Path> {
      * @param hideFileType        隐藏文件处理方式
      * @param codeRenameConfig    重命名规则
      * @param reverseFileType     是否反向过滤文件类型（true-反向过滤）
+     * @param workTask            工作任务线程
      */
     public CopyVisitor(Path sourceRoot, Path targetRoot, CopyMode copyMode, List<String> filterExtensionList,
-                       String sourceAction, String hideFileType, CodeRenameConfig codeRenameConfig, boolean reverseFileType) {
+                       String sourceAction, String hideFileType, CodeRenameConfig codeRenameConfig,
+                       boolean reverseFileType, Task<?> workTask) {
         this.sourceRoot = sourceRoot;
         this.targetRoot = targetRoot;
         this.copyMode = copyMode;
@@ -89,6 +97,7 @@ public class CopyVisitor extends SimpleFileVisitor<Path> {
         this.hideFileType = hideFileType;
         this.codeRenameConfig = codeRenameConfig;
         this.reverseFileType = reverseFileType;
+        this.workTask = workTask;
     }
 
     /**
@@ -123,6 +132,15 @@ public class CopyVisitor extends SimpleFileVisitor<Path> {
     }
 
     /**
+     * 检查任务是否取消
+     *
+     * @return 如果任务已取消或未运行，则返回true；否则返回false
+     */
+    private boolean isTaskCancelled() {
+        return workTask != null && workTask.isCancelled();
+    }
+
+    /**
      * 在访问目录前处理目录创建逻辑
      *
      * @param path  当前访问的目录路径
@@ -132,6 +150,10 @@ public class CopyVisitor extends SimpleFileVisitor<Path> {
      */
     @Override
     public FileVisitResult preVisitDirectory(Path path, BasicFileAttributes attrs) throws IOException {
+        // 检测任务是否取消
+        if (isTaskCancelled()) {
+            return FileVisitResult.TERMINATE;
+        }
         // 处理隐藏文件，顶层目录是否隐藏都要读取
         if (!path.equals(sourceRoot)) {
             // 只复制根目录文件
@@ -176,6 +198,10 @@ public class CopyVisitor extends SimpleFileVisitor<Path> {
      */
     @Override
     public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
+        // 检测任务是否取消
+        if (isTaskCancelled()) {
+            return FileVisitResult.TERMINATE;
+        }
         // 跳过非根目录文件
         if (copyMode == CopyMode.ONLY_ROOT_FILES && !path.getParent().equals(sourceRoot)) {
             return FileVisitResult.CONTINUE;
@@ -247,17 +273,24 @@ public class CopyVisitor extends SimpleFileVisitor<Path> {
         if (exc != null) {
             throw exc;
         }
+        // 检测任务是否取消
+        if (isTaskCancelled()) {
+            return FileVisitResult.TERMINATE;
+        }
         if (sourceAction.equals(sourceAction_deleteFolder)) {
             // 仅处理源目录及其子目录删除逻辑
             try (Stream<Path> stream = Files.walk(dir)) {
-                stream.sorted(Comparator.reverseOrder())
-                        .forEach(path -> {
-                            try {
-                                Files.delete(path);
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
-                        });
+                List<Path> sortedPaths = stream
+                        .sorted(Comparator.reverseOrder())
+                        .toList();
+                for (Path path : sortedPaths) {
+                    if (isTaskCancelled()) {
+                        break;
+                    }
+                    if (Files.exists(path)) {
+                        Files.delete(path);
+                    }
+                }
             }
         } else if (sourceAction.equals(sourceAction_trashFolder)) {
             Desktop.getDesktop().moveToTrash(dir.toFile());

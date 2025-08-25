@@ -149,7 +149,9 @@ public class TaskUtils {
             progressBar.setVisible(false);
             progressBar.progressProperty().unbind();
         }
-        taskBean.setInFileList(null);
+        taskBean.setInFileList(null)
+                .setBeanList(null)
+                .setWorkTask(null);
         System.gc();
     }
 

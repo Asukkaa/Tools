@@ -1,6 +1,9 @@
 package priv.koishi.tools.Service;
 
+import javafx.application.Platform;
 import javafx.concurrent.Task;
+import javafx.scene.control.Alert;
+import org.apache.commons.collections4.CollectionUtils;
 import priv.koishi.tools.Bean.FileBean;
 import priv.koishi.tools.Bean.TaskBean;
 import priv.koishi.tools.Configuration.CodeRenameConfig;
@@ -16,12 +19,12 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 
-import static priv.koishi.tools.Visitor.CopyVisitor.determineCopyMode;
 import static priv.koishi.tools.Finals.CommonFinals.*;
 import static priv.koishi.tools.Service.FileRenameService.getCodeRename;
 import static priv.koishi.tools.Utils.FileUtils.getFileType;
 import static priv.koishi.tools.Utils.FileUtils.readAllFiles;
 import static priv.koishi.tools.Utils.UiUtils.*;
+import static priv.koishi.tools.Visitor.CopyVisitor.determineCopyMode;
 
 /**
  * 文件复制工具服务类
@@ -95,10 +98,11 @@ public class CopyFileService {
     /**
      * 复制文件功能任务
      *
-     * @param taskBean 任务设置
+     * @param taskBean        任务设置
+     * @param checkParentPath 是否检查导出目录为父目录
      * @return 复制后要打开的目录
      */
-    public static Task<List<String>> copyFile(TaskBean<FileBean> taskBean) {
+    public static Task<List<String>> copyFile(TaskBean<FileBean> taskBean, boolean checkParentPath) {
         return new Task<>() {
             @Override
             protected List<String> call() throws IOException {
@@ -106,6 +110,40 @@ public class CopyFileService {
                 taskBean.getCancelButton().setVisible(true);
                 List<FileBean> fileBeans = taskBean.getBeanList();
                 int fileBeanListSize = fileBeans.size();
+                if (checkParentPath) {
+                    updateMessage("正在校验文件路径设置");
+                    updateProgress(0, fileBeanListSize);
+                    List<FileBean> errorFileBeans = new ArrayList<>();
+                    String errorMsg = "检测到错误的目标目录设置：\n";
+                    for (int i = 0; i < fileBeanListSize; i++) {
+                        if (isCancelled()) {
+                            break;
+                        }
+                        FileBean fileBean = fileBeans.get(i);
+                        CopyConfig copyConfig = fileBean.getCopyConfig();
+                        String copyType = copyConfig.getCopyType();
+                        String outPath = copyConfig.getOutPath();
+                        String sourcePath = fileBean.getPath();
+                        if (!copyType_file.equals(copyType) && !copyType_rootFile.equals(copyType)) {
+                            if (outPath.startsWith(sourcePath)) {
+                                errorFileBeans.add(fileBean);
+                                errorMsg += "\n序号为：" + fileBean.getIndex() + " 的文件夹 " + fileBean.getName() +
+                                        " 目标目录设置在源文件夹目录下" + "\n文件夹路径为：" + sourcePath +
+                                        "\n目标目录为：" + outPath + "\n";
+                            }
+                        }
+                        updateProgress(i + 1, fileBeanListSize);
+                    }
+                    if (CollectionUtils.isNotEmpty(errorFileBeans)) {
+                        String finalErrorMsg = errorMsg;
+                        Platform.runLater(() -> {
+                            Alert alert = creatErrorAlert(finalErrorMsg);
+                            alert.setHeaderText("目标目录不能设置在源文件夹目录下");
+                            alert.showAndWait();
+                        });
+                        return null;
+                    }
+                }
                 updateMessage("正在复制文件");
                 updateProgress(0, fileBeanListSize);
                 List<String> newPathList = new ArrayList<>();
@@ -172,7 +210,8 @@ public class CopyFileService {
                                         sourceAction_saveFile,
                                         copyConfig.getHideFileType(),
                                         codeRenameConfig,
-                                        copyConfig.isReverseFileType()));
+                                        copyConfig.isReverseFileType(),
+                                        taskBean.getWorkTask()));
                             } else {
                                 Files.copy(source.toPath(), newFile.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
                             }

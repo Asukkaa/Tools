@@ -37,8 +37,7 @@ import static priv.koishi.tools.MainApplication.mainScene;
 import static priv.koishi.tools.MainApplication.mainStage;
 import static priv.koishi.tools.Service.MoveFileService.*;
 import static priv.koishi.tools.Utils.FileUtils.*;
-import static priv.koishi.tools.Utils.TaskUtils.bindingTaskNode;
-import static priv.koishi.tools.Utils.TaskUtils.taskUnbind;
+import static priv.koishi.tools.Utils.TaskUtils.*;
 import static priv.koishi.tools.Utils.UiUtils.*;
 
 /**
@@ -64,6 +63,11 @@ public class MoveFileController extends RootController {
      * 页面标识符
      */
     private static final String tabId = "_MV";
+
+    /**
+     * 移动文件线程任务
+     */
+    private static Task<String> moveFileTask;
 
     /**
      * 要防重复点击的组件
@@ -102,7 +106,7 @@ public class MoveFileController extends RootController {
     public CheckBox openDirectory_MV, addSpace_MV, reverseFileType_MV;
 
     @FXML
-    public Button clearButton_MV, moveButton_MV, addFileButton_MV, outPathButton_MV;
+    public Button clearButton_MV, moveButton_MV, addFileButton_MV, outPathButton_MV, cancelButton_MV;
 
     @FXML
     public ChoiceBox<String> addFileType_MV, sourceAction_MV, moveType_MV, hideFileType_MV, differenceCode_MV,
@@ -400,7 +404,8 @@ public class MoveFileController extends RootController {
             throw new RuntimeException("请选择要移动的文件或文件夹");
         }
         TaskBean<FileBean> taskBean = new TaskBean<>();
-        taskBean.setProgressBar(progressBar_MV)
+        taskBean.setCancelButton(cancelButton_MV)
+                .setProgressBar(progressBar_MV)
                 .setDisableNodes(disableNodes)
                 .setTableView(tableView_MV)
                 .setMassageLabel(log_MV)
@@ -411,14 +416,29 @@ public class MoveFileController extends RootController {
                 .setAddSpace(addSpace_MV.isSelected())
                 .setSubCode(subCode_MV.getValue())
                 .setPrefix(prefix_MV.getText());
-        Task<Void> moveFileTask = moveFile(taskBean, codeRenameConfig);
+        moveFileTask = moveFile(taskBean, codeRenameConfig);
+        taskBean.setWorkTask(moveFileTask);
         bindingTaskNode(moveFileTask, taskBean);
         moveFileTask.setOnSucceeded(event -> {
             taskUnbind(taskBean);
-            if (openDirectory_MV.isSelected()) {
-                openDirectory(path);
+            if (StringUtils.isNotBlank(moveFileTask.getValue())) {
+                if (openDirectory_MV.isSelected()) {
+                    openDirectory(path);
+                }
+                log_MV.setTextFill(Color.GREEN);
+            } else {
+                taskNotSuccess(taskBean, text_taskFailed);
             }
-            log_MV.setTextFill(Color.GREEN);
+            moveFileTask = null;
+        });
+        moveFileTask.setOnFailed(event -> {
+            taskNotSuccess(taskBean, text_taskFailed);
+            moveFileTask = null;
+            throw new RuntimeException(event.getSource().getException());
+        });
+        moveFileTask.setOnCancelled(event -> {
+            taskNotSuccess(taskBean, text_taskCancelled);
+            moveFileTask = null;
         });
         if (!moveFileTask.isRunning()) {
             Thread.ofVirtual()
@@ -592,6 +612,16 @@ public class MoveFileController extends RootController {
     @FXML
     private void handleCheckBoxAction() {
         differenceCodeAction();
+    }
+
+    /**
+     * 取消移动
+     */
+    @FXML
+    private void cancelMove() {
+        if (moveFileTask != null && moveFileTask.isRunning()) {
+            moveFileTask.cancel();
+        }
     }
 
 }

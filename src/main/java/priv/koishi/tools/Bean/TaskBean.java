@@ -1,5 +1,6 @@
 package priv.koishi.tools.Bean;
 
+import javafx.concurrent.Task;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import lombok.Data;
@@ -109,5 +110,10 @@ public class TaskBean<T> {
      * excel表名下拉框
      */
     ChoiceBox<String> sheet;
+
+    /**
+     * 工作任务线程
+     */
+    Task<?> workTask;
 
 }

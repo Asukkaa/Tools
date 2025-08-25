@@ -1,6 +1,8 @@
 package priv.koishi.tools.Service;
 
+import javafx.application.Platform;
 import javafx.concurrent.Task;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TableView;
 import org.apache.commons.collections4.CollectionUtils;
@@ -136,12 +138,12 @@ public class MoveFileService {
      *
      * @param taskBean 任务设置
      */
-    public static Task<Void> moveFile(TaskBean<FileBean> taskBean, CodeRenameConfig codeRenameConfig) {
+    public static Task<String> moveFile(TaskBean<FileBean> taskBean, CodeRenameConfig codeRenameConfig) {
         return new Task<>() {
             @Override
-            protected Void call() throws IOException {
-                // 改变要防重复点击的组件状态
+            protected String call() throws IOException {
                 changeDisableNodes(taskBean, true);
+                taskBean.getCancelButton().setVisible(true);
                 updateMessage("正在校验要处理的路径");
                 List<FileBean> fileBeanList = taskBean.getBeanList();
                 String moveType = moveFileController.moveType_MV.getValue();
@@ -151,11 +153,38 @@ public class MoveFileService {
                 String hideFileType = moveFileController.hideFileType_MV.getValue();
                 List<String> filterExtensionList = getFilterExtensionList(moveFileController.filterFileType_MV);
                 List<File> fileList = new ArrayList<>();
-                for (FileBean fileBean : fileBeanList) {
-                    File file = new File(fileBean.getPath());
+                int fileListSize = fileBeanList.size();
+                updateProgress(0, fileListSize);
+                List<FileBean> errorFileBeans = new ArrayList<>();
+                String errorMsg = "检测到错误的目标目录设置：\n";
+                for (int i = 0; i < fileListSize; i++) {
+                    if (isCancelled()) {
+                        break;
+                    }
+                    FileBean fileBean = fileBeanList.get(i);
+                    String sourcePath = fileBean.getPath();
+                    File file = new File(sourcePath);
                     fileList.add(file);
+                    if (text_addDirectory.equals(addFileType)) {
+                        updateMessage("正在校验文件路径设置");
+                        if (targetDirectory.startsWith(sourcePath)) {
+                            errorFileBeans.add(fileBean);
+                            errorMsg += "\n序号为：" + fileBean.getIndex() + " 的文件夹 " + fileBean.getName() +
+                                    " 目标目录设置在源文件夹目录下" + "\n文件夹路径为：" + sourcePath +
+                                    "\n目标目录为：" + targetDirectory + "\n";
+                        }
+                    }
+                    updateProgress(i + 1, fileListSize);
                 }
-                int fileListSize = fileList.size();
+                if (CollectionUtils.isNotEmpty(errorFileBeans)) {
+                    String finalErrorMsg = errorMsg;
+                    Platform.runLater(() -> {
+                        Alert alert = creatErrorAlert(finalErrorMsg);
+                        alert.setHeaderText("目标目录不能设置在源文件夹目录下");
+                        alert.showAndWait();
+                    });
+                    return null;
+                }
                 updateMessage("开始移动文件");
                 updateProgress(0, fileListSize);
                 if (text_addDirectory.equals(addFileType)) {
@@ -163,6 +192,9 @@ public class MoveFileService {
                     List<File> topDirs = filterTopDirectories(fileList);
                     int topDirsSize = topDirs.size();
                     for (int i = 0; i < topDirsSize; i++) {
+                        if (isCancelled()) {
+                            break;
+                        }
                         File source = topDirs.get(i);
                         updateMessage("正在移动：" + source.getPath());
                         Path sourcePath = source.toPath();
@@ -175,11 +207,15 @@ public class MoveFileService {
                                         sourceAction,
                                         hideFileType,
                                         codeRenameConfig,
-                                        moveFileController.reverseFileType_MV.isSelected()));
+                                        moveFileController.reverseFileType_MV.isSelected(),
+                                        taskBean.getWorkTask()));
                         updateProgress(i + 1, fileListSize);
                     }
                 } else if (text_addFile.equals(addFileType)) {
                     for (int i = 0; i < fileListSize; i++) {
+                        if (isCancelled()) {
+                            break;
+                        }
                         File file = fileList.get(i);
                         if (file.isHidden() && text_noHideFile.equals(hideFileType)) {
                             continue;
@@ -202,7 +238,7 @@ public class MoveFileService {
                     }
                 }
                 updateMessage("所有文件以移动到：" + targetDirectory);
-                return null;
+                return targetDirectory;
             }
         };
     }
