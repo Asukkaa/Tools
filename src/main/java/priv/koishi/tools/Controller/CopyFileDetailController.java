@@ -302,7 +302,6 @@ public class CopyFileDetailController extends RootController {
                 .setDisableNodes(disableNodes)
                 .setTableView(tableView_CD)
                 .setSortType(sortValue)
-                .setInFileList(null)
                 .setTabId(tabId);
         return taskBean;
     }
