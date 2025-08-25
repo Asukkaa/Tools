@@ -56,7 +56,7 @@
 
             <HBox fx:id="filterHBox_MV" visible="false" spacing="10">
                 <Label prefHeight="25" text="目录结构设置:"/>
-                <ChoiceBox fx:id="moveType_MV" prefHeight="25" prefWidth="170" onAction="#moveTypeAction"
+                <ChoiceBox fx:id="moveType_MV" prefHeight="25" prefWidth="185" onAction="#moveTypeAction"
                            style="-fx-cursor: hand">
                     <items>
                         <FXCollections fx:factory="observableArrayList">

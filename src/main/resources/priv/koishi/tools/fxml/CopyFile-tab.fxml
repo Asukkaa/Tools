@@ -46,7 +46,7 @@
 
             <HBox fx:id="filterHBox_CP" visible="false" spacing="10">
                 <Label prefHeight="25" text="目录结构设置:"/>
-                <ChoiceBox fx:id="copyType_CP" prefHeight="25" prefWidth="170" onAction="#copyTypeAction"
+                <ChoiceBox fx:id="copyType_CP" prefHeight="25" prefWidth="185" onAction="#copyTypeAction"
                            style="-fx-cursor: hand">
                     <items>
                         <FXCollections fx:factory="observableArrayList">
